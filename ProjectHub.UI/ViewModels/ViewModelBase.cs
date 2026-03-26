@@ -17,46 +17,6 @@ namespace ProjectHub.UI.ViewModels;
 public abstract class ViewModelBase : ReactiveObject
 {
     /// <summary>
-    /// 页面标题
-    /// </summary>
-    private string _title = string.Empty;
-    public string Title
-    {
-        get => _title;
-        set => this.RaiseAndSetIfChanged(ref _title, value);
-    }
-
-    /// <summary>
-    /// 是否正在加载
-    /// </summary>
-    private bool _isLoading;
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
-    }
-
-    /// <summary>
-    /// 错误消息
-    /// </summary>
-    private string? _errorMessage;
-    public string? ErrorMessage
-    {
-        get => _errorMessage;
-        set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
-    }
-
-    /// <summary>
-    /// 是否有错误
-    /// </summary>
-    private bool _hasError;
-    public bool HasError
-    {
-        get => _hasError;
-        set => this.RaiseAndSetIfChanged(ref _hasError, value);
-    }
-
-    /// <summary>
     /// 日志记录器
     /// </summary>
     protected readonly ILogger Logger;
@@ -64,43 +24,6 @@ public abstract class ViewModelBase : ReactiveObject
     protected ViewModelBase(ILogger logger)
     {
         Logger = logger;
-    }
-
-    /// <summary>
-    /// Executes an action asynchronously with error handling
-    /// </summary>
-    protected async Task ExecuteWithErrorHandlerAsync(Func<Task> action, string operationName)
-    {
-        try
-        {
-            IsLoading = true;
-            HasError = false;
-            ErrorMessage = null;
-
-            await action();
-        }
-        catch (ValidationException ex)
-        {
-            Logger.LogWarning(ex, "Validation exception: {Operation}", operationName);
-            HasError = true;
-            ErrorMessage = string.Join(", ", ex.Errors.SelectMany(kvp => kvp.Value));
-        }
-        catch (DomainException ex)
-        {
-            Logger.LogError(ex, "Domain exception: {Operation}", operationName);
-            HasError = true;
-            ErrorMessage = ex.Message;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Unknown exception: {Operation}", operationName);
-            HasError = true;
-            ErrorMessage = $"Operation failed: {ex.Message}";
-        }
-        finally
-        {
-            IsLoading = false;
-        }
     }
 
     /// <summary>

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Core.DependencyInjection;
 using ProjectHub.PlatformAbstractions;
+using ProjectHub.UI.DependencyInjection;
 using ProjectHub.UI.ViewModels;
 
 namespace ProjectHub;
@@ -43,7 +44,7 @@ public partial class App : System.Windows.Application
     {
         // Build the host with all configurations
         _host = CreateHostBuilder();
-        
+
         // Resolve logger and platform service after host is built
         _logger = Services.GetRequiredService<ILogger<App>>();
         _platformService = Services.GetRequiredService<IPlatformService>();
@@ -72,11 +73,11 @@ public partial class App : System.Windows.Application
         config.Sources.Clear();
 
         // Add configuration providers in order of precedence (later overrides earlier)
-        
+
         // 1. JSON configuration files
         config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-        config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", 
-            optional: true, 
+        config.AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json",
+            optional: true,
             reloadOnChange: true);
 
         // 2. User-specific settings (optional)
@@ -106,12 +107,12 @@ public partial class App : System.Windows.Application
         {
             // Database configuration
             ["ConnectionStrings:DefaultConnection"] = "Data Source=projecthub.db",
-            
+
             // Application settings
             ["AppSettings:EnableTelemetry"] = "false",
             ["AppSettings:Theme"] = "Light",
             ["AppSettings:Language"] = "en-US",
-            
+
             // Feature flags
             ["FeatureFlags:EnableProjectBundles"] = "true",
             ["FeatureFlags:EnableGarbageCollection"] = "true",
@@ -126,11 +127,11 @@ public partial class App : System.Windows.Application
     private void ConfigureLogging(HostBuilderContext context, ILoggingBuilder logging)
     {
         logging.ClearProviders();
-        
+
         // Built-in logging providers
         logging.AddConsole();
         logging.AddDebug();
-        
+
         // Optional: Add file logging (uncomment when needed)
         // logging.AddFile("Logs/app.log", new FileLoggerOptions
         // {
@@ -142,10 +143,9 @@ public partial class App : System.Windows.Application
         // Set minimum log level based on configuration
         var minLevel = context.Configuration.GetValue<LogLevel>("Logging:MinLevel", LogLevel.Information);
         logging.SetMinimumLevel(minLevel);
-        
+
         // Add logging filters for specific namespaces
         logging.AddFilter("Microsoft.EntityFrameworkCore", LogLevel.Warning);
-        logging.AddFilter("System.Net.Http.HttpClient", LogLevel.Warning);
     }
 
     /// <summary>
@@ -156,50 +156,17 @@ public partial class App : System.Windows.Application
     {
         var configuration = context.Configuration;
 
-        // ========== Layer 1: Core Services ==========
-        // No explicit registration needed - Core provides extension methods
-
-        // ========== Layer 2: Domain Services ==========
-        // Register domain services when implemented
-        // services.AddScoped<IProjectDomainService, ProjectDomainService>();
-
-        // ========== Layer 3: Application Services ==========
-        // Register application use cases when implemented
-        // services.AddScoped<IProjectAppService, ProjectAppService>();
-        // services.AddScoped<IGroupAppService, GroupAppService>();
-        // services.AddScoped<ITagAppService, TagAppService>();
-
-        // ========== Layer 4: Infrastructure Services ==========
-        services.AddInfrastructureServices(configuration);
-
-        // ========== Layer 5: UI Services ==========
-        RegisterViewModels(services);
+        // ========== Register Views ==========
         RegisterViews(services);
 
-        // ========== Cross-Cutting Concerns ==========
-        RegisterCrossCuttingConcerns(services, configuration);
+        // ========== Register UI Services (ViewModels) ==========
+        services.AddUIServices();
 
-        // ========== Platform-Specific Services ==========
-        // This abstraction allows switching between WPF and Avalonia
+        // ========== Register Infrastructure Services ==========
+        services.AddInfrastructureServices(configuration);
+
+        // ========== Register Platform Services ==========
         services.AddSingleton<IPlatformService, WpfPlatformService>();
-
-        // ========== Health Checks (Future Extension) ==========
-        // services.AddHealthChecks()
-        //     .AddDbContextCheck<AppDbContext>()
-        //     .AddDiskStorageHealthCheck("C:\\");
-    }
-
-    /// <summary>
-    /// Registers all ViewModels with appropriate lifecycles.
-    /// </summary>
-    private static void RegisterViewModels(IServiceCollection services)
-    {
-        // Main ViewModel - Singleton (shared across application lifetime)
-        services.AddSingleton<MainViewModel>();
-        
-        // Other ViewModels - register as needed
-        // services.AddTransient<ProjectDetailViewModel>();
-        // services.AddTransient<SettingsViewModel>();
     }
 
     /// <summary>
@@ -217,23 +184,9 @@ public partial class App : System.Windows.Application
         // Other windows/dialogs - register as needed
         // services.AddTransient<SettingsWindow>(provider =>
         // {
-        //     var viewModel = provider.GetRequiredService<SettingsViewModel>();
+        //     var viewModel = provider.GetRequiredService<ViewModels.MainViewModel>();
         //     return new SettingsWindow(viewModel);
         // });
-    }
-
-    /// <summary>
-    /// Registers cross-cutting concerns like caching, notifications, etc.
-    /// </summary>
-    private static void RegisterCrossCuttingConcerns(
-        IServiceCollection services, 
-        IConfiguration configuration)
-    {
-        // Memory cache for frequently accessed data
-        services.AddMemoryCache();
-        
-        // Background services (when needed)
-        // services.AddHostedService<DataSyncBackgroundService>();
     }
 
     /// <summary>
@@ -249,14 +202,14 @@ public partial class App : System.Windows.Application
 
             // Start the host (initializes all services)
             await _host.StartAsync();
-            
+
             _logger.LogInformation("Host started successfully");
-            _logger.LogInformation("Environment: {Environment}", 
+            _logger.LogInformation("Environment: {Environment}",
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
 
             // Display main window using platform-agnostic service
             await _platformService.ShowMainWindowAsync();
-            
+
             _logger.LogInformation("Application started successfully");
         }
         catch (Exception ex)
@@ -265,7 +218,7 @@ public partial class App : System.Windows.Application
             await _platformService.ShowStartupErrorAsync(ex);
             throw;
         }
-        
+
         base.OnStartup(e);
     }
 
@@ -273,12 +226,12 @@ public partial class App : System.Windows.Application
     /// Global exception handler for unhandled UI thread exceptions.
     /// Delegates to platform-specific implementation.
     /// </summary>
-    protected  void OnDispatcherUnhandledException(
+    protected void OnDispatcherUnhandledException(
         System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
         // Delegate to platform service for handling
         var shouldContinue = _platformService.ShowErrorDialogAsync(e.Exception).Result;
-        
+
         // Mark exception as handled to prevent crash if user chose to continue
         e.Handled = shouldContinue;
     }
@@ -292,13 +245,13 @@ public partial class App : System.Windows.Application
         try
         {
             _logger.LogInformation("Application shutting down...");
-            
+
             // Gracefully stop the host and dispose all services
             using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
             {
                 await _host.StopAsync(timeout.Token);
             }
-            
+
             _logger.LogInformation("Host stopped successfully");
             _logger.LogInformation("Application exited gracefully");
         }

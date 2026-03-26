@@ -97,8 +97,6 @@ public class MainViewModel : ViewModelBase
     public MainViewModel(ILogger<MainViewModel> logger)
         : base(logger)
     {
-        Title = "Project Hub - 开发者项目管理器";
-        
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
         SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
@@ -113,16 +111,7 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private async Task LoadProjectsAsync()
     {
-        await ExecuteWithErrorHandlerAsync(async () =>
-        {
-            // TODO: 调用应用服务加载数据
-            // var projects = await _projectAppService.GetAllActiveAsync();
-            // Projects = new ObservableCollection<ProjectViewModel>(
-            //     projects.Select(p => new ProjectViewModel(p))
-            // );
-            
-            Logger.LogInformation("加载了 {Count} 个项目", Projects.Count);
-        }, "加载项目");
+      
     }
 
     /// <summary>
@@ -135,15 +124,6 @@ public class MainViewModel : ViewModelBase
             await LoadProjectsAsync();
             return;
         }
-
-        await ExecuteWithErrorHandlerAsync(async () =>
-        {
-            // TODO: 调用搜索服务
-            // var results = await _projectAppService.SearchAsync(SearchKeyword);
-            // Projects = new ObservableCollection<ProjectViewModel>(
-            //     results.Select(p => new ProjectViewModel(p))
-            // );
-        }, "搜索项目");
     }
 
     /// <summary>
