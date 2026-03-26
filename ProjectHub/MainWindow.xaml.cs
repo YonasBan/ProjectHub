@@ -1,24 +1,22 @@
-﻿using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using ProjectHub.UI.ViewModels;
 
 namespace ProjectHub
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
+    /// 
+    /// Note: This is a code-behind file that only handles view-specific logic.
+    /// All business logic should be in the ViewModel (MVVM pattern).
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow()
+        public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
+            
+            // Set DataContext to ViewModel for data binding
+            DataContext = viewModel;
         }
     }
 }

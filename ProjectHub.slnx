@@ -1,3 +1,8 @@
 <Solution>
+  <Project Path="ProjectHub.Application/ProjectHub.Application.csproj" />
+  <Project Path="ProjectHub.Core/ProjectHub.Core.csproj" />
+  <Project Path="ProjectHub.Domain/ProjectHub.Domain.csproj" />
+  <Project Path="ProjectHub.Infrastructure/ProjectHub.Infrastructure.csproj" />
+  <Project Path="ProjectHub.UI/ProjectHub.UI.csproj" />
   <Project Path="ProjectHub/ProjectHub.csproj" />
 </Solution>

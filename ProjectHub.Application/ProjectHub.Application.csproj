@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <!-- Application layer depends on Core and Domain -->
+  <ItemGroup>
+    <ProjectReference Include="..\ProjectHub.Core\ProjectHub.Core.csproj" />
+    <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
