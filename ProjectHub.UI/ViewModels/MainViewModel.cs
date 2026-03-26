@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using ProjectHub.Application.Interfaces;
 
 namespace ProjectHub.UI.ViewModels;
 
@@ -13,9 +14,9 @@ namespace ProjectHub.UI.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     // TODO: 注入应用服务
-    // private readonly IProjectAppService _projectAppService;
-    // private readonly IGroupAppService _groupAppService;
-    // private readonly ITagAppService _tagAppService;
+    private readonly IProjectAppService _projectAppService;
+    private readonly IGroupAppService _groupAppService;
+    private readonly ITagAppService _tagAppService;
 
     /// <summary>
     /// 项目列表 (Observable)
@@ -94,16 +95,24 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
 
-    public MainViewModel(ILogger<MainViewModel> logger)
+    public MainViewModel(
+        ILogger<MainViewModel> logger,
+        IProjectAppService projectAppService,
+        IGroupAppService groupAppService,
+        ITagAppService tagAppService)
         : base(logger)
     {
+        _projectAppService = projectAppService;
+        _groupAppService = groupAppService;
+        _tagAppService = tagAppService;
+
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
         SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
         
-        // TODO: 加载数据
-        // LoadProjectsCommand.Execute(Unit.Default).Subscribe();
+        // 加载数据
+        LoadProjectsCommand.Execute(Unit.Default).Subscribe();
     }
 
     /// <summary>
@@ -111,7 +120,25 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private async Task LoadProjectsAsync()
     {
-      
+        try
+        {
+            Logger.LogInformation("开始加载项目列表");
+            
+            var projects = await _projectAppService.GetAllActiveAsync();
+            
+            Projects.Clear();
+            foreach (var project in projects)
+            {
+                Projects.Add(new ProjectViewModel(project));
+            }
+            
+            Logger.LogInformation($"成功加载 {projects.Count} 个项目");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载项目列表时发生错误");
+            throw;
+        }
     }
 
     /// <summary>
@@ -119,10 +146,30 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private async Task SearchProjectsAsync()
     {
-        if (string.IsNullOrWhiteSpace(SearchKeyword))
+        try
         {
-            await LoadProjectsAsync();
-            return;
+            if (string.IsNullOrWhiteSpace(SearchKeyword))
+            {
+                await LoadProjectsAsync();
+                return;
+            }
+
+            Logger.LogInformation($"搜索关键字：{SearchKeyword}");
+            
+            var projects = await _projectAppService.SearchAsync(SearchKeyword);
+            
+            Projects.Clear();
+            foreach (var project in projects)
+            {
+                Projects.Add(new ProjectViewModel(project));
+            }
+            
+            Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "搜索项目时发生错误");
+            throw;
         }
     }
 
@@ -131,23 +178,69 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private async Task RefreshAsync()
     {
-        await LoadProjectsAsync();
-        await LoadGroupsAsync();
-        await LoadTagsAsync();
+        try
+        {
+            Logger.LogInformation("开始刷新所有数据");
+            
+            await LoadProjectsAsync();
+            await LoadGroupsAsync();
+            await LoadTagsAsync();
+            
+            Logger.LogInformation("数据刷新完成");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "刷新数据时发生错误");
+            throw;
+        }
     }
 
     // ========== 辅助方法 ==========
 
     private async Task LoadGroupsAsync()
     {
-        // TODO: 实现
-        await Task.CompletedTask;
+        try
+        {
+            Logger.LogInformation("加载分组列表");
+            
+            var groups = await _groupAppService.GetAllWithProjectCountAsync();
+            
+            Groups.Clear();
+            foreach (var group in groups)
+            {
+                Groups.Add(new GroupViewModel(group));
+            }
+            
+            Logger.LogInformation($"成功加载 {groups.Count} 个分组");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载分组列表时发生错误");
+            throw;
+        }
     }
 
     private async Task LoadTagsAsync()
     {
-        // TODO: 实现
-        await Task.CompletedTask;
+        try
+        {
+            Logger.LogInformation("加载标签列表");
+            
+            var tags = await _tagAppService.GetAllWithProjectCountAsync();
+            
+            Tags.Clear();
+            foreach (var tag in tags)
+            {
+                Tags.Add(new TagViewModel(tag));
+            }
+            
+            Logger.LogInformation($"成功加载 {tags.Count} 个标签");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载标签列表时发生错误");
+            throw;
+        }
     }
 }
 
