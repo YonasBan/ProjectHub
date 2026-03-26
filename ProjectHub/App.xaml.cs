@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Core.DependencyInjection;
 using ProjectHub.PlatformAbstractions;
-using ProjectHub.UI.DependencyInjection;
 using ProjectHub.UI.ViewModels;
 
 namespace ProjectHub;
@@ -167,6 +166,7 @@ public partial class App : System.Windows.Application
 
         // ========== Register Platform Services ==========
         services.AddSingleton<IPlatformService, WpfPlatformService>();
+        services.AddSingleton<IDialogService>(provider => provider.GetRequiredService<WpfPlatformService>());
     }
 
     /// <summary>
@@ -177,7 +177,7 @@ public partial class App : System.Windows.Application
         // MainWindow with injected ViewModel
         services.AddSingleton<MainWindow>(provider =>
         {
-            var viewModel = provider.GetRequiredService<MainViewModel>();
+            var viewModel = provider.GetRequiredService<ViewModels.MainViewModel>();
             return new MainWindow(viewModel);
         });
 
@@ -284,6 +284,3 @@ public partial class App : System.Windows.Application
     /// </summary>
     public T? TryGetService<T>() where T : notnull
     {
-        return Services.GetService<T>();
-    }
-}
