@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DependencyInjection;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
 namespace ProjectHub.Presentation.Wpf;
@@ -145,6 +147,9 @@ public partial class App : System.Windows.Application
     {
         var configuration = context.Configuration;
 
+        // ========== Register Localization Service ==========
+        RegisterLocalizationServices(services);
+
         // ========== Register Views ==========
         RegisterViews(services);
 
@@ -153,6 +158,21 @@ public partial class App : System.Windows.Application
 
         // ========== Register Infrastructure Services ==========
         services.AddInfrastructureServices(configuration);
+    }
+
+    /// <summary>
+    /// Registers localization services.
+    /// </summary>
+    private static void RegisterLocalizationServices(IServiceCollection services)
+    {
+        // 注册本地化服务，使用 ProjectHub.Resources.Strings 资源文件
+        services.AddSingleton<ILocalizationService>(provider =>
+        {
+            var assembly = Assembly.Load("ProjectHub.Resources");
+            return new ResxLocalizationService(
+                "ProjectHub.Resources.Strings.Strings",
+                assembly);
+        });
     }
 
     /// <summary>

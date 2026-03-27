@@ -8,12 +8,14 @@
 
   <ItemGroup>
     <PackageReference Include="ReactiveUI" Version="23.1.8" />
+    <!-- System.Reactive version is managed by ReactiveUI -->
   </ItemGroup>
 
-  <!-- Application layer depends on Core and Domain -->
+  <!-- Application layer depends on Core, Domain and Resources -->
   <ItemGroup>
     <ProjectReference Include="..\ProjectHub.Core\ProjectHub.Core.csproj" />
     <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
+    <ProjectReference Include="..\ProjectHub.Resources\ProjectHub.Resources.csproj" />
   </ItemGroup>
 
 </Project>

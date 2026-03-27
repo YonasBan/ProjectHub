@@ -4,4 +4,5 @@
   <Project Path="ProjectHub.Domain/ProjectHub.Domain.csproj" />
   <Project Path="ProjectHub.Infrastructure/ProjectHub.Infrastructure.csproj" />
   <Project Path="ProjectHub.Presentation.Wpf/ProjectHub.Presentation.Wpf.csproj" />
+  <Project Path="ProjectHub.Resources/ProjectHub.Resources.csproj" />
 </Solution>

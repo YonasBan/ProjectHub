@@ -14,6 +14,7 @@
     <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
     <ProjectReference Include="..\ProjectHub.Application\ProjectHub.Application.csproj" />
     <ProjectReference Include="..\ProjectHub.Infrastructure\ProjectHub.Infrastructure.csproj" />
+    <ProjectReference Include="..\ProjectHub.Resources\ProjectHub.Resources.csproj" />
   </ItemGroup>
 
   <!-- Microsoft.Extensions for Dependency Injection and Configuration -->
@@ -21,6 +22,12 @@
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.5" />
+  </ItemGroup>
+
+  <!-- ReactiveUI for MVVM -->
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" Version="23.1.8" />
+    <PackageReference Include="System.Reactive" Version="6.1.0" />
   </ItemGroup>
 
 </Project>

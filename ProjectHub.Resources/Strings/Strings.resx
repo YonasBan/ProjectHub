@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  
+  <!-- 通用 -->
+  <data name="Confirm" xml:space="preserve">
+    <value>确认</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>保存</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  
+  <!-- 项目管理 -->
+  <data name="Project_Create" xml:space="preserve">
+    <value>创建项目</value>
+  </data>
+  <data name="Project_Edit" xml:space="preserve">
+    <value>编辑项目</value>
+  </data>
+  <data name="Project_Delete" xml:space="preserve">
+    <value>删除项目</value>
+  </data>
+  <data name="Project_Launch" xml:space="preserve">
+    <value>启动项目</value>
+  </data>
+  <data name="Project_OpenFolder" xml:space="preserve">
+    <value>打开文件夹</value>
+  </data>
+  
+  <!-- 对话框 -->
+  <data name="DeleteConfirm_Title" xml:space="preserve">
+    <value>确认删除</value>
+  </data>
+  <data name="DeleteConfirm_Message" xml:space="preserve">
+    <value>确定要删除"{0}"吗？此操作不可恢复。</value>
+  </data>
+  <data name="DeleteConfirm_Success" xml:space="preserve">
+    <value>删除成功</value>
+  </data>
+  
+  <!-- 消息提示 -->
+  <data name="Message_SaveSuccess" xml:space="preserve">
+    <value>保存成功</value>
+  </data>
+  <data name="Message_SaveFailed" xml:space="preserve">
+    <value>保存失败</value>
+  </data>
+  <data name="Message_LoadFailed" xml:space="preserve">
+    <value>加载失败</value>
+  </data>
+  
+  <!-- 分组和标签 -->
+  <data name="Group_Create" xml:space="preserve">
+    <value>创建分组</value>
+  </data>
+  <data name="Tag_Add" xml:space="preserve">
+    <value>添加标签</value>
+  </data>
+  <data name="Tag_Remove" xml:space="preserve">
+    <value>移除标签</value>
+  </data>
+</root>
