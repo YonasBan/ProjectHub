@@ -21,4 +21,7 @@ public abstract class BaseEntity
     /// 最后修改时间
     /// </summary>
     public DateTime? UpdatedAt { get; protected set; }
+
+    public bool IsDeleted { get; protected set; }
+    public DateTime? DeleteedTime { get; protected set;  }
 }

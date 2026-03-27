@@ -31,7 +31,7 @@ public class Project : BaseEntity
 
     /// <summary>
     /// 自定义图标路径 (可选)
-    /// 为空则使用默认类型图标
+    /// 为空则使用系统默认类型图标
     /// </summary>
     public string? CustomIconPath { get; private set; }
 
@@ -266,5 +266,9 @@ public enum ProjectType
     /// <summary>
     /// 文件夹
     /// </summary>
-    Folder = 6
+    Folder = 6,
+    /// <summary>
+    /// WebSite
+    /// </summary>
+    WebSite = 7,
 }
