@@ -153,6 +153,11 @@ public class WorkSpaceDto
     public DateTime? LastOpenedAt { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    
+    /// <summary>
+    /// 已启用启动的项目 ID 列表
+    /// </summary>
+    public IReadOnlyList<long> EnabledProjectIds { get; set; } = new List<long>();
 }
 
 /// <summary>
@@ -362,4 +367,37 @@ public class UpdateProjectBundleDto
     public bool? UseCustomOrder { get; set; }
     public int? DefaultIntervalSeconds { get; set; }
     public IEnumerable<ProjectBundleItemInput>? Items { get; set; }
+}
+
+/// <summary>
+/// 工作空间项目设置 DTO - 用于弹窗设置
+/// </summary>
+public class WorkSpaceProjectSettingsDto
+{
+    public long WorkSpaceId { get; set; }
+    public string WorkSpaceName { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// 工作空间包含的所有项目
+    /// </summary>
+    public IReadOnlyList<ProjectDto> AllProjects { get; set; } = new List<ProjectDto>();
+    
+    /// <summary>
+    /// 已启用启动的项目 ID 列表
+    /// </summary>
+    public IReadOnlyList<long> EnabledProjectIds { get; set; } = new List<long>();
+}
+
+/// <summary>
+/// 更新工作空间项目设置输入 DTO
+/// </summary>
+public class UpdateWorkSpaceProjectSettingsDto
+{
+    [Required]
+    public long WorkSpaceId { get; set; }
+    
+    /// <summary>
+    /// 已启用启动的项目 ID 列表
+    /// </summary>
+    public IEnumerable<long> EnabledProjectIds { get; set; } = new List<long>();
 }

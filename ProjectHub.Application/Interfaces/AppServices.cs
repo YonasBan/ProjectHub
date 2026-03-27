@@ -161,6 +161,16 @@ public interface IWorkSpaceAppService
     /// 将项目移动到工作空间
     /// </summary>
     Task MoveProjectToWorkSpaceAsync(long projectId, long? workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间的项目启动设置
+    /// </summary>
+    Task<WorkSpaceProjectSettingsDto> GetProjectSettingsAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 更新工作空间的项目启动设置
+    /// </summary>
+    Task<WorkSpaceProjectSettingsDto> UpdateProjectSettingsAsync(UpdateWorkSpaceProjectSettingsDto input, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

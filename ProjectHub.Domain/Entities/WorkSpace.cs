@@ -51,6 +51,12 @@ public class WorkSpace : BaseEntity
     /// </summary>
     public DateTime? LastOpenedAt { get; private set; }
 
+    /// <summary>
+    /// 已启用启动的项目 ID 列表 (JSON 格式存储)
+    /// 用于记录用户勾选的会自动启动的项目
+    /// </summary>
+    public string? EnabledProjectIdsJson { get; private set; }
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -120,5 +126,66 @@ public class WorkSpace : BaseEntity
     {
         LastOpenedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置已启用启动的项目 ID 列表
+    /// </summary>
+    /// <param name="projectIds">项目 ID 列表</param>
+    public void SetEnabledProjectIds(IEnumerable<long> projectIds)
+    {
+        var idsList = projectIds.ToList();
+        EnabledProjectIdsJson = idsList.Count > 0 
+            ? System.Text.Json.JsonSerializer.Serialize(idsList.Distinct().OrderBy(x => x))
+            : null;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 获取已启用启动的项目 ID 列表
+    /// </summary>
+    /// <returns>项目 ID 列表</returns>
+    public IEnumerable<long> GetEnabledProjectIds()
+    {
+        if (string.IsNullOrEmpty(EnabledProjectIdsJson))
+            return Enumerable.Empty<long>();
+
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<IEnumerable<long>>(EnabledProjectIdsJson) 
+                   ?? Enumerable.Empty<long>();
+        }
+        catch
+        {
+            return Enumerable.Empty<long>();
+        }
+    }
+
+    /// <summary>
+    /// 添加单个项目到启用列表
+    /// </summary>
+    /// <param name="projectId">项目 ID</param>
+    public void AddEnabledProject(long projectId)
+    {
+        var enabledIds = GetEnabledProjectIds().ToList();
+        if (!enabledIds.Contains(projectId))
+        {
+            enabledIds.Add(projectId);
+            SetEnabledProjectIds(enabledIds);
+        }
+    }
+
+    /// <summary>
+    /// 从启用列表中移除单个项目
+    /// </summary>
+    /// <param name="projectId">项目 ID</param>
+    public void RemoveEnabledProject(long projectId)
+    {
+        var enabledIds = GetEnabledProjectIds().ToList();
+        if (enabledIds.Contains(projectId))
+        {
+            enabledIds.Remove(projectId);
+            SetEnabledProjectIds(enabledIds);
+        }
     }
 }

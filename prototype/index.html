@@ -295,6 +295,34 @@
             border-radius: var(--radius-sm);
         }
         
+        /* Add child folder button */
+        .tree-add-btn {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0;
+            transition: all 0.2s;
+            visibility: hidden;
+        }
+        
+        .tree-item:hover .tree-add-btn {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tree-add-btn:hover {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
         .tree-children {
             padding-left: var(--space-24);
         }
@@ -345,6 +373,171 @@
             background-color: var(--accent-blue);
             border-color: var(--accent-blue);
             color: var(--text-primary);
+        }
+        
+        /* Workspace Settings Button */
+        .workspace-settings-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+            margin-left: var(--space-12);
+        }
+        
+        .workspace-settings-btn:hover {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        /* Modal Dialog */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.visible {
+            display: flex;
+        }
+        
+        .modal-dialog {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            width: 90%;
+            max-width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            padding: var(--space-16) var(--space-20);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-close {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: var(--space-20);
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .modal-footer {
+            padding: var(--space-16) var(--space-20);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-8);
+        }
+        
+        /* Project Checkbox List */
+        .project-checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-8);
+        }
+        
+        .project-checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-12);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .project-checkbox-item:hover {
+            border-color: var(--accent-blue);
+            background-color: var(--bg-hover);
+        }
+        
+        .project-checkbox-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: var(--space-12);
+            cursor: pointer;
+            accent-color: var(--accent-blue);
+        }
+        
+        .project-checkbox-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .project-checkbox-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+        
+        .project-checkbox-path {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .project-checkbox-type {
+            width: 60px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-xs);
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-left: var(--space-8);
         }
         
         /* Recent List View (hidden by default when card view is active) */
@@ -757,56 +950,6 @@
                     <span class="tree-count">5</span>
                 </div>
                 
-                <!-- 开发项目（展开状态） -->
-                <div class="tree-item selected">
-                    <span class="tree-expand expanded">▶</span>
-                    <div class="tree-icon">📁</div>
-                    <span class="tree-label">开发项目</span>
-                    <span class="tree-count">12</span>
-                </div>
-                <div class="tree-children">
-                    <div class="tree-item">
-                        <span class="tree-expand">▶</span>
-                        <div class="tree-icon">📁</div>
-                        <span class="tree-label">Web 应用</span>
-                        <span class="tree-count">5</span>
-                    </div>
-                    <div class="tree-item">
-                        <span class="tree-expand">▶</span>
-                        <div class="tree-icon">📁</div>
-                        <span class="tree-label">移动应用</span>
-                        <span class="tree-count">4</span>
-                    </div>
-                    <div class="tree-item">
-                        <span class="tree-expand">▶</span>
-                        <div class="tree-icon">📁</div>
-                        <span class="tree-label">桌面应用</span>
-                        <span class="tree-count">3</span>
-                    </div>
-                </div>
-                
-                <!-- 学习资源（展开状态） -->
-                <div class="tree-item">
-                    <span class="tree-expand expanded">▶</span>
-                    <div class="tree-icon">📁</div>
-                    <span class="tree-label">学习资源</span>
-                    <span class="tree-count">8</span>
-                </div>
-                <div class="tree-children">
-                    <div class="tree-item">
-                        <span class="tree-expand">▶</span>
-                        <div class="tree-icon">📁</div>
-                        <span class="tree-label">编程教程</span>
-                        <span class="tree-count">3</span>
-                    </div>
-                    <div class="tree-item">
-                        <span class="tree-expand">▶</span>
-                        <div class="tree-icon">📁</div>
-                        <span class="tree-label">电子书</span>
-                        <span class="tree-count">5</span>
-                    </div>
-                </div>
-                
                 <!-- 工作空间 (WorkSpace) -->
                 <div class="tree-item">
                     <span class="tree-expand"></span>
@@ -820,6 +963,63 @@
                     </div>
                     <span class="tree-label">工作空间</span>
                     <span class="tree-count">8</span>
+                </div>
+                
+                <!-- 开发项目（展开状态） -->
+                <div class="tree-item selected">
+                    <span class="tree-expand expanded">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">开发项目</span>
+                    <span class="tree-count">12</span>
+                    <button class="tree-add-btn" title="新建子文件夹">+</button>
+                </div>
+                <div class="tree-children">
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">Web 应用</span>
+                        <span class="tree-count">5</span>
+                        <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">移动应用</span>
+                        <span class="tree-count">4</span>
+                        <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">桌面应用</span>
+                        <span class="tree-count">3</span>
+                        <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    </div>
+                </div>
+                
+                <!-- 学习资源（展开状态） -->
+                <div class="tree-item">
+                    <span class="tree-expand expanded">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">学习资源</span>
+                    <span class="tree-count">8</span>
+                    <button class="tree-add-btn" title="新建子文件夹">+</button>
+                </div>
+                <div class="tree-children">
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">编程教程</span>
+                        <span class="tree-count">3</span>
+                        <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">电子书</span>
+                        <span class="tree-count">5</span>
+                        <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    </div>
                 </div>
                 
                 <!-- 所有项目 -->
@@ -1124,6 +1324,62 @@
         </footer>
     </div>
     
+    <!-- Workspace Settings Modal -->
+    <div class="modal-overlay" id="workspaceSettingsModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">⚙️ 设置启动项目 - Android 开发空间</h3>
+                <button class="modal-close" onclick="closeWorkspaceSettings()">×</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 13px;">
+                    勾选将在打开工作空间时自动启动的项目：
+                </p>
+                <div class="project-checkbox-list">
+                    <label class="project-checkbox-item">
+                        <input type="checkbox" checked>
+                        <div class="project-checkbox-info">
+                            <div class="project-checkbox-name">Android 商城应用</div>
+                            <div class="project-checkbox-path">d:\projects\ShopApp\build.gradle</div>
+                        </div>
+                        <div class="project-checkbox-type">Android</div>
+                    </label>
+                    
+                    <label class="project-checkbox-item">
+                        <input type="checkbox" checked>
+                        <div class="project-checkbox-info">
+                            <div class="project-checkbox-name">后端 API 服务</div>
+                            <div class="project-checkbox-path">d:\projects\ShopApi\ShopApi.sln</div>
+                        </div>
+                        <div class="project-checkbox-type">VS</div>
+                    </label>
+                    
+                    <label class="project-checkbox-item">
+                        <input type="checkbox">
+                        <div class="project-checkbox-info">
+                            <div class="project-checkbox-name">管理后台前端</div>
+                            <div class="project-checkbox-path">d:\projects\ShopAdmin\package.json</div>
+                        </div>
+                        <div class="project-checkbox-type">Web</div>
+                    </label>
+                    
+                    <label class="project-checkbox-item">
+                        <input type="checkbox">
+                        <div class="project-checkbox-info">
+                            <div class="project-checkbox-name">接口文档</div>
+                            <div class="project-checkbox-path">d:\projects\Docs\API 文档.md</div>
+                        </div>
+                        <div class="project-checkbox-type">文档</div>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeWorkspaceSettings()" style="padding: 8px 16px; font-size: 13px;">取消</button>
+                <button class="btn btn-primary" onclick="saveWorkspaceSettings()" style="padding: 8px 16px; font-size: 13px;">保存设置</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // Tree View Interactivity
         document.addEventListener('DOMContentLoaded', function() {
@@ -1131,17 +1387,99 @@
             const treeItems = document.querySelectorAll('.tree-item');
             treeItems.forEach(item => {
                 item.addEventListener('click', function(e) {
+                    // Don't trigger selection when clicking add button
+                    if (e.target.classList.contains('tree-add-btn')) {
+                        return;
+                    }
+                    
                     // Toggle selection
                     treeItems.forEach(i => i.classList.remove('selected'));
                     this.classList.add('selected');
                     
                     // Toggle expand/collapse if has children
                     const expandIcon = this.querySelector('.tree-expand');
-                    if (expandIcon) {
+                    if (expandIcon && expandIcon.textContent !== '') {
                         expandIcon.classList.toggle('expanded');
                     }
                 });
             });
+            
+            // Add child folder button functionality
+            const addFolderBtns = document.querySelectorAll('.tree-add-btn');
+            addFolderBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent triggering tree item click
+                    
+                    const treeItem = this.closest('.tree-item');
+                    const folderName = prompt('请输入新文件夹名称:');
+                    
+                    if (folderName && folderName.trim()) {
+                        // Find or create tree-children container
+                        let childrenContainer = treeItem.nextElementSibling;
+                        if (!childrenContainer || !childrenContainer.classList.contains('tree-children')) {
+                            childrenContainer = document.createElement('div');
+                            childrenContainer.className = 'tree-children';
+                            treeItem.parentNode.insertBefore(childrenContainer, treeItem.nextSibling);
+                            
+                            // Expand the parent folder
+                            const expandIcon = treeItem.querySelector('.tree-expand');
+                            if (expandIcon) {
+                                expandIcon.classList.add('expanded');
+                            }
+                        }
+                        
+                        // Create new child folder
+                        const newFolder = document.createElement('div');
+                        newFolder.className = 'tree-item';
+                        newFolder.innerHTML = `
+                            <span class="tree-expand">▶</span>
+                            <div class="tree-icon">📁</div>
+                            <span class="tree-label">${folderName}</span>
+                            <span class="tree-count">0</span>
+                            <button class="tree-add-btn" title="新建子文件夹">+</button>
+                        `;
+                        
+                        childrenContainer.appendChild(newFolder);
+                        
+                        // Add event listeners to new folder
+                        newFolder.addEventListener('click', function(e) {
+                            if (e.target.classList.contains('tree-add-btn')) {
+                                return;
+                            }
+                            treeItems.forEach(i => i.classList.remove('selected'));
+                            this.classList.add('selected');
+                            
+                            const expandIcon = this.querySelector('.tree-expand');
+                            if (expandIcon && expandIcon.textContent !== '') {
+                                expandIcon.classList.toggle('expanded');
+                            }
+                        });
+                        
+                        // Add event listener to new add button
+                        const newAddBtn = newFolder.querySelector('.tree-add-btn');
+                        newAddBtn.addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            // Trigger the same add folder logic
+                            this.click();
+                        });
+                        
+                        // Update count
+                        updateFolderCount(treeItem);
+                    }
+                });
+            });
+            
+            // Helper function to update folder count
+            function updateFolderCount(folderItem) {
+                const countSpan = folderItem.querySelector('.tree-count');
+                const childrenContainer = folderItem.nextElementSibling;
+                if (childrenContainer && childrenContainer.classList.contains('tree-children')) {
+                    const count = childrenContainer.querySelectorAll('.tree-item').length;
+                    if (countSpan) {
+                        countSpan.textContent = count.toString();
+                    }
+                }
+            }
             
             // Toggle buttons for card/list view
             const toggleBtns = document.querySelectorAll('.toggle-btn');
@@ -1163,6 +1501,50 @@
                     }
                 });
             });
+        });
+        
+        // Workspace Settings Modal Functions
+        function openWorkspaceSettings() {
+            const modal = document.getElementById('workspaceSettingsModal');
+            if (modal) {
+                modal.classList.add('visible');
+            }
+        }
+        
+        function closeWorkspaceSettings() {
+            const modal = document.getElementById('workspaceSettingsModal');
+            if (modal) {
+                modal.classList.remove('visible');
+            }
+        }
+        
+        function saveWorkspaceSettings() {
+            // Get all checked project IDs
+            const checkboxes = document.querySelectorAll('#workspaceSettingsModal input[type="checkbox"]');
+            const enabledProjectIds = [];
+            
+            checkboxes.forEach((cb, index) => {
+                if (cb.checked) {
+                    // In real implementation, get the actual project ID
+                    enabledProjectIds.push(index + 1);
+                }
+            });
+            
+            // TODO: Call API to save settings
+            console.log('Saving enabled project IDs:', enabledProjectIds);
+            
+            // Show success message (optional)
+            alert('设置已保存！勾选的项目将在打开工作空间时自动启动。');
+            
+            closeWorkspaceSettings();
+        }
+        
+        // Close modal when clicking on overlay
+        document.addEventListener('click', function(e) {
+            const modal = document.getElementById('workspaceSettingsModal');
+            if (e.target === modal) {
+                closeWorkspaceSettings();
+            }
         });
     </script>
 </body>

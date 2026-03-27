@@ -10,10 +10,12 @@ namespace ProjectHub.Application.Services;
 public class WorkSpaceAppService : IWorkSpaceAppService
 {
     private readonly IWorkSpaceRepository _workSpaceRepository;
+    private readonly IProjectRepository _projectRepository;
 
-    public WorkSpaceAppService(IWorkSpaceRepository workSpaceRepository)
+    public WorkSpaceAppService(IWorkSpaceRepository workSpaceRepository, IProjectRepository projectRepository)
     {
         _workSpaceRepository = workSpaceRepository;
+        _projectRepository = projectRepository;
     }
 
     public async Task<WorkSpaceDto> CreateAsync(CreateWorkSpaceDto input, CancellationToken cancellationToken = default)
@@ -89,6 +91,38 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         await Task.CompletedTask;
     }
 
+    public async Task<WorkSpaceProjectSettingsDto> GetProjectSettingsAsync(long workSpaceId, CancellationToken cancellationToken = default)
+    {
+        var workSpace = await _workSpaceRepository.GetByIdAsync(workSpaceId, cancellationToken)
+            ?? throw new KeyNotFoundException($"工作空间 (Id={workSpaceId}) 不存在");
+
+        // 获取该工作空间包含的所有项目
+        // TODO: 需要通过 WorkSpace-Project 关联获取项目列表
+        // 暂时返回空列表，后续需要实现关联查询
+        var allProjects = new List<ProjectDto>();
+        
+        return new WorkSpaceProjectSettingsDto
+        {
+            WorkSpaceId = workSpace.Id,
+            WorkSpaceName = workSpace.Name,
+            AllProjects = allProjects,
+            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList()
+        };
+    }
+
+    public async Task<WorkSpaceProjectSettingsDto> UpdateProjectSettingsAsync(UpdateWorkSpaceProjectSettingsDto input, CancellationToken cancellationToken = default)
+    {
+        var workSpace = await _workSpaceRepository.GetByIdAsync(input.WorkSpaceId, cancellationToken)
+            ?? throw new KeyNotFoundException($"工作空间 (Id={input.WorkSpaceId}) 不存在");
+
+        // 更新已启用启动的项目 ID 列表
+        workSpace.SetEnabledProjectIds(input.EnabledProjectIds);
+        await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+
+        // 重新获取设置并返回
+        return await GetProjectSettingsAsync(input.WorkSpaceId, cancellationToken);
+    }
+
     private static WorkSpaceDto MapToDto(WorkSpace workSpace)
     {
         return new WorkSpaceDto
@@ -103,7 +137,8 @@ public class WorkSpaceAppService : IWorkSpaceAppService
             FavoritedAt = workSpace.FavoritedAt,
             LastOpenedAt = workSpace.LastOpenedAt,
             CreatedAt = workSpace.CreatedAt,
-            UpdatedAt = workSpace.UpdatedAt
+            UpdatedAt = workSpace.UpdatedAt,
+            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList()
         };
     }
 }
