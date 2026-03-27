@@ -2,23 +2,24 @@
 namespace ProjectHub.Domain.Entities;
 
 /// <summary>
-/// 分组实体
+/// 工作文件夹实体
 /// 用于对项目进行分类管理 (如：工作、学习、个人等)
+/// 一个 WorkFolder 可以包含多个 Project，一个 Project 只能属于一个 WorkFolder
 /// </summary>
-public class Group : BaseEntity
+public class WorkFolder : BaseEntity
 {
     /// <summary>
-    /// 分组名称
+    /// 工作文件夹名称
     /// </summary>
     public string Name { get; private set; } = string.Empty;
 
     /// <summary>
-    /// 分组描述
+    /// 工作文件夹描述
     /// </summary>
     public string? Description { get; private set; }
 
     /// <summary>
-    /// 分组图标路径 (可选)
+    /// 工作文件夹图标路径 (可选)
     /// </summary>
     public string? IconPath { get; private set; }
 
@@ -27,6 +28,12 @@ public class Group : BaseEntity
     /// 数字越小越靠前
     /// </summary>
     public int SortOrder { get; private set; }
+
+    /// <summary>
+    /// 父级工作文件夹 ID (可选，用于实现层级结构)
+    /// 为空表示根级工作文件夹
+    /// </summary>
+    public long? ParentId { get; private set; }
 
     /// <summary>
     /// 是否展开状态 (UI 状态，可选存储)
@@ -40,36 +47,40 @@ public class Group : BaseEntity
 
     // ========== DDD 领域行为 ==========
 
-    public Group()
+    /// <summary>
+    /// 私有构造函数 - 强制使用工厂方法创建
+    /// </summary>
+    private WorkFolder()
     {
     }
 
     /// <summary>
-    /// 工厂方法：创建分组
+    /// 工厂方法：创建工作文件夹
     /// </summary>
-    public static Group Create(string name, int sortOrder = 0, string? description = null)
+    public static WorkFolder Create(string name, int sortOrder = 0, string? description = null, long? parentId = null)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("分组名称不能为空", nameof(name));
+            throw new ArgumentException("工作文件夹名称不能为空", nameof(name));
 
-        var group = new Group
+        var workFolder = new WorkFolder
         {
             Name = name,
             Description = description,
             SortOrder = sortOrder,
+            ParentId = parentId,
             CreatedAt = DateTime.UtcNow,
             IsExpanded = true
         };
-        return group;
+        return workFolder;
     }
 
     /// <summary>
-    /// 更新分组信息
+    /// 更新工作文件夹信息
     /// </summary>
     public void UpdateInfo(string name, string? description = null)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new ArgumentException("分组名称不能为空", nameof(name));
+            throw new ArgumentException("工作文件夹名称不能为空", nameof(name));
 
         Name = name;
         Description = description;

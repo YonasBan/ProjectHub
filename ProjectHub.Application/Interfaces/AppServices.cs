@@ -92,34 +92,75 @@ public interface IProjectAppService
 }
 
 /// <summary>
-/// 分组管理应用服务接口
+/// 工作文件夹管理应用服务接口
 /// </summary>
-public interface IGroupAppService
+public interface IWorkFolderAppService
 {
     /// <summary>
-    /// 创建分组
+    /// 创建工作文件夹
     /// </summary>
-    Task<GroupDto> CreateAsync(CreateGroupDto input, CancellationToken cancellationToken = default);
+    Task<WorkFolderDto> CreateAsync(CreateWorkFolderDto input, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 更新分组
+    /// 更新工作文件夹
     /// </summary>
-    Task<GroupDto> UpdateAsync(UpdateGroupDto input, CancellationToken cancellationToken = default);
+    Task<WorkFolderDto> UpdateAsync(UpdateWorkFolderDto input, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 删除分组
+    /// 删除工作文件夹
     /// </summary>
     Task DeleteAsync(long id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 获取所有分组 (含项目数量)
+    /// 获取所有工作文件夹 (含项目数量)
     /// </summary>
-    Task<IReadOnlyList<GroupDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<WorkFolderDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 将项目移动到分组
+    /// 将项目移动到工作文件夹
     /// </summary>
-    Task MoveProjectToGroupAsync(long projectId, long? groupId, CancellationToken cancellationToken = default);
+    Task MoveProjectToWorkFolderAsync(long projectId, long? workFolderId, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// 工作空间管理应用服务接口
+/// </summary>
+public interface IWorkSpaceAppService
+{
+    /// <summary>
+    /// 创建工作空间
+    /// </summary>
+    Task<WorkSpaceDto> CreateAsync(CreateWorkSpaceDto input, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 更新工作空间
+    /// </summary>
+    Task<WorkSpaceDto> UpdateAsync(UpdateWorkSpaceDto input, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 删除工作空间
+    /// </summary>
+    Task DeleteAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取所有工作空间 (含项目数量)
+    /// </summary>
+    Task<IReadOnlyList<WorkSpaceDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取最近打开的工作空间
+    /// </summary>
+    Task<IReadOnlyList<WorkSpaceDto>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 记录工作空间被打开
+    /// </summary>
+    Task RecordOpenAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 将项目移动到工作空间
+    /// </summary>
+    Task MoveProjectToWorkSpaceAsync(long projectId, long? workSpaceId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

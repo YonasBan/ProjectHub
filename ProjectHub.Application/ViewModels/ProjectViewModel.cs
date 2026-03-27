@@ -33,9 +33,15 @@ public partial class ProjectViewModel : ReactiveObject
     
     public string? Description => _projectDto.Description;
     
-    public long? GroupId => _projectDto.GroupId;
+    /// <summary>
+    /// 关联的工作文件夹 ID 列表
+    /// </summary>
+    public IReadOnlyList<long> WorkFolderIds => _projectDto.WorkFolderIds;
     
-    public string? GroupName => _projectDto.GroupName;
+    /// <summary>
+    /// 关联的工作空间 ID 列表
+    /// </summary>
+    public IReadOnlyList<long> WorkSpaceIds => _projectDto.WorkSpaceIds;
     
     public DateTime? LastOpenedAt => _projectDto.LastOpenedAt;
     
@@ -48,6 +54,8 @@ public partial class ProjectViewModel : ReactiveObject
     public bool IsArchived => _projectDto.IsArchived;
     
     public bool IsFavorite => _projectDto.IsFavorite;
+    
+    public DateTime? FavoritedAt => _projectDto.FavoritedAt;
     
     public DateTime? Deadline => _projectDto.Deadline;
     

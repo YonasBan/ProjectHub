@@ -29,6 +29,9 @@ public static class DependencyInjection
         // services.AddScoped<ITagAppService, TagAppService>();
         // services.AddScoped<ICleanupAppService, CleanupAppService>();
         // services.AddScoped<IProjectBundleAppService, ProjectBundleAppService>();
+        
+        // 注意：应用服务需要在 Application 层自行注册
+        // 调用 services.AddApplicationServicesFromAssembly() 来注册
 
         return services;
     }
@@ -64,7 +67,8 @@ public static class DependencyInjection
 
         // 注册仓储
         services.AddScoped<IProjectRepository, ProjectRepository>();
-        services.AddScoped<IGroupRepository, GroupRepository>();
+        services.AddScoped<IWorkFolderRepository, WorkFolderRepository>();
+        services.AddScoped<IWorkSpaceRepository, WorkSpaceRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
 
         // TODO: 注册其他基础设施服务

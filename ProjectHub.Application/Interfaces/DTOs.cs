@@ -21,8 +21,17 @@ public class ProjectDto
     public string? CustomIconPath { get; set; }
     public string? ColorTag { get; set; }
     public string? Description { get; set; }
-    public long? GroupId { get; set; }
-    public string? GroupName { get; set; } // 导航属性
+    
+    /// <summary>
+    /// 关联的工作文件夹 ID 列表
+    /// </summary>
+    public IReadOnlyList<long> WorkFolderIds { get; set; } = new List<long>();
+    
+    /// <summary>
+    /// 关联的工作空间 ID 列表
+    /// </summary>
+    public IReadOnlyList<long> WorkSpaceIds { get; set; } = new List<long>();
+    
     public DateTime? LastOpenedAt { get; set; }
     public DateTime? LastModifiedAt { get; set; }
     public int LaunchCount { get; set; }
@@ -30,6 +39,7 @@ public class ProjectDto
     public long TotalUsageDurationMs { get; set; }
     public bool IsArchived { get; set; }
     public bool IsFavorite { get; set; }
+    public DateTime? FavoritedAt { get; set; }
     public DateTime? Deadline { get; set; }
     public long? CustomerId { get; set; }
     public long? DiskSpaceBytes { get; set; }
@@ -57,10 +67,11 @@ public class CreateProjectDto
     [Required]
     public string Path { get; set; } = string.Empty;
     
-    public long? GroupId { get; set; }
     public string? Description { get; set; }
     public string? CustomIconPath { get; set; }
     public string? ColorTag { get; set; }
+    public IEnumerable<long> WorkFolderIds { get; set; } = new List<long>();
+    public IEnumerable<long> WorkSpaceIds { get; set; } = new List<long>();
     public IEnumerable<long> TagIds { get; set; } = new List<long>();
 }
 
@@ -77,15 +88,16 @@ public class UpdateProjectDto
     
     public string? Description { get; set; }
     public string? ColorTag { get; set; }
-    public long? GroupId { get; set; }
+    public IEnumerable<long> WorkFolderIds { get; set; } = new List<long>();
+    public IEnumerable<long> WorkSpaceIds { get; set; } = new List<long>();
     public DateTime? Deadline { get; set; }
     public long? CustomerId { get; set; }
 }
 
 /// <summary>
-/// 分组 DTO
+/// 工作文件夹 DTO
 /// </summary>
-public class GroupDto
+public class WorkFolderDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
@@ -99,9 +111,9 @@ public class GroupDto
 }
 
 /// <summary>
-/// 创建分组输入 DTO
+/// 创建工作文件夹输入 DTO
 /// </summary>
-public class CreateGroupDto
+public class CreateWorkFolderDto
 {
     [Required]
     public string Name { get; set; } = string.Empty;
@@ -112,9 +124,9 @@ public class CreateGroupDto
 }
 
 /// <summary>
-/// 更新分组输入 DTO
+/// 更新工作文件夹输入 DTO
 /// </summary>
-public class UpdateGroupDto
+public class UpdateWorkFolderDto
 {
     [Required]
     public long Id { get; set; }
@@ -123,6 +135,55 @@ public class UpdateGroupDto
     public string Name { get; set; } = string.Empty;
     
     public string? Description { get; set; }
+}
+
+/// <summary>
+/// 工作空间 DTO
+/// </summary>
+public class WorkSpaceDto
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? IconPath { get; set; }
+    public int SortOrder { get; set; }
+    public int ProjectCount { get; set; }
+    public bool IsFavorite { get; set; }
+    public DateTime? FavoritedAt { get; set; }
+    public DateTime? LastOpenedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+}
+
+/// <summary>
+/// 创建工作空间输入 DTO
+/// </summary>
+public class CreateWorkSpaceDto
+{
+    [Required]
+    public string Name { get; set; } = string.Empty;
+    
+    public string? Description { get; set; }
+    
+    public int SortOrder { get; set; }
+    
+    public bool IsFavorite { get; set; }
+}
+
+/// <summary>
+/// 更新工作空间输入 DTO
+/// </summary>
+public class UpdateWorkSpaceDto
+{
+    [Required]
+    public long Id { get; set; }
+    
+    [Required]
+    public string Name { get; set; } = string.Empty;
+    
+    public string? Description { get; set; }
+    
+    public bool? IsFavorite { get; set; }
 }
 
 /// <summary>

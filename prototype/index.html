@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectHub - 项目管理系统原型</title>
+    <style>
+        :root {
+            --bg-primary: #1E1E1E;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2D2D30;
+            --bg-hover: #3E3E42;
+            --accent-blue: #0078D4;
+            --accent-blue-hover: #1084D8;
+            --text-primary: #FFFFFF;
+            --text-secondary: #CCCCCC;
+            --text-muted: #858585;
+            --border-color: #3C3C3C;
+            --success: #4EC9B0;
+            --warning: #CCA700;
+            --error: #F44747;
+            
+            --tag-blue: #0078D4;
+            --tag-green: #4EC9B0;
+            --tag-orange: #CE9178;
+            --tag-purple: #C586C0;
+            --tag-red: #F44747;
+            --tag-teal: #4DC9B0;
+            
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --space-32: 32px;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            grid-template-rows: 48px 1fr 32px;
+            height: 100vh;
+            gap: 1px;
+            background-color: var(--border-color);
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-16);
+            gap: var(--space-24);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--tag-purple));
+            border-radius: var(--radius-sm);
+        }
+        
+        .menu-bar {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        .menu-item {
+            padding: var(--space-4) var(--space-12);
+            color: var(--text-secondary);
+            font-size: 13px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--space-8) var(--space-12);
+            padding-left: 36px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: var(--space-12);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--space-8);
+        }
+        
+        .btn {
+            padding: var(--space-8) var(--space-16);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-blue-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        /* Left Sidebar Navigation - Tree View Style */
+        .left-sidebar {
+            grid-row: 2 / 3;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: var(--space-16);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-actions {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        .icon-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+        
+        .icon-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .tree-view {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-8) 0;
+        }
+        
+        .tree-item {
+            padding: var(--space-8) var(--space-16);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .tree-item:hover {
+            background-color: var(--bg-hover);
+        }
+        
+        .tree-item.selected {
+            background-color: rgba(0, 120, 212, 0.2);
+            border-left: 3px solid var(--accent-blue);
+            padding-left: 13px;
+        }
+        
+        .tree-expand {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .tree-expand.expanded {
+            transform: rotate(90deg);
+        }
+        
+        .tree-icon {
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-blue);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* WorkSpace icon with gradient */
+        .workspace-icon {
+            background: linear-gradient(135deg, #0078D4, #4EC9B0);
+        }
+        
+        .tree-label {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        
+        .tree-count {
+            font-size: 11px;
+            color: var(--text-muted);
+            background-color: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .tree-children {
+            padding-left: var(--space-24);
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            grid-row: 2 / 3;
+            background-color: var(--bg-primary);
+            overflow-y: auto;
+            padding: var(--space-24);
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-24);
+        }
+        
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .view-toggle {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        .toggle-btn {
+            padding: var(--space-8) var(--space-12);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toggle-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .toggle-btn.active {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        /* Recent List View (hidden by default when card view is active) */
+        .recent-list {
+            display: none;
+            flex-direction: column;
+            gap: var(--space-8);
+        }
+        
+        .recent-list.visible {
+            display: flex;
+        }
+        
+        /* Recent Card View */
+        .recent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--space-16);
+        }
+        
+        .recent-card-item {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .recent-card-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .recent-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-12);
+            margin-bottom: var(--space-12);
+        }
+        
+        .recent-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+        
+        .recent-card-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .recent-card-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .recent-card-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-8);
+        }
+        
+        .recent-card-path {
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: var(--space-12);
+        }
+        
+        .recent-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-12);
+        }
+        
+        .recent-card-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding-top: var(--space-12);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .recent-card-actions {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        /* List View */
+        
+        .recent-item-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-16);
+            padding: var(--space-12) var(--space-16);
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .recent-item-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(4px);
+        }
+        
+        .recent-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .type-vs { background: linear-gradient(135deg, #5C2D91, #8B5CF6); }
+        .type-android { background: linear-gradient(135deg, #3DDC84, #10B981); }
+        .type-cpp { background: linear-gradient(135deg, #00599C, #0EA5E9); }
+        .type-tool { background: linear-gradient(135deg, #F44747, #EF4444); }
+        .type-document { background: linear-gradient(135deg, #CE9178, #F59E0B); }
+        .type-folder { background: linear-gradient(135deg, #4EC9B0, #14B8A6); }
+        
+        .recent-item-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .recent-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .recent-item-meta {
+            display: flex;
+            gap: var(--space-16);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+        
+        .recent-item-path {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .recent-item-tags {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        .tag {
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .tag-blue { background-color: var(--tag-blue); }
+        .tag-green { background-color: var(--tag-green); }
+        .tag-orange { background-color: var(--tag-orange); }
+        .tag-purple { background-color: var(--tag-purple); }
+        .tag-red { background-color: var(--tag-red); }
+        .tag-teal { background-color: var(--tag-teal); }
+        
+        .recent-item-actions {
+            display: flex;
+            gap: var(--space-8);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .recent-item-card:hover .recent-item-actions {
+            opacity: 1;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .action-btn:hover {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        /* Project Grid */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--space-16);
+        }
+        
+        .project-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-12);
+            margin-bottom: var(--space-12);
+        }
+        
+        .project-type-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .project-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .project-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .project-path {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .project-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-12);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-12);
+        }
+        
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding-top: var(--space-12);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .project-actions {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            grid-column: 1 / -1;
+            background-color: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-16);
+            gap: var(--space-24);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                ProjectHub
+            </div>
+            <nav class="menu-bar">
+                <div class="menu-item">文件 (F)</div>
+                <div class="menu-item">编辑 (E)</div>
+                <div class="menu-item">查看 (V)</div>
+                <div class="menu-item">工具 (T)</div>
+                <div class="menu-item">帮助 (H)</div>
+            </nav>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="搜索项目、工作空间、标签...">
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">⚙️</button>
+                <button class="btn btn-primary">+ 新建项目</button>
+            </div>
+        </header>
+        
+        <!-- Left Sidebar Navigation - Tree View -->
+        <aside class="left-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">工作文件夹</h2>
+                <div class="sidebar-actions">
+                    <button class="icon-btn" title="新建文件夹">+</button>
+                    <button class="icon-btn" title="刷新">⟳</button>
+                </div>
+            </div>
+            <div class="tree-view">
+                <!-- 最近使用 -->
+                <div class="tree-item">
+                    <span class="tree-expand"></span>
+                    <div class="tree-icon" style="background: linear-gradient(135deg, #CCA700, #FFD700);">🕒</div>
+                    <span class="tree-label">最近使用</span>
+                    <span class="tree-count">12</span>
+                </div>
+                
+                <!-- 收藏夹 -->
+                <div class="tree-item">
+                    <span class="tree-expand"></span>
+                    <div class="tree-icon" style="background: linear-gradient(135deg, #FFA500, #FFD700);">⭐</div>
+                    <span class="tree-label">收藏夹</span>
+                    <span class="tree-count">5</span>
+                </div>
+                
+                <!-- 开发项目（展开状态） -->
+                <div class="tree-item selected">
+                    <span class="tree-expand expanded">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">开发项目</span>
+                    <span class="tree-count">12</span>
+                </div>
+                <div class="tree-children">
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">Web 应用</span>
+                        <span class="tree-count">5</span>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">移动应用</span>
+                        <span class="tree-count">4</span>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">桌面应用</span>
+                        <span class="tree-count">3</span>
+                    </div>
+                </div>
+                
+                <!-- 学习资源（展开状态） -->
+                <div class="tree-item">
+                    <span class="tree-expand expanded">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">学习资源</span>
+                    <span class="tree-count">8</span>
+                </div>
+                <div class="tree-children">
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">编程教程</span>
+                        <span class="tree-count">3</span>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">电子书</span>
+                        <span class="tree-count">5</span>
+                    </div>
+                </div>
+                
+                <!-- 工作空间 (WorkSpace) -->
+                <div class="tree-item">
+                    <span class="tree-expand"></span>
+                    <div class="tree-icon workspace-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;">
+                            <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                            <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                            <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                            <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                        </svg>
+                    </div>
+                    <span class="tree-label">工作空间</span>
+                    <span class="tree-count">8</span>
+                </div>
+                
+                <!-- 所有项目 -->
+                <div class="tree-item">
+                    <span class="tree-expand"></span>
+                    <div class="tree-icon" style="background: linear-gradient(135deg, #0078D4, #4EC9B0);">📦</div>
+                    <span class="tree-label">所有项目</span>
+                    <span class="tree-count">45</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="content-title">🕒 最近使用</h1>
+                <div class="view-toggle">
+                    <button class="toggle-btn">列表</button>
+                    <button class="toggle-btn active">卡片</button>
+                </div>
+            </div>
+            
+            <!-- Card View (Default) -->
+            <div class="recent-grid">
+                <!-- Recent Card 1 -->
+                <div class="recent-card-item">
+                    <div class="recent-card-header">
+                        <div class="recent-card-icon type-vs">VS</div>
+                        <div class="recent-card-info">
+                            <div class="recent-card-name">ProjectHub 主程序</div>
+                            <div class="recent-card-time">🕒 2 小时前</div>
+                        </div>
+                    </div>
+                    <div class="recent-card-path">d:\work\ProjectHub</div>
+                    <div class="recent-card-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                        <span class="tag tag-purple">MVVM</span>
+                    </div>
+                    <div class="recent-card-meta">
+                        <span>启动 156 次</span>
+                        <div class="recent-card-actions">
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="更多">⋮</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Card 2 -->
+                <div class="recent-card-item">
+                    <div class="recent-card-header">
+                        <div class="recent-card-icon type-android">🤖</div>
+                        <div class="recent-card-info">
+                            <div class="recent-card-name">Android 商城应用</div>
+                            <div class="recent-card-time">🕒 昨天 下午 3:20</div>
+                        </div>
+                    </div>
+                    <div class="recent-card-path">d:\projects\ShopApp</div>
+                    <div class="recent-card-tags">
+                        <span class="tag tag-teal">Android</span>
+                        <span class="tag tag-orange">Kotlin</span>
+                    </div>
+                    <div class="recent-card-meta">
+                        <span>启动 89 次</span>
+                        <div class="recent-card-actions">
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="更多">⋮</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Card 3 -->
+                <div class="recent-card-item">
+                    <div class="recent-card-header">
+                        <div class="recent-card-icon type-cpp">C++</div>
+                        <div class="recent-card-info">
+                            <div class="recent-card-name">图像处理引擎</div>
+                            <div class="recent-card-time">🕒 2 天前</div>
+                        </div>
+                    </div>
+                    <div class="recent-card-path">d:\dev\ImageProcessor</div>
+                    <div class="recent-card-tags">
+                        <span class="tag tag-blue">C++</span>
+                        <span class="tag tag-purple">图形</span>
+                    </div>
+                    <div class="recent-card-meta">
+                        <span>启动 42 次</span>
+                        <div class="recent-card-actions">
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="更多">⋮</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Card 4 -->
+                <div class="recent-card-item">
+                    <div class="recent-card-header">
+                        <div class="recent-card-icon type-tool">🔧</div>
+                        <div class="recent-card-info">
+                            <div class="recent-card-name">代码生成器</div>
+                            <div class="recent-card-time">🕒 3 天前</div>
+                        </div>
+                    </div>
+                    <div class="recent-card-path">d:\tools\CodeGenerator</div>
+                    <div class="recent-card-tags">
+                        <span class="tag tag-orange">CLI</span>
+                        <span class="tag tag-blue">工具</span>
+                    </div>
+                    <div class="recent-card-meta">
+                        <span>启动 67 次</span>
+                        <div class="recent-card-actions">
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="更多">⋮</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Card 5 -->
+                <div class="recent-card-item">
+                    <div class="recent-card-header">
+                        <div class="recent-card-icon type-vs">VS</div>
+                        <div class="recent-card-info">
+                            <div class="recent-card-name">WPF 控件库</div>
+                            <div class="recent-card-time">🕒 上周</div>
+                        </div>
+                    </div>
+                    <div class="recent-card-path">d:\projects\WpfControls</div>
+                    <div class="recent-card-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                    </div>
+                    <div class="recent-card-meta">
+                        <span>启动 34 次</span>
+                        <div class="recent-card-actions">
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="更多">⋮</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Card 6 -->
+                <div class="recent-card-item">
+                    <div class="recent-card-header">
+                        <div class="recent-card-icon type-document">📄</div>
+                        <div class="recent-card-info">
+                            <div class="recent-card-name">技术文档库</div>
+                            <div class="recent-card-time">🕒 上周</div>
+                        </div>
+                    </div>
+                    <div class="recent-card-path">d:\docs\TechnicalDocs</div>
+                    <div class="recent-card-tags">
+                        <span class="tag tag-blue">文档</span>
+                        <span class="tag tag-purple">Markdown</span>
+                    </div>
+                    <div class="recent-card-meta">
+                        <span>启动 23 次</span>
+                        <div class="recent-card-actions">
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="更多">⋮</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- List View -->
+            <div class="recent-list">
+                <!-- Recent Item 1 -->
+                <div class="recent-item-card">
+                    <div class="recent-item-icon type-vs">VS</div>
+                    <div class="recent-item-details">
+                        <div class="recent-item-name">ProjectHub 主程序</div>
+                        <div class="recent-item-meta">
+                            <span class="recent-item-path">d:\work\ProjectHub</span>
+                            <span>🕒 2 小时前</span>
+                        </div>
+                    </div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                        <span class="tag tag-purple">MVVM</span>
+                    </div>
+                    <div class="recent-item-actions">
+                        <div class="action-btn" title="打开">📂</div>
+                        <div class="action-btn" title="编辑">✏️</div>
+                        <div class="action-btn" title="更多">⋮</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 2 -->
+                <div class="recent-item-card">
+                    <div class="recent-item-icon type-android">🤖</div>
+                    <div class="recent-item-details">
+                        <div class="recent-item-name">Android 商城应用</div>
+                        <div class="recent-item-meta">
+                            <span class="recent-item-path">d:\projects\ShopApp</span>
+                            <span>🕒 昨天 下午 3:20</span>
+                        </div>
+                    </div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-teal">Android</span>
+                        <span class="tag tag-orange">Kotlin</span>
+                    </div>
+                    <div class="recent-item-actions">
+                        <div class="action-btn" title="打开">📂</div>
+                        <div class="action-btn" title="编辑">✏️</div>
+                        <div class="action-btn" title="更多">⋮</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 3 -->
+                <div class="recent-item-card">
+                    <div class="recent-item-icon type-cpp">C++</div>
+                    <div class="recent-item-details">
+                        <div class="recent-item-name">图像处理引擎</div>
+                        <div class="recent-item-meta">
+                            <span class="recent-item-path">d:\dev\ImageProcessor</span>
+                            <span>🕒 2 天前</span>
+                        </div>
+                    </div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-blue">C++</span>
+                        <span class="tag tag-purple">图形</span>
+                    </div>
+                    <div class="recent-item-actions">
+                        <div class="action-btn" title="打开">📂</div>
+                        <div class="action-btn" title="编辑">✏️</div>
+                        <div class="action-btn" title="更多">⋮</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 4 -->
+                <div class="recent-item-card">
+                    <div class="recent-item-icon type-tool">🔧</div>
+                    <div class="recent-item-details">
+                        <div class="recent-item-name">代码生成器</div>
+                        <div class="recent-item-meta">
+                            <span class="recent-item-path">d:\tools\CodeGenerator</span>
+                            <span>🕒 3 天前</span>
+                        </div>
+                    </div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-orange">CLI</span>
+                        <span class="tag tag-blue">工具</span>
+                    </div>
+                    <div class="recent-item-actions">
+                        <div class="action-btn" title="打开">📂</div>
+                        <div class="action-btn" title="编辑">✏️</div>
+                        <div class="action-btn" title="更多">⋮</div>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 5 -->
+                <div class="recent-item-card">
+                    <div class="recent-item-icon type-vs">VS</div>
+                    <div class="recent-item-details">
+                        <div class="recent-item-name">WPF 控件库</div>
+                        <div class="recent-item-meta">
+                            <span class="recent-item-path">d:\projects\WpfControls</span>
+                            <span>🕒 上周</span>
+                        </div>
+                    </div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                    </div>
+                    <div class="recent-item-actions">
+                        <div class="action-btn" title="打开">📂</div>
+                        <div class="action-btn" title="编辑">✏️</div>
+                        <div class="action-btn" title="更多">⋮</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>就绪</span>
+            </div>
+            <div class="status-item">
+                <span>📦 共 45 个项目</span>
+            </div>
+            <div class="status-item">
+                <span>📁 15 个文件夹</span>
+            </div>
+            <div class="status-item">
+                <span>🚀 8 个工作空间</span>
+            </div>
+            <div class="status-item" style="margin-left: auto;">
+                <span>🏷️ 24 个标签</span>
+            </div>
+            <div class="status-item">
+                <span>中文 (简体)</span>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // Tree View Interactivity
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tree item selection and expand/collapse
+            const treeItems = document.querySelectorAll('.tree-item');
+            treeItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    // Toggle selection
+                    treeItems.forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                    
+                    // Toggle expand/collapse if has children
+                    const expandIcon = this.querySelector('.tree-expand');
+                    if (expandIcon) {
+                        expandIcon.classList.toggle('expanded');
+                    }
+                });
+            });
+            
+            // Toggle buttons for card/list view
+            const toggleBtns = document.querySelectorAll('.toggle-btn');
+            const gridView = document.querySelector('.recent-grid');
+            const listView = document.querySelector('.recent-list');
+            
+            toggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toggleBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const isCardView = this.textContent === '卡片';
+                    if (isCardView) {
+                        if (gridView) gridView.style.display = 'grid';
+                        if (listView) listView.style.display = 'none';
+                    } else {
+                        if (gridView) gridView.style.display = 'none';
+                        if (listView) listView.style.display = 'flex';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

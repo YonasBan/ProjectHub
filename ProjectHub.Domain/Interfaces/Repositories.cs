@@ -42,9 +42,14 @@ public interface IRepository<T> where T : class
 public interface IProjectRepository : IRepository<Project>
 {
     /// <summary>
-    /// 根据分组 ID 查询项目
+    /// 根据工作文件夹 ID 查询项目
     /// </summary>
-    Task<IReadOnlyList<Project>> GetByGroupIdAsync(long? groupId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Project>> GetByWorkFolderIdAsync(long? workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据工作空间 ID 查询项目
+    /// </summary>
+    Task<IReadOnlyList<Project>> GetByWorkSpaceIdAsync(long? workSpaceId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 根据标签 ID 查询项目
@@ -89,19 +94,41 @@ public interface IProjectRepository : IRepository<Project>
 }
 
 /// <summary>
-/// 分组仓储接口
+/// 工作文件夹仓储接口
 /// </summary>
-public interface IGroupRepository : IRepository<Group>
+public interface IWorkFolderRepository : IRepository<WorkFolder>
 {
     /// <summary>
-    /// 获取所有分组 (包含项目数量统计)
+    /// 获取所有工作文件夹 (包含项目数量统计)
     /// </summary>
-    Task<IReadOnlyList<Group>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<WorkFolder>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 检查分组名称是否已存在
+    /// 检查工作文件夹名称是否已存在
     /// </summary>
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// 工作空间仓储接口
+/// </summary>
+public interface IWorkSpaceRepository : IRepository<WorkSpace>
+{
+    /// <summary>
+    /// 获取所有工作空间 (包含项目数量统计)
+    /// </summary>
+    Task<IReadOnlyList<WorkSpace>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 检查工作空间名称是否已存在
+    /// </summary>
+    Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取最近打开的工作空间
+    /// </summary>
+    /// <param name="count">返回数量</param>
+    Task<IReadOnlyList<WorkSpace>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

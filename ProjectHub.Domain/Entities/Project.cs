@@ -47,12 +47,6 @@ public class Project : BaseEntity
     public string? Description { get; private set; }
 
     /// <summary>
-    /// 所属分组 ID (外键)
-    /// 可为空，表示未分组
-    /// </summary>
-    public long? GroupId { get; private set; }
-
-    /// <summary>
     /// 最近打开时间
     /// 用于"最近使用"排序
     /// </summary>
@@ -85,6 +79,12 @@ public class Project : BaseEntity
     /// 是否被收藏/置顶
     /// </summary>
     public bool IsFavorite { get; private set; }
+
+    /// <summary>
+    /// 收藏/置顶时间
+    /// 用于排序，数字越大越靠前
+    /// </summary>
+    public DateTime? FavoritedAt { get; private set; }
 
     /// <summary>
     /// 截止日期 (可选)
@@ -220,6 +220,7 @@ public class Project : BaseEntity
         if (IsFavorite == isFavorite) return;
         
         IsFavorite = isFavorite;
+        FavoritedAt = isFavorite ? DateTime.UtcNow : null;
         UpdatedAt = DateTime.UtcNow;
     }
 

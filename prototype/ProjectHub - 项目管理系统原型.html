@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<!-- saved from url=(0047)file:///D:/work/ProjectHub/prototype/index.html -->
+<html lang="zh-CN"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectHub - 项目管理系统原型</title>
+    <style>
+        :root {
+            --bg-primary: #1E1E1E;
+            --bg-secondary: #252526;
+            --bg-tertiary: #2D2D30;
+            --bg-hover: #3E3E42;
+            --accent-blue: #0078D4;
+            --accent-blue-hover: #1084D8;
+            --text-primary: #FFFFFF;
+            --text-secondary: #CCCCCC;
+            --text-muted: #858585;
+            --border-color: #3C3C3C;
+            --success: #4EC9B0;
+            --warning: #CCA700;
+            --error: #F44747;
+            
+            /* Tag colors */
+            --tag-blue: #0078D4;
+            --tag-green: #4EC9B0;
+            --tag-orange: #CE9178;
+            --tag-purple: #C586C0;
+            --tag-red: #F44747;
+            --tag-teal: #4DC9B0;
+            
+            /* Spacing scale */
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-24: 24px;
+            --space-32: 32px;
+            --space-48: 48px;
+            
+            /* Border radius */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            display: grid;
+            grid-template-columns: 280px 320px 1fr;
+            grid-template-rows: 48px auto 1fr 32px;
+            height: 100vh;
+            gap: 1px;
+            background-color: var(--border-color);
+        }
+        
+        /* Header */
+        .header {
+            grid-column: 1 / -1;
+            background-color: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-16);
+            gap: var(--space-24);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--tag-purple));
+            border-radius: var(--radius-sm);
+        }
+        
+        .menu-bar {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        .menu-item {
+            padding: var(--space-4) var(--space-12);
+            color: var(--text-secondary);
+            font-size: 13px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .menu-item:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .search-bar {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: var(--space-8) var(--space-12);
+            padding-left: 36px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: var(--space-12);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: var(--space-8);
+        }
+        
+        .btn {
+            padding: var(--space-8) var(--space-16);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-blue-hover);
+        }
+        
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        /* Recently Used Section */
+        .recently-used-section {
+            grid-column: 1 / -1;
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--space-16) var(--space-24);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+        
+        .recently-used-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .recently-used-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .recently-used-icon {
+            color: var(--warning);
+        }
+        
+        .recently-used-actions {
+            display: flex;
+            gap: var(--space-8);
+        }
+        
+        .recently-used-list {
+            display: flex;
+            gap: var(--space-12);
+            overflow-x: auto;
+            padding-bottom: var(--space-8);
+        }
+        
+        .recent-item {
+            flex-shrink: 0;
+            width: 280px;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: var(--space-12);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .recent-item:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+        }
+        
+        .recent-item-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+        
+        .recent-item-type {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        .recent-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .recent-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .recent-item-time {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+        
+        .recent-item-path {
+            font-size: 11px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-bottom: var(--space-8);
+        }
+        
+        .recent-item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+        }
+        
+        /* WorkFolder Tree Sidebar */
+        .workfolder-sidebar {
+            grid-row: 2 / 3;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: var(--space-16);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-actions {
+            display: flex;
+            gap: var(--space-4);
+        }
+        
+        .icon-btn {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .icon-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .tree-view {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-8) 0;
+        }
+        
+        .tree-item {
+            padding: var(--space-8) var(--space-16);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .tree-item:hover {
+            background-color: var(--bg-hover);
+        }
+        
+        .tree-item.selected {
+            background-color: rgba(0, 120, 212, 0.2);
+            border-left: 3px solid var(--accent-blue);
+            padding-left: var(--space-13);
+        }
+        
+        .tree-expand {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 10px;
+            transition: transform 0.2s;
+        }
+        
+        .tree-expand.expanded {
+            transform: rotate(90deg);
+        }
+        
+        .tree-icon {
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent-blue);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        .tree-label {
+            flex: 1;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+        
+        .tree-count {
+            font-size: 11px;
+            color: var(--text-muted);
+            background-color: var(--bg-tertiary);
+            padding: 2px 6px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .tree-children {
+            padding-left: var(--space-24);
+        }
+        
+        /* WorkSpace Panel */
+        .workspace-panel {
+            grid-row: 2 / 3;
+            background-color: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            padding: var(--space-16);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .workspace-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--space-8);
+        }
+        
+        .workspace-card {
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-md);
+            padding: var(--space-12);
+            margin-bottom: var(--space-8);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .workspace-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateX(4px);
+        }
+        
+        .workspace-card.selected {
+            border-color: var(--accent-blue);
+            background-color: rgba(0, 120, 212, 0.1);
+        }
+        
+        .workspace-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+        
+        .workspace-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            flex: 1;
+        }
+        
+        .favorite-star {
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .favorite-star.active {
+            color: var(--warning);
+        }
+        
+        .workspace-description {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-8);
+            line-height: 1.4;
+        }
+        
+        .workspace-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+        }
+        
+        .tag {
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .tag-blue { background-color: var(--tag-blue); }
+        .tag-green { background-color: var(--tag-green); }
+        .tag-orange { background-color: var(--tag-orange); }
+        .tag-purple { background-color: var(--tag-purple); }
+        .tag-red { background-color: var(--tag-red); }
+        .tag-teal { background-color: var(--tag-teal); }
+        
+        .workspace-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .project-count {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+        
+        /* Main Content - Project Grid */
+        .main-content {
+            grid-row: 2 / 3;
+            background-color: var(--bg-primary);
+            overflow-y: auto;
+            padding: var(--space-24);
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-24);
+        }
+        
+        .content-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--space-16);
+        }
+        
+        .project-card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .project-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-12);
+            margin-bottom: var(--space-12);
+        }
+        
+        .project-type-badge {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .type-vs { background: linear-gradient(135deg, #5C2D91, #8B5CF6); }
+        .type-android { background: linear-gradient(135deg, #3DDC84, #10B981); }
+        .type-cpp { background: linear-gradient(135deg, #00599C, #0EA5E9); }
+        .type-tool { background: linear-gradient(135deg, #F44747, #EF4444); }
+        .type-document { background: linear-gradient(135deg, #CE9178, #F59E0B); }
+        .type-folder { background: linear-gradient(135deg, #4EC9B0, #14B8A6); }
+        
+        .project-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .project-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .project-path {
+            font-size: 12px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .project-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-12);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-4);
+            margin-bottom: var(--space-12);
+        }
+        
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            padding-top: var(--space-12);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .project-actions {
+            display: flex;
+            gap: var(--space-4);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .project-card:hover .project-actions {
+            opacity: 1;
+        }
+        
+        .action-icon {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .action-icon:hover {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            grid-column: 1 / -1;
+            background-color: var(--bg-tertiary);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 var(--space-16);
+            gap: var(--space-24);
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-hover);
+            border-radius: var(--radius-md);
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+        
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            width: 600px;
+            max-width: 90%;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-header {
+            padding: var(--space-24);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: var(--space-24);
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-8);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--space-10) var(--space-12);
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .type-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-12);
+        }
+        
+        .type-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--space-16);
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .type-option:hover {
+            border-color: var(--text-muted);
+        }
+        
+        .type-option.selected {
+            border-color: var(--accent-blue);
+            background-color: rgba(0, 120, 212, 0.1);
+        }
+        
+        .type-option-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: var(--space-8);
+        }
+        
+        .type-option-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .modal-footer {
+            padding: var(--space-16) var(--space-24);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-8);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                ProjectHub
+            </div>
+            <nav class="menu-bar">
+                <div class="menu-item">文件 (F)</div>
+                <div class="menu-item">编辑 (E)</div>
+                <div class="menu-item">查看 (V)</div>
+                <div class="menu-item">工具 (T)</div>
+                <div class="menu-item">帮助 (H)</div>
+            </nav>
+            <div class="search-bar">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="搜索项目、工作空间、标签...">
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">⚙️</button>
+                <button class="btn btn-primary">+ 新建项目</button>
+            </div>
+        </header>
+        
+        <!-- Recently Used Section -->
+        <section class="recently-used-section">
+            <div class="recently-used-header">
+                <h2 class="recently-used-title">
+                    <span class="recently-used-icon">🕒</span>
+                    最近使用
+                </h2>
+                <div class="recently-used-actions">
+                    <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;">查看全部</button>
+                    <button class="icon-btn" title="清除历史">🗑️</button>
+                </div>
+            </div>
+            <div class="recently-used-list">
+                <!-- Recent Item 1 -->
+                <div class="recent-item">
+                    <div class="recent-item-header">
+                        <div class="recent-item-type type-vs">VS</div>
+                        <div class="recent-item-info">
+                            <div class="recent-item-name">ProjectHub 主程序</div>
+                            <div class="recent-item-time">🕒 刚刚 • 2 小时前</div>
+                        </div>
+                    </div>
+                    <div class="recent-item-path">d:\work\ProjectHub</div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 2 -->
+                <div class="recent-item">
+                    <div class="recent-item-header">
+                        <div class="recent-item-type type-android">🤖</div>
+                        <div class="recent-item-info">
+                            <div class="recent-item-name">Android 商城应用</div>
+                            <div class="recent-item-time">🕒 今天 • 下午 3:20</div>
+                        </div>
+                    </div>
+                    <div class="recent-item-path">d:\projects\ShopApp</div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-teal">Android</span>
+                        <span class="tag tag-orange">Kotlin</span>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 3 -->
+                <div class="recent-item">
+                    <div class="recent-item-header">
+                        <div class="recent-item-type type-cpp">C++</div>
+                        <div class="recent-item-info">
+                            <div class="recent-item-name">图像处理引擎</div>
+                            <div class="recent-item-time">🕒 昨天 • 上午 10:15</div>
+                        </div>
+                    </div>
+                    <div class="recent-item-path">d:\dev\ImageProcessor</div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-blue">C++</span>
+                        <span class="tag tag-purple">图形</span>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 4 -->
+                <div class="recent-item">
+                    <div class="recent-item-header">
+                        <div class="recent-item-type type-tool">🔧</div>
+                        <div class="recent-item-info">
+                            <div class="recent-item-name">代码生成器</div>
+                            <div class="recent-item-time">🕒 2 天前 • 下午 4:30</div>
+                        </div>
+                    </div>
+                    <div class="recent-item-path">d:\tools\CodeGenerator</div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-orange">CLI</span>
+                        <span class="tag tag-blue">工具</span>
+                    </div>
+                </div>
+                
+                <!-- Recent Item 5 -->
+                <div class="recent-item">
+                    <div class="recent-item-header">
+                        <div class="recent-item-type type-vs">VS</div>
+                        <div class="recent-item-info">
+                            <div class="recent-item-name">WPF 控件库</div>
+                            <div class="recent-item-time">🕒 3 天前 • 上午 9:00</div>
+                        </div>
+                    </div>
+                    <div class="recent-item-path">d:\projects\WpfControls</div>
+                    <div class="recent-item-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- WorkFolder Tree Sidebar -->
+        <aside class="workfolder-sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">工作文件夹</h2>
+                <div class="sidebar-actions">
+                    <button class="icon-btn" title="新建文件夹">+</button>
+                    <button class="icon-btn" title="刷新">⟳</button>
+                </div>
+            </div>
+            <div class="tree-view">
+                <div class="tree-item">
+                    <span class="tree-expand expanded">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">开发项目</span>
+                    <span class="tree-count">12</span>
+                </div>
+                <div class="tree-children">
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">Web 应用</span>
+                        <span class="tree-count">5</span>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">移动应用</span>
+                        <span class="tree-count">4</span>
+                    </div>
+                    <div class="tree-item">
+                        <span class="tree-expand">▶</span>
+                        <div class="tree-icon">📁</div>
+                        <span class="tree-label">桌面应用</span>
+                        <span class="tree-count">3</span>
+                    </div>
+                </div>
+                <div class="tree-item selected">
+                    <span class="tree-expand">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">学习资源</span>
+                    <span class="tree-count">8</span>
+                </div>
+                <div class="tree-item">
+                    <span class="tree-expand">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">工具集合</span>
+                    <span class="tree-count">6</span>
+                </div>
+                <div class="tree-item">
+                    <span class="tree-expand">▶</span>
+                    <div class="tree-icon">📁</div>
+                    <span class="tree-label">文档资料</span>
+                    <span class="tree-count">15</span>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- WorkSpace Panel -->
+        <aside class="workspace-panel">
+            <div class="panel-header">
+                <h2 class="panel-title">工作空间</h2>
+                <div class="sidebar-actions">
+                    <button class="icon-btn" title="新建工作空间">+</button>
+                    <button class="icon-btn" title="管理标签">🏷️</button>
+                </div>
+            </div>
+            <div class="workspace-list">
+                <div class="workspace-card selected">
+                    <div class="workspace-header">
+                        <span class="workspace-name">前端开发</span>
+                        <span class="favorite-star active">★</span>
+                    </div>
+                    <p class="workspace-description">包含所有前端相关项目，包括 React、Vue、Angular 等框架</p>
+                    <div class="workspace-tags">
+                        <span class="tag tag-blue">前端</span>
+                        <span class="tag tag-green">Web</span>
+                        <span class="tag tag-purple">UI/UX</span>
+                    </div>
+                    <div class="workspace-meta">
+                        <span class="project-count">📦 5 个项目</span>
+                        <span>排序：1</span>
+                    </div>
+                </div>
+                
+                <div class="workspace-card">
+                    <div class="workspace-header">
+                        <span class="workspace-name">后端服务</span>
+                        <span class="favorite-star">☆</span>
+                    </div>
+                    <p class="workspace-description">API 服务、微服务、数据库相关项目</p>
+                    <div class="workspace-tags">
+                        <span class="tag tag-orange">后端</span>
+                        <span class="tag tag-blue">API</span>
+                    </div>
+                    <div class="workspace-meta">
+                        <span class="project-count">📦 8 个项目</span>
+                        <span>排序：2</span>
+                    </div>
+                </div>
+                
+                <div class="workspace-card">
+                    <div class="workspace-header">
+                        <span class="workspace-name">移动开发</span>
+                        <span class="favorite-star active">★</span>
+                    </div>
+                    <p class="workspace-description">Android、iOS、跨平台移动应用</p>
+                    <div class="workspace-tags">
+                        <span class="tag tag-green">移动</span>
+                        <span class="tag tag-teal">Android</span>
+                        <span class="tag tag-purple">iOS</span>
+                    </div>
+                    <div class="workspace-meta">
+                        <span class="project-count">📦 4 个项目</span>
+                        <span>排序：3</span>
+                    </div>
+                </div>
+                
+                <div class="workspace-card">
+                    <div class="workspace-header">
+                        <span class="workspace-name">工具集</span>
+                        <span class="favorite-star">☆</span>
+                    </div>
+                    <p class="workspace-description">实用工具、效率软件、开发辅助</p>
+                    <div class="workspace-tags">
+                        <span class="tag tag-red">工具</span>
+                        <span class="tag tag-orange">效率</span>
+                    </div>
+                    <div class="workspace-meta">
+                        <span class="project-count">📦 6 个项目</span>
+                        <span>排序：4</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content - Project Grid -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="content-title">全部项目</h1>
+                <div style="display: flex; gap: 8px;">
+                    <button class="btn btn-secondary">≡ 列表</button>
+                    <button class="btn btn-secondary">▦ 网格</button>
+                    <button class="btn btn-secondary">↓ 排序</button>
+                </div>
+            </div>
+            
+            <div class="project-grid">
+                <!-- Project Card 1 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-type-badge type-vs">VS</div>
+                        <div class="project-info">
+                            <h3 class="project-name">ProjectHub 主程序</h3>
+                            <p class="project-path">d:\work\ProjectHub</p>
+                        </div>
+                    </div>
+                    <p class="project-description">项目管理系统的核心应用，支持多语言本地化和灵活的项目组织</p>
+                    <div class="project-tags">
+                        <span class="tag tag-blue">.NET</span>
+                        <span class="tag tag-green">WPF</span>
+                        <span class="tag tag-purple">MVVM</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>🕒 2 小时前修改</span>
+                        <div class="project-actions">
+                            <div class="action-icon" title="编辑">✏️</div>
+                            <div class="action-icon" title="删除">🗑️</div>
+                            <div class="action-icon" title="打开">📂</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Card 2 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-type-badge type-android">🤖</div>
+                        <div class="project-info">
+                            <h3 class="project-name">Android 商城应用</h3>
+                            <p class="project-path">d:\projects\ShopApp</p>
+                        </div>
+                    </div>
+                    <p class="project-description">基于 Kotlin 的 Android 电商应用，包含商品浏览、购物车、支付功能</p>
+                    <div class="project-tags">
+                        <span class="tag tag-teal">Android</span>
+                        <span class="tag tag-orange">Kotlin</span>
+                        <span class="tag tag-blue">MVVM</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>🕒 昨天修改</span>
+                        <div class="project-actions">
+                            <div class="action-icon" title="编辑">✏️</div>
+                            <div class="action-icon" title="删除">🗑️</div>
+                            <div class="action-icon" title="打开">📂</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Card 3 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-type-badge type-cpp">C++</div>
+                        <div class="project-info">
+                            <h3 class="project-name">图像处理引擎</h3>
+                            <p class="project-path">d:\dev\ImageProcessor</p>
+                        </div>
+                    </div>
+                    <p class="project-description">高性能图像处理库，支持滤镜、变换、格式转换等功能</p>
+                    <div class="project-tags">
+                        <span class="tag tag-blue">C++</span>
+                        <span class="tag tag-purple">图形</span>
+                        <span class="tag tag-green">性能</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>🕒 3 天前修改</span>
+                        <div class="project-actions">
+                            <div class="action-icon" title="编辑">✏️</div>
+                            <div class="action-icon" title="删除">🗑️</div>
+                            <div class="action-icon" title="打开">📂</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Card 4 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-type-badge type-tool">🔧</div>
+                        <div class="project-info">
+                            <h3 class="project-name">代码生成器</h3>
+                            <p class="project-path">d:\tools\CodeGenerator</p>
+                        </div>
+                    </div>
+                    <p class="project-description">根据模板自动生成代码的命令行工具，支持多种语言</p>
+                    <div class="project-tags">
+                        <span class="tag tag-orange">CLI</span>
+                        <span class="tag tag-blue">工具</span>
+                        <span class="tag tag-green">自动化</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>🕒 上周修改</span>
+                        <div class="project-actions">
+                            <div class="action-icon" title="编辑">✏️</div>
+                            <div class="action-icon" title="删除">🗑️</div>
+                            <div class="action-icon" title="打开">📂</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Card 5 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-type-badge type-document">📄</div>
+                        <div class="project-info">
+                            <h3 class="project-name">技术文档库</h3>
+                            <p class="project-path">d:\docs\TechnicalDocs</p>
+                        </div>
+                    </div>
+                    <p class="project-description">项目开发文档、API 文档、用户手册等文档集合</p>
+                    <div class="project-tags">
+                        <span class="tag tag-blue">文档</span>
+                        <span class="tag tag-purple">Markdown</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>🕒 2 周前修改</span>
+                        <div class="project-actions">
+                            <div class="action-icon" title="编辑">✏️</div>
+                            <div class="action-icon" title="删除">🗑️</div>
+                            <div class="action-icon" title="打开">📂</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project Card 6 -->
+                <div class="project-card">
+                    <div class="project-header">
+                        <div class="project-type-badge type-folder">📁</div>
+                        <div class="project-info">
+                            <h3 class="project-name">学习资料</h3>
+                            <p class="project-path">d:\learn\Resources</p>
+                        </div>
+                    </div>
+                    <p class="project-description">编程教程、电子书、视频教程等学习资源整合</p>
+                    <div class="project-tags">
+                        <span class="tag tag-green">学习</span>
+                        <span class="tag tag-orange">教程</span>
+                    </div>
+                    <div class="project-meta">
+                        <span>🕒 上月修改</span>
+                        <div class="project-actions">
+                            <div class="action-icon" title="编辑">✏️</div>
+                            <div class="action-icon" title="删除">🗑️</div>
+                            <div class="action-icon" title="打开">📂</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="status-item">
+                <div class="status-dot"></div>
+                <span>就绪</span>
+            </div>
+            <div class="status-item">
+                <span>📦 共 45 个项目</span>
+            </div>
+            <div class="status-item">
+                <span>📁 8 个工作文件夹</span>
+            </div>
+            <div class="status-item">
+                <span>🚀 12 个工作空间</span>
+            </div>
+            <div class="status-item" style="margin-left: auto;">
+                <span>🏷️ 24 个标签</span>
+            </div>
+            <div class="status-item">
+                <span>中文 (简体)</span>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Create Project Modal (Hidden by default, shown for demo) -->
+    <div class="modal-overlay" id="createProjectModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">创建新项目</h2>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">项目名称 *</label>
+                    <input type="text" class="form-input" placeholder="输入项目名称">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">项目描述</label>
+                    <textarea class="form-input form-textarea" placeholder="简要描述项目用途"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">项目路径</label>
+                    <input type="text" class="form-input" placeholder="d:\projects\MyProject">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">项目类型 *</label>
+                    <div class="type-selector">
+                        <div class="type-option selected">
+                            <div class="type-option-icon type-vs">VS</div>
+                            <span class="type-option-label">Visual Studio</span>
+                        </div>
+                        <div class="type-option">
+                            <div class="type-option-icon type-android">🤖</div>
+                            <span class="type-option-label">Android</span>
+                        </div>
+                        <div class="type-option">
+                            <div class="type-option-icon type-cpp">C++</div>
+                            <span class="type-option-label">C++ 项目</span>
+                        </div>
+                        <div class="type-option">
+                            <div class="type-option-icon type-tool">🔧</div>
+                            <span class="type-option-label">工具</span>
+                        </div>
+                        <div class="type-option">
+                            <div class="type-option-icon type-document">📄</div>
+                            <span class="type-option-label">文档</span>
+                        </div>
+                        <div class="type-option">
+                            <div class="type-option-icon type-folder">📁</div>
+                            <span class="type-option-label">文件夹</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary">取消</button>
+                <button class="btn btn-primary">创建项目</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple interactivity for demo purposes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tree item selection
+            const treeItems = document.querySelectorAll('.tree-item');
+            treeItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    treeItems.forEach(i => i.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Workspace card selection
+            const workspaceCards = document.querySelectorAll('.workspace-card');
+            workspaceCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    workspaceCards.forEach(c => c.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Favorite star toggle
+            const favoriteStars = document.querySelectorAll('.favorite-star');
+            favoriteStars.forEach(star => {
+                star.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.classList.toggle('active');
+                    this.textContent = this.classList.contains('active') ? '★' : '☆';
+                });
+            });
+            
+            // Type option selection
+            const typeOptions = document.querySelectorAll('.type-option');
+            typeOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    typeOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+            
+            // Show modal after 2 seconds for demo
+            setTimeout(() => {
+                // Uncomment to show modal automatically
+                // document.getElementById('createProjectModal').style.display = 'flex';
+            }, 2000);
+        });
+    </script>
+
+</body></html>

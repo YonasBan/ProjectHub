@@ -4,27 +4,56 @@ using ReactiveUI;
 namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
-/// Group ViewModel
+/// WorkFolder ViewModel
 /// </summary>
-public partial class GroupViewModel : ReactiveObject
+public partial class WorkFolderViewModel : ReactiveObject
 {
-    private readonly GroupDto _groupDto;
+    private readonly WorkFolderDto _workFolderDto;
 
-    public long Id => _groupDto.Id;
+    public long Id => _workFolderDto.Id;
     
-    public string Name => _groupDto.Name;
+    public string Name => _workFolderDto.Name;
     
-    public string? Description => _groupDto.Description;
+    public string? Description => _workFolderDto.Description;
     
-    public int ProjectCount => _groupDto.ProjectCount;
+    public int ProjectCount => _workFolderDto.ProjectCount;
     
-    public bool IsExpanded => _groupDto.IsExpanded;
+    public bool IsExpanded => _workFolderDto.IsExpanded;
     
-    public int SortOrder => _groupDto.SortOrder;
+    public int SortOrder => _workFolderDto.SortOrder;
 
-    public GroupViewModel(GroupDto groupDto)
+    public WorkFolderViewModel(WorkFolderDto workFolderDto)
     {
-        _groupDto = groupDto;
+        _workFolderDto = workFolderDto;
+    }
+}
+
+/// <summary>
+/// WorkSpace ViewModel
+/// </summary>
+public partial class WorkSpaceViewModel : ReactiveObject
+{
+    private readonly WorkSpaceDto _workSpaceDto;
+
+    public long Id => _workSpaceDto.Id;
+    
+    public string Name => _workSpaceDto.Name;
+    
+    public string? Description => _workSpaceDto.Description;
+    
+    public int ProjectCount => _workSpaceDto.ProjectCount;
+    
+    public int SortOrder => _workSpaceDto.SortOrder;
+    
+    public bool IsFavorite => _workSpaceDto.IsFavorite;
+    
+    public DateTime? FavoritedAt => _workSpaceDto.FavoritedAt;
+    
+    public DateTime? LastOpenedAt => _workSpaceDto.LastOpenedAt;
+
+    public WorkSpaceViewModel(WorkSpaceDto workSpaceDto)
+    {
+        _workSpaceDto = workSpaceDto;
     }
 }
 

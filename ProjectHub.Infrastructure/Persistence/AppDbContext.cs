@@ -25,9 +25,14 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects => Set<Project>();
 
     /// <summary>
-    /// 分组 DbSet
+    /// 工作文件夹 DbSet
     /// </summary>
-    public DbSet<Group> Groups => Set<Group>();
+    public DbSet<WorkFolder> WorkFolders => Set<WorkFolder>();
+
+    /// <summary>
+    /// 工作空间 DbSet
+    /// </summary>
+    public DbSet<WorkSpace> WorkSpaces => Set<WorkSpace>();
 
     /// <summary>
     /// 标签 DbSet
@@ -38,6 +43,21 @@ public class AppDbContext : DbContext
     /// 项目 - 标签关联 DbSet
     /// </summary>
     public DbSet<ProjectTag> ProjectTags => Set<ProjectTag>();
+
+    /// <summary>
+    /// 项目 - 工作文件夹关联 DbSet
+    /// </summary>
+    public DbSet<ProjectWorkFolder> ProjectWorkFolders => Set<ProjectWorkFolder>();
+
+    /// <summary>
+    /// 项目 - 工作空间关联 DbSet
+    /// </summary>
+    public DbSet<ProjectWorkSpace> ProjectWorkSpaces => Set<ProjectWorkSpace>();
+
+    /// <summary>
+    /// 工作空间 - 标签关联 DbSet
+    /// </summary>
+    public DbSet<WorkSpaceTag> WorkSpaceTags => Set<WorkSpaceTag>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,18 +92,18 @@ public class AppDbContext : DbContext
                 .HasMaxLength(50);
             
             // 索引优化
-            entity.HasIndex(e => e.GroupId);
             entity.HasIndex(e => e.IsArchived);
             entity.HasIndex(e => e.LastOpenedAt);
             entity.HasIndex(e => e.IsFavorite);
+            entity.HasIndex(e => e.FavoritedAt);
             
             // 忽略不存储的字段
             entity.Ignore(e => e.DiskSpaceBytes);
             entity.Ignore(e => e.CleanableSpaceBytes);
         });
 
-        // ========== Group 配置 ==========
-        modelBuilder.Entity<Group>(entity =>
+        // ========== WorkFolder 配置 ==========
+        modelBuilder.Entity<WorkFolder>(entity =>
         {
             entity.HasKey(e => e.Id);
             
@@ -99,6 +119,38 @@ public class AppDbContext : DbContext
             
             entity.Property(e => e.IconPath)
                 .HasMaxLength(500);
+            
+            // 自引用外键：ParentId
+            entity.HasOne<WorkFolder>()
+                .WithMany()
+                .HasForeignKey(e => e.ParentId)
+                .OnDelete(DeleteBehavior.Restrict); // 防止级联删除
+            
+            entity.HasIndex(e => e.ParentId);
+        });
+
+        // ========== WorkSpace 配置 ==========
+        modelBuilder.Entity<WorkSpace>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+            
+            entity.HasIndex(e => e.Name)
+                .IsUnique();
+            
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+            
+            entity.Property(e => e.IconPath)
+                .HasMaxLength(500);
+            
+            // 索引优化
+            entity.HasIndex(e => e.IsFavorite);
+            entity.HasIndex(e => e.FavoritedAt);
+            entity.HasIndex(e => e.LastOpenedAt);
         });
 
         // ========== Tag 配置 ==========
@@ -133,6 +185,82 @@ public class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
             
             entity.HasIndex(e => new { e.ProjectId, e.TagId })
+                .IsUnique();
+        });
+
+        // ========== ProjectWorkFolder 配置 (多对多关联表) ==========
+        modelBuilder.Entity<ProjectWorkFolder>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne<Project>()
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne<WorkFolder>()
+                .WithMany()
+                .HasForeignKey(e => e.WorkFolderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => new { e.ProjectId, e.WorkFolderId })
+                .IsUnique();
+        });
+
+        // ========== ProjectWorkSpace 配置 (多对多关联表) ==========
+        modelBuilder.Entity<ProjectWorkSpace>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne<Project>()
+                .WithMany()
+                .HasForeignKey(e => e.ProjectId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne<WorkSpace>()
+                .WithMany()
+                .HasForeignKey(e => e.WorkSpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => new { e.ProjectId, e.WorkSpaceId })
+                .IsUnique();
+        });
+
+        // ========== WorkSpaceWorkFolder 配置 (多对多关联表) ==========
+        modelBuilder.Entity<WorkSpaceWorkFolder>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne<WorkSpace>()
+                .WithMany()
+                .HasForeignKey(e => e.WorkSpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne<WorkFolder>()
+                .WithMany()
+                .HasForeignKey(e => e.WorkFolderId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => new { e.WorkSpaceId, e.WorkFolderId })
+                .IsUnique();
+        });
+
+        // ========== WorkSpaceTag 配置 (多对多关联表) ==========
+        modelBuilder.Entity<WorkSpaceTag>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            
+            entity.HasOne<WorkSpace>()
+                .WithMany()
+                .HasForeignKey(e => e.WorkSpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasOne<Tag>()
+                .WithMany()
+                .HasForeignKey(e => e.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.HasIndex(e => new { e.WorkSpaceId, e.TagId })
                 .IsUnique();
         });
 

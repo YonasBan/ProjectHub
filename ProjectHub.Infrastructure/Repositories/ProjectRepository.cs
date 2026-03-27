@@ -47,18 +47,67 @@ public class ProjectRepository : IProjectRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Project>> GetByGroupIdAsync(long? groupId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Project>> GetByWorkFolderIdAsync(long? workFolderId, CancellationToken cancellationToken = default)
     {
-        if (groupId == null)
+        if (workFolderId == null)
         {
-            // 查询未分组的项目
+            // 查询未归属工作文件夹的项目
+            var allProjectIds = await _dbContext.Projects
+                .Where(p => !p.IsArchived)
+                .Select(p => p.Id)
+                .ToListAsync(cancellationToken);
+            
+            var projectInFolderIds = await _dbContext.ProjectWorkFolders
+                .Select(pwf => pwf.ProjectId)
+                .ToListAsync(cancellationToken);
+            
+            var notInFolderIds = allProjectIds.Except(projectInFolderIds).ToList();
+            
             return await _dbContext.Projects
-                .Where(p => p.GroupId == null && !p.IsArchived)
+                .Where(p => notInFolderIds.Contains(p.Id))
                 .ToListAsync(cancellationToken);
         }
 
+        // 通过关联表查询属于该工作文件夹的项目
+        var projectIds = await _dbContext.ProjectWorkFolders
+            .Where(pwf => pwf.WorkFolderId == workFolderId)
+            .Select(pwf => pwf.ProjectId)
+            .ToListAsync(cancellationToken);
+
         return await _dbContext.Projects
-            .Where(p => p.GroupId == groupId && !p.IsArchived)
+            .Where(p => projectIds.Contains(p.Id) && !p.IsArchived)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Project>> GetByWorkSpaceIdAsync(long? workSpaceId, CancellationToken cancellationToken = default)
+    {
+        if (workSpaceId == null)
+        {
+            // 查询未归属工作空间的项目
+            var allProjectIds = await _dbContext.Projects
+                .Where(p => !p.IsArchived)
+                .Select(p => p.Id)
+                .ToListAsync(cancellationToken);
+            
+            var projectInSpaceIds = await _dbContext.ProjectWorkSpaces
+                .Select(pws => pws.ProjectId)
+                .ToListAsync(cancellationToken);
+            
+            var notInSpaceIds = allProjectIds.Except(projectInSpaceIds).ToList();
+            
+            return await _dbContext.Projects
+                .Where(p => notInSpaceIds.Contains(p.Id))
+                .ToListAsync(cancellationToken);
+        }
+
+        // 通过关联表查询属于该工作空间的项目
+        var projectIds = await _dbContext.ProjectWorkSpaces
+            .Where(pws => pws.WorkSpaceId == workSpaceId)
+            .Select(pws => pws.ProjectId)
+            .ToListAsync(cancellationToken);
+
+        return await _dbContext.Projects
+            .Where(p => projectIds.Contains(p.Id) && !p.IsArchived)
             .ToListAsync(cancellationToken);
     }
 

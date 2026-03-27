@@ -15,7 +15,8 @@ public class MainViewModel : ViewModelBase
 {
     // TODO: 注入应用服务
     private readonly IProjectAppService _projectAppService;
-    private readonly IGroupAppService _groupAppService;
+    private readonly IWorkFolderAppService _workFolderAppService;
+    private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly ITagAppService _tagAppService;
 
     /// <summary>
@@ -29,13 +30,23 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 分组列表 (Observable)
+    /// 工作文件夹列表 (Observable)
     /// </summary>
-    private ObservableCollection<GroupViewModel>? _groups;
-    public ObservableCollection<GroupViewModel> Groups
+    private ObservableCollection<WorkFolderViewModel>? _workFolders;
+    public ObservableCollection<WorkFolderViewModel> WorkFolders
     {
-        get => _groups ??= new();
-        set => this.RaiseAndSetIfChanged(ref _groups, value);
+        get => _workFolders ??= new();
+        set => this.RaiseAndSetIfChanged(ref _workFolders, value);
+    }
+
+    /// <summary>
+    /// 工作空间列表 (Observable)
+    /// </summary>
+    private ObservableCollection<WorkSpaceViewModel>? _workSpaces;
+    public ObservableCollection<WorkSpaceViewModel> WorkSpaces
+    {
+        get => _workSpaces ??= new();
+        set => this.RaiseAndSetIfChanged(ref _workSpaces, value);
     }
 
     /// <summary>
@@ -49,13 +60,13 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 当前选中的分组
+    /// 当前选中的工作文件夹
     /// </summary>
-    private GroupViewModel? _selectedGroup;
-    public GroupViewModel? SelectedGroup
+    private WorkFolderViewModel? _selectedWorkFolder;
+    public WorkFolderViewModel? SelectedWorkFolder
     {
-        get => _selectedGroup;
-        set => this.RaiseAndSetIfChanged(ref _selectedGroup, value);
+        get => _selectedWorkFolder;
+        set => this.RaiseAndSetIfChanged(ref _selectedWorkFolder, value);
     }
 
     /// <summary>
@@ -98,12 +109,14 @@ public class MainViewModel : ViewModelBase
     public MainViewModel(
         ILogger<MainViewModel> logger,
         IProjectAppService projectAppService,
-        IGroupAppService groupAppService,
+        IWorkFolderAppService workFolderAppService,
+        IWorkSpaceAppService workSpaceAppService,
         ITagAppService tagAppService)
         : base(logger)
     {
         _projectAppService = projectAppService;
-        _groupAppService = groupAppService;
+        _workFolderAppService = workFolderAppService;
+        _workSpaceAppService = workSpaceAppService;
         _tagAppService = tagAppService;
 
         // 初始化命令 (使用方法的分组语法)
@@ -183,7 +196,8 @@ public class MainViewModel : ViewModelBase
             Logger.LogInformation("开始刷新所有数据");
             
             await LoadProjectsAsync();
-            await LoadGroupsAsync();
+            await LoadWorkFoldersAsync();
+            await LoadWorkSpacesAsync();
             await LoadTagsAsync();
             
             Logger.LogInformation("数据刷新完成");
@@ -197,25 +211,48 @@ public class MainViewModel : ViewModelBase
 
     // ========== 辅助方法 ==========
 
-    private async Task LoadGroupsAsync()
+    private async Task LoadWorkFoldersAsync()
     {
         try
         {
-            Logger.LogInformation("加载分组列表");
+            Logger.LogInformation("加载工作文件夹列表");
             
-            var groups = await _groupAppService.GetAllWithProjectCountAsync();
+            var workFolders = await _workFolderAppService.GetAllWithProjectCountAsync();
             
-            Groups.Clear();
-            foreach (var group in groups)
+            WorkFolders.Clear();
+            foreach (var workFolder in workFolders)
             {
-                Groups.Add(new GroupViewModel(group));
+                WorkFolders.Add(new WorkFolderViewModel(workFolder));
             }
             
-            Logger.LogInformation($"成功加载 {groups.Count} 个分组");
+            Logger.LogInformation($"成功加载 {workFolders.Count} 个工作文件夹");
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "加载分组列表时发生错误");
+            Logger.LogError(ex, "加载工作文件夹列表时发生错误");
+            throw;
+        }
+    }
+
+    private async Task LoadWorkSpacesAsync()
+    {
+        try
+        {
+            Logger.LogInformation("加载工作空间列表");
+            
+            var workSpaces = await _workSpaceAppService.GetAllWithProjectCountAsync();
+            
+            WorkSpaces.Clear();
+            foreach (var workSpace in workSpaces)
+            {
+                WorkSpaces.Add(new WorkSpaceViewModel(workSpace));
+            }
+            
+            Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载工作空间列表时发生错误");
             throw;
         }
     }
