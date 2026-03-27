@@ -3,7 +3,7 @@ using ProjectHub.Core.Extensions;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
 
-namespace ProjectHub.UI.ViewModels;
+namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
 /// Project ViewModel (for UI presentation)

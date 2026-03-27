@@ -1,7 +1,7 @@
 using System.Windows;
-using ProjectHub.UI.ViewModels;
+using ProjectHub.Application.ViewModels;
 
-namespace ProjectHub
+namespace ProjectHub.Presentation.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -14,7 +14,6 @@ namespace ProjectHub
         public MainWindow(MainViewModel viewModel)
         {
             InitializeComponent();
-            
             // Set DataContext to ViewModel for data binding
             DataContext = viewModel;
         }

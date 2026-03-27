@@ -14,7 +14,6 @@
     <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
     <ProjectReference Include="..\ProjectHub.Application\ProjectHub.Application.csproj" />
     <ProjectReference Include="..\ProjectHub.Infrastructure\ProjectHub.Infrastructure.csproj" />
-    <ProjectReference Include="..\ProjectHub.UI\ProjectHub.UI.csproj" />
   </ItemGroup>
 
   <!-- Microsoft.Extensions for Dependency Injection and Configuration -->

@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using ProjectHub.Application.Interfaces;
 
-namespace ProjectHub.UI.ViewModels;
+namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
 /// 主窗口 ViewModel

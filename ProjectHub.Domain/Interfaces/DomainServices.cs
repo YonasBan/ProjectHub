@@ -1,5 +1,4 @@
 using ProjectHub.Domain.Entities;
-using ProjectHub.Domain.Events;
 
 namespace ProjectHub.Domain.Interfaces;
 
@@ -141,18 +140,6 @@ public interface ISmartAddService
     /// 从忽略列表移除
     /// </summary>
     void RemoveFromIgnoreList(string path);
-}
-
-/// <summary>
-/// 域事件分发器接口
-/// 用于发布和订阅域事件
-/// </summary>
-public interface IDomainEventDispatcher
-{
-    /// <summary>
-    /// 发布域事件
-    /// </summary>
-    Task DispatchAsync(BaseDomainEvent domainEvent, CancellationToken cancellationToken = default);
 }
 
 // ========== 辅助数据模型 ==========

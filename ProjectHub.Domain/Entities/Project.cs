@@ -1,4 +1,3 @@
-using ProjectHub.Domain.Events;
 
 namespace ProjectHub.Domain.Entities;
 
@@ -142,10 +141,6 @@ public class Project : BaseEntity
             LaunchCount = 0,
             TotalUsageDurationMs = 0
         };
-
-        // 触发域事件
-        project.AddDomainEvent(new ProjectCreatedDomainEvent(project.Id, project.Name, project.Type));
-
         return project;
     }
 
@@ -204,8 +199,6 @@ public class Project : BaseEntity
         
         IsArchived = true;
         UpdatedAt = DateTime.UtcNow;
-        
-        AddDomainEvent(new ProjectArchivedDomainEvent(Id, Name));
     }
 
     /// <summary>
@@ -217,8 +210,6 @@ public class Project : BaseEntity
         
         IsArchived = false;
         UpdatedAt = DateTime.UtcNow;
-        
-        AddDomainEvent(new ProjectRestoredDomainEvent(Id, Name));
     }
 
     /// <summary>

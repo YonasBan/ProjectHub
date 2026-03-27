@@ -1,4 +1,3 @@
-using ProjectHub.Domain.Events;
 
 namespace ProjectHub.Domain.Entities;
 
@@ -45,9 +44,6 @@ public class Tag : BaseEntity
             CreatedAt = DateTime.UtcNow,
             ProjectCount = 0
         };
-
-        tag.AddDomainEvent(new TagCreatedDomainEvent(tag.Id, tag.Name));
-
         return tag;
     }
 

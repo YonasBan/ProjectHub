@@ -3,7 +3,7 @@ using ReactiveUI;
 using System.Reactive;
 using ProjectHub.Core.Exceptions;
 
-namespace ProjectHub.UI.ViewModels;
+namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
 /// ViewModel 基类

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace ProjectHub.UI.DependencyInjection;
+namespace ProjectHub.Application.DependencyInjection;
 
 /// <summary>
 /// Extension methods for registering UI services (ViewModels).

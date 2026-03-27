@@ -3,6 +3,5 @@
   <Project Path="ProjectHub.Core/ProjectHub.Core.csproj" />
   <Project Path="ProjectHub.Domain/ProjectHub.Domain.csproj" />
   <Project Path="ProjectHub.Infrastructure/ProjectHub.Infrastructure.csproj" />
-  <Project Path="ProjectHub.UI/ProjectHub.UI.csproj" />
-  <Project Path="ProjectHub/ProjectHub.csproj" />
+  <Project Path="ProjectHub.Presentation.Wpf/ProjectHub.Presentation.Wpf.csproj" />
 </Solution>

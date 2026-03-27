@@ -1,4 +1,3 @@
-using ProjectHub.Domain.Events;
 
 namespace ProjectHub.Domain.Entities;
 
@@ -61,9 +60,6 @@ public class Group : BaseEntity
             CreatedAt = DateTime.UtcNow,
             IsExpanded = true
         };
-
-        group.AddDomainEvent(new GroupCreatedDomainEvent(group.Id, group.Name));
-
         return group;
     }
 

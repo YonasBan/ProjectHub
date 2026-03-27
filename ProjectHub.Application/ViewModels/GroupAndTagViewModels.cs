@@ -1,7 +1,7 @@
 using ProjectHub.Application.Interfaces;
 using ReactiveUI;
 
-namespace ProjectHub.UI.ViewModels;
+namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
 /// Group ViewModel

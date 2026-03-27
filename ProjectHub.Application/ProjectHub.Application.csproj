@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" Version="23.1.8" />
+  </ItemGroup>
+
   <!-- Application layer depends on Core and Domain -->
   <ItemGroup>
     <ProjectReference Include="..\ProjectHub.Core\ProjectHub.Core.csproj" />

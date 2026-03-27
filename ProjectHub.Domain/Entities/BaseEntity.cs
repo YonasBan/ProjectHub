@@ -1,4 +1,3 @@
-using ProjectHub.Domain.Events;
 
 namespace ProjectHub.Domain.Entities;
 
@@ -22,27 +21,4 @@ public abstract class BaseEntity
     /// 最后修改时间
     /// </summary>
     public DateTime? UpdatedAt { get; protected set; }
-
-    /// <summary>
-    /// 域事件列表 (用于最终一致性)
-    /// </summary>
-    private readonly List<BaseDomainEvent> _domainEvents = new();
-    
-    /// <summary>
-    /// 获取并清除所有待处理的域事件
-    /// </summary>
-    public IReadOnlyCollection<BaseDomainEvent> GetDomainEvents()
-    {
-        var events = _domainEvents.AsReadOnly();
-        _domainEvents.Clear();
-        return events;
-    }
-
-    /// <summary>
-    /// 添加域事件
-    /// </summary>
-    protected void AddDomainEvent(BaseDomainEvent domainEvent)
-    {
-        _domainEvents.Add(domainEvent);
-    }
 }
