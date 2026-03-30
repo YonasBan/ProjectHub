@@ -1,3 +1,4 @@
+using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Core.Extensions;
 using ProjectHub.Domain.Entities;
@@ -29,8 +30,6 @@ public partial class ProjectViewModel : ReactiveObject
     
     public string? CustomIconPath => _projectDto.CustomIconPath;
     
-    public string? ColorTag => _projectDto.ColorTag;
-    
     public string? Description => _projectDto.Description;
     
     /// <summary>
@@ -51,8 +50,6 @@ public partial class ProjectViewModel : ReactiveObject
     
     public string TotalUsageDurationDisplay => _projectDto.TotalUsageDuration.ToHumanReadableString();
     
-    public bool IsArchived => _projectDto.IsArchived;
-    
     public bool IsFavorite => _projectDto.IsFavorite;
     
     public DateTime? FavoritedAt => _projectDto.FavoritedAt;
@@ -66,8 +63,6 @@ public partial class ProjectViewModel : ReactiveObject
     public long? CleanableSpaceBytes => _projectDto.CleanableSpaceBytes;
     
     public string CleanableSpaceDisplay => _projectDto.CleanableSpaceBytes?.FormatFileSize() ?? "Not calculated";
-    
-    public IReadOnlyList<TagViewModel> Tags { get; }
 
     /// <summary>
     /// Project type display name
@@ -77,10 +72,6 @@ public partial class ProjectViewModel : ReactiveObject
     public ProjectViewModel(ProjectDto projectDto)
     {
         _projectDto = projectDto;
-        
-        Tags = projectDto.Tags
-            .Select(t => new TagViewModel(t))
-            .ToList();
     }
 
     /// <summary>

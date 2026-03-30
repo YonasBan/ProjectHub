@@ -1,5 +1,4 @@
 using ProjectHub.Domain.Entities;
-using ProjectHub.Domain.ValueObjects;
 
 namespace ProjectHub.Domain.Interfaces;
 
@@ -52,11 +51,6 @@ public interface IProjectRepository : IRepository<Project>
     Task<IReadOnlyList<Project>> GetByWorkSpaceIdAsync(long? workSpaceId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 根据标签 ID 查询项目
-    /// </summary>
-    Task<IReadOnlyList<Project>> GetByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 搜索项目 (按名称/路径/描述)
     /// </summary>
     Task<IReadOnlyList<Project>> SearchAsync(string keyword, CancellationToken cancellationToken = default);
@@ -66,16 +60,6 @@ public interface IProjectRepository : IRepository<Project>
     /// </summary>
     /// <param name="count">返回数量</param>
     Task<IReadOnlyList<Project>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取未归档的项目
-    /// </summary>
-    Task<IReadOnlyList<Project>> GetActiveProjectsAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取已归档的项目
-    /// </summary>
-    Task<IReadOnlyList<Project>> GetArchivedProjectsAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取收藏的项目
@@ -137,43 +121,52 @@ public interface IWorkSpaceRepository : IRepository<WorkSpace>
 public interface ITagRepository : IRepository<Tag>
 {
     /// <summary>
-    /// 获取所有标签 (包含项目数量统计)
+    /// 获取所有标签 (按排序顺序)
     /// </summary>
-    Task<IReadOnlyList<Tag>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Tag>> GetAllOrderedAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 检查标签名称是否已存在
     /// </summary>
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
-}
-
-/// <summary>
-/// 项目包仓储接口
-/// </summary>
-public interface IProjectBundleRepository
-{
-    /// <summary>
-    /// 根据 ID 获取项目包
-    /// </summary>
-    Task<ProjectBundle?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 获取所有项目包
+    /// 根据标签 ID 获取关联的项目 ID 列表
     /// </summary>
-    Task<IReadOnlyList<ProjectBundle>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<long>> GetProjectIdsByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 添加项目包
+    /// 根据标签 ID 获取关联的工作空间 ID 列表
     /// </summary>
-    Task<ProjectBundle> AddAsync(ProjectBundle bundle, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<long>> GetWorkSpaceIdsByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 更新项目包
+    /// 获取项目的标签列表
     /// </summary>
-    Task UpdateAsync(ProjectBundle bundle, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Tag>> GetTagsByProjectIdAsync(long projectId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 删除项目包
+    /// 获取工作空间的标签列表
     /// </summary>
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Tag>> GetTagsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加项目-标签关联
+    /// </summary>
+    Task<ProjectTag> AddProjectTagAsync(ProjectTag projectTag, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 删除项目-标签关联
+    /// </summary>
+    Task DeleteProjectTagAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加工作空间-标签关联
+    /// </summary>
+    Task<WorkSpaceTag> AddWorkSpaceTagAsync(WorkSpaceTag workSpaceTag, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 删除工作空间-标签关联
+    /// </summary>
+    Task DeleteWorkSpaceTagAsync(long workSpaceId, long tagId, CancellationToken cancellationToken = default);
 }

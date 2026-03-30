@@ -53,7 +53,6 @@ public class ProjectRepository : IProjectRepository
         {
             // 查询未归属工作文件夹的项目
             var allProjectIds = await _dbContext.Projects
-                .Where(p => !p.IsArchived)
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
             
@@ -75,7 +74,7 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
 
         return await _dbContext.Projects
-            .Where(p => projectIds.Contains(p.Id) && !p.IsArchived)
+            .Where(p => projectIds.Contains(p.Id))
             .ToListAsync(cancellationToken);
     }
 
@@ -85,7 +84,6 @@ public class ProjectRepository : IProjectRepository
         {
             // 查询未归属工作空间的项目
             var allProjectIds = await _dbContext.Projects
-                .Where(p => !p.IsArchived)
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
             
@@ -107,61 +105,32 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
 
         return await _dbContext.Projects
-            .Where(p => projectIds.Contains(p.Id) && !p.IsArchived)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Project>> GetByTagIdAsync(long tagId, CancellationToken cancellationToken = default)
-    {
-        var projectIds = await _dbContext.ProjectTags
-            .Where(pt => pt.TagId == tagId)
-            .Select(pt => pt.ProjectId)
-            .ToListAsync(cancellationToken);
-
-        return await _dbContext.Projects
-            .Where(p => projectIds.Contains(p.Id) && !p.IsArchived)
+            .Where(p => projectIds.Contains(p.Id))
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> SearchAsync(string keyword, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Projects
-            .Where(p => !p.IsArchived && 
-                       (p.Name.Contains(keyword) || 
-                        p.Path.Contains(keyword) || 
-                        (p.Description != null && p.Description.Contains(keyword))))
+            .Where(p => p.Name.Contains(keyword) || 
+                       p.Path.Contains(keyword) || 
+                       (p.Description != null && p.Description.Contains(keyword)))
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Projects
-            .Where(p => !p.IsArchived && p.LastOpenedAt != null)
+            .Where(p => p.LastOpenedAt != null)
             .OrderByDescending(p => p.LastOpenedAt)
             .Take(count)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Project>> GetActiveProjectsAsync(CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Projects
-            .Where(p => !p.IsArchived)
-            .OrderBy(p => p.Name)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Project>> GetArchivedProjectsAsync(CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Projects
-            .Where(p => p.IsArchived)
-            .OrderByDescending(p => p.UpdatedAt)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetFavoriteProjectsAsync(CancellationToken cancellationToken = default)
     {
         return await _dbContext.Projects
-            .Where(p => !p.IsArchived && p.IsFavorite)
+            .Where(p => p.IsFavorite)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
     }
@@ -175,7 +144,7 @@ public class ProjectRepository : IProjectRepository
     public async Task<IReadOnlyList<Project>> GetByTypeAsync(ProjectType type, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Projects
-            .Where(p => p.Type == type && !p.IsArchived)
+            .Where(p => p.Type == type)
             .OrderBy(p => p.Name)
             .ToListAsync(cancellationToken);
     }

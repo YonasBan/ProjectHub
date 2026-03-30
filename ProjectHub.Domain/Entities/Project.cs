@@ -70,12 +70,6 @@ public class Project : BaseEntity
     public long TotalUsageDurationMs { get; private set; }
 
     /// <summary>
-    /// 是否已归档
-    /// 归档项目不在主界面显示
-    /// </summary>
-    public bool IsArchived { get; private set; }
-
-    /// <summary>
     /// 是否被收藏/置顶
     /// </summary>
     public bool IsFavorite { get; private set; }
@@ -136,7 +130,6 @@ public class Project : BaseEntity
             Type = type,
             Path = path,
             CreatedAt = DateTime.UtcNow,
-            IsArchived = false,
             IsFavorite = false,
             LaunchCount = 0,
             TotalUsageDurationMs = 0
@@ -188,28 +181,6 @@ public class Project : BaseEntity
     public void UpdateLastModifiedTime(DateTime lastModified)
     {
         LastModifiedAt = lastModified;
-    }
-
-    /// <summary>
-    /// 归档项目
-    /// </summary>
-    public void Archive()
-    {
-        if (IsArchived) return;
-        
-        IsArchived = true;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    /// <summary>
-    /// 恢复已归档项目
-    /// </summary>
-    public void RestoreFromArchive()
-    {
-        if (!IsArchived) return;
-        
-        IsArchived = false;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>

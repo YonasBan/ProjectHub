@@ -1,5 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Services;
 
 namespace ProjectHub.Application.DependencyInjection;
 
@@ -14,11 +16,24 @@ public static class UIServiceCollectionExtensions
     /// </summary>
     public static void AddUIServices(this IServiceCollection services)
     {
-        // Main ViewModel - Singleton (shared across application lifetime)
-        services.AddSingleton<ViewModels.MainViewModel>();
-        
+        // Main ViewModel - Scoped (because it depends on scoped services)
+        services.AddScoped<ViewModels.MainViewModel>();
+
         // Other ViewModels - register as needed
         // services.AddTransient<ProjectDetailViewModel>();
         // services.AddTransient<SettingsViewModel>();
+    }
+    
+    /// <summary>
+    /// Registers all application services (platform-agnostic).
+    /// Note: Platform-specific services (like DialogService) should be registered in the presentation layer.
+    /// </summary>
+    public static void AddAppServices(this IServiceCollection services)
+    {
+        // Application Services
+        services.AddScoped<IProjectAppService, ProjectAppService>();
+        services.AddScoped<IWorkFolderAppService, WorkFolderAppService>();
+        services.AddScoped<IWorkSpaceAppService, WorkSpaceAppService>();
+        services.AddScoped<ITagAppService, TagAppService>();
     }
 }

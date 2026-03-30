@@ -45,6 +45,11 @@ public class AppDbContext : DbContext
     public DbSet<ProjectTag> ProjectTags => Set<ProjectTag>();
 
     /// <summary>
+    /// 工作空间 - 标签关联 DbSet
+    /// </summary>
+    public DbSet<WorkSpaceTag> WorkSpaceTags => Set<WorkSpaceTag>();
+
+    /// <summary>
     /// 项目 - 工作文件夹关联 DbSet
     /// </summary>
     public DbSet<ProjectWorkFolder> ProjectWorkFolders => Set<ProjectWorkFolder>();
@@ -53,11 +58,6 @@ public class AppDbContext : DbContext
     /// 项目 - 工作空间关联 DbSet
     /// </summary>
     public DbSet<ProjectWorkSpace> ProjectWorkSpaces => Set<ProjectWorkSpace>();
-
-    /// <summary>
-    /// 工作空间 - 标签关联 DbSet
-    /// </summary>
-    public DbSet<WorkSpaceTag> WorkSpaceTags => Set<WorkSpaceTag>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,11 +88,10 @@ public class AppDbContext : DbContext
             entity.Property(e => e.CustomIconPath)
                 .HasMaxLength(500);
             
-            entity.Property(e => e.ColorTag)
-                .HasMaxLength(50);
+            entity.Property(e => e.Description)
+                .HasMaxLength(1000);
             
             // 索引优化
-            entity.HasIndex(e => e.IsArchived);
             entity.HasIndex(e => e.LastOpenedAt);
             entity.HasIndex(e => e.IsFavorite);
             entity.HasIndex(e => e.FavoritedAt);
@@ -133,59 +132,30 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<WorkSpace>(entity =>
         {
             entity.HasKey(e => e.Id);
-            
+
             entity.Property(e => e.Name)
                 .IsRequired()
                 .HasMaxLength(100);
-            
+
             entity.HasIndex(e => e.Name)
                 .IsUnique();
-            
+
             entity.Property(e => e.Description)
                 .HasMaxLength(500);
-            
+
             entity.Property(e => e.IconPath)
                 .HasMaxLength(500);
-            
+
+            entity.Property(e => e.EnabledProjectIdsJson)
+                .HasMaxLength(2000);
+
+            entity.Property(e => e.LaunchOrderJson)
+                .HasMaxLength(4000);
+
             // 索引优化
             entity.HasIndex(e => e.IsFavorite);
             entity.HasIndex(e => e.FavoritedAt);
             entity.HasIndex(e => e.LastOpenedAt);
-        });
-
-        // ========== Tag 配置 ==========
-        modelBuilder.Entity<Tag>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            
-            entity.Property(e => e.Name)
-                .IsRequired()
-                .HasMaxLength(50);
-            
-            entity.HasIndex(e => e.Name)
-                .IsUnique();
-            
-            entity.Property(e => e.Color)
-                .HasMaxLength(50);
-        });
-
-        // ========== ProjectTag 配置 (多对多关联表) ==========
-        modelBuilder.Entity<ProjectTag>(entity =>
-        {
-            entity.HasKey(e => e.Id);
-            
-            entity.HasOne<Project>()
-                .WithMany() // 注意：Project 实体中暂不添加导航属性集合，保持简洁
-                .HasForeignKey(e => e.ProjectId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            entity.HasOne<Tag>()
-                .WithMany()
-                .HasForeignKey(e => e.TagId)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            entity.HasIndex(e => new { e.ProjectId, e.TagId })
-                .IsUnique();
         });
 
         // ========== ProjectWorkFolder 配置 (多对多关联表) ==========
@@ -245,26 +215,75 @@ public class AppDbContext : DbContext
                 .IsUnique();
         });
 
-        // ========== WorkSpaceTag 配置 (多对多关联表) ==========
-        modelBuilder.Entity<WorkSpaceTag>(entity =>
+        // ========== Tag 配置 ==========
+        modelBuilder.Entity<Tag>(entity =>
         {
             entity.HasKey(e => e.Id);
-            
-            entity.HasOne<WorkSpace>()
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            entity.Property(e => e.Color)
+                .IsRequired()
+                .HasMaxLength(20);
+
+            entity.Property(e => e.Description)
+                .HasMaxLength(500);
+
+            entity.Property(e => e.SortOrder)
+                .HasDefaultValue(0);
+
+            entity.HasIndex(e => e.Name)
+                .IsUnique();
+
+            entity.HasIndex(e => e.SortOrder);
+        });
+
+        // ========== ProjectTag 配置 (多对多关联表) ==========
+        modelBuilder.Entity<ProjectTag>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne<Project>()
                 .WithMany()
-                .HasForeignKey(e => e.WorkSpaceId)
+                .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             entity.HasOne<Tag>()
                 .WithMany()
                 .HasForeignKey(e => e.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
-            entity.HasIndex(e => new { e.WorkSpaceId, e.TagId })
+
+            entity.HasIndex(e => new { e.ProjectId, e.TagId })
                 .IsUnique();
+
+            entity.HasIndex(e => e.ProjectId);
+            entity.HasIndex(e => e.TagId);
         });
 
-        // TODO: 未来添加 ProjectBundle 配置
+        // ========== WorkSpaceTag 配置 (多对多关联表) ==========
+        modelBuilder.Entity<WorkSpaceTag>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+
+            entity.HasOne<WorkSpace>()
+                .WithMany()
+                .HasForeignKey(e => e.WorkSpaceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne<Tag>()
+                .WithMany()
+                .HasForeignKey(e => e.TagId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(e => new { e.WorkSpaceId, e.TagId })
+                .IsUnique();
+
+            entity.HasIndex(e => e.WorkSpaceId);
+            entity.HasIndex(e => e.TagId);
+        });
+
         // TODO: 未来添加 Customer/Contact 配置
         // TODO: 未来添加 Attachment 配置
     }

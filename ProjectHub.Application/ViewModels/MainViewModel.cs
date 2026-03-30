@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
+using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 
 namespace ProjectHub.Application.ViewModels;
@@ -17,7 +18,6 @@ public class MainViewModel : ViewModelBase
     private readonly IProjectAppService _projectAppService;
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
-    private readonly ITagAppService _tagAppService;
 
     /// <summary>
     /// 项目列表 (Observable)
@@ -47,16 +47,6 @@ public class MainViewModel : ViewModelBase
     {
         get => _workSpaces ??= new();
         set => this.RaiseAndSetIfChanged(ref _workSpaces, value);
-    }
-
-    /// <summary>
-    /// 标签列表 (Observable)
-    /// </summary>
-    private ObservableCollection<TagViewModel>? _tags;
-    public ObservableCollection<TagViewModel> Tags
-    {
-        get => _tags ??= new();
-        set => this.RaiseAndSetIfChanged(ref _tags, value);
     }
 
     /// <summary>
@@ -110,20 +100,23 @@ public class MainViewModel : ViewModelBase
         ILogger<MainViewModel> logger,
         IProjectAppService projectAppService,
         IWorkFolderAppService workFolderAppService,
-        IWorkSpaceAppService workSpaceAppService,
-        ITagAppService tagAppService)
+        IWorkSpaceAppService workSpaceAppService)
         : base(logger)
     {
         _projectAppService = projectAppService;
         _workFolderAppService = workFolderAppService;
         _workSpaceAppService = workSpaceAppService;
-        _tagAppService = tagAppService;
 
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
         SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
-        
+
+        // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
+        LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
+        SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
+        RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
+
         // 加载数据
         LoadProjectsCommand.Execute(Unit.Default).Subscribe();
     }
@@ -150,7 +143,6 @@ public class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "加载项目列表时发生错误");
-            throw;
         }
     }
 
@@ -182,7 +174,6 @@ public class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "搜索项目时发生错误");
-            throw;
         }
     }
 
@@ -198,14 +189,12 @@ public class MainViewModel : ViewModelBase
             await LoadProjectsAsync();
             await LoadWorkFoldersAsync();
             await LoadWorkSpacesAsync();
-            await LoadTagsAsync();
             
             Logger.LogInformation("数据刷新完成");
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "刷新数据时发生错误");
-            throw;
         }
     }
 
@@ -230,7 +219,6 @@ public class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "加载工作文件夹列表时发生错误");
-            throw;
         }
     }
 
@@ -253,30 +241,6 @@ public class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "加载工作空间列表时发生错误");
-            throw;
-        }
-    }
-
-    private async Task LoadTagsAsync()
-    {
-        try
-        {
-            Logger.LogInformation("加载标签列表");
-            
-            var tags = await _tagAppService.GetAllWithProjectCountAsync();
-            
-            Tags.Clear();
-            foreach (var tag in tags)
-            {
-                Tags.Add(new TagViewModel(tag));
-            }
-            
-            Logger.LogInformation($"成功加载 {tags.Count} 个标签");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载标签列表时发生错误");
-            throw;
         }
     }
 }

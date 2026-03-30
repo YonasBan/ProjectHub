@@ -13,6 +13,7 @@ using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
+using ProjectHub.Presentation.Wpf.Services;
 namespace ProjectHub.Presentation.Wpf;
 
 /// <summary>
@@ -48,6 +49,9 @@ public partial class App : System.Windows.Application
 
         // Resolve logger and platform service after host is built
         _logger = Services.GetRequiredService<ILogger<App>>();
+        
+        // Register global exception handler
+        this.DispatcherUnhandledException += App_DispatcherUnhandledException;
     }
 
     /// <summary>
@@ -155,9 +159,15 @@ public partial class App : System.Windows.Application
 
         // ========== Register UI Services (ViewModels) ==========
         services.AddUIServices();
+        
+        // ========== Register Application Services ==========
+        services.AddAppServices();
 
         // ========== Register Infrastructure Services ==========
         services.AddInfrastructureServices(configuration);
+        
+        // ========== Register Platform-Specific Services (WPF) ==========
+        services.AddSingleton<IDialogService, DialogService>();
     }
 
     /// <summary>
@@ -180,8 +190,8 @@ public partial class App : System.Windows.Application
     /// </summary>
     private static void RegisterViews(IServiceCollection services)
     {
-        // MainWindow with injected ViewModel
-        services.AddSingleton<MainWindow>(provider =>
+        // MainWindow with injected ViewModel - Scoped to match MainViewModel's lifetime
+        services.AddScoped<MainWindow>(provider =>
         {
             var viewModel = provider.GetRequiredService<MainViewModel>();
             return new MainWindow(viewModel);
@@ -205,8 +215,11 @@ public partial class App : System.Windows.Application
             _logger.LogInformation("Host started successfully");
             _logger.LogInformation("Environment: {Environment}",
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
-            var mainWindows=Services.GetRequiredService<MainWindow>();
-            mainWindows?.Show();
+
+            // Create a scope to resolve scoped services
+            using var scope = Services.CreateScope();
+            var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
+            mainWindow?.Show();
 
             _logger.LogInformation("Application started successfully");
         }
@@ -225,15 +238,27 @@ public partial class App : System.Windows.Application
     /// Global exception handler for unhandled UI thread exceptions.
     /// Delegates to platform-specific implementation.
     /// </summary>
-    protected async void OnDispatcherUnhandledException(
+    private async void App_DispatcherUnhandledException(
+        object sender,
         System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
-        // Delegate to platform service for handling
-        //var shouldContinue = _platformService.ShowErrorDialogAsync(e.Exception).Result;
-        var idialogServer = Services.GetRequiredService<IDialogService>();
-        await idialogServer.ShowMessageAsync("Error", $"Application failed to start", "OK");
-        // Mark exception as handled to prevent crash if user chose to continue
-        e.Handled = false;
+        _logger.LogCritical(e.Exception, "Unhandled exception occurred");
+        
+        try
+        {
+            var dialogService = Services.GetService<IDialogService>();
+            if (dialogService != null)
+            {
+                await dialogService.ShowMessageAsync("Error", $"发生错误: {e.Exception.Message}", "OK");
+            }
+        }
+        catch
+        {
+            // Ignore dialog errors
+        }
+        
+        // Mark exception as handled to prevent crash
+        e.Handled = true;
     }
 
     /// <summary>

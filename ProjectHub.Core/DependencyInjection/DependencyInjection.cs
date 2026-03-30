@@ -71,9 +71,6 @@ public static class DependencyInjection
         services.AddScoped<IWorkSpaceRepository, WorkSpaceRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
 
-        // TODO: 注册其他基础设施服务
-        // services.AddScoped<IProjectBundleRepository, ProjectBundleRepository>();
-
         return services;
     }
 

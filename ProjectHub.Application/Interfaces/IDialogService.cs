@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +6,12 @@ namespace ProjectHub.Application.Interfaces
 {
     // 基础弹窗结果
     public record DialogResult<T>(bool Confirmed, T? Value = default);
+
+    // 对话框 ViewModel 接口
+    public interface IDialogViewModel<TResult>
+    {
+        DialogResult<TResult>? Result { get; }
+    }
 
     // 核心弹窗服务接口
     public interface IDialogService
@@ -24,6 +30,6 @@ namespace ProjectHub.Application.Interfaces
         // 自定义 ViewModel 弹窗
         Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(
             TViewModel viewModel)
-            where TViewModel : DialogViewModelBase<TResult>;
+            where TViewModel : IDialogViewModel<TResult>;
     }
 }

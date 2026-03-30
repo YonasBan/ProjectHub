@@ -26,6 +26,10 @@
             --tag-purple: #C586C0;
             --tag-red: #F44747;
             --tag-teal: #4DC9B0;
+            --tag-yellow: #D7BA7D;
+            --tag-cyan: #9CDCFE;
+            --tag-pink: #C586C0;
+            --tag-brown: #CE9178;
             
             --space-4: 4px;
             --space-8: 8px;
@@ -80,6 +84,7 @@
             display: flex;
             align-items: center;
             gap: var(--space-8);
+            flex-shrink: 0;
         }
         
         .logo-icon {
@@ -89,58 +94,45 @@
             border-radius: var(--radius-sm);
         }
         
-        .menu-bar {
-            display: flex;
-            gap: var(--space-4);
-        }
-        
-        .menu-item {
-            padding: var(--space-4) var(--space-12);
-            color: var(--text-secondary);
-            font-size: 13px;
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .menu-item:hover {
-            background-color: var(--bg-hover);
-            color: var(--text-primary);
-        }
-        
         .search-bar {
             flex: 1;
-            max-width: 400px;
-            position: relative;
+            max-width: 480px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 0 var(--space-12);
+        }
+        
+        .search-bar:focus-within {
+            border-color: var(--accent-blue);
+        }
+        
+        .search-icon {
+            color: var(--text-muted);
+            margin-right: var(--space-8);
         }
         
         .search-input {
-            width: 100%;
-            padding: var(--space-8) var(--space-12);
-            padding-left: 36px;
-            background-color: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
             color: var(--text-primary);
             font-size: 13px;
+            padding: var(--space-10) 0;
         }
         
         .search-input::placeholder {
             color: var(--text-muted);
         }
         
-        .search-icon {
-            position: absolute;
-            left: var(--space-12);
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 14px;
-        }
-        
         .header-actions {
             display: flex;
-            gap: var(--space-8);
+            gap: var(--space-12);
+            flex-shrink: 0;
         }
         
         .btn {
@@ -323,8 +315,66 @@
             color: var(--text-primary);
         }
         
+        /* Delete folder button */
+        .tree-delete-btn {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.2s;
+            visibility: hidden;
+            margin-left: var(--space-4);
+        }
+        
+        .tree-item:hover .tree-delete-btn {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tree-delete-btn:hover {
+            background-color: var(--error);
+            color: var(--text-primary);
+        }
+        
         .tree-children {
             padding-left: var(--space-24);
+        }
+        
+        /* Tag Settings Button */
+        .tree-settings-btn {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0;
+            transition: all 0.2s;
+            visibility: hidden;
+            margin-left: var(--space-4);
+        }
+        
+        .tree-item:hover .tree-settings-btn {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .tree-settings-btn:hover {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
         }
         
         /* Main Content Area */
@@ -405,11 +455,12 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.7);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(2px);
         }
         
         .modal-overlay.visible {
@@ -418,31 +469,364 @@
         
         .modal-dialog {
             background-color: var(--bg-secondary);
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-lg);
             border: 1px solid var(--border-color);
             width: 90%;
-            max-width: 700px;
-            max-height: 80vh;
+            max-width: 520px;
+            max-height: 85vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6);
+            animation: modalIn 0.2s ease-out;
+        }
+        
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
         
         .modal-header {
-            padding: var(--space-16) var(--space-20);
+            padding: var(--space-20) var(--space-24);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-shrink: 0;
         }
         
         .modal-title {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
         }
         
         .modal-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 22px;
+            transition: all 0.15s;
+        }
+        
+        .modal-close:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .modal-body {
+            padding: var(--space-24);
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        /* Form Styles */
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-8);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--space-10) var(--space-12);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: all 0.15s;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+        
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: var(--space-10) var(--space-12);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 13px;
+            transition: all 0.15s;
+            outline: none;
+            min-height: 80px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .form-textarea:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.2);
+        }
+        
+        /* Icon Selector */
+        .icon-selector {
+            display: flex;
+            gap: var(--space-8);
+            flex-wrap: wrap;
+        }
+        
+        .icon-option {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+            font-size: 16px;
+        }
+        
+        .icon-option:hover {
+            border-color: var(--text-muted);
+        }
+        
+        .icon-option.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.3);
+        }
+        
+        .icon-option.type-vs { background-color: #512BD4; }
+        .icon-option.type-android { background-color: #3DDC84; }
+        .icon-option.type-cpp { background-color: #00599C; }
+        .icon-option.type-tool { background-color: #F44747; }
+        .icon-option.type-doc { background-color: #4EC9B0; }
+        .icon-option.type-folder { background-color: #CCA700; }
+        .icon-option.type-web { background-color: #E44D26; }
+        .icon-option.type-workspace { background: linear-gradient(135deg, #0078D4, #4EC9B0); }
+        
+        /* File Path Input */
+        .file-path-input-group {
+            display: flex;
+            gap: var(--space-8);
+        }
+        
+        .file-path-input-group .form-input {
+            flex: 1;
+        }
+        
+        .btn-browse {
+            padding: var(--space-10) var(--space-16);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        
+        .btn-browse:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+        
+        .launcher-default {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            margin-top: var(--space-8);
+            padding: var(--space-8) var(--space-12);
+            background-color: rgba(0, 120, 212, 0.1);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        
+        .launcher-default-icon {
+            color: var(--accent-blue);
+        }
+        
+        /* Tag Editor */
+        .tag-editor {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-8);
+            padding: var(--space-10);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            min-height: 42px;
+            align-items: center;
+        }
+        
+        .tag-editor:focus-within {
+            border-color: var(--accent-blue);
+        }
+        
+        .tag-editor-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        .tag-editor-item.tag-blue { background-color: var(--tag-blue); }
+        .tag-editor-item.tag-green { background-color: var(--tag-green); }
+        .tag-editor-item.tag-orange { background-color: var(--tag-orange); }
+        .tag-editor-item.tag-purple { background-color: var(--tag-purple); }
+        .tag-editor-item.tag-red { background-color: var(--tag-red); }
+        .tag-editor-item.tag-teal { background-color: var(--tag-teal); }
+        .tag-editor-item.tag-yellow { background-color: var(--tag-yellow); }
+        .tag-editor-item.tag-cyan { background-color: var(--tag-cyan); }
+        .tag-editor-item.tag-pink { background-color: var(--tag-pink); }
+        .tag-editor-item.tag-brown { background-color: var(--tag-brown); }
+        
+        .tag-editor-remove {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            font-size: 10px;
+            transition: background-color 0.15s;
+        }
+        
+        .tag-editor-remove:hover {
+            background-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .tag-editor-input {
+            flex: 1;
+            min-width: 80px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+        }
+        
+        .tag-editor-input::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .tag-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-6);
+            margin-top: var(--space-8);
+        }
+        
+        .tag-suggestion {
+            padding: 4px 10px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 11px;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .tag-suggestion:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--text-muted);
+        }
+        
+        /* Workspace Project Item */
+        .workspace-project-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-12) var(--space-16);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.15s;
+        }
+        
+        .workspace-project-item:hover {
+            border-color: var(--accent-blue);
+            background-color: var(--bg-hover);
+        }
+        
+        .workspace-project-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: var(--space-12);
+            cursor: pointer;
+            accent-color: var(--accent-blue);
+        }
+        
+        .workspace-project-item .project-checkbox-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-right: var(--space-12);
+        }
+        
+        .workspace-project-item .project-checkbox-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .workspace-project-item .project-checkbox-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .workspace-project-item .project-checkbox-path {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .workspace-project-delete {
             width: 28px;
             height: 28px;
             display: flex;
@@ -453,27 +837,70 @@
             border-radius: var(--radius-sm);
             color: var(--text-muted);
             cursor: pointer;
-            font-size: 20px;
-            transition: all 0.2s;
+            font-size: 16px;
+            transition: all 0.15s;
+            opacity: 0;
+            flex-shrink: 0;
         }
         
-        .modal-close:hover {
-            background-color: var(--bg-hover);
+        .workspace-project-item:hover .workspace-project-delete {
+            opacity: 1;
+        }
+        
+        .workspace-project-delete:hover {
+            background-color: var(--error);
             color: var(--text-primary);
         }
         
-        .modal-body {
-            padding: var(--space-20);
-            overflow-y: auto;
-            flex: 1;
+        /* Add Project Button */
+        .add-project-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-8);
+            padding: var(--space-12);
+            background-color: transparent;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .add-project-btn:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+        
+        .add-project-btn .add-icon {
+            font-size: 16px;
+        }
+        
+        .modal-description {
+            margin-bottom: var(--space-16);
+            color: var(--text-secondary);
+            font-size: 13px;
+            line-height: 1.5;
         }
         
         .modal-footer {
-            padding: var(--space-16) var(--space-20);
+            padding: var(--space-16) var(--space-24);
             border-top: 1px solid var(--border-color);
             display: flex;
             justify-content: flex-end;
-            gap: var(--space-8);
+            gap: var(--space-12);
+            flex-shrink: 0;
+            background-color: var(--bg-tertiary);
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+        
+        .modal-footer .btn {
+            min-width: 88px;
+            padding: var(--space-10) var(--space-20);
+            font-size: 13px;
+            font-weight: 500;
         }
         
         /* Project Checkbox List */
@@ -486,17 +913,22 @@
         .project-checkbox-item {
             display: flex;
             align-items: center;
-            padding: var(--space-12);
+            padding: var(--space-12) var(--space-16);
             background-color: var(--bg-tertiary);
             border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.15s;
         }
         
         .project-checkbox-item:hover {
             border-color: var(--accent-blue);
             background-color: var(--bg-hover);
+        }
+        
+        .project-checkbox-item:has(input:checked) {
+            border-color: var(--accent-blue);
+            background-color: rgba(0, 120, 212, 0.1);
         }
         
         .project-checkbox-item input[type="checkbox"] {
@@ -507,20 +939,50 @@
             accent-color: var(--accent-blue);
         }
         
+        .project-checkbox-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-left: var(--space-8);
+        }
+        
+        .project-checkbox-icon.type-vs { background-color: #512BD4; }
+        .project-checkbox-icon.type-android { background-color: #3DDC84; }
+        .project-checkbox-icon.type-cpp { background-color: #00599C; }
+        .project-checkbox-icon.type-web { background-color: #E44D26; }
+        .project-checkbox-icon.type-doc { background-color: #4EC9B0; }
+        .project-checkbox-icon.type-workspace { 
+            background: linear-gradient(135deg, #0078D4, #4EC9B0); 
+        }
+        
+        .project-checkbox-icon svg {
+            width: 16px;
+            height: 16px;
+        }
+        
         .project-checkbox-info {
             flex: 1;
             min-width: 0;
+            padding: 0 var(--space-12);
         }
         
         .project-checkbox-name {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             color: var(--text-primary);
-            margin-bottom: var(--space-4);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .project-checkbox-path {
-            font-size: 12px;
+            font-size: 11px;
             color: var(--text-muted);
             white-space: nowrap;
             overflow: hidden;
@@ -528,16 +990,17 @@
         }
         
         .project-checkbox-type {
-            width: 60px;
-            height: 24px;
+            padding: 4px 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             background-color: var(--bg-secondary);
-            border-radius: var(--radius-xs);
+            border-radius: var(--radius-sm);
             font-size: 11px;
+            font-weight: 500;
             color: var(--text-secondary);
             margin-left: var(--space-8);
+            flex-shrink: 0;
         }
         
         /* Recent List View (hidden by default when card view is active) */
@@ -727,6 +1190,10 @@
         .tag-purple { background-color: var(--tag-purple); }
         .tag-red { background-color: var(--tag-red); }
         .tag-teal { background-color: var(--tag-teal); }
+        .tag-yellow { background-color: var(--tag-yellow); }
+        .tag-cyan { background-color: var(--tag-cyan); }
+        .tag-pink { background-color: var(--tag-pink); }
+        .tag-brown { background-color: var(--tag-brown); }
         
         .recent-item-actions {
             display: flex;
@@ -756,6 +1223,86 @@
         .action-btn:hover {
             background-color: var(--accent-blue);
             color: var(--text-primary);
+        }
+        
+        /* Favorite Button */
+        .action-btn-favorite {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+        
+        .action-btn-favorite:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .action-btn-favorite.active {
+            color: #FFD700;
+        }
+        
+        .action-btn-favorite.active:hover {
+            color: #FFA500;
+        }
+        
+        /* Action Button with Dropdown */
+        .action-btn-wrapper {
+            position: relative;
+        }
+        
+        .action-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 4px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            min-width: 120px;
+            display: none;
+            z-index: 100;
+        }
+        
+        .action-dropdown.visible {
+            display: block;
+        }
+        
+        .action-dropdown-item {
+            padding: var(--space-8) var(--space-12);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: all 0.15s;
+        }
+        
+        .action-dropdown-item:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .action-dropdown-item:first-child {
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        }
+        
+        .action-dropdown-item:last-child {
+            border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+        }
+        
+        /* Workspace Type Badge */
+        .type-workspace {
+            background: linear-gradient(135deg, #0078D4, #4EC9B0);
         }
         
         /* Project Grid */
@@ -880,6 +1427,241 @@
             background-color: var(--success);
         }
         
+        /* Tag Management Styles */
+        .tag-management-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-24);
+        }
+        
+        .tag-management-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: var(--space-16);
+        }
+        
+        .tag-management-actions {
+            display: flex;
+            gap: var(--space-12);
+        }
+        
+        .tag-creation-panel {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-24);
+            border: 1px solid var(--border-color);
+        }
+        
+        .tag-creation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-16);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .tag-creation-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: var(--space-16);
+            align-items: end;
+        }
+        
+        .color-picker {
+            display: flex;
+            gap: var(--space-8);
+            flex-wrap: wrap;
+        }
+        
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.15s;
+        }
+        
+        .color-option:hover {
+            border-color: var(--text-muted);
+        }
+        
+        .color-option.selected {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--text-primary);
+        }
+        
+        .tag-list-container {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--space-24);
+            border: 1px solid var(--border-color);
+        }
+        
+        .tag-list-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-16);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+        
+        .tag-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-8);
+        }
+        
+        .tag-list-item {
+            display: flex;
+            align-items: center;
+            padding: var(--space-12) var(--space-16);
+            background-color: var(--bg-tertiary);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.15s;
+        }
+        
+        .tag-list-item:hover {
+            border-color: var(--accent-blue);
+            background-color: var(--bg-hover);
+        }
+        
+        .tag-list-color {
+            width: 24px;
+            height: 24px;
+            border-radius: var(--radius-sm);
+            margin-right: var(--space-12);
+            flex-shrink: 0;
+            border: 2px solid transparent;
+        }
+        
+        .tag-list-color.selected {
+            border-color: var(--text-primary);
+            box-shadow: 0 0 0 2px var(--text-primary);
+        }
+        
+        .tag-list-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .tag-list-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        
+        .tag-list-meta {
+            display: flex;
+            gap: var(--space-16);
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-left: var(--space-12);
+        }
+        
+        .tag-list-count {
+            background-color: var(--bg-secondary);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .tag-list-actions {
+            display: flex;
+            gap: var(--space-8);
+            margin-left: var(--space-12);
+        }
+        
+        .tag-list-edit {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.15s;
+        }
+        
+        .tag-list-edit:hover {
+            background-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+        
+        .tag-list-delete {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.15s;
+        }
+        
+        .tag-list-delete:hover {
+            background-color: var(--error);
+            color: var(--text-primary);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-48) var(--space-24);
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--space-16);
+            opacity: 0.5;
+        }
+        
+        .empty-state-title {
+            font-size: 16px;
+            margin-bottom: var(--space-8);
+            color: var(--text-secondary);
+        }
+        
+        .empty-state-description {
+            font-size: 13px;
+            max-width: 360px;
+            line-height: 1.5;
+        }
+        
+        /* Content view switching */
+        .content-view {
+            display: none;
+        }
+        
+        .content-view.active {
+            display: block;
+        }
+        
+        .recent-view {
+            display: block;
+        }
+        
+        .tag-management-view {
+            display: none;
+        }
+        
         ::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -907,13 +1689,6 @@
                 <div class="logo-icon"></div>
                 ProjectHub
             </div>
-            <nav class="menu-bar">
-                <div class="menu-item">文件 (F)</div>
-                <div class="menu-item">编辑 (E)</div>
-                <div class="menu-item">查看 (V)</div>
-                <div class="menu-item">工具 (T)</div>
-                <div class="menu-item">帮助 (H)</div>
-            </nav>
             <div class="search-bar">
                 <span class="search-icon">🔍</span>
                 <input type="text" class="search-input" placeholder="搜索项目、工作空间、标签...">
@@ -935,7 +1710,7 @@
             </div>
             <div class="tree-view">
                 <!-- 最近使用 -->
-                <div class="tree-item">
+                <div class="tree-item selected" onclick="showRecentView()">
                     <span class="tree-expand"></span>
                     <div class="tree-icon" style="background: linear-gradient(135deg, #CCA700, #FFD700);">🕒</div>
                     <span class="tree-label">最近使用</span>
@@ -972,6 +1747,7 @@
                     <span class="tree-label">开发项目</span>
                     <span class="tree-count">12</span>
                     <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                 </div>
                 <div class="tree-children">
                     <div class="tree-item">
@@ -980,6 +1756,7 @@
                         <span class="tree-label">Web 应用</span>
                         <span class="tree-count">5</span>
                         <button class="tree-add-btn" title="新建子文件夹">+</button>
+                        <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                     </div>
                     <div class="tree-item">
                         <span class="tree-expand">▶</span>
@@ -987,6 +1764,7 @@
                         <span class="tree-label">移动应用</span>
                         <span class="tree-count">4</span>
                         <button class="tree-add-btn" title="新建子文件夹">+</button>
+                        <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                     </div>
                     <div class="tree-item">
                         <span class="tree-expand">▶</span>
@@ -994,6 +1772,7 @@
                         <span class="tree-label">桌面应用</span>
                         <span class="tree-count">3</span>
                         <button class="tree-add-btn" title="新建子文件夹">+</button>
+                        <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                     </div>
                 </div>
                 
@@ -1004,6 +1783,7 @@
                     <span class="tree-label">学习资源</span>
                     <span class="tree-count">8</span>
                     <button class="tree-add-btn" title="新建子文件夹">+</button>
+                    <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                 </div>
                 <div class="tree-children">
                     <div class="tree-item">
@@ -1012,6 +1792,7 @@
                         <span class="tree-label">编程教程</span>
                         <span class="tree-count">3</span>
                         <button class="tree-add-btn" title="新建子文件夹">+</button>
+                        <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                     </div>
                     <div class="tree-item">
                         <span class="tree-expand">▶</span>
@@ -1019,282 +1800,410 @@
                         <span class="tree-label">电子书</span>
                         <span class="tree-count">5</span>
                         <button class="tree-add-btn" title="新建子文件夹">+</button>
+                        <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                     </div>
                 </div>
                 
                 <!-- 所有项目 -->
-                <div class="tree-item">
-                    <span class="tree-expand"></span>
+                <div class="tree-item" onclick="showAllProjectsView()">
+                    <span class="tree-expand">▶</span>
                     <div class="tree-icon" style="background: linear-gradient(135deg, #0078D4, #4EC9B0);">📦</div>
                     <span class="tree-label">所有项目</span>
                     <span class="tree-count">45</span>
+                    <button class="tree-add-btn" title="新建项目">+</button>
+                    <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
+                </div>
+                
+                <!-- 标签设置（独立项，和所有项目同级） -->
+                <div class="tree-item" onclick="showTagManagementView()">
+                    <span class="tree-expand"></span>
+                    <div class="tree-icon" style="background: linear-gradient(135deg, #D7BA7D, #FFD700);">🏷️</div>
+                    <span class="tree-label">标签设置</span>
+                    <span class="tree-count">8</span>
+                    <button class="tree-delete-btn" title="删除" onclick="deleteFolder(this)">×</button>
                 </div>
             </div>
         </aside>
         
-        <!-- Main Content Area -->
+        <!-- Main Content Area - Recent View (Default) -->
         <main class="main-content">
-            <div class="content-header">
-                <h1 class="content-title">🕒 最近使用</h1>
-                <div class="view-toggle">
-                    <button class="toggle-btn">列表</button>
-                    <button class="toggle-btn active">卡片</button>
+            <!-- Recent View -->
+            <div class="content-view recent-view active" id="recentView">
+                <div class="content-header">
+                    <h1 class="content-title">🕒 最近使用</h1>
+                    <div class="view-toggle">
+                        <button class="toggle-btn">列表</button>
+                        <button class="toggle-btn active">卡片</button>
+                    </div>
+                </div>
+                
+                <!-- Card View (Default) -->
+                <div class="recent-grid">
+                    <!-- Recent Card 1 -->
+                    <div class="recent-card-item">
+                        <div class="recent-card-header">
+                            <div class="recent-card-icon type-vs">VS</div>
+                            <div class="recent-card-info">
+                                <div class="recent-card-name">ProjectHub 主程序</div>
+                                <div class="recent-card-time">🕒 2 小时前</div>
+                            </div>
+                        </div>
+                        <div class="recent-card-path">d:\work\ProjectHub</div>
+                        <div class="recent-card-tags">
+                            <span class="tag tag-blue">.NET</span>
+                            <span class="tag tag-green">WPF</span>
+                            <span class="tag tag-purple">MVVM</span>
+                        </div>
+                        <div class="recent-card-meta">
+                            <span>启动 156 次</span>
+                            <div class="recent-card-actions">
+                                <div class="action-btn-favorite active" title="取消收藏" onclick="toggleFavorite(this)">★</div>
+                                <div class="action-btn" title="打开">📂</div>
+                                <div class="action-btn" title="编辑" onclick="openEditModal()">✏️</div>
+                                <div class="action-btn" title="设置" onclick="openEditModal()">⚙</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Card 2 -->
+                    <div class="recent-card-item">
+                        <div class="recent-card-header">
+                            <div class="recent-card-icon type-android">🤖</div>
+                            <div class="recent-card-info">
+                                <div class="recent-card-name">Android 商城应用</div>
+                                <div class="recent-card-time">🕒 昨天 下午 3:20</div>
+                            </div>
+                        </div>
+                        <div class="recent-card-path">d:\projects\ShopApp</div>
+                        <div class="recent-card-tags">
+                            <span class="tag tag-teal">Android</span>
+                            <span class="tag tag-orange">Kotlin</span>
+                        </div>
+                        <div class="recent-card-meta">
+                            <span>启动 89 次</span>
+                            <div class="recent-card-actions">
+                                <div class="action-btn-favorite" title="收藏" onclick="toggleFavorite(this)">☆</div>
+                                <div class="action-btn" title="打开">📂</div>
+                                <div class="action-btn" title="编辑">✏️</div>
+                                <div class="action-btn" title="设置" onclick="openWorkspaceSettings()">⚙</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Card - Workspace -->
+                    <div class="recent-card-item">
+                        <div class="recent-card-header">
+                            <div class="recent-card-icon type-workspace">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 22px; height: 22px;">
+                                    <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                                    <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                    <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                    <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                                </svg>
+                            </div>
+                            <div class="recent-card-info">
+                                <div class="recent-card-name">Android 开发空间</div>
+                                <div class="recent-card-time">🕒 3 小时前</div>
+                            </div>
+                        </div>
+                        <div class="recent-card-path">包含 4 个项目</div>
+                        <div class="recent-card-tags">
+                            <span class="tag tag-teal">Android</span>
+                            <span class="tag tag-blue">.NET</span>
+                            <span class="tag tag-purple">工作空间</span>
+                        </div>
+                        <div class="recent-card-meta">
+                            <span>启动 45 次</span>
+                            <div class="recent-card-actions">
+                                <div class="action-btn-favorite active" title="取消收藏" onclick="toggleFavorite(this)">★</div>
+                                <div class="action-btn" title="打开">📂</div>
+                                <div class="action-btn" title="编辑">✏️</div>
+                                <div class="action-btn" title="设置" onclick="openWorkspaceSettings()">⚙</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Card 3 -->
+                    <div class="recent-card-item">
+                        <div class="recent-card-header">
+                            <div class="recent-card-icon type-cpp">C++</div>
+                            <div class="recent-card-info">
+                                <div class="recent-card-name">图像处理引擎</div>
+                                <div class="recent-card-time">🕒 2 天前</div>
+                            </div>
+                        </div>
+                        <div class="recent-card-path">d:\dev\ImageProcessor</div>
+                        <div class="recent-card-tags">
+                            <span class="tag tag-blue">C++</span>
+                            <span class="tag tag-purple">图形</span>
+                        </div>
+                        <div class="recent-card-meta">
+                            <span>启动 42 次</span>
+                            <div class="recent-card-actions">
+                                <div class="action-btn-favorite" title="收藏" onclick="toggleFavorite(this)">☆</div>
+                                <div class="action-btn" title="打开">📂</div>
+                                <div class="action-btn" title="编辑">✏️</div>
+                                <div class="action-btn" title="设置" onclick="openEditModal()">⚙</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Card 4 -->
+                    <div class="recent-card-item">
+                        <div class="recent-card-header">
+                            <div class="recent-card-icon type-tool">🔧</div>
+                            <div class="recent-card-info">
+                                <div class="recent-card-name">代码生成器</div>
+                                <div class="recent-card-time">🕒 3 天前</div>
+                            </div>
+                        </div>
+                        <div class="recent-card-path">d:\tools\CodeGenerator</div>
+                        <div class="recent-card-tags">
+                            <span class="tag tag-orange">CLI</span>
+                            <span class="tag tag-blue">工具</span>
+                        </div>
+                        <div class="recent-card-meta">
+                            <span>启动 67 次</span>
+                            <div class="recent-card-actions">
+                                <div class="action-btn-favorite" title="收藏" onclick="toggleFavorite(this)">☆</div>
+                                <div class="action-btn" title="打开">📂</div>
+                                <div class="action-btn" title="编辑">✏️</div>
+                                <div class="action-btn" title="设置" onclick="openEditModal()">⚙</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- List View -->
+                <div class="recent-list">
+                    <!-- Recent Item 1 -->
+                    <div class="recent-item-card">
+                        <div class="recent-item-icon type-vs">VS</div>
+                        <div class="recent-item-details">
+                            <div class="recent-item-name">ProjectHub 主程序</div>
+                            <div class="recent-item-meta">
+                                <span class="recent-item-path">d:\work\ProjectHub</span>
+                                <span>🕒 2 小时前</span>
+                            </div>
+                        </div>
+                        <div class="recent-item-tags">
+                            <span class="tag tag-blue">.NET</span>
+                            <span class="tag tag-green">WPF</span>
+                            <span class="tag tag-purple">MVVM</span>
+                        </div>
+                        <div class="recent-item-actions">
+                            <div class="action-btn-favorite active" title="取消收藏" onclick="toggleFavorite(this)">★</div>
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="设置" onclick="openEditModal()">⚙</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Item 2 -->
+                    <div class="recent-item-card">
+                        <div class="recent-item-icon type-android">🤖</div>
+                        <div class="recent-item-details">
+                            <div class="recent-item-name">Android 商城应用</div>
+                            <div class="recent-item-meta">
+                                <span class="recent-item-path">d:\projects\ShopApp</span>
+                                <span>🕒 昨天 下午 3:20</span>
+                            </div>
+                        </div>
+                        <div class="recent-item-tags">
+                            <span class="tag tag-teal">Android</span>
+                            <span class="tag tag-orange">Kotlin</span>
+                        </div>
+                        <div class="recent-item-actions">
+                            <div class="action-btn-favorite" title="收藏" onclick="toggleFavorite(this)">☆</div>
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="设置" onclick="openEditModal()">⚙</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Item 3 -->
+                    <div class="recent-item-card">
+                        <div class="recent-item-icon type-cpp">C++</div>
+                        <div class="recent-item-details">
+                            <div class="recent-item-name">图像处理引擎</div>
+                            <div class="recent-item-meta">
+                                <span class="recent-item-path">d:\dev\ImageProcessor</span>
+                                <span>🕒 2 天前</span>
+                            </div>
+                        </div>
+                        <div class="recent-item-tags">
+                            <span class="tag tag-blue">C++</span>
+                            <span class="tag tag-purple">图形</span>
+                        </div>
+                        <div class="recent-item-actions">
+                            <div class="action-btn-favorite" title="收藏" onclick="toggleFavorite(this)">☆</div>
+                            <div class="action-btn" title="打开">📂</div>
+                            <div class="action-btn" title="编辑">✏️</div>
+                            <div class="action-btn" title="设置" onclick="openEditModal()">⚙</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <!-- Card View (Default) -->
-            <div class="recent-grid">
-                <!-- Recent Card 1 -->
-                <div class="recent-card-item">
-                    <div class="recent-card-header">
-                        <div class="recent-card-icon type-vs">VS</div>
-                        <div class="recent-card-info">
-                            <div class="recent-card-name">ProjectHub 主程序</div>
-                            <div class="recent-card-time">🕒 2 小时前</div>
-                        </div>
-                    </div>
-                    <div class="recent-card-path">d:\work\ProjectHub</div>
-                    <div class="recent-card-tags">
-                        <span class="tag tag-blue">.NET</span>
-                        <span class="tag tag-green">WPF</span>
-                        <span class="tag tag-purple">MVVM</span>
-                    </div>
-                    <div class="recent-card-meta">
-                        <span>启动 156 次</span>
-                        <div class="recent-card-actions">
-                            <div class="action-btn" title="打开">📂</div>
-                            <div class="action-btn" title="编辑">✏️</div>
-                            <div class="action-btn" title="更多">⋮</div>
-                        </div>
+            <!-- Tag Management View -->
+            <div class="content-view tag-management-view" id="tagManagementView">
+                <div class="content-header">
+                    <h1 class="content-title">🏷️ 标签管理</h1>
+                    <div class="tag-management-actions">
+                        <button class="btn btn-secondary" onclick="exportTags()">导出标签</button>
+                        <button class="btn btn-secondary" onclick="importTags()">导入标签</button>
+                        <button class="btn btn-primary" onclick="refreshTagList()">刷新</button>
                     </div>
                 </div>
                 
-                <!-- Recent Card 2 -->
-                <div class="recent-card-item">
-                    <div class="recent-card-header">
-                        <div class="recent-card-icon type-android">🤖</div>
-                        <div class="recent-card-info">
-                            <div class="recent-card-name">Android 商城应用</div>
-                            <div class="recent-card-time">🕒 昨天 下午 3:20</div>
+                <div class="tag-management-container">
+                    <!-- Tag Creation Panel -->
+                    <div class="tag-creation-panel">
+                        <h3 class="tag-creation-title">+ 创建新标签</h3>
+                        <div class="tag-creation-form">
+                            <div class="form-group">
+                                <label class="form-label">标签名称</label>
+                                <input type="text" class="form-input" id="newTagName" placeholder="例如：.NET、Android、Web...">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">标签颜色</label>
+                                <div class="color-picker" id="colorPicker">
+                                    <div class="color-option selected" style="background-color: var(--tag-blue);" data-color="tag-blue" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-green);" data-color="tag-green" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-orange);" data-color="tag-orange" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-purple);" data-color="tag-purple" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-red);" data-color="tag-red" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-teal);" data-color="tag-teal" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-yellow);" data-color="tag-yellow" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-cyan);" data-color="tag-cyan" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-pink);" data-color="tag-pink" onclick="selectColor(this)"></div>
+                                    <div class="color-option" style="background-color: var(--tag-brown);" data-color="tag-brown" onclick="selectColor(this)"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <button class="btn btn-primary" onclick="createNewTag()">创建标签</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="recent-card-path">d:\projects\ShopApp</div>
-                    <div class="recent-card-tags">
-                        <span class="tag tag-teal">Android</span>
-                        <span class="tag tag-orange">Kotlin</span>
-                    </div>
-                    <div class="recent-card-meta">
-                        <span>启动 89 次</span>
-                        <div class="recent-card-actions">
-                            <div class="action-btn" title="打开">📂</div>
-                            <div class="action-btn" title="编辑">✏️</div>
-                            <div class="action-btn" title="更多">⋮</div>
+                    
+                    <!-- Tag List Panel -->
+                    <div class="tag-list-container">
+                        <h3 class="tag-list-title">现有标签 (8)</h3>
+                        <div class="tag-list" id="tagList">
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-blue"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">.NET</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">28 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-green"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">WPF</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">15 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-orange"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">Kotlin</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">12 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-purple"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">MVVM</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">9 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-red"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">个人项目</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">22 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-teal"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">Android</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">18 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-yellow"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">C++</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">7 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
+                            
+                            <div class="tag-list-item">
+                                <div class="tag-list-color tag-cyan"></div>
+                                <div class="tag-list-info">
+                                    <div class="tag-list-name">Web</div>
+                                </div>
+                                <div class="tag-list-meta">
+                                    <span class="tag-list-count">14 个项目</span>
+                                </div>
+                                <div class="tag-list-actions">
+                                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Card 3 -->
-                <div class="recent-card-item">
-                    <div class="recent-card-header">
-                        <div class="recent-card-icon type-cpp">C++</div>
-                        <div class="recent-card-info">
-                            <div class="recent-card-name">图像处理引擎</div>
-                            <div class="recent-card-time">🕒 2 天前</div>
-                        </div>
-                    </div>
-                    <div class="recent-card-path">d:\dev\ImageProcessor</div>
-                    <div class="recent-card-tags">
-                        <span class="tag tag-blue">C++</span>
-                        <span class="tag tag-purple">图形</span>
-                    </div>
-                    <div class="recent-card-meta">
-                        <span>启动 42 次</span>
-                        <div class="recent-card-actions">
-                            <div class="action-btn" title="打开">📂</div>
-                            <div class="action-btn" title="编辑">✏️</div>
-                            <div class="action-btn" title="更多">⋮</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Card 4 -->
-                <div class="recent-card-item">
-                    <div class="recent-card-header">
-                        <div class="recent-card-icon type-tool">🔧</div>
-                        <div class="recent-card-info">
-                            <div class="recent-card-name">代码生成器</div>
-                            <div class="recent-card-time">🕒 3 天前</div>
-                        </div>
-                    </div>
-                    <div class="recent-card-path">d:\tools\CodeGenerator</div>
-                    <div class="recent-card-tags">
-                        <span class="tag tag-orange">CLI</span>
-                        <span class="tag tag-blue">工具</span>
-                    </div>
-                    <div class="recent-card-meta">
-                        <span>启动 67 次</span>
-                        <div class="recent-card-actions">
-                            <div class="action-btn" title="打开">📂</div>
-                            <div class="action-btn" title="编辑">✏️</div>
-                            <div class="action-btn" title="更多">⋮</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Card 5 -->
-                <div class="recent-card-item">
-                    <div class="recent-card-header">
-                        <div class="recent-card-icon type-vs">VS</div>
-                        <div class="recent-card-info">
-                            <div class="recent-card-name">WPF 控件库</div>
-                            <div class="recent-card-time">🕒 上周</div>
-                        </div>
-                    </div>
-                    <div class="recent-card-path">d:\projects\WpfControls</div>
-                    <div class="recent-card-tags">
-                        <span class="tag tag-blue">.NET</span>
-                        <span class="tag tag-green">WPF</span>
-                    </div>
-                    <div class="recent-card-meta">
-                        <span>启动 34 次</span>
-                        <div class="recent-card-actions">
-                            <div class="action-btn" title="打开">📂</div>
-                            <div class="action-btn" title="编辑">✏️</div>
-                            <div class="action-btn" title="更多">⋮</div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Recent Card 6 -->
-                <div class="recent-card-item">
-                    <div class="recent-card-header">
-                        <div class="recent-card-icon type-document">📄</div>
-                        <div class="recent-card-info">
-                            <div class="recent-card-name">技术文档库</div>
-                            <div class="recent-card-time">🕒 上周</div>
-                        </div>
-                    </div>
-                    <div class="recent-card-path">d:\docs\TechnicalDocs</div>
-                    <div class="recent-card-tags">
-                        <span class="tag tag-blue">文档</span>
-                        <span class="tag tag-purple">Markdown</span>
-                    </div>
-                    <div class="recent-card-meta">
-                        <span>启动 23 次</span>
-                        <div class="recent-card-actions">
-                            <div class="action-btn" title="打开">📂</div>
-                            <div class="action-btn" title="编辑">✏️</div>
-                            <div class="action-btn" title="更多">⋮</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- List View -->
-            <div class="recent-list">
-                <!-- Recent Item 1 -->
-                <div class="recent-item-card">
-                    <div class="recent-item-icon type-vs">VS</div>
-                    <div class="recent-item-details">
-                        <div class="recent-item-name">ProjectHub 主程序</div>
-                        <div class="recent-item-meta">
-                            <span class="recent-item-path">d:\work\ProjectHub</span>
-                            <span>🕒 2 小时前</span>
-                        </div>
-                    </div>
-                    <div class="recent-item-tags">
-                        <span class="tag tag-blue">.NET</span>
-                        <span class="tag tag-green">WPF</span>
-                        <span class="tag tag-purple">MVVM</span>
-                    </div>
-                    <div class="recent-item-actions">
-                        <div class="action-btn" title="打开">📂</div>
-                        <div class="action-btn" title="编辑">✏️</div>
-                        <div class="action-btn" title="更多">⋮</div>
-                    </div>
-                </div>
-                
-                <!-- Recent Item 2 -->
-                <div class="recent-item-card">
-                    <div class="recent-item-icon type-android">🤖</div>
-                    <div class="recent-item-details">
-                        <div class="recent-item-name">Android 商城应用</div>
-                        <div class="recent-item-meta">
-                            <span class="recent-item-path">d:\projects\ShopApp</span>
-                            <span>🕒 昨天 下午 3:20</span>
-                        </div>
-                    </div>
-                    <div class="recent-item-tags">
-                        <span class="tag tag-teal">Android</span>
-                        <span class="tag tag-orange">Kotlin</span>
-                    </div>
-                    <div class="recent-item-actions">
-                        <div class="action-btn" title="打开">📂</div>
-                        <div class="action-btn" title="编辑">✏️</div>
-                        <div class="action-btn" title="更多">⋮</div>
-                    </div>
-                </div>
-                
-                <!-- Recent Item 3 -->
-                <div class="recent-item-card">
-                    <div class="recent-item-icon type-cpp">C++</div>
-                    <div class="recent-item-details">
-                        <div class="recent-item-name">图像处理引擎</div>
-                        <div class="recent-item-meta">
-                            <span class="recent-item-path">d:\dev\ImageProcessor</span>
-                            <span>🕒 2 天前</span>
-                        </div>
-                    </div>
-                    <div class="recent-item-tags">
-                        <span class="tag tag-blue">C++</span>
-                        <span class="tag tag-purple">图形</span>
-                    </div>
-                    <div class="recent-item-actions">
-                        <div class="action-btn" title="打开">📂</div>
-                        <div class="action-btn" title="编辑">✏️</div>
-                        <div class="action-btn" title="更多">⋮</div>
-                    </div>
-                </div>
-                
-                <!-- Recent Item 4 -->
-                <div class="recent-item-card">
-                    <div class="recent-item-icon type-tool">🔧</div>
-                    <div class="recent-item-details">
-                        <div class="recent-item-name">代码生成器</div>
-                        <div class="recent-item-meta">
-                            <span class="recent-item-path">d:\tools\CodeGenerator</span>
-                            <span>🕒 3 天前</span>
-                        </div>
-                    </div>
-                    <div class="recent-item-tags">
-                        <span class="tag tag-orange">CLI</span>
-                        <span class="tag tag-blue">工具</span>
-                    </div>
-                    <div class="recent-item-actions">
-                        <div class="action-btn" title="打开">📂</div>
-                        <div class="action-btn" title="编辑">✏️</div>
-                        <div class="action-btn" title="更多">⋮</div>
-                    </div>
-                </div>
-                
-                <!-- Recent Item 5 -->
-                <div class="recent-item-card">
-                    <div class="recent-item-icon type-vs">VS</div>
-                    <div class="recent-item-details">
-                        <div class="recent-item-name">WPF 控件库</div>
-                        <div class="recent-item-meta">
-                            <span class="recent-item-path">d:\projects\WpfControls</span>
-                            <span>🕒 上周</span>
-                        </div>
-                    </div>
-                    <div class="recent-item-tags">
-                        <span class="tag tag-blue">.NET</span>
-                        <span class="tag tag-green">WPF</span>
-                    </div>
-                    <div class="recent-item-actions">
-                        <div class="action-btn" title="打开">📂</div>
-                        <div class="action-btn" title="编辑">✏️</div>
-                        <div class="action-btn" title="更多">⋮</div>
                     </div>
                 </div>
             </div>
@@ -1315,8 +2224,11 @@
             <div class="status-item">
                 <span>🚀 8 个工作空间</span>
             </div>
+            <div class="status-item">
+                <span>🏷️ 8 个标签分类</span>
+            </div>
             <div class="status-item" style="margin-left: auto;">
-                <span>🏷️ 24 个标签</span>
+                <span>标签项目: 156</span>
             </div>
             <div class="status-item">
                 <span>中文 (简体)</span>
@@ -1328,54 +2240,142 @@
     <div class="modal-overlay" id="workspaceSettingsModal">
         <div class="modal-dialog">
             <div class="modal-header">
-                <h3 class="modal-title">⚙️ 设置启动项目 - Android 开发空间</h3>
+                <h3 class="modal-title">⚙️ 设置启动项目</h3>
                 <button class="modal-close" onclick="closeWorkspaceSettings()">×</button>
             </div>
             <div class="modal-body">
-                <p style="margin-bottom: 16px; color: var(--text-secondary); font-size: 13px;">
-                    勾选将在打开工作空间时自动启动的项目：
+                <p class="modal-description">
+                    勾选将在打开工作空间时自动启动的项目，点击 × 可移除项目：
                 </p>
-                <div class="project-checkbox-list">
-                    <label class="project-checkbox-item">
+                <div class="project-checkbox-list" id="workspaceProjectList">
+                    <div class="workspace-project-item">
                         <input type="checkbox" checked>
+                        <div class="project-checkbox-icon type-android">🤖</div>
                         <div class="project-checkbox-info">
                             <div class="project-checkbox-name">Android 商城应用</div>
                             <div class="project-checkbox-path">d:\projects\ShopApp\build.gradle</div>
                         </div>
-                        <div class="project-checkbox-type">Android</div>
-                    </label>
+                        <button class="workspace-project-delete" onclick="removeWorkspaceProject(this)" title="移除">×</button>
+                    </div>
                     
-                    <label class="project-checkbox-item">
+                    <div class="workspace-project-item">
                         <input type="checkbox" checked>
+                        <div class="project-checkbox-icon type-vs">VS</div>
                         <div class="project-checkbox-info">
                             <div class="project-checkbox-name">后端 API 服务</div>
                             <div class="project-checkbox-path">d:\projects\ShopApi\ShopApi.sln</div>
                         </div>
-                        <div class="project-checkbox-type">VS</div>
-                    </label>
+                        <button class="workspace-project-delete" onclick="removeWorkspaceProject(this)" title="移除">×</button>
+                    </div>
                     
-                    <label class="project-checkbox-item">
+                    <div class="workspace-project-item">
                         <input type="checkbox">
+                        <div class="project-checkbox-icon type-web">🌐</div>
                         <div class="project-checkbox-info">
                             <div class="project-checkbox-name">管理后台前端</div>
                             <div class="project-checkbox-path">d:\projects\ShopAdmin\package.json</div>
                         </div>
-                        <div class="project-checkbox-type">Web</div>
-                    </label>
+                        <button class="workspace-project-delete" onclick="removeWorkspaceProject(this)" title="移除">×</button>
+                    </div>
                     
-                    <label class="project-checkbox-item">
+                    <div class="workspace-project-item">
                         <input type="checkbox">
+                        <div class="project-checkbox-icon type-doc">📄</div>
                         <div class="project-checkbox-info">
                             <div class="project-checkbox-name">接口文档</div>
                             <div class="project-checkbox-path">d:\projects\Docs\API 文档.md</div>
                         </div>
-                        <div class="project-checkbox-type">文档</div>
-                    </label>
+                        <button class="workspace-project-delete" onclick="removeWorkspaceProject(this)" title="移除">×</button>
+                    </div>
+                    
+                    <!-- Add Project Button -->
+                    <div class="add-project-btn" onclick="addWorkspaceProject()">
+                        <span class="add-icon">+</span>
+                        <span>添加项目</span>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="closeWorkspaceSettings()" style="padding: 8px 16px; font-size: 13px;">取消</button>
-                <button class="btn btn-primary" onclick="saveWorkspaceSettings()" style="padding: 8px 16px; font-size: 13px;">保存设置</button>
+                <button class="btn btn-secondary" onclick="closeWorkspaceSettings()">取消</button>
+                <button class="btn btn-primary" onclick="saveWorkspaceSettings()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Edit Project Modal -->
+    <div class="modal-overlay" id="editProjectModal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h3 class="modal-title">✏️ 编辑项目</h3>
+                <button class="modal-close" onclick="closeEditModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">项目名称</label>
+                    <input type="text" class="form-input" id="editProjectName" value="ProjectHub 主程序" placeholder="输入项目名称">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">项目图标</label>
+                    <div class="icon-selector" id="iconSelector">
+                        <div class="icon-option type-vs selected" data-type="vs">VS</div>
+                        <div class="icon-option type-android" data-type="android">🤖</div>
+                        <div class="icon-option type-cpp" data-type="cpp">C++</div>
+                        <div class="icon-option type-tool" data-type="tool">🔧</div>
+                        <div class="icon-option type-doc" data-type="doc">📄</div>
+                        <div class="icon-option type-folder" data-type="folder">📁</div>
+                        <div class="icon-option type-web" data-type="web">🌐</div>
+                        <div class="icon-option type-workspace" data-type="workspace">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 18px; height: 18px;">
+                                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">标签</label>
+                    <div class="tag-editor" id="tagEditor">
+                        <span class="tag-editor-item tag-blue">
+                            .NET
+                            <span class="tag-editor-remove" onclick="removeTag(this)">×</span>
+                        </span>
+                        <span class="tag-editor-item tag-green">
+                            WPF
+                            <span class="tag-editor-remove" onclick="removeTag(this)">×</span>
+                        </span>
+                        <span class="tag-editor-item tag-purple">
+                            MVVM
+                            <span class="tag-editor-remove" onclick="removeTag(this)">×</span>
+                        </span>
+                        <input type="text" class="tag-editor-input" id="tagInput" placeholder="输入标签...">
+                    </div>
+                    <div class="tag-suggestions">
+                        <span class="tag-suggestion" onclick="addTag('C#', 'tag-blue')">+ C#</span>
+                        <span class="tag-suggestion" onclick="addTag('桌面应用', 'tag-teal')">+ 桌面应用</span>
+                        <span class="tag-suggestion" onclick="addTag('开源', 'tag-orange')">+ 开源</span>
+                        <span class="tag-suggestion" onclick="addTag('个人项目', 'tag-red')">+ 个人项目</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">启动程序</label>
+                    <div class="file-path-input-group">
+                        <input type="text" class="form-input" id="launcherPath" placeholder="留空使用默认程序打开">
+                        <button class="btn-browse" onclick="browseLauncher()">浏览</button>
+                    </div>
+                    <div class="launcher-default">
+                        <span class="launcher-default-icon">ℹ</span>
+                        <span>默认: Visual Studio 2022 (devenv.exe)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveEditProject()">保存</button>
             </div>
         </div>
     </div>
@@ -1388,7 +2388,9 @@
             treeItems.forEach(item => {
                 item.addEventListener('click', function(e) {
                     // Don't trigger selection when clicking add button
-                    if (e.target.classList.contains('tree-add-btn')) {
+                    if (e.target.classList.contains('tree-add-btn') || 
+                        e.target.classList.contains('tree-settings-btn') ||
+                        e.target.classList.contains('tree-delete-btn')) {
                         return;
                     }
                     
@@ -1501,13 +2503,73 @@
                     }
                 });
             });
+            
+            // Initialize color picker selection
+            const colorOptions = document.querySelectorAll('.color-option');
+            if (colorOptions.length > 0) {
+                colorOptions[0].classList.add('selected');
+            }
+            
+            // Initialize tag management
+            initializeTagManagement();
+        });
+        
+        // Dropdown Menu Functions
+        function toggleDropdown(btn) {
+            const wrapper = btn.closest('.action-btn-wrapper');
+            const dropdown = wrapper.querySelector('.action-dropdown');
+            
+            // Close all other dropdowns first
+            document.querySelectorAll('.action-dropdown.visible').forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('visible');
+                }
+            });
+            
+            dropdown.classList.toggle('visible');
+            event.stopPropagation();
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-btn-wrapper')) {
+                document.querySelectorAll('.action-dropdown.visible').forEach(d => {
+                    d.classList.remove('visible');
+                });
+            }
         });
         
         // Workspace Settings Modal Functions
         function openWorkspaceSettings() {
+            // Close any open dropdowns first
+            document.querySelectorAll('.action-dropdown.visible').forEach(d => {
+                d.classList.remove('visible');
+            });
+            
             const modal = document.getElementById('workspaceSettingsModal');
             if (modal) {
                 modal.classList.add('visible');
+            }
+        }
+        
+        // Delete folder function
+        function deleteFolder(btn) {
+            const treeItem = btn.closest('.tree-item');
+            const folderName = treeItem.querySelector('.tree-label').textContent;
+            
+            if (confirm(`确定要删除文件夹 "${folderName}" 吗？\n\n注意：删除文件夹不会删除其中的项目，项目将移至上一级。`)) {
+                treeItem.style.opacity = '0';
+                treeItem.style.transform = 'translateX(-20px)';
+                treeItem.style.transition = 'all 0.2s';
+                
+                setTimeout(() => {
+                    // 如果有子文件夹容器，也一起移除
+                    const nextSibling = treeItem.nextElementSibling;
+                    if (nextSibling && nextSibling.classList.contains('tree-children')) {
+                        nextSibling.remove();
+                    }
+                    treeItem.remove();
+                }, 200);
             }
         }
         
@@ -1520,7 +2582,7 @@
         
         function saveWorkspaceSettings() {
             // Get all checked project IDs
-            const checkboxes = document.querySelectorAll('#workspaceSettingsModal input[type="checkbox"]');
+            const checkboxes = document.querySelectorAll('#workspaceProjectList .workspace-project-item input[type="checkbox"]');
             const enabledProjectIds = [];
             
             checkboxes.forEach((cb, index) => {
@@ -1539,11 +2601,413 @@
             closeWorkspaceSettings();
         }
         
+        // Remove project from workspace
+        function removeWorkspaceProject(btn) {
+            const item = btn.closest('.workspace-project-item');
+            const projectName = item.querySelector('.project-checkbox-name').textContent;
+            
+            if (confirm(`确定要从工作空间中移除 "${projectName}" 吗？`)) {
+                item.style.opacity = '0';
+                item.style.transform = 'translateX(20px)';
+                item.style.transition = 'all 0.2s';
+                
+                setTimeout(() => {
+                    item.remove();
+                }, 200);
+            }
+        }
+        
+        // Sample projects for adding
+        const availableProjects = [
+            { name: '数据分析工具', path: 'd:\\projects\\DataAnalyzer\\DataAnalyzer.sln', type: 'vs', icon: 'VS' },
+            { name: 'iOS 客户端', path: 'd:\\projects\\iOSClient\\Podfile', type: 'web', icon: '🌐' },
+            { name: 'Python 脚本集', path: 'd:\\scripts\\main.py', type: 'tool', icon: '🔧' },
+            { name: '设计资源库', path: 'd:\\design\\Resources', type: 'folder', icon: '📁' },
+            { name: '测试用例文档', path: 'd:\\docs\\TestCase.xlsx', type: 'doc', icon: '📄' },
+        ];
+        
+        let projectIndex = 0;
+        
+        // Add project to workspace
+        function addWorkspaceProject() {
+            const list = document.getElementById('workspaceProjectList');
+            const addBtn = list.querySelector('.add-project-btn');
+            
+            // 获取一个示例项目
+            const project = availableProjects[projectIndex % availableProjects.length];
+            projectIndex++;
+            
+            const item = document.createElement('div');
+            item.className = 'workspace-project-item';
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(-10px)';
+            item.innerHTML = `
+                <input type="checkbox" checked>
+                <div class="project-checkbox-icon type-${project.type}">${project.icon}</div>
+                <div class="project-checkbox-info">
+                    <div class="project-checkbox-name">${project.name}</div>
+                    <div class="project-checkbox-path">${project.path}</div>
+                </div>
+                <button class="workspace-project-delete" onclick="removeWorkspaceProject(this)" title="移除">×</button>
+            `;
+            
+            // 插入到添加按钮之前
+            list.insertBefore(item, addBtn);
+            
+            // 动画效果
+            setTimeout(() => {
+                item.style.transition = 'all 0.2s';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, 10);
+        }
+        
+        // Edit Project Modal Functions
+        function openEditModal() {
+            const modal = document.getElementById('editProjectModal');
+            if (modal) {
+                modal.classList.add('visible');
+            }
+        }
+        
+        function closeEditModal() {
+            const modal = document.getElementById('editProjectModal');
+            if (modal) {
+                modal.classList.remove('visible');
+            }
+        }
+        
+        function saveEditProject() {
+            const name = document.getElementById('editProjectName').value;
+            const selectedIcon = document.querySelector('.icon-option.selected');
+            const iconType = selectedIcon ? selectedIcon.dataset.type : 'vs';
+            
+            const tags = [];
+            document.querySelectorAll('.tag-editor-item').forEach(tagEl => {
+                tags.push(tagEl.textContent.replace('×', '').trim());
+            });
+            
+            const launcherPath = document.getElementById('launcherPath').value;
+            
+            console.log('Saving project:', { name, iconType, tags, launcherPath });
+            alert('项目已保存！');
+            
+            closeEditModal();
+        }
+        
+        // Browse Launcher Function
+        function browseLauncher() {
+            // 在实际应用中，这里会打开文件选择对话框
+            // 由于是原型，模拟选择文件
+            const input = document.getElementById('launcherPath');
+            const defaultPaths = [
+                'C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\Common7\\IDE\\devenv.exe',
+                'C:\\Program Files\\Microsoft Visual Studio\\2019\\Professional\\Common7\\IDE\\devenv.exe',
+                'C:\\Program Files\\JetBrains\\IntelliJ IDEA\\bin\\idea64.exe',
+                ''
+            ];
+            
+            // 模拟选择
+            const currentPath = input.value;
+            const currentIndex = defaultPaths.indexOf(currentPath);
+            const nextIndex = (currentIndex + 1) % defaultPaths.length;
+            
+            if (defaultPaths[nextIndex]) {
+                input.value = defaultPaths[nextIndex];
+            } else {
+                input.value = '';
+            }
+        }
+        
+        // Toggle Favorite Function
+        function toggleFavorite(el) {
+            const isActive = el.classList.contains('active');
+            
+            if (isActive) {
+                el.classList.remove('active');
+                el.textContent = '☆';
+                el.title = '收藏';
+                console.log('Removed from favorites');
+            } else {
+                el.classList.add('active');
+                el.textContent = '★';
+                el.title = '取消收藏';
+                console.log('Added to favorites');
+            }
+        }
+        
+        // Icon Selector
+        document.addEventListener('DOMContentLoaded', function() {
+            const iconOptions = document.querySelectorAll('.icon-option');
+            iconOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    iconOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+        });
+        
+        // Tag Editor Functions
+        function addTag(tagName, colorClass) {
+            const tagEditor = document.getElementById('tagEditor');
+            const input = document.getElementById('tagInput');
+            
+            // Check if tag already exists
+            const existingTags = tagEditor.querySelectorAll('.tag-editor-item');
+            for (let tag of existingTags) {
+                if (tag.textContent.replace('×', '').trim() === tagName) {
+                    return;
+                }
+            }
+            
+            const tagEl = document.createElement('span');
+            tagEl.className = `tag-editor-item ${colorClass}`;
+            tagEl.innerHTML = `${tagName}<span class="tag-editor-remove" onclick="removeTag(this)">×</span>`;
+            
+            tagEditor.insertBefore(tagEl, input);
+        }
+        
+        function removeTag(el) {
+            el.parentElement.remove();
+        }
+        
+        // Tag input handler
+        document.addEventListener('DOMContentLoaded', function() {
+            const tagInput = document.getElementById('tagInput');
+            if (tagInput) {
+                tagInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && this.value.trim()) {
+                        e.preventDefault();
+                        const colors = ['tag-blue', 'tag-green', 'tag-orange', 'tag-purple', 'tag-red', 'tag-teal', 'tag-yellow', 'tag-cyan', 'tag-pink', 'tag-brown'];
+                        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                        addTag(this.value.trim(), randomColor);
+                        this.value = '';
+                    }
+                });
+            }
+        });
+        
+        // View Switching Functions
+        function showRecentView() {
+            const recentView = document.getElementById('recentView');
+            const tagManagementView = document.getElementById('tagManagementView');
+            
+            recentView.classList.add('active');
+            tagManagementView.classList.remove('active');
+            
+            // Update tree selection
+            document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
+            document.querySelector('.tree-item[onclick="showRecentView()"]').classList.add('selected');
+        }
+        
+        function showAllProjectsView() {
+            const recentView = document.getElementById('recentView');
+            const tagManagementView = document.getElementById('tagManagementView');
+            
+            recentView.classList.add('active');
+            tagManagementView.classList.remove('active');
+            
+            // Update content title
+            const title = document.querySelector('.content-title');
+            if (title) {
+                title.textContent = "📦 所有项目";
+            }
+            
+            // Update tree selection
+            document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
+            document.querySelector('.tree-item[onclick="showAllProjectsView()"]').classList.add('selected');
+        }
+        
+        function showTagManagementView() {
+            const recentView = document.getElementById('recentView');
+            const tagManagementView = document.getElementById('tagManagementView');
+            
+            recentView.classList.remove('active');
+            tagManagementView.classList.add('active');
+            
+            // Update tree selection
+            document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
+            document.querySelector('.tree-item[onclick="showTagManagementView()"]').classList.add('selected');
+        }
+        
+        // Tag Management Functions
+        function initializeTagManagement() {
+            // Initialize with default selected color
+            const colorOptions = document.querySelectorAll('.color-option');
+            if (colorOptions.length > 0) {
+                colorOptions[0].classList.add('selected');
+            }
+        }
+        
+        function selectColor(el) {
+            const colorOptions = document.querySelectorAll('.color-option');
+            colorOptions.forEach(option => option.classList.remove('selected'));
+            el.classList.add('selected');
+        }
+        
+        function createNewTag() {
+            const nameInput = document.getElementById('newTagName');
+            const selectedColor = document.querySelector('.color-option.selected');
+            
+            if (!nameInput.value.trim()) {
+                alert('请输入标签名称');
+                nameInput.focus();
+                return;
+            }
+            
+            if (!selectedColor) {
+                alert('请选择标签颜色');
+                return;
+            }
+            
+            const colorClass = selectedColor.dataset.color;
+            const tagName = nameInput.value.trim();
+            
+            // Check if tag already exists
+            const existingTags = document.querySelectorAll('#tagList .tag-list-name');
+            for (let tag of existingTags) {
+                if (tag.textContent === tagName) {
+                    alert(`标签 "${tagName}" 已存在`);
+                    return;
+                }
+            }
+            
+            const tagList = document.getElementById('tagList');
+            
+            const tagItem = document.createElement('div');
+            tagItem.className = 'tag-list-item';
+            tagItem.innerHTML = `
+                <div class="tag-list-color ${colorClass}"></div>
+                <div class="tag-list-info">
+                    <div class="tag-list-name">${tagName}</div>
+                </div>
+                <div class="tag-list-meta">
+                    <span class="tag-list-count">0 个项目</span>
+                </div>
+                <div class="tag-list-actions">
+                    <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
+                    <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
+                </div>
+            `;
+            
+            tagList.appendChild(tagItem);
+            
+            // Clear input
+            nameInput.value = '';
+            
+            // Update tag count
+            updateTagCount();
+            
+            // Show success message
+            alert(`标签 "${tagName}" 已创建`);
+        }
+        
+        function editTag(btn) {
+            const tagItem = btn.closest('.tag-list-item');
+            const nameEl = tagItem.querySelector('.tag-list-name');
+            const colorEl = tagItem.querySelector('.tag-list-color');
+            const currentColor = Array.from(colorEl.classList).find(cls => cls.startsWith('tag-'));
+            
+            const newName = prompt('修改标签名称:', nameEl.textContent);
+            if (newName && newName.trim()) {
+                nameEl.textContent = newName.trim();
+            }
+            
+            // Show color picker for editing color
+            const colorOptions = ['tag-blue', 'tag-green', 'tag-orange', 'tag-purple', 'tag-red', 'tag-teal', 'tag-yellow', 'tag-cyan', 'tag-pink', 'tag-brown'];
+            const colorNames = ['蓝色', '绿色', '橙色', '紫色', '红色', '青色', '黄色', '浅蓝', '粉色', '棕色'];
+            
+            let colorPrompt = '选择新颜色:\n';
+            colorOptions.forEach((color, index) => {
+                colorPrompt += `${index + 1}. ${colorNames[index]}\n`;
+            });
+            
+            const colorChoice = prompt(colorPrompt, '1');
+            if (colorChoice && !isNaN(colorChoice) && colorChoice >= 1 && colorChoice <= colorOptions.length) {
+                const newColor = colorOptions[colorChoice - 1];
+                
+                // Remove all color classes
+                colorEl.classList.remove(...colorOptions);
+                // Add new color class
+                colorEl.classList.add(newColor);
+            }
+        }
+        
+        function deleteTag(btn) {
+            const tagItem = btn.closest('.tag-list-item');
+            const tagName = tagItem.querySelector('.tag-list-name').textContent;
+            
+            if (confirm(`确定要删除标签 "${tagName}" 吗？\n\n注意：删除标签不会删除项目，但会移除项目的此标签。`)) {
+                tagItem.style.opacity = '0';
+                tagItem.style.transform = 'translateX(20px)';
+                tagItem.style.transition = 'all 0.2s';
+                
+                setTimeout(() => {
+                    tagItem.remove();
+                    updateTagCount();
+                }, 200);
+            }
+        }
+        
+        function updateTagCount() {
+            const tagItems = document.querySelectorAll('#tagList .tag-list-item');
+            const tagCount = tagItems.length;
+            
+            // Update title
+            const title = document.querySelector('.tag-list-title');
+            if (title) {
+                title.textContent = `现有标签 (${tagCount})`;
+            }
+            
+            // Update status bar
+            const tagStatsElement = document.querySelector('.status-item:nth-child(5) span');
+            if (tagStatsElement) {
+                tagStatsElement.textContent = `🏷️ ${tagCount} 个标签分类`;
+            }
+        }
+        
+        function exportTags() {
+            const tagItems = document.querySelectorAll('#tagList .tag-list-item');
+            const tags = [];
+            
+            tagItems.forEach(item => {
+                const name = item.querySelector('.tag-list-name').textContent;
+                const colorClass = Array.from(item.querySelector('.tag-list-color').classList)
+                    .find(cls => cls.startsWith('tag-'));
+                const count = item.querySelector('.tag-list-count').textContent;
+                
+                tags.push({
+                    name,
+                    color: colorClass || 'tag-blue',
+                    count: parseInt(count) || 0
+                });
+            });
+            
+            // In a real app, this would export to a file
+            console.log('Exporting tags:', tags);
+            alert(`已导出 ${tags.length} 个标签到控制台（查看开发者工具）`);
+        }
+        
+        function importTags() {
+            // In a real app, this would import from a file
+            alert('导入功能将在实际应用中实现');
+        }
+        
+        function refreshTagList() {
+            // Simulate refreshing tag list
+            alert('标签列表已刷新');
+        }
+        
         // Close modal when clicking on overlay
         document.addEventListener('click', function(e) {
-            const modal = document.getElementById('workspaceSettingsModal');
-            if (e.target === modal) {
+            const workspaceModal = document.getElementById('workspaceSettingsModal');
+            const editModal = document.getElementById('editProjectModal');
+            
+            if (e.target === workspaceModal) {
                 closeWorkspaceSettings();
+            }
+            if (e.target === editModal) {
+                closeEditModal();
             }
         });
     </script>

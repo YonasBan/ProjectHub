@@ -57,6 +57,19 @@ public class WorkSpace : BaseEntity
     /// </summary>
     public string? EnabledProjectIdsJson { get; private set; }
 
+    /// <summary>
+    /// 是否使用自定义启动顺序
+    /// false: 按照添加顺序启动
+    /// true: 按照 WorkSpaceProjectLaunchOrder 中定义的顺序启动
+    /// </summary>
+    public bool UseCustomLaunchOrder { get; private set; }
+
+    /// <summary>
+    /// 默认项目启动间隔时间 (秒)
+    /// 默认为 0，表示连续启动不等待
+    /// </summary>
+    public int DefaultLaunchIntervalSeconds { get; private set; }
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -80,7 +93,9 @@ public class WorkSpace : BaseEntity
             Description = description,
             SortOrder = sortOrder,
             CreatedAt = DateTime.UtcNow,
-            IsFavorite = false
+            IsFavorite = false,
+            UseCustomLaunchOrder = false,
+            DefaultLaunchIntervalSeconds = 0
         };
         return workSpace;
     }
@@ -188,4 +203,65 @@ public class WorkSpace : BaseEntity
             SetEnabledProjectIds(enabledIds);
         }
     }
+
+    /// <summary>
+    /// 更新启动配置
+    /// </summary>
+    /// <param name="useCustomLaunchOrder">是否使用自定义启动顺序</param>
+    /// <param name="defaultLaunchIntervalSeconds">默认启动间隔时间(秒)</param>
+    public void UpdateLaunchConfig(bool useCustomLaunchOrder, int defaultLaunchIntervalSeconds)
+    {
+        UseCustomLaunchOrder = useCustomLaunchOrder;
+        DefaultLaunchIntervalSeconds = defaultLaunchIntervalSeconds >= 0 ? defaultLaunchIntervalSeconds : 0;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 获取启动顺序配置 (JSON 格式)
+    /// 格式: [{ "projectId": 1, "order": 1, "intervalSeconds": 5 }, ...]
+    /// </summary>
+    public string? LaunchOrderJson { get; private set; }
+
+    /// <summary>
+    /// 设置项目启动顺序配置
+    /// </summary>
+    /// <param name="launchOrders">启动顺序配置列表</param>
+    public void SetLaunchOrder(IEnumerable<WorkSpaceProjectLaunchOrder> launchOrders)
+    {
+        var ordersList = launchOrders.ToList();
+        LaunchOrderJson = ordersList.Count > 0
+            ? System.Text.Json.JsonSerializer.Serialize(ordersList)
+            : null;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 获取项目启动顺序配置
+    /// </summary>
+    /// <returns>启动顺序配置列表</returns>
+    public IReadOnlyList<WorkSpaceProjectLaunchOrder> GetLaunchOrder()
+    {
+        if (string.IsNullOrEmpty(LaunchOrderJson))
+            return Array.Empty<WorkSpaceProjectLaunchOrder>();
+
+        try
+        {
+            return System.Text.Json.JsonSerializer.Deserialize<IReadOnlyList<WorkSpaceProjectLaunchOrder>>(LaunchOrderJson)
+                   ?? Array.Empty<WorkSpaceProjectLaunchOrder>();
+        }
+        catch
+        {
+            return Array.Empty<WorkSpaceProjectLaunchOrder>();
+        }
+    }
+}
+
+/// <summary>
+/// 工作空间项目启动顺序配置
+/// </summary>
+public class WorkSpaceProjectLaunchOrder
+{
+    public long ProjectId { get; set; }
+    public int Order { get; set; }
+    public int? IntervalSeconds { get; set; }
 }

@@ -55,7 +55,7 @@ public class WorkFolderRepository : IWorkFolderRepository
                 WorkFolder = w,
                 ProjectCount = _dbContext.ProjectWorkFolders
                     .Count(pwf => pwf.WorkFolderId == w.Id && 
-                                  !_dbContext.Projects.Any(p => p.Id == pwf.ProjectId && p.IsArchived))
+                                  !_dbContext.Projects.Any(p => p.Id == pwf.ProjectId))
             })
             .OrderBy(x => x.WorkFolder.SortOrder)
             .ThenBy(x => x.WorkFolder.Name)

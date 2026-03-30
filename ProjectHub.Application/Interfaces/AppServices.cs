@@ -1,3 +1,5 @@
+using ProjectHub.Application.DTOs;
+
 namespace ProjectHub.Application.Interfaces;
 
 /// <summary>
@@ -56,34 +58,9 @@ public interface IProjectAppService
     Task LaunchMultipleAsync(IEnumerable<long> projectIds, int intervalSeconds = 0, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 归档项目
-    /// </summary>
-    Task ArchiveAsync(long id, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 恢复已归档项目
-    /// </summary>
-    Task RestoreFromArchiveAsync(long id, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 设置收藏状态
     /// </summary>
     Task SetFavoriteAsync(long id, bool isFavorite, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 为项目添加标签
-    /// </summary>
-    Task AddTagAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 移除项目标签
-    /// </summary>
-    Task RemoveTagAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取项目的标签列表
-    /// </summary>
-    Task<IReadOnlyList<TagDto>> GetTagsAsync(long projectId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 扫描并更新项目的磁盘空间信息
@@ -174,37 +151,6 @@ public interface IWorkSpaceAppService
 }
 
 /// <summary>
-/// 标签管理应用服务接口
-/// </summary>
-public interface ITagAppService
-{
-    /// <summary>
-    /// 创建标签
-    /// </summary>
-    Task<TagDto> CreateAsync(CreateTagDto input, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 更新标签
-    /// </summary>
-    Task<TagDto> UpdateAsync(UpdateTagDto input, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 删除标签
-    /// </summary>
-    Task DeleteAsync(long id, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取所有标签 (含项目数量)
-    /// </summary>
-    Task<IReadOnlyList<TagDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 合并标签
-    /// </summary>
-    Task MergeTagsAsync(long sourceTagId, long targetTagId, CancellationToken cancellationToken = default);
-}
-
-/// <summary>
 /// 垃圾清理应用服务接口
 /// </summary>
 public interface ICleanupAppService
@@ -231,32 +177,67 @@ public interface ICleanupAppService
 }
 
 /// <summary>
-/// 项目包管理应用服务接口
+/// 标签管理应用服务接口
 /// </summary>
-public interface IProjectBundleAppService
+public interface ITagAppService
 {
     /// <summary>
-    /// 创建项目包
+    /// 创建标签
     /// </summary>
-    Task<ProjectBundleDto> CreateAsync(CreateProjectBundleDto input, CancellationToken cancellationToken = default);
+    Task<TagDto> CreateAsync(CreateTagDto input, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 更新项目包
+    /// 更新标签
     /// </summary>
-    Task<ProjectBundleDto> UpdateAsync(UpdateProjectBundleDto input, CancellationToken cancellationToken = default);
+    Task<TagDto> UpdateAsync(UpdateTagDto input, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 删除项目包
+    /// 删除标签
     /// </summary>
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task DeleteAsync(long id, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 获取所有项目包
+    /// 获取所有标签
     /// </summary>
-    Task<IReadOnlyList<ProjectBundleDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<TagDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 启动项目包
+    /// 为项目添加标签
     /// </summary>
-    Task LaunchBundleAsync(Guid id, CancellationToken cancellationToken = default);
+    Task AddTagToProjectAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从项目移除标签
+    /// </summary>
+    Task RemoveTagFromProjectAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取项目的标签列表
+    /// </summary>
+    Task<IReadOnlyList<TagDto>> GetTagsByProjectIdAsync(long projectId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 为工作空间添加标签
+    /// </summary>
+    Task AddTagToWorkSpaceAsync(long workSpaceId, long tagId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从工作空间移除标签
+    /// </summary>
+    Task RemoveTagFromWorkSpaceAsync(long workSpaceId, long tagId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间的标签列表
+    /// </summary>
+    Task<IReadOnlyList<TagDto>> GetTagsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据标签 ID 获取项目
+    /// </summary>
+    Task<IReadOnlyList<ProjectDto>> GetProjectsByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据标签 ID 获取工作空间
+    /// </summary>
+    Task<IReadOnlyList<WorkSpaceDto>> GetWorkSpacesByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
 }

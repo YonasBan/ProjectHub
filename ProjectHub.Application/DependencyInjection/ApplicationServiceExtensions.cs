@@ -14,15 +14,20 @@ public static class ApplicationServiceExtensions
     /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        // 注册项目应用服务
+        services.AddScoped<IProjectAppService, ProjectAppService>();
+
+        // 注册工作文件夹应用服务
+        services.AddScoped<IWorkFolderAppService, WorkFolderAppService>();
+
         // 注册工作空间应用服务
         services.AddScoped<IWorkSpaceAppService, WorkSpaceAppService>();
-        
-        // TODO: 注册其他应用服务
-        // services.AddScoped<IProjectAppService, ProjectAppService>();
-        // services.AddScoped<IWorkFolderAppService, WorkFolderAppService>();
-        // services.AddScoped<ITagAppService, TagAppService>();
+
+        // 注册标签应用服务
+        services.AddScoped<ITagAppService, TagAppService>();
+
+        // TODO: 注册清理应用服务
         // services.AddScoped<ICleanupAppService, CleanupAppService>();
-        // services.AddScoped<IProjectBundleAppService, ProjectBundleAppService>();
 
         return services;
     }

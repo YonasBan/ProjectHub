@@ -55,7 +55,7 @@ public class WorkSpaceRepository : IWorkSpaceRepository
                 WorkSpace = w,
                 ProjectCount = _dbContext.ProjectWorkSpaces
                     .Count(pws => pws.WorkSpaceId == w.Id && 
-                                  !_dbContext.Projects.Any(p => p.Id == pws.ProjectId && p.IsArchived))
+                                  !_dbContext.Projects.Any(p => p.Id == pws.ProjectId))
             })
             .OrderBy(x => x.WorkSpace.SortOrder)
             .ThenBy(x => x.WorkSpace.Name)
