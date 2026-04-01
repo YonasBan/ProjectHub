@@ -13,6 +13,7 @@
     mc:Ignorable="d">
     <StackPanel>
         <TextBlock Text="{x:Static res:Strings.Project_Create}" />
+        <TextBlock Text="{Binding L.Project_Create}" />
         <Button Command="{Binding SwitchToEnglishCommand}" Content="Change Localization" />
     </StackPanel>
 

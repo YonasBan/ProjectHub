@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Logging;
+using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Localization;
+using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
 using System.Reactive.Concurrency;
-using Microsoft.Extensions.Logging;
-using ReactiveUI;
-using ProjectHub.Application.Interfaces;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 
@@ -137,7 +138,7 @@ public class MainViewModel : ViewModelBase
         IWorkSpaceAppService workSpaceAppService,
         ILocalizationService localizationService,
         IScheduler mainThreadScheduler)
-        : base(logger, mainThreadScheduler,localizationService)
+        : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
         _workFolderAppService = workFolderAppService;

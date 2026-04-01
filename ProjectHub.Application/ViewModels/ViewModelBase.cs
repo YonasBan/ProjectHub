@@ -1,14 +1,12 @@
 using Microsoft.Extensions.Logging;
-using ProjectHub.Application.Interfaces;
-using ProjectHub.Core.Exceptions;
-using ProjectHub.Resources.Strings;
+using ProjectHub.Application.Localization;
 using ReactiveUI;
+using Splat;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
-using System.Reactive.Disposables.Fluent;
-using System.Reactive.Linq;
-using System.Threading;
+using System.Runtime.InteropServices.JavaScript;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ProjectHub.Application.ViewModels;
 
@@ -27,29 +25,17 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
     /// 日志记录器
     /// </summary>
     protected readonly ILogger Logger;
-
+    public LocalizedStrings L { get; }
     /// <summary>
     /// 主线程调度器 (由平台层提供,用于跨平台兼容)
     /// </summary>
     protected readonly IScheduler MainThreadScheduler;
-    private readonly ILocalizationService localizationService;
 
-    protected ViewModelBase(ILogger logger, IScheduler mainThreadScheduler, ILocalizationService localizationService)
+    protected ViewModelBase(ILogger logger, IScheduler mainThreadScheduler)
     {
         Logger = logger;
         MainThreadScheduler = mainThreadScheduler;
-        this.localizationService = localizationService;
-        localizationService.CultureChanged
-          .ObserveOn(mainThreadScheduler)
-          .Subscribe(_ =>
-
-          {
-              this.RaisePropertyChanged(string.Empty);
-              
-          }
-
-          )
-          .DisposeWith(Disposables);
+        L = Locator.Current.GetService<LocalizedStrings>()!;
     }
 
     /// <summary>

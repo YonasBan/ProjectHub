@@ -1,36 +1,33 @@
-using System.Collections.Generic;
-using System.Reflection;
-using System.Reactive.Concurrency;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Markup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DependencyInjection;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Localization;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
 using ProjectHub.Presentation.Wpf.Services;
-using ReactiveUI;
-using ReactiveUI.Builder;
+using Splat.Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Concurrency;
+using System.Reflection;
+using System.Windows;
+
 namespace ProjectHub.Presentation.Wpf;
 
 /// <summary>
 /// Application entry point and composition root.
-/// 
+///
 /// Responsibilities:
 /// - Host builder configuration (DI, Logging, Configuration)
 /// - Service registration for all application layers
 /// - Application lifecycle management (Startup, Exit)
-/// 
+///
 /// DDD Architecture:
 /// This class serves as the Composition Root where all dependencies are assembled.
 /// Following the Dependency Inversion Principle, concrete implementations are resolved here.
-/// 
+///
 /// Cross-Platform Design:
 /// This class is platform-agnostic. Platform-specific implementations (WPF, Avalonia)
 /// are handled by IPlatformService interface implementations.
@@ -49,7 +46,7 @@ public partial class App : System.Windows.Application
     {
         // Build the host with all configurations
         _host = CreateHostBuilder();
-
+        _host.Services.UseMicrosoftDependencyResolver();
         // Resolve logger and platform service after host is built
         _logger = Services.GetRequiredService<ILogger<App>>();
 
@@ -63,11 +60,12 @@ public partial class App : System.Windows.Application
     /// </summary>
     private IHost CreateHostBuilder()
     {
-        return Host.CreateDefaultBuilder()
+        var host = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration(ConfigureApplicationConfiguration)
             .ConfigureLogging(ConfigureLogging)
             .ConfigureServices(ConfigureServices)
             .Build();
+        return host;
     }
 
     /// <summary>
@@ -191,6 +189,11 @@ public partial class App : System.Windows.Application
                 "ProjectHub.Resources.Strings.Strings",
                 assembly,
                 scheduler);
+        });
+        services.AddSingleton<LocalizedStrings>(provider =>
+        {
+            var loc = provider.GetRequiredService<ILocalizationService>();
+            return new LocalizedStrings(loc);
         });
     }
 

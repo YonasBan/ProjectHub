@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="ReactiveUI" Version="23.1.8" />
+    <PackageReference Include="Splat.Microsoft.Extensions.DependencyInjection" Version="19.3.1" />
     <PackageReference Include="System.CodeDom" Version="10.0.5" />
     <!-- System.Reactive version is managed by ReactiveUI -->
   </ItemGroup>
@@ -20,7 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="Localization\StringsWrapper.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>StringsWrapper.cs</LastGenOutput>
     </None>
   </ItemGroup>
