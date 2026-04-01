@@ -1434,6 +1434,27 @@
             gap: var(--space-24);
         }
         
+        /* 标签管理页面的独特样式 */
+        .tag-management-view .content-header {
+            border-bottom: 2px solid var(--tag-purple);
+            background: linear-gradient(90deg, rgba(197, 134, 192, 0.1), transparent);
+            padding-bottom: var(--space-16);
+        }
+        
+        .tag-management-view .content-title {
+            color: var(--tag-purple);
+        }
+        
+        .tag-management-view .tag-management-actions .btn-secondary {
+            border-color: var(--tag-purple);
+            color: var(--tag-purple);
+        }
+        
+        .tag-management-view .tag-management-actions .btn-secondary:hover {
+            background-color: var(--tag-purple);
+            color: white;
+        }
+        
         .tag-management-header {
             display: flex;
             justify-content: space-between;
@@ -1648,18 +1669,156 @@
         /* Content view switching */
         .content-view {
             display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
         
         .content-view.active {
             display: block;
+            opacity: 1;
         }
         
-        .recent-view {
-            display: block;
+        /* 最近使用视图的独特样式 */
+        .recent-view .content-header {
+            border-bottom: 2px solid var(--accent-blue);
+            background: linear-gradient(90deg, rgba(0, 120, 212, 0.1), transparent);
         }
         
-        .tag-management-view {
-            display: none;
+        .recent-view .content-title {
+            color: var(--accent-blue);
+        }
+        
+        /* 标签管理视图的独特样式 */
+        .tag-management-view .content-header {
+            border-bottom: 2px solid var(--tag-purple);
+            background: linear-gradient(90deg, rgba(197, 134, 192, 0.1), transparent);
+        }
+        
+        .tag-management-view .content-title {
+            color: var(--tag-purple);
+        }
+        
+        /* 工作空间视图的独特样式 */
+        .workspace-view .content-header {
+            border-bottom: 2px solid var(--accent-orange);
+            background: linear-gradient(90deg, rgba(255, 165, 0, 0.1), transparent);
+        }
+        
+        .workspace-view .content-title {
+            color: var(--accent-orange);
+        }
+        
+        /* 工作空间列表样式 */
+        .workspace-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-16);
+            margin-top: var(--space-16);
+        }
+        
+        .workspace-item-card {
+            display: flex;
+            align-items: center;
+            padding: var(--space-16);
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--accent-orange);
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .workspace-item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        
+        .workspace-item-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.9), rgba(255, 215, 0, 0.7));
+            border-radius: var(--radius-md);
+            margin-right: var(--space-16);
+            flex-shrink: 0;
+        }
+        
+        .workspace-item-details {
+            flex-grow: 1;
+            min-width: 0; /* 防止文本溢出 */
+        }
+        
+        .workspace-item-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-4);
+        }
+        
+        .workspace-item-meta {
+            display: flex;
+            gap: var(--space-12);
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: var(--space-8);
+        }
+        
+        .workspace-item-description {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .workspace-item-tags {
+            display: flex;
+            gap: var(--space-8);
+            margin-left: var(--space-16);
+            flex-wrap: wrap;
+            min-width: 120px;
+        }
+        
+        .workspace-item-actions {
+            display: flex;
+            gap: var(--space-4);
+            margin-left: var(--space-16);
+            align-items: center;
+        }
+        
+        .add-workspace-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-20) var(--space-16);
+            background-color: var(--bg-secondary);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+            gap: var(--space-8);
+        }
+        
+        .add-workspace-btn:hover {
+            border-color: var(--accent-orange);
+            color: var(--accent-orange);
+            background-color: rgba(255, 165, 0, 0.05);
+        }
+        
+        .add-icon {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .tag-management-view .tag-management-actions .btn-secondary {
+            border-color: var(--tag-purple);
+            color: var(--tag-purple);
+        }
+        
+        .tag-management-view .tag-management-actions .btn-secondary:hover {
+            background-color: var(--tag-purple);
+            color: white;
         }
         
         ::-webkit-scrollbar {
@@ -1695,7 +1854,7 @@
             </div>
             <div class="header-actions">
                 <button class="btn btn-secondary">⚙️</button>
-                <button class="btn btn-primary">+ 新建项目</button>
+                <!-- 新建项目按钮已移除 -->
             </div>
         </header>
         
@@ -1726,7 +1885,7 @@
                 </div>
                 
                 <!-- 工作空间 (WorkSpace) -->
-                <div class="tree-item">
+                <div class="tree-item" onclick="showWorkspaceView()">
                     <span class="tree-expand"></span>
                     <div class="tree-icon workspace-icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 14px; height: 14px;">
@@ -1738,6 +1897,8 @@
                     </div>
                     <span class="tree-label">工作空间</span>
                     <span class="tree-count">8</span>
+                    <button class="tree-add-btn" title="添加工作空间" onclick="addWorkspace(event)">+</button>
+                    <button class="tree-delete-btn" title="删除文件夹" onclick="deleteFolder(this)">×</button>
                 </div>
                 
                 <!-- 开发项目（展开状态） -->
@@ -2052,7 +2213,6 @@
                     <div class="tag-management-actions">
                         <button class="btn btn-secondary" onclick="exportTags()">导出标签</button>
                         <button class="btn btn-secondary" onclick="importTags()">导入标签</button>
-                        <button class="btn btn-primary" onclick="refreshTagList()">刷新</button>
                     </div>
                 </div>
                 
@@ -2090,16 +2250,14 @@
                     
                     <!-- Tag List Panel -->
                     <div class="tag-list-container">
-                        <h3 class="tag-list-title">现有标签 (8)</h3>
+                        <h3 class="tag-list-title">现有标签</h3>
                         <div class="tag-list" id="tagList">
                             <div class="tag-list-item">
                                 <div class="tag-list-color tag-blue"></div>
                                 <div class="tag-list-info">
                                     <div class="tag-list-name">.NET</div>
                                 </div>
-                                <div class="tag-list-meta">
-                                    <span class="tag-list-count">28 个项目</span>
-                                </div>
+                                
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
                                     <button class="tag-list-delete" title="删除" onclick="deleteTag(this)">×</button>
@@ -2112,7 +2270,7 @@
                                     <div class="tag-list-name">WPF</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">15 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2126,7 +2284,7 @@
                                     <div class="tag-list-name">Kotlin</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">12 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2140,7 +2298,7 @@
                                     <div class="tag-list-name">MVVM</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">9 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2154,7 +2312,7 @@
                                     <div class="tag-list-name">个人项目</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">22 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2168,7 +2326,7 @@
                                     <div class="tag-list-name">Android</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">18 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2182,7 +2340,7 @@
                                     <div class="tag-list-name">C++</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">7 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2196,7 +2354,7 @@
                                     <div class="tag-list-name">Web</div>
                                 </div>
                                 <div class="tag-list-meta">
-                                    <span class="tag-list-count">14 个项目</span>
+                                    
                                 </div>
                                 <div class="tag-list-actions">
                                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2204,6 +2362,126 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        <!-- Workspace View -->
+            <div class="content-view workspace-view" id="workspaceView">
+                <div class="content-header">
+                    <h1 class="content-title">📦 工作空间</h1>
+                    <div class="view-toggle">
+                        <button class="toggle-btn active">列表</button>
+                        <button class="toggle-btn">卡片</button>
+                    </div>
+                </div>
+                
+                <!-- Workspace List View -->
+                <div class="workspace-list">
+                    <!-- Workspace Item 1 -->
+                    <div class="workspace-item-card">
+                        <div class="workspace-item-icon type-workspace">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                            </svg>
+                        </div>
+                        <div class="workspace-item-details">
+                            <div class="workspace-item-name">Android 开发空间</div>
+                            <div class="workspace-item-meta">
+                                <span class="workspace-item-projects">📦 4 个项目</span>
+                                <span>🕒 3 小时前</span>
+                            </div>
+                            <div class="workspace-item-description">
+                                包含 Android 应用、后端 API 和管理界面的完整开发环境
+                            </div>
+                        </div>
+                        <div class="workspace-item-tags">
+                            <span class="tag tag-teal">Android</span>
+                            <span class="tag tag-blue">.NET</span>
+                            <span class="tag tag-purple">工作空间</span>
+                        </div>
+                        <div class="workspace-item-actions">
+                            <div class="action-btn-favorite active" title="取消收藏" onclick="toggleFavorite(this)">★</div>
+                            <div class="action-btn" title="打开" onclick="openWorkspace(this)">🚀</div>
+                            <div class="action-btn" title="编辑" onclick="openEditModal()">✏️</div>
+                            <div class="action-btn" title="设置" onclick="openWorkspaceSettings()">⚙</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Workspace Item 2 -->
+                    <div class="workspace-item-card">
+                        <div class="workspace-item-icon type-workspace">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                            </svg>
+                        </div>
+                        <div class="workspace-item-details">
+                            <div class="workspace-item-name">Web 全栈开发</div>
+                            <div class="workspace-item-meta">
+                                <span class="workspace-item-projects">📦 3 个项目</span>
+                                <span>🕒 昨天</span>
+                            </div>
+                            <div class="workspace-item-description">
+                                前端 React + 后端 Node.js + 数据库的完整 Web 开发环境
+                            </div>
+                        </div>
+                        <div class="workspace-item-tags">
+                            <span class="tag tag-cyan">Web</span>
+                            <span class="tag tag-green">React</span>
+                            <span class="tag tag-orange">Node.js</span>
+                            <span class="tag tag-purple">工作空间</span>
+                        </div>
+                        <div class="workspace-item-actions">
+                            <div class="action-btn-favorite" title="收藏" onclick="toggleFavorite(this)">☆</div>
+                            <div class="action-btn" title="打开" onclick="openWorkspace(this)">🚀</div>
+                            <div class="action-btn" title="编辑" onclick="openEditModal()">✏️</div>
+                            <div class="action-btn" title="设置" onclick="openWorkspaceSettings()">⚙</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Workspace Item 3 -->
+                    <div class="workspace-item-card">
+                        <div class="workspace-item-icon type-workspace">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 32px; height: 32px;">
+                                <rect x="3" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                                <rect x="14" y="3" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="3" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.6"/>
+                                <rect x="14" y="14" width="7" height="7" rx="1.5" fill="white" fill-opacity="0.9"/>
+                            </svg>
+                        </div>
+                        <div class="workspace-item-details">
+                            <div class="workspace-item-name">数据科学与机器学习</div>
+                            <div class="workspace-item-meta">
+                                <span class="workspace-item-projects">📦 5 个项目</span>
+                                <span>🕒 3 天前</span>
+                            </div>
+                            <div class="workspace-item-description">
+                                Python 数据分析和机器学习模型训练环境
+                            </div>
+                        </div>
+                        <div class="workspace-item-tags">
+                            <span class="tag tag-red">Python</span>
+                            <span class="tag tag-yellow">数据科学</span>
+                            <span class="tag tag-teal">机器学习</span>
+                            <span class="tag tag-purple">工作空间</span>
+                        </div>
+                        <div class="workspace-item-actions">
+                            <div class="action-btn-favorite active" title="取消收藏" onclick="toggleFavorite(this)">★</div>
+                            <div class="action-btn" title="打开" onclick="openWorkspace(this)">🚀</div>
+                            <div class="action-btn" title="编辑" onclick="openEditModal()">✏️</div>
+                            <div class="action-btn" title="设置" onclick="openWorkspaceSettings()">⚙</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Add Workspace Button -->
+                    <div class="add-workspace-btn" onclick="openWorkspaceSettings()">
+                        <span class="add-icon">+</span>
+                        <span>添加工作空间</span>
                     </div>
                 </div>
             </div>
@@ -2337,7 +2615,8 @@
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label">标签</label>
+                    <label class="form-label">标签设置</label>
+                    <p style="color: var(--text-muted); font-size: 12px; margin-bottom: var(--space-12);">为项目添加标签进行分类管理</p>
                     <div class="tag-editor" id="tagEditor">
                         <span class="tag-editor-item tag-blue">
                             .NET
@@ -2351,13 +2630,25 @@
                             MVVM
                             <span class="tag-editor-remove" onclick="removeTag(this)">×</span>
                         </span>
-                        <input type="text" class="tag-editor-input" id="tagInput" placeholder="输入标签...">
+                        <input type="text" class="tag-editor-input" id="tagInput" placeholder="输入标签名称...">
                     </div>
-                    <div class="tag-suggestions">
-                        <span class="tag-suggestion" onclick="addTag('C#', 'tag-blue')">+ C#</span>
-                        <span class="tag-suggestion" onclick="addTag('桌面应用', 'tag-teal')">+ 桌面应用</span>
-                        <span class="tag-suggestion" onclick="addTag('开源', 'tag-orange')">+ 开源</span>
-                        <span class="tag-suggestion" onclick="addTag('个人项目', 'tag-red')">+ 个人项目</span>
+                    <div class="tag-suggestions" id="tagSuggestions">
+                        <span class="tag-suggestion" onclick="addTagFromSuggestion('C#', 'tag-blue')">+ C# (蓝色)</span>
+                        <span class="tag-suggestion" onclick="addTagFromSuggestion('桌面应用', 'tag-teal')">+ 桌面应用 (青色)</span>
+                        <span class="tag-suggestion" onclick="addTagFromSuggestion('开源', 'tag-orange')">+ 开源 (橙色)</span>
+                        <span class="tag-suggestion" onclick="addTagFromSuggestion('个人项目', 'tag-red')">+ 个人项目 (红色)</span>
+                        <span class="tag-suggestion" onclick="addTagFromSuggestion('Android', 'tag-green')">+ Android (绿色)</span>
+                        <span class="tag-suggestion" onclick="addTagFromSuggestion('Web', 'tag-cyan')">+ Web (浅蓝色)</span>
+                    </div>
+                    
+                    <!-- 标签管理快捷链接 -->
+                    <div style="margin-top: var(--space-12); padding: var(--space-8); background-color: rgba(0, 120, 212, 0.1); border-radius: var(--radius-sm); border-left: 3px solid var(--accent-blue);">
+                        <div style="font-size: 12px; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center;">
+                            <span>🏷️ 需要更多标签选项？</span>
+                            <button onclick="openTagManagementFromModal()" style="background: none; border: none; color: var(--accent-blue); font-size: 12px; cursor: pointer; text-decoration: underline;">
+                                去标签管理
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
@@ -2512,6 +2803,12 @@
             
             // Initialize tag management
             initializeTagManagement();
+            
+            // 页面加载时初始化视图
+            window.addEventListener('load', function() {
+                // 默认显示最近使用视图
+                showRecentView();
+            });
         });
         
         // Dropdown Menu Functions
@@ -2767,6 +3064,35 @@
             tagEditor.insertBefore(tagEl, input);
         }
         
+        function addTagFromSuggestion(tagName, colorClass) {
+            addTag(tagName, colorClass);
+            
+            // Show visual feedback
+            const suggestionBtn = event.target;
+            suggestionBtn.style.backgroundColor = 'var(--bg-hover)';
+            suggestionBtn.style.color = 'var(--text-primary)';
+            suggestionBtn.style.borderColor = colorClass.replace('tag-', 'var(--') + ')';
+            
+            setTimeout(() => {
+                suggestionBtn.style.backgroundColor = '';
+                suggestionBtn.style.color = '';
+                suggestionBtn.style.borderColor = '';
+            }, 300);
+        }
+        
+        function openTagManagementFromModal() {
+            // Close the edit modal
+            closeEditModal();
+            
+            // Show tag management view
+            setTimeout(() => {
+                showTagManagementView();
+            }, 100);
+            
+            // Show a helpful message
+            alert('已跳转到标签管理界面，您可以在那里创建和管理所有标签。');
+        }
+        
         function removeTag(el) {
             el.parentElement.remove();
         }
@@ -2792,42 +3118,134 @@
             const recentView = document.getElementById('recentView');
             const tagManagementView = document.getElementById('tagManagementView');
             
-            recentView.classList.add('active');
+            // 确保标签管理视图完全隐藏
+            tagManagementView.style.display = 'none';
             tagManagementView.classList.remove('active');
             
-            // Update tree selection
+            // 确保最近使用视图完全显示
+            recentView.style.display = 'block';
+            recentView.classList.add('active');
+            
+            // 更新侧边栏选择
             document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
-            document.querySelector('.tree-item[onclick="showRecentView()"]').classList.add('selected');
+            const recentItem = document.querySelector('.tree-item[onclick="showRecentView()"]');
+            if (recentItem) {
+                recentItem.classList.add('selected');
+            }
+            
+            // 确保页面标题正确显示
+            const contentTitle = document.querySelector('.content-title');
+            if (contentTitle) {
+                contentTitle.textContent = "🕒 最近使用";
+            }
         }
         
         function showAllProjectsView() {
             const recentView = document.getElementById('recentView');
             const tagManagementView = document.getElementById('tagManagementView');
             
-            recentView.classList.add('active');
+            // 确保标签管理视图完全隐藏
+            tagManagementView.style.display = 'none';
             tagManagementView.classList.remove('active');
             
-            // Update content title
-            const title = document.querySelector('.content-title');
-            if (title) {
-                title.textContent = "📦 所有项目";
+            // 确保最近使用视图完全显示
+            recentView.style.display = 'block';
+            recentView.classList.add('active');
+            
+            // 更新页面标题
+            const contentTitle = document.querySelector('.content-title');
+            if (contentTitle) {
+                contentTitle.textContent = "📦 所有项目";
             }
             
-            // Update tree selection
+            // 更新侧边栏选择
             document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
-            document.querySelector('.tree-item[onclick="showAllProjectsView()"]').classList.add('selected');
+            const allProjectsItem = document.querySelector('.tree-item[onclick="showAllProjectsView()"]');
+            if (allProjectsItem) {
+                allProjectsItem.classList.add('selected');
+            }
         }
         
         function showTagManagementView() {
             const recentView = document.getElementById('recentView');
             const tagManagementView = document.getElementById('tagManagementView');
             
+            // 确保最近使用视图完全隐藏
+            recentView.style.display = 'none';
             recentView.classList.remove('active');
+            
+            // 确保标签管理视图完全显示
+            tagManagementView.style.display = 'block';
             tagManagementView.classList.add('active');
             
-            // Update tree selection
+            // 更新侧边栏选择
             document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
-            document.querySelector('.tree-item[onclick="showTagManagementView()"]').classList.add('selected');
+            const tagManagementItem = document.querySelector('.tree-item[onclick="showTagManagementView()"]');
+            if (tagManagementItem) {
+                tagManagementItem.classList.add('selected');
+            }
+            
+            // 确保页面标题正确显示
+            const contentTitle = document.querySelector('.content-title');
+            if (contentTitle) {
+                contentTitle.textContent = "🏷️ 标签管理";
+            }
+        }
+        
+        // Workspace View Functions
+        function showWorkspaceView() {
+            const recentView = document.getElementById('recentView');
+            const tagManagementView = document.getElementById('tagManagementView');
+            const workspaceView = document.getElementById('workspaceView');
+            
+            // 确保其他视图完全隐藏
+            recentView.style.display = 'none';
+            recentView.classList.remove('active');
+            tagManagementView.style.display = 'none';
+            tagManagementView.classList.remove('active');
+            
+            // 确保工作空间视图完全显示
+            workspaceView.style.display = 'block';
+            workspaceView.classList.add('active');
+            
+            // 更新侧边栏选择
+            document.querySelectorAll('.tree-item').forEach(item => item.classList.remove('selected'));
+            const workspaceItem = document.querySelector('.tree-item[onclick="showWorkspaceView()"]');
+            if (workspaceItem) {
+                workspaceItem.classList.add('selected');
+            }
+            
+            // 确保页面标题正确显示
+            const contentTitle = document.querySelector('.content-title');
+            if (contentTitle) {
+                contentTitle.textContent = "📦 工作空间";
+            }
+        }
+        
+        function addWorkspace(event) {
+            event.stopPropagation(); // 防止触发树项点击事件
+            
+            const workspaceName = prompt('请输入新工作空间名称:');
+            if (workspaceName && workspaceName.trim()) {
+                // 在实际应用中，这里会调用API创建新工作空间
+                console.log('Adding new workspace:', workspaceName);
+                
+                // 显示成功消息
+                alert(`工作空间 "${workspaceName}" 已创建！`);
+                
+                // 刷新工作空间列表
+                setTimeout(() => {
+                    showWorkspaceView();
+                }, 100);
+            }
+        }
+        
+        function openWorkspace(btn) {
+            const workspaceItem = btn.closest('.workspace-item-card');
+            const workspaceName = workspaceItem.querySelector('.workspace-item-name').textContent;
+            
+            console.log(`Opening workspace: ${workspaceName}`);
+            alert(`正在打开工作空间 "${workspaceName}"...`);
         }
         
         // Tag Management Functions
@@ -2882,7 +3300,7 @@
                     <div class="tag-list-name">${tagName}</div>
                 </div>
                 <div class="tag-list-meta">
-                    <span class="tag-list-count">0 个项目</span>
+                    
                 </div>
                 <div class="tag-list-actions">
                     <button class="tag-list-edit" title="编辑" onclick="editTag(this)">✏️</button>
@@ -2953,12 +3371,6 @@
             const tagItems = document.querySelectorAll('#tagList .tag-list-item');
             const tagCount = tagItems.length;
             
-            // Update title
-            const title = document.querySelector('.tag-list-title');
-            if (title) {
-                title.textContent = `现有标签 (${tagCount})`;
-            }
-            
             // Update status bar
             const tagStatsElement = document.querySelector('.status-item:nth-child(5) span');
             if (tagStatsElement) {
@@ -2969,23 +3381,42 @@
         function exportTags() {
             const tagItems = document.querySelectorAll('#tagList .tag-list-item');
             const tags = [];
-            
+
             tagItems.forEach(item => {
-                const name = item.querySelector('.tag-list-name').textContent;
-                const colorClass = Array.from(item.querySelector('.tag-list-color').classList)
-                    .find(cls => cls.startsWith('tag-'));
-                const count = item.querySelector('.tag-list-count').textContent;
-                
+                // 安全获取元素内容，添加默认值处理
+                const nameEl = item.querySelector('.tag-list-name');
+                const name = nameEl ? nameEl.textContent.trim() : '未命名标签';
+
+                const colorEl = item.querySelector('.tag-list-color');
+                let colorClass = 'tag-blue'; // 默认颜色
+
+                // 优化：直接遍历 classList，避免创建中间数组
+                if (colorEl) {
+                    colorEl.classList.forEach(cls => {
+                        if (cls.startsWith('tag-')) {
+                            colorClass = cls;
+                        }
+                    });
+                }
+
+                const countEl = item.querySelector('.tag-list-count');
+                // 优化：更健壮的数值提取，处理空值和非数字情况
+                let count = 0;
+                if (countEl) {
+                    const countText = countEl.textContent.trim().replace(/[^\d]/g, '');
+                    count = countText ? parseInt(countText, 10) : 0;
+                }
+
                 tags.push({
                     name,
-                    color: colorClass || 'tag-blue',
-                    count: parseInt(count) || 0
+                    color: colorClass,
+                    count: count
                 });
             });
-            
-            // In a real app, this would export to a file
+
+            // 导出标签数据到控制台，方便开发者查看和调试
             console.log('Exporting tags:', tags);
-            alert(`已导出 ${tags.length} 个标签到控制台（查看开发者工具）`);
+            alert(`已导出 ${tags.length} 个标签到控制台（请按 F12 查看详细信息）`);
         }
         
         function importTags() {
@@ -2993,10 +3424,7 @@
             alert('导入功能将在实际应用中实现');
         }
         
-        function refreshTagList() {
-            // Simulate refreshing tag list
-            alert('标签列表已刷新');
-        }
+        
         
         // Close modal when clicking on overlay
         document.addEventListener('click', function(e) {

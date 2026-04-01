@@ -239,5 +239,221 @@ namespace ProjectHub.Resources.Strings {
                 return ResourceManager.GetString("Tag_Remove", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 📁 工作文件夹 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_WorkFolders {
+            get {
+                return ResourceManager.GetString("Sidebar_WorkFolders", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 新建文件夹 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_NewFolder {
+            get {
+                return ResourceManager.GetString("Sidebar_NewFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 刷新 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_Refresh {
+            get {
+                return ResourceManager.GetString("Sidebar_Refresh", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 新建子文件夹 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_NewSubFolder {
+            get {
+                return ResourceManager.GetString("Sidebar_NewSubFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除文件夹 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_DeleteFolder {
+            get {
+                return ResourceManager.GetString("Sidebar_DeleteFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 最近使用 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_Recent {
+            get {
+                return ResourceManager.GetString("Sidebar_Recent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 收藏夹 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_Favorites {
+            get {
+                return ResourceManager.GetString("Sidebar_Favorites", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 工作空间 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_Workspaces {
+            get {
+                return ResourceManager.GetString("Sidebar_Workspaces", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 开发项目 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_DevProjects {
+            get {
+                return ResourceManager.GetString("Sidebar_DevProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Web 应用 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_WebApp {
+            get {
+                return ResourceManager.GetString("Sidebar_WebApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 移动应用 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_MobileApp {
+            get {
+                return ResourceManager.GetString("Sidebar_MobileApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 桌面应用 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_DesktopApp {
+            get {
+                return ResourceManager.GetString("Sidebar_DesktopApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 学习资源 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_Learning {
+            get {
+                return ResourceManager.GetString("Sidebar_Learning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编程教程 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_Tutorials {
+            get {
+                return ResourceManager.GetString("Sidebar_Tutorials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 电子书 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_EBooks {
+            get {
+                return ResourceManager.GetString("Sidebar_EBooks", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 所有项目 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_AllProjects {
+            get {
+                return ResourceManager.GetString("Sidebar_AllProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 标签设置 的本地化字符串。
+        /// </summary>
+        public static string Sidebar_TagSettings {
+            get {
+                return ResourceManager.GetString("Sidebar_TagSettings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 搜索项目... 的本地化字符串。
+        /// </summary>
+        public static string Header_Search {
+            get {
+                return ResourceManager.GetString("Header_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 就绪 的本地化字符串。
+        /// </summary>
+        public static string Status_Ready {
+            get {
+                return ResourceManager.GetString("Status_Ready", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 📦 共 {0} 个项目 的本地化字符串。
+        /// </summary>
+        public static string Status_ProjectCount {
+            get {
+                return ResourceManager.GetString("Status_ProjectCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 📁 {0} 个文件夹 的本地化字符串。
+        /// </summary>
+        public static string Status_FolderCount {
+            get {
+                return ResourceManager.GetString("Status_FolderCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 🚀 {0} 个工作空间 的本地化字符串。
+        /// </summary>
+        public static string Status_WorkspaceCount {
+            get {
+                return ResourceManager.GetString("Status_WorkspaceCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 🏷️ {0} 个标签分类 的本地化字符串。
+        /// </summary>
+        public static string Status_TagCount {
+            get {
+                return ResourceManager.GetString("Status_TagCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 标签项目: {0} 的本地化字符串。
+        /// </summary>
+        public static string Status_TaggedProjects {
+            get {
+                return ResourceManager.GetString("Status_TaggedProjects", resourceCulture);
+            }
+        }
     }
 }

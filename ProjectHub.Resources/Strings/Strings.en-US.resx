@@ -128,4 +128,82 @@
   <data name="Tag_Remove" xml:space="preserve">
     <value>Remove Tag</value>
   </data>
+
+  <!-- Sidebar -->
+  <data name="Sidebar_WorkFolders" xml:space="preserve">
+    <value>📁 Work Folders</value>
+  </data>
+  <data name="Sidebar_NewFolder" xml:space="preserve">
+    <value>New Folder</value>
+  </data>
+  <data name="Sidebar_Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Sidebar_NewSubFolder" xml:space="preserve">
+    <value>New Subfolder</value>
+  </data>
+  <data name="Sidebar_DeleteFolder" xml:space="preserve">
+    <value>Delete Folder</value>
+  </data>
+  <data name="Sidebar_Recent" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="Sidebar_Favorites" xml:space="preserve">
+    <value>Favorites</value>
+  </data>
+  <data name="Sidebar_Workspaces" xml:space="preserve">
+    <value>Workspaces</value>
+  </data>
+  <data name="Sidebar_DevProjects" xml:space="preserve">
+    <value>Dev Projects</value>
+  </data>
+  <data name="Sidebar_WebApp" xml:space="preserve">
+    <value>Web App</value>
+  </data>
+  <data name="Sidebar_MobileApp" xml:space="preserve">
+    <value>Mobile App</value>
+  </data>
+  <data name="Sidebar_DesktopApp" xml:space="preserve">
+    <value>Desktop App</value>
+  </data>
+  <data name="Sidebar_Learning" xml:space="preserve">
+    <value>Learning</value>
+  </data>
+  <data name="Sidebar_Tutorials" xml:space="preserve">
+    <value>Tutorials</value>
+  </data>
+  <data name="Sidebar_EBooks" xml:space="preserve">
+    <value>E-Books</value>
+  </data>
+  <data name="Sidebar_AllProjects" xml:space="preserve">
+    <value>All Projects</value>
+  </data>
+  <data name="Sidebar_TagSettings" xml:space="preserve">
+    <value>Tag Settings</value>
+  </data>
+
+  <!-- Header -->
+  <data name="Header_Search" xml:space="preserve">
+    <value>Search projects...</value>
+  </data>
+
+  <!-- Status Bar -->
+  <data name="Status_Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="Status_ProjectCount" xml:space="preserve">
+    <value>📦 {0} projects</value>
+  </data>
+  <data name="Status_FolderCount" xml:space="preserve">
+    <value>📁 {0} folders</value>
+  </data>
+  <data name="Status_WorkspaceCount" xml:space="preserve">
+    <value>🚀 {0} workspaces</value>
+  </data>
+  <data name="Status_TagCount" xml:space="preserve">
+    <value>🏷️ {0} tag categories</value>
+  </data>
+  <data name="Status_TaggedProjects" xml:space="preserve">
+    <value>Tagged projects: {0}</value>
+  </data>
 </root>

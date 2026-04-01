@@ -128,4 +128,82 @@
   <data name="Tag_Remove" xml:space="preserve">
     <value>移除标签</value>
   </data>
+
+  <!-- 侧边栏 -->
+  <data name="Sidebar_WorkFolders" xml:space="preserve">
+    <value>📁 工作文件夹</value>
+  </data>
+  <data name="Sidebar_NewFolder" xml:space="preserve">
+    <value>新建文件夹</value>
+  </data>
+  <data name="Sidebar_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Sidebar_NewSubFolder" xml:space="preserve">
+    <value>新建子文件夹</value>
+  </data>
+  <data name="Sidebar_DeleteFolder" xml:space="preserve">
+    <value>删除文件夹</value>
+  </data>
+  <data name="Sidebar_Recent" xml:space="preserve">
+    <value>最近使用</value>
+  </data>
+  <data name="Sidebar_Favorites" xml:space="preserve">
+    <value>收藏夹</value>
+  </data>
+  <data name="Sidebar_Workspaces" xml:space="preserve">
+    <value>工作空间</value>
+  </data>
+  <data name="Sidebar_DevProjects" xml:space="preserve">
+    <value>开发项目</value>
+  </data>
+  <data name="Sidebar_WebApp" xml:space="preserve">
+    <value>Web 应用</value>
+  </data>
+  <data name="Sidebar_MobileApp" xml:space="preserve">
+    <value>移动应用</value>
+  </data>
+  <data name="Sidebar_DesktopApp" xml:space="preserve">
+    <value>桌面应用</value>
+  </data>
+  <data name="Sidebar_Learning" xml:space="preserve">
+    <value>学习资源</value>
+  </data>
+  <data name="Sidebar_Tutorials" xml:space="preserve">
+    <value>编程教程</value>
+  </data>
+  <data name="Sidebar_EBooks" xml:space="preserve">
+    <value>电子书</value>
+  </data>
+  <data name="Sidebar_AllProjects" xml:space="preserve">
+    <value>所有项目</value>
+  </data>
+  <data name="Sidebar_TagSettings" xml:space="preserve">
+    <value>标签设置</value>
+  </data>
+
+  <!-- 头部 -->
+  <data name="Header_Search" xml:space="preserve">
+    <value>搜索项目...</value>
+  </data>
+
+  <!-- 状态栏 -->
+  <data name="Status_Ready" xml:space="preserve">
+    <value>就绪</value>
+  </data>
+  <data name="Status_ProjectCount" xml:space="preserve">
+    <value>📦 共 {0} 个项目</value>
+  </data>
+  <data name="Status_FolderCount" xml:space="preserve">
+    <value>📁 {0} 个文件夹</value>
+  </data>
+  <data name="Status_WorkspaceCount" xml:space="preserve">
+    <value>🚀 {0} 个工作空间</value>
+  </data>
+  <data name="Status_TagCount" xml:space="preserve">
+    <value>🏷️ {0} 个标签分类</value>
+  </data>
+  <data name="Status_TaggedProjects" xml:space="preserve">
+    <value>标签项目: {0}</value>
+  </data>
 </root>

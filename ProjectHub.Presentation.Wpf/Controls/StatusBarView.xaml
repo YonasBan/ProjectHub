@@ -1,0 +1,68 @@
+<UserControl x:Class="ProjectHub.Presentation.Wpf.Controls.StatusBarView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignHeight="32" d:DesignWidth="800">
+    <Border Background="{StaticResource BgTertiaryBrush}"
+            BorderBrush="{StaticResource BorderBrush}"
+            BorderThickness="0,1,0,0">
+        <Grid Height="32">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Ready Status -->
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="16,0,0,0">
+                <!-- Green Dot -->
+                <Border Width="8" Height="8"
+                        CornerRadius="4"
+                        Background="{StaticResource SuccessBrush}"
+                        VerticalAlignment="Center"
+                        Margin="0,0,8,0"/>
+                <TextBlock x:Name="StatusReadyText"
+                           Text="&#x5C31;&#x7EEA;"
+                           Style="{StaticResource StatusTextStyle}"/>
+            </StackPanel>
+
+            <!-- Project Count -->
+            <TextBlock Grid.Column="1" x:Name="ProjectCountText"
+                       Text="&#x1F4E6; &#x5171; 45 &#x4E2A;&#x9879;&#x76EE;"
+                       Style="{StaticResource StatusTextStyle}"
+                       Margin="24,0,0,0"/>
+
+            <!-- Folder Count -->
+            <TextBlock Grid.Column="2" x:Name="FolderCountText"
+                       Text="&#x1F4C1; 15 &#x4E2A;&#x6587;&#x4EF6;&#x5939;"
+                       Style="{StaticResource StatusTextStyle}"
+                       Margin="24,0,0,0"/>
+
+            <!-- Workspace Count -->
+            <TextBlock Grid.Column="3" x:Name="WorkspaceCountText"
+                       Text="&#x1F680; 8 &#x4E2A;&#x5DE5;&#x4F5C;&#x7A7A;&#x95F4;"
+                       Style="{StaticResource StatusTextStyle}"
+                       Margin="24,0,0,0"/>
+
+            <!-- Tag Count -->
+            <TextBlock Grid.Column="4" x:Name="TagCountText"
+                       Text="&#x1F3F7;&#xFE0F; 8 &#x4E2A;&#x6807;&#x7B7E;&#x5206;&#x7C7B;"
+                       Style="{StaticResource StatusTextStyle}"
+                       Margin="24,0,0,0"/>
+
+            <!-- Tagged Projects (right aligned) -->
+            <TextBlock Grid.Column="6" x:Name="TaggedProjectsText"
+                       Text="&#x6807;&#x7B7E;&#x9879;&#x76EE;: 156"
+                       Style="{StaticResource StatusTextStyle}"
+                       Margin="0,0,16,0"/>
+        </Grid>
+    </Border>
+</UserControl>
