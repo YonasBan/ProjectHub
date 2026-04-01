@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
-using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 
 namespace ProjectHub.Application.ViewModels;
 
@@ -18,6 +21,7 @@ public class MainViewModel : ViewModelBase
     private readonly IProjectAppService _projectAppService;
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
+    private readonly ILocalizationService _localizationService;
 
     /// <summary>
     /// 项目列表 (Observable)
@@ -96,29 +100,104 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
 
+    /// <summary>
+    /// 切换到中文命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SwitchToChineseCommand { get; }
+
+    /// <summary>
+    /// 切换到英文命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> SwitchToEnglishCommand { get; }
+
+    /// <summary>
+    /// 当前语言显示文本
+    /// </summary>
+    private string _currentLanguageText = string.Empty;
+    public string CurrentLanguageText
+    {
+        get => _currentLanguageText;
+        set => this.RaiseAndSetIfChanged(ref _currentLanguageText, value);
+    }
+
+    /// <summary>
+    /// 测试文本 (用于验证本地化)
+    /// </summary>
+    private string _testText = string.Empty;
+    public string TestText
+    {
+        get => _testText;
+        set => this.RaiseAndSetIfChanged(ref _testText, value);
+    }
+
     public MainViewModel(
         ILogger<MainViewModel> logger,
         IProjectAppService projectAppService,
         IWorkFolderAppService workFolderAppService,
-        IWorkSpaceAppService workSpaceAppService)
-        : base(logger)
+        IWorkSpaceAppService workSpaceAppService,
+        ILocalizationService localizationService,
+        IScheduler mainThreadScheduler)
+        : base(logger, mainThreadScheduler,localizationService)
     {
         _projectAppService = projectAppService;
         _workFolderAppService = workFolderAppService;
         _workSpaceAppService = workSpaceAppService;
+        _localizationService = localizationService;
 
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
         SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
+        SwitchToChineseCommand = ReactiveCommand.CreateFromTask(
+            SwitchToChineseAsync,
+            outputScheduler: MainThreadScheduler);
+        SwitchToEnglishCommand = ReactiveCommand.CreateFromTask(
+            SwitchToEnglishAsync,
+            outputScheduler: MainThreadScheduler);
 
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
         SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
         RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
+        SwitchToChineseCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换到中文时发生错误"));
+        SwitchToEnglishCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换到英文时发生错误"));
+
+        // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
+        _localizationService.CultureChanged
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(_ => UpdateTestText())
+            .DisposeWith(Disposables);
+
+        // 初始化测试文本
+        UpdateTestText();
 
         // 加载数据
         LoadProjectsCommand.Execute(Unit.Default).Subscribe();
+    }
+
+    /// <summary>
+    /// 更新测试文本
+    /// </summary>
+    private void UpdateTestText()
+    {
+        TestText = _localizationService["Project_Create"];
+        CurrentLanguageText = _localizationService.CurrentCulture.Name;
+    }
+
+    /// <summary>
+    /// 切换到中文（确保在 UI 线程执行）
+    /// </summary>
+    private async Task SwitchToChineseAsync()
+    {
+        await _localizationService.SetCultureAsync(new CultureInfo("zh-CN"));
+    }
+
+    /// <summary>
+    /// 切换到英文（确保在 UI 线程执行）
+    /// </summary>
+    private async Task SwitchToEnglishAsync()
+    {
+        await _localizationService.SetCultureAsync(new CultureInfo("en-US"));
     }
 
     /// <summary>

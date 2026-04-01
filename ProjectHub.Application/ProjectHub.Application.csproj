@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="ReactiveUI" Version="23.1.8" />
+    <PackageReference Include="System.CodeDom" Version="10.0.5" />
     <!-- System.Reactive version is managed by ReactiveUI -->
   </ItemGroup>
 
@@ -16,6 +17,22 @@
     <ProjectReference Include="..\ProjectHub.Core\ProjectHub.Core.csproj" />
     <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
     <ProjectReference Include="..\ProjectHub.Resources\ProjectHub.Resources.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Localization\StringsWrapper.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>StringsWrapper.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Localization\StringsWrapper.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>StringsWrapper.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
 
 </Project>

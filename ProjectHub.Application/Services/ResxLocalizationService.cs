@@ -14,6 +14,7 @@ public class ResxLocalizationService : ILocalizationService
 {
     private readonly ResourceManager _resourceManager;
     private readonly Subject<CultureInfo> _cultureChanged = new();
+    private readonly IScheduler mainThreadScheduler;
     private CultureInfo _currentCulture;
 
     /// <summary>
@@ -21,10 +22,11 @@ public class ResxLocalizationService : ILocalizationService
     /// </summary>
     /// <param name="baseName">资源文件的基本名称（不含文化信息和扩展名）</param>
     /// <param name="assembly">包含资源文件的程序集</param>
-    public ResxLocalizationService(string baseName, System.Reflection.Assembly assembly)
+    public ResxLocalizationService(string baseName, System.Reflection.Assembly assembly, IScheduler mainThreadScheduler)
     {
         _resourceManager = new ResourceManager(baseName, assembly);
         _currentCulture = CultureInfo.CurrentUICulture;
+        this.mainThreadScheduler = mainThreadScheduler;
     }
 
     /// <summary>
@@ -84,16 +86,14 @@ public class ResxLocalizationService : ILocalizationService
             throw new ArgumentNullException(nameof(culture));
 
         _currentCulture = culture;
-        
         // 设置线程的文化信息
         CultureInfo.CurrentUICulture = culture;
         CultureInfo.CurrentCulture = culture;
         Thread.CurrentThread.CurrentUICulture = culture;
         Thread.CurrentThread.CurrentCulture = culture;
-
+        Resources.Strings.Strings.Culture = culture;
         // 通知观察者文化已变更
         _cultureChanged.OnNext(culture);
-
         return Task.CompletedTask;
     }
 }

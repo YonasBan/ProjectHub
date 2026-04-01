@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -27,6 +27,7 @@
   <!-- ReactiveUI for MVVM -->
   <ItemGroup>
     <PackageReference Include="ReactiveUI" Version="23.1.8" />
+    <PackageReference Include="ReactiveUI.WPF" Version="22.3.1" />
     <PackageReference Include="System.Reactive" Version="6.1.0" />
   </ItemGroup>
 

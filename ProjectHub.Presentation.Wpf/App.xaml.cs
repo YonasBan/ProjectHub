@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reactive.Concurrency;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,8 @@ using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
 using ProjectHub.Presentation.Wpf.Services;
+using ReactiveUI;
+using ReactiveUI.Builder;
 namespace ProjectHub.Presentation.Wpf;
 
 /// <summary>
@@ -49,7 +52,7 @@ public partial class App : System.Windows.Application
 
         // Resolve logger and platform service after host is built
         _logger = Services.GetRequiredService<ILogger<App>>();
-        
+
         // Register global exception handler
         this.DispatcherUnhandledException += App_DispatcherUnhandledException;
     }
@@ -151,6 +154,13 @@ public partial class App : System.Windows.Application
     {
         var configuration = context.Configuration;
 
+        // ========== Register Platform-Specific Services (WPF) ==========
+        services.AddSingleton<IDialogService, DialogService>();
+        // 或者
+        var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
+        // ========== Register WPF Scheduler (must be before other registrations) ==========
+        services.AddSingleton<IScheduler>(scheduler);
+
         // ========== Register Localization Service ==========
         RegisterLocalizationServices(services);
 
@@ -159,15 +169,12 @@ public partial class App : System.Windows.Application
 
         // ========== Register UI Services (ViewModels) ==========
         services.AddUIServices();
-        
+
         // ========== Register Application Services ==========
         services.AddAppServices();
 
         // ========== Register Infrastructure Services ==========
         services.AddInfrastructureServices(configuration);
-        
-        // ========== Register Platform-Specific Services (WPF) ==========
-        services.AddSingleton<IDialogService, DialogService>();
     }
 
     /// <summary>
@@ -179,9 +186,11 @@ public partial class App : System.Windows.Application
         services.AddSingleton<ILocalizationService>(provider =>
         {
             var assembly = Assembly.Load("ProjectHub.Resources");
+            var scheduler = provider.GetRequiredService<IScheduler>();
             return new ResxLocalizationService(
                 "ProjectHub.Resources.Strings.Strings",
-                assembly);
+                assembly,
+                scheduler);
         });
     }
 
@@ -243,7 +252,7 @@ public partial class App : System.Windows.Application
         System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
         _logger.LogCritical(e.Exception, "Unhandled exception occurred");
-        
+
         try
         {
             var dialogService = Services.GetService<IDialogService>();
@@ -256,7 +265,7 @@ public partial class App : System.Windows.Application
         {
             // Ignore dialog errors
         }
-        
+
         // Mark exception as handled to prevent crash
         e.Handled = true;
     }
