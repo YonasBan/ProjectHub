@@ -183,6 +183,18 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _tagCount, value);
     }
 
+    // ========== 侧边栏树形数据 ==========
+
+    /// <summary>
+    /// 侧边栏树形节点集合
+    /// </summary>
+    private ObservableCollection<TreeItemViewModel>? _sidebarTreeItems;
+    public ObservableCollection<TreeItemViewModel> SidebarTreeItems
+    {
+        get => _sidebarTreeItems ??= new();
+        set => this.RaiseAndSetIfChanged(ref _sidebarTreeItems, value);
+    }
+
     public MainViewModel(
         ILogger<MainViewModel> logger,
         IProjectAppService projectAppService,
@@ -218,7 +230,11 @@ public class MainViewModel : ViewModelBase
         // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
         _localizationService.CultureChanged
             .ObserveOn(MainThreadScheduler)
-            .Subscribe(_ => UpdateTestText())
+            .Subscribe(_ => 
+            {
+                UpdateTestText();
+                BuildSidebarTree(); // 语言变化时重建树形结构
+            })
             .DisposeWith(Disposables);
 
         // 初始化测试文本
@@ -226,6 +242,11 @@ public class MainViewModel : ViewModelBase
 
         // 加载所有数据
         _ = LoadAllDataAsync();
+        
+        // 订阅数据集合变化，自动重建树形结构
+        Projects.CollectionChanged += (_, _) => BuildSidebarTree();
+        WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
+        WorkSpaces.CollectionChanged += (_, _) => BuildSidebarTree();
     }
 
     private async Task LoadAllDataAsync()
@@ -391,6 +412,58 @@ public class MainViewModel : ViewModelBase
         {
             Logger.LogError(ex, "加载工作空间列表时发生错误");
         }
+    }
+
+    /// <summary>
+    /// 构建侧边栏树形结构
+    /// 
+    /// DDD 设计要点:
+    /// - 纯业务逻辑，不包含 UI 操作
+    /// - 响应式调用，当数据或语言变化时自动重建
+    /// - 符合跨平台设计要求
+    /// </summary>
+    private void BuildSidebarTree()
+    {
+        if (SidebarTreeItems == null)
+            return;
+
+        SidebarTreeItems.Clear();
+
+        // Recent (最近使用)
+        var recentCount = Projects.Count(p => p.LastOpenedAt.HasValue);
+        var recent = new TreeItemViewModel(L.Sidebar_Recent, "\uD83D\uDD52", recentCount, TreeItemType.RecentProject)
+        { IsSelected = true };
+        SidebarTreeItems.Add(recent);
+
+        // Favorites (收藏夹)
+        var favoriteCount = Projects.Count(p => p.IsFavorite);
+        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, "\u2B50", favoriteCount, TreeItemType.FavoriteProject);
+        SidebarTreeItems.Add(favorites);
+
+        // Workspaces (工作空间)
+        var workspaces = new TreeItemViewModel(L.Sidebar_Workspaces, "", WorkSpaces.Count, TreeItemType.WorkSpace);
+        foreach (var ws in WorkSpaces)
+        {
+            workspaces.Children.Add(new TreeItemViewModel(ws.Name, "\uD83D\uDCC1", ws.ProjectCount, TreeItemType.WorkSpace, ws.Id));
+        }
+        SidebarTreeItems.Add(workspaces);
+
+        // Work Folders (工作文件夹)
+        foreach (var folder in WorkFolders)
+        {
+            var folderNode = new TreeItemViewModel(folder.Name, "\uD83D\uDCC1", folder.ProjectCount, TreeItemType.WorkFolder, folder.Id);
+            SidebarTreeItems.Add(folderNode);
+        }
+
+        // All Projects (所有项目)
+        var allProjects = new TreeItemViewModel(L.Sidebar_AllProjects, "\uD83D\uDCE6", Projects.Count, TreeItemType.AllProjects);
+        SidebarTreeItems.Add(allProjects);
+
+        // Tag Settings (标签设置) - 暂时使用固定数量，后续从 TagAppService 获取
+        var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, "\uD83C\uDFF7\uFE0F", 0, TreeItemType.TagSettings);
+        SidebarTreeItems.Add(tagSettings);
+
+        Logger.LogDebug("侧边栏树形结构已重建");
     }
 }
 
