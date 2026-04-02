@@ -2,7 +2,6 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Presentation.Wpf.Models;
@@ -14,16 +13,12 @@ public partial class SidebarView : UserControl
 {
     private ObservableCollection<TreeItemViewModel> _treeItems = new();
     private readonly LocalizedStrings _l = Locator.Current.GetService<LocalizedStrings>()!;
-    private readonly ILocalizationService? _localizationService = Locator.Current.GetService<ILocalizationService>();
     public LocalizedStrings L => _l;
 
     public SidebarView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
-        
-        // 订阅语言改变事件
-        _localizationService?.CultureChanged.Subscribe(_ => RefreshTreeData());
     }
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
