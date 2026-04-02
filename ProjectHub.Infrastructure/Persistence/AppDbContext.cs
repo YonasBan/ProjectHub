@@ -245,13 +245,13 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            entity.HasOne<Project>()
-                .WithMany()
+            entity.HasOne(p => p.Project)
+                .WithMany(p => p.ProjectTags)
                 .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<Tag>()
-                .WithMany()
+            entity.HasOne(p => p.Tag)
+                .WithMany(t => t.ProjectTags)
                 .HasForeignKey(e => e.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -267,13 +267,13 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            entity.HasOne<WorkSpace>()
-                .WithMany()
+            entity.HasOne(w => w.WorkSpace)
+                .WithMany(w => w.WorkSpaceTags)
                 .HasForeignKey(e => e.WorkSpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<Tag>()
-                .WithMany()
+            entity.HasOne(w => w.Tag)
+                .WithMany(t => t.WorkSpaceTags)
                 .HasForeignKey(e => e.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
 

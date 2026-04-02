@@ -1,155 +1,170 @@
-<UserControl x:Class="ProjectHub.Presentation.Wpf.Controls.SidebarView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:models="clr-namespace:ProjectHub.Presentation.Wpf.Models"
-             xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
-             mc:Ignorable="d"
-             d:DesignWidth="260">
+<UserControl
+    x:Class="ProjectHub.Presentation.Wpf.Controls.SidebarView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="clr-namespace:ProjectHub.Presentation.Wpf.Models"
+    xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+    d:DesignWidth="260"
+    mc:Ignorable="d">
     <UserControl.Resources>
-        <converters:InverseBoolToVisibilityConverter x:Key="InvBoolVis"/>
-        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InvBoolVis" />
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
 
-    <Border Background="{StaticResource BgSecondaryBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
-            BorderThickness="0,0,1,0">
+    <Border
+        Background="{StaticResource BgSecondaryBrush}"
+        BorderBrush="{StaticResource BorderBrush}"
+        BorderThickness="0,0,1,0">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <!-- Sidebar Header -->
-            <Border Grid.Row="0"
-                    Padding="16,12"
-                    BorderBrush="{StaticResource BorderBrush}"
-                    BorderThickness="0,0,0,1">
+            <!--  Sidebar Header  -->
+            <Border
+                Grid.Row="0"
+                Padding="16,12"
+                BorderBrush="{StaticResource BorderBrush}"
+                BorderThickness="0,0,0,1">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0"
-                               Text="{Binding L.Sidebar_WorkFolders, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                               Style="{StaticResource SidebarTitleStyle}"/>
+                    <TextBlock
+                        Grid.Column="0"
+                        Style="{StaticResource SidebarTitleStyle}"
+                        Text="{Binding L.Sidebar_WorkFolders, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Style="{StaticResource IconButtonStyle}"
-                                Content="+" ToolTip="{Binding L.Sidebar_NewFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                        <Button Style="{StaticResource IconButtonStyle}"
-                                Content="&#x27F3;" ToolTip="{Binding L.Sidebar_Refresh, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <Button
+                            Content="+"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="{Binding L.Sidebar_NewFolder, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        <Button
+                            Content="&#x27F3;"
+                            Style="{StaticResource IconButtonStyle}"
+                            ToolTip="{Binding L.Sidebar_Refresh, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Tree View -->
-            <TreeView Grid.Row="1"
-                      x:Name="NavigationTree"
-                      Background="Transparent"
-                      BorderThickness="0"
-                      Padding="0,8,0,8"
-                      Loaded="NavigationTree_OnLoaded"
-                      ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}">
+            <!--  Tree View  -->
+            <TreeView
+                x:Name="NavigationTree"
+                Grid.Row="1"
+                Padding="0,8,0,8"
+                Background="Transparent"
+                BorderThickness="0"
+                ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
+                Loaded="NavigationTree_OnLoaded">
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type models:TreeItemViewModel}"
-                                            ItemsSource="{Binding Children}">
-                        <Border x:Name="ItemBorder"
-                                Padding="8,6,16,6"
-                                Background="Transparent"
-                                CornerRadius="0"
-                                Tag="{Binding}"
-                                MouseEnter="ItemBorder_MouseEnter"
-                                MouseLeave="ItemBorder_MouseLeave"
-                                MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp">
+                    <HierarchicalDataTemplate DataType="{x:Type models:TreeItemViewModel}" ItemsSource="{Binding Children}">
+                        <Border
+                            x:Name="ItemBorder"
+                            Padding="8,6,16,6"
+                            Background="Transparent"
+                            CornerRadius="0"
+                            MouseEnter="ItemBorder_MouseEnter"
+                            MouseLeave="ItemBorder_MouseLeave"
+                            MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp"
+                            Tag="{Binding}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="16"/>
-                                    <ColumnDefinition Width="24"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="24" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <!-- Expand/Collapse Arrow -->
-                                <TextBlock Grid.Column="0"
-                                           x:Name="ExpandArrow"
-                                           Text="&#x25B6;"
-                                           FontSize="10"
-                                           Foreground="{StaticResource TextMutedBrush}"
-                                           VerticalAlignment="Center"
-                                           HorizontalAlignment="Center"
-                                           RenderTransformOrigin="0.5,0.5"
-                                           Tag="{Binding}">
+                                <!--  Expand/Collapse Arrow  -->
+                                <TextBlock
+                                    x:Name="ExpandArrow"
+                                    Grid.Column="0"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="10"
+                                    Foreground="{StaticResource TextMutedBrush}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Tag="{Binding}"
+                                    Text="&#x25B6;">
+
                                     <TextBlock.RenderTransform>
-                                        <RotateTransform x:Name="ExpandRotation" Angle="0"/>
+                                        <RotateTransform x:Name="ExpandRotation" Angle="0" />
                                     </TextBlock.RenderTransform>
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Setter Property="Visibility" Value="Visible" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Children.Count}" Value="0">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Setter Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsSpecial}" Value="True">
-                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Setter Property="Visibility" Value="Collapsed" />
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding IsExpanded}" Value="True">
-                                                    <Setter Property="Text" Value="&#x25BC;"/>
+                                                    <Setter Property="Text" Value="&#x25BC;" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <!-- Icon -->
-                                <Border Grid.Column="1"
-                                        Width="20" Height="20"
-                                        CornerRadius="4"
-                                        Background="{StaticResource AccentBlueBrush}"
-                                        VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding Icon}"
-                                               FontSize="12"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
+                                <!--  Icon  -->
+                                <svg:SvgViewbox
+                                    Grid.Column="1"
+                                    Width="18"
+                                    Height="18"
+                                    VerticalAlignment="Center"
+                                    Source="{Binding IconPath}" />
+
+                                <!--  Label  -->
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    FontSize="13"
+                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    Text="{Binding Name}" />
+
+                                <!--  Count Badge  -->
+                                <Border
+                                    Grid.Column="3"
+                                    Margin="8,0,0,0"
+                                    Style="{StaticResource TreeCountBadgeStyle}">
+                                    <TextBlock
+                                        FontSize="11"
+                                        Foreground="{StaticResource TextMutedBrush}"
+                                        Text="{Binding Count}" />
                                 </Border>
 
-                                <!-- Label -->
-                                <TextBlock Grid.Column="2"
-                                           Text="{Binding Name}"
-                                           FontSize="13"
-                                           Foreground="{StaticResource TextPrimaryBrush}"
-                                           VerticalAlignment="Center"
-                                           Margin="8,0,0,0"/>
+                                <!--  Add Button (visible on hover)  -->
+                                <Button
+                                    Grid.Column="4"
+                                    Width="20"
+                                    Height="20"
+                                    Content="+"
+                                    FontSize="14"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    ToolTip="{Binding L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
 
-                                <!-- Count Badge -->
-                                <Border Grid.Column="3"
-                                        Style="{StaticResource TreeCountBadgeStyle}"
-                                        Margin="8,0,0,0">
-                                    <TextBlock Text="{Binding Count}"
-                                               FontSize="11"
-                                               Foreground="{StaticResource TextMutedBrush}"/>
-                                </Border>
-
-                                <!-- Add Button (visible on hover) -->
-                                <Button Grid.Column="4"
-                                        Style="{StaticResource IconButtonStyle}"
-                                        Width="20" Height="20"
-                                        Content="+"
-                                        FontSize="14"
-                                        Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}"
-                                        ToolTip="{Binding L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-
-                                <!-- Delete Button (visible on hover) -->
-                                <Button Grid.Column="5"
-                                        Style="{StaticResource IconButtonStyle}"
-                                        Width="20" Height="20"
-                                        Content="&#x00D7;"
-                                        FontSize="14"
-                                        Margin="4,0,0,0"
-                                        Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}"
-                                        ToolTip="{Binding L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                <!--  Delete Button (visible on hover)  -->
+                                <Button
+                                    Grid.Column="5"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="4,0,0,0"
+                                    Content="&#x00D7;"
+                                    FontSize="14"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    ToolTip="{Binding L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
                             </Grid>
                         </Border>
                     </HierarchicalDataTemplate>

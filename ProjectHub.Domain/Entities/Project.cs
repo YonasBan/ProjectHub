@@ -103,6 +103,13 @@ public class Project : BaseEntity
     /// </summary>
     public long? CleanableSpaceBytes { get; private set; }
 
+    // ========== 导航属性 ==========
+
+    /// <summary>
+    /// 关联的标签
+    /// </summary>
+    public ICollection<ProjectTag> ProjectTags { get; private set; } = new List<ProjectTag>();
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>

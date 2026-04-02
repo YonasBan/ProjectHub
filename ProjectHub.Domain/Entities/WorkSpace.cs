@@ -70,6 +70,13 @@ public class WorkSpace : BaseEntity
     /// </summary>
     public int DefaultLaunchIntervalSeconds { get; private set; }
 
+    // ========== 导航属性 ==========
+
+    /// <summary>
+    /// 关联的标签
+    /// </summary>
+    public ICollection<WorkSpaceTag> WorkSpaceTags { get; private set; } = new List<WorkSpaceTag>();
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>

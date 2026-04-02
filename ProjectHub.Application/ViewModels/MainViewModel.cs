@@ -131,6 +131,58 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _testText, value);
     }
 
+    // ========== 侧边栏统计属性 ==========
+
+    /// <summary>
+    /// 所有项目总数
+    /// </summary>
+    private int _totalProjectCount;
+    public int TotalProjectCount
+    {
+        get => _totalProjectCount;
+        set => this.RaiseAndSetIfChanged(ref _totalProjectCount, value);
+    }
+
+    /// <summary>
+    /// 收藏项目数量
+    /// </summary>
+    private int _favoriteProjectCount;
+    public int FavoriteProjectCount
+    {
+        get => _favoriteProjectCount;
+        set => this.RaiseAndSetIfChanged(ref _favoriteProjectCount, value);
+    }
+
+    /// <summary>
+    /// 工作文件夹总数
+    /// </summary>
+    private int _totalFolderCount;
+    public int TotalFolderCount
+    {
+        get => _totalFolderCount;
+        set => this.RaiseAndSetIfChanged(ref _totalFolderCount, value);
+    }
+
+    /// <summary>
+    /// 工作空间总数
+    /// </summary>
+    private int _totalWorkspaceCount;
+    public int TotalWorkspaceCount
+    {
+        get => _totalWorkspaceCount;
+        set => this.RaiseAndSetIfChanged(ref _totalWorkspaceCount, value);
+    }
+
+    /// <summary>
+    /// 标签分类数量
+    /// </summary>
+    private int _tagCount;
+    public int TagCount
+    {
+        get => _tagCount;
+        set => this.RaiseAndSetIfChanged(ref _tagCount, value);
+    }
+
     public MainViewModel(
         ILogger<MainViewModel> logger,
         IProjectAppService projectAppService,
@@ -172,8 +224,24 @@ public class MainViewModel : ViewModelBase
         // 初始化测试文本
         UpdateTestText();
 
-        // 加载数据
-        LoadProjectsCommand.Execute(Unit.Default).Subscribe();
+        // 加载所有数据
+        _ = LoadAllDataAsync();
+    }
+
+    private async Task LoadAllDataAsync()
+    {
+        await LoadProjectsAsync();
+        await LoadWorkFoldersAsync();
+        await LoadWorkSpacesAsync();
+        UpdateStatistics();
+    }
+
+    private void UpdateStatistics()
+    {
+        TotalProjectCount = Projects.Count;
+        FavoriteProjectCount = Projects.Count(p => p.IsFavorite);
+        TotalFolderCount = WorkFolders.Count;
+        TotalWorkspaceCount = WorkSpaces.Count;
     }
 
     /// <summary>
@@ -269,6 +337,7 @@ public class MainViewModel : ViewModelBase
             await LoadProjectsAsync();
             await LoadWorkFoldersAsync();
             await LoadWorkSpacesAsync();
+            UpdateStatistics();
             
             Logger.LogInformation("数据刷新完成");
         }

@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using ProjectHub.Application.Localization;
+using ProjectHub.Application.ViewModels;
 using ProjectHub.Presentation.Wpf.Models;
 using Splat;
 
@@ -17,51 +18,73 @@ public partial class SidebarView : UserControl
     public SidebarView()
     {
         InitializeComponent();
-        InitializeTreeData();
+        DataContextChanged += OnDataContextChanged;
     }
 
-    private void InitializeTreeData()
+    private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
-        // Recent
-        var recent = new TreeItemViewModel(L.Sidebar_Recent, "\uD83D\uDD52", 12, isSpecial: true)
+        if (DataContext is MainViewModel vm)
+        {
+            vm.Projects.CollectionChanged += (_, _) => RefreshTreeData();
+            vm.WorkFolders.CollectionChanged += (_, _) => RefreshTreeData();
+            vm.WorkSpaces.CollectionChanged += (_, _) => RefreshTreeData();
+            RefreshTreeData();
+        }
+    }
+
+    private void RefreshTreeData()
+    {
+        if (DataContext is not MainViewModel vm) return;
+
+        _treeItems.Clear();
+
+        // Recent (最近使用)
+        var recentCount = vm.Projects.Count(p => p.LastOpenedAt.HasValue);
+        var recent = new TreeItemViewModel(L.Sidebar_Recent, "\uD83D\uDD52", recentCount, TreeItemType.RecentProject)
         { IsSelected = true };
         _treeItems.Add(recent);
 
-        // Favorites
-        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, "\u2B50", 5, isSpecial: true);
+        // Favorites (收藏夹)
+        var favoriteCount = vm.Projects.Count(p => p.IsFavorite);
+        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, "\u2B50", favoriteCount, TreeItemType.FavoriteProject);
         _treeItems.Add(favorites);
 
-        // Workspaces
-        var workspaces = new TreeItemViewModel(L.Sidebar_Workspaces, "", 8, isSpecial: true);
+        // Workspaces (工作空间)
+        var workspaces = new TreeItemViewModel(L.Sidebar_Workspaces, "", vm.WorkSpaces.Count, TreeItemType.WorkSpace);
+        foreach (var ws in vm.WorkSpaces)
+        {
+            workspaces.Children.Add(new TreeItemViewModel(ws.Name, "\uD83D\uDCC1", ws.ProjectCount, TreeItemType.WorkSpace, ws.Id));
+        }
         _treeItems.Add(workspaces);
 
-        // Dev Projects (expanded with children)
-        var devProjects = new TreeItemViewModel(L.Sidebar_DevProjects, "\uD83D\uDCC1", 12)
-        { IsExpanded = true };
-        devProjects.Children.Add(new TreeItemViewModel(L.Sidebar_WebApp, "\uD83D\uDCC1", 5));
-        devProjects.Children.Add(new TreeItemViewModel(L.Sidebar_MobileApp, "\uD83D\uDCC1", 4));
-        devProjects.Children.Add(new TreeItemViewModel(L.Sidebar_DesktopApp, "\uD83D\uDCC1", 3));
-        _treeItems.Add(devProjects);
+        // Work Folders (工作文件夹)
+        foreach (var folder in vm.WorkFolders)
+        {
+            var folderNode = new TreeItemViewModel(folder.Name, "\uD83D\uDCC1", folder.ProjectCount, TreeItemType.WorkFolder, folder.Id);
+            _treeItems.Add(folderNode);
+        }
 
-        // Learning Resources (expanded with children)
-        var learning = new TreeItemViewModel(L.Sidebar_Learning, "\uD83D\uDCC1", 8)
-        { IsExpanded = true };
-        learning.Children.Add(new TreeItemViewModel(L.Sidebar_Tutorials, "\uD83D\uDCC1", 3));
-        learning.Children.Add(new TreeItemViewModel(L.Sidebar_EBooks, "\uD83D\uDCC1", 5));
-        _treeItems.Add(learning);
-
-        // All Projects
-        var allProjects = new TreeItemViewModel(L.Sidebar_AllProjects, "\uD83D\uDCE6", 45);
+        // All Projects (所有项目)
+        var allProjects = new TreeItemViewModel(L.Sidebar_AllProjects, "\uD83D\uDCE6", vm.Projects.Count, TreeItemType.AllProjects);
         _treeItems.Add(allProjects);
 
-        // Tag Settings
-        var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, "\uD83C\uDFF7\uFE0F", 8, isSpecial: true);
+        // Tag Settings (标签设置) - 暂时使用固定数量，后续从 TagAppService 获取
+        var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, "\uD83C\uDFF7\uFE0F", 0, TreeItemType.TagSettings);
         _treeItems.Add(tagSettings);
+
+        // 刷新 TreeView
+        if (NavigationTree.ItemsSource != _treeItems)
+        {
+            NavigationTree.ItemsSource = _treeItems;
+        }
     }
 
     private void NavigationTree_OnLoaded(object sender, RoutedEventArgs e)
     {
-        NavigationTree.ItemsSource = _treeItems;
+        if (DataContext is MainViewModel vm)
+        {
+            RefreshTreeData();
+        }
     }
 
     private void ItemBorder_MouseEnter(object sender, MouseEventArgs e)

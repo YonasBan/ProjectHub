@@ -158,7 +158,6 @@ public partial class App : System.Windows.Application
         var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
         // ========== Register WPF Scheduler (must be before other registrations) ==========
         services.AddSingleton<IScheduler>(scheduler);
-
         // ========== Register Localization Service ==========
         RegisterLocalizationServices(services);
 

@@ -1,3 +1,4 @@
+using ProjectHub.Presentation.Wpf.Services;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -5,21 +6,37 @@ using System.Windows.Input;
 
 namespace ProjectHub.Presentation.Wpf.Models;
 
+public enum TreeItemType
+{
+    Special,
+    RecentProject,
+    FavoriteProject,
+    WorkFolder,
+    WorkSpace,
+    AllProjects,
+    TagSettings
+}
+
 public class TreeItemViewModel : ReactiveObject
 {
-    public TreeItemViewModel(string name, string icon, int count, bool isSpecial = false)
+    public TreeItemViewModel(string name, string icon, int count, TreeItemType itemType = TreeItemType.Special, long id = 0)
     {
         Name = name;
         Icon = icon;
         Count = count;
-        IsSpecial = isSpecial;
+        ItemType = itemType;
+        Id = id;
+        IconPath = IconPathMapper.GetIconPath(itemType);
         Children = new ObservableCollection<TreeItemViewModel>();
     }
 
+    public long Id { get; }
     public string Name { get; }
     public string Icon { get; }
-    public int Count { get; }
-    public bool IsSpecial { get; }
+    public string IconPath { get; }
+    public int Count { get; set; }
+    public bool IsSpecial => ItemType == TreeItemType.Special;
+    public TreeItemType ItemType { get; }
 
     private bool _isExpanded;
     public bool IsExpanded
