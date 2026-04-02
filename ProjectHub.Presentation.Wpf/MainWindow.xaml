@@ -28,8 +28,7 @@
         <controls:HeaderView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
 
         <!-- Left Sidebar -->
-        <controls:SidebarView Grid.Row="1" Grid.Column="0"
-                              DataContext="{Binding}"/>
+        <controls:SidebarView Grid.Row="1" Grid.Column="0"/>
 
         <!-- Main Content Area (placeholder) -->
         <Grid Grid.Row="1" Grid.Column="1"
