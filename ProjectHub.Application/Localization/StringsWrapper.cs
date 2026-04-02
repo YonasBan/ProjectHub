@@ -8,56 +8,59 @@ namespace ProjectHub.Application.Localization;
 
 public class LocalizedStrings : ReactiveObject
 {
+    private readonly ILocalizationService _loc;
+
     public LocalizedStrings(ILocalizationService loc)
     {
+        _loc = loc;
         loc.CultureChanged
            .Subscribe(_ => this.RaisePropertyChanged(string.Empty))
            .DisposeWith(Disposables);
     }
 
     private CompositeDisposable Disposables { get; } = new();
-    public string Confirm => ProjectHub.Resources.Strings.Strings.Confirm;
-    public string Cancel => ProjectHub.Resources.Strings.Strings.Cancel;
-    public string Delete => ProjectHub.Resources.Strings.Strings.Delete;
-    public string Save => ProjectHub.Resources.Strings.Strings.Save;
-    public string Edit => ProjectHub.Resources.Strings.Strings.Edit;
-    public string Close => ProjectHub.Resources.Strings.Strings.Close;
-    public string Project_Create => ProjectHub.Resources.Strings.Strings.Project_Create;
-    public string Project_Edit => ProjectHub.Resources.Strings.Strings.Project_Edit;
-    public string Project_Delete => ProjectHub.Resources.Strings.Strings.Project_Delete;
-    public string Project_Launch => ProjectHub.Resources.Strings.Strings.Project_Launch;
-    public string Project_OpenFolder => ProjectHub.Resources.Strings.Strings.Project_OpenFolder;
-    public string DeleteConfirm_Title => ProjectHub.Resources.Strings.Strings.DeleteConfirm_Title;
-    public string DeleteConfirm_Message => ProjectHub.Resources.Strings.Strings.DeleteConfirm_Message;
-    public string DeleteConfirm_Success => ProjectHub.Resources.Strings.Strings.DeleteConfirm_Success;
-    public string Message_SaveSuccess => ProjectHub.Resources.Strings.Strings.Message_SaveSuccess;
-    public string Message_SaveFailed => ProjectHub.Resources.Strings.Strings.Message_SaveFailed;
-    public string Message_LoadFailed => ProjectHub.Resources.Strings.Strings.Message_LoadFailed;
-    public string Group_Create => ProjectHub.Resources.Strings.Strings.Group_Create;
-    public string Tag_Add => ProjectHub.Resources.Strings.Strings.Tag_Add;
-    public string Tag_Remove => ProjectHub.Resources.Strings.Strings.Tag_Remove;
-    public string Sidebar_WorkFolders => ProjectHub.Resources.Strings.Strings.Sidebar_WorkFolders;
-    public string Sidebar_NewFolder => ProjectHub.Resources.Strings.Strings.Sidebar_NewFolder;
-    public string Sidebar_Refresh => ProjectHub.Resources.Strings.Strings.Sidebar_Refresh;
-    public string Sidebar_NewSubFolder => ProjectHub.Resources.Strings.Strings.Sidebar_NewSubFolder;
-    public string Sidebar_DeleteFolder => ProjectHub.Resources.Strings.Strings.Sidebar_DeleteFolder;
-    public string Sidebar_Recent => ProjectHub.Resources.Strings.Strings.Sidebar_Recent;
-    public string Sidebar_Favorites => ProjectHub.Resources.Strings.Strings.Sidebar_Favorites;
-    public string Sidebar_Workspaces => ProjectHub.Resources.Strings.Strings.Sidebar_Workspaces;
-    public string Sidebar_DevProjects => ProjectHub.Resources.Strings.Strings.Sidebar_DevProjects;
-    public string Sidebar_WebApp => ProjectHub.Resources.Strings.Strings.Sidebar_WebApp;
-    public string Sidebar_MobileApp => ProjectHub.Resources.Strings.Strings.Sidebar_MobileApp;
-    public string Sidebar_DesktopApp => ProjectHub.Resources.Strings.Strings.Sidebar_DesktopApp;
-    public string Sidebar_Learning => ProjectHub.Resources.Strings.Strings.Sidebar_Learning;
-    public string Sidebar_Tutorials => ProjectHub.Resources.Strings.Strings.Sidebar_Tutorials;
-    public string Sidebar_EBooks => ProjectHub.Resources.Strings.Strings.Sidebar_EBooks;
-    public string Sidebar_AllProjects => ProjectHub.Resources.Strings.Strings.Sidebar_AllProjects;
-    public string Sidebar_TagSettings => ProjectHub.Resources.Strings.Strings.Sidebar_TagSettings;
-    public string Header_Search => ProjectHub.Resources.Strings.Strings.Header_Search;
-    public string Status_Ready => ProjectHub.Resources.Strings.Strings.Status_Ready;
-    public string Status_ProjectCount => ProjectHub.Resources.Strings.Strings.Status_ProjectCount;
-    public string Status_FolderCount => ProjectHub.Resources.Strings.Strings.Status_FolderCount;
-    public string Status_WorkspaceCount => ProjectHub.Resources.Strings.Strings.Status_WorkspaceCount;
-    public string Status_TagCount => ProjectHub.Resources.Strings.Strings.Status_TagCount;
-    public string Status_TaggedProjects => ProjectHub.Resources.Strings.Strings.Status_TaggedProjects;
+    public string Confirm => _loc["Confirm"];
+    public string Cancel => _loc["Cancel"];
+    public string Delete => _loc["Delete"];
+    public string Save => _loc["Save"];
+    public string Edit => _loc["Edit"];
+    public string Close => _loc["Close"];
+    public string Project_Create => _loc["Project_Create"];
+    public string Project_Edit => _loc["Project_Edit"];
+    public string Project_Delete => _loc["Project_Delete"];
+    public string Project_Launch => _loc["Project_Launch"];
+    public string Project_OpenFolder => _loc["Project_OpenFolder"];
+    public string DeleteConfirm_Title => _loc["DeleteConfirm_Title"];
+    public string DeleteConfirm_Message => _loc["DeleteConfirm_Message"];
+    public string DeleteConfirm_Success => _loc["DeleteConfirm_Success"];
+    public string Message_SaveSuccess => _loc["Message_SaveSuccess"];
+    public string Message_SaveFailed => _loc["Message_SaveFailed"];
+    public string Message_LoadFailed => _loc["Message_LoadFailed"];
+    public string Group_Create => _loc["Group_Create"];
+    public string Tag_Add => _loc["Tag_Add"];
+    public string Tag_Remove => _loc["Tag_Remove"];
+    public string Sidebar_WorkFolders => _loc["Sidebar_WorkFolders"];
+    public string Sidebar_NewFolder => _loc["Sidebar_NewFolder"];
+    public string Sidebar_Refresh => _loc["Sidebar_Refresh"];
+    public string Sidebar_NewSubFolder => _loc["Sidebar_NewSubFolder"];
+    public string Sidebar_DeleteFolder => _loc["Sidebar_DeleteFolder"];
+    public string Sidebar_Recent => _loc["Sidebar_Recent"];
+    public string Sidebar_Favorites => _loc["Sidebar_Favorites"];
+    public string Sidebar_Workspaces => _loc["Sidebar_Workspaces"];
+    public string Sidebar_DevProjects => _loc["Sidebar_DevProjects"];
+    public string Sidebar_WebApp => _loc["Sidebar_WebApp"];
+    public string Sidebar_MobileApp => _loc["Sidebar_MobileApp"];
+    public string Sidebar_DesktopApp => _loc["Sidebar_DesktopApp"];
+    public string Sidebar_Learning => _loc["Sidebar_Learning"];
+    public string Sidebar_Tutorials => _loc["Sidebar_Tutorials"];
+    public string Sidebar_EBooks => _loc["Sidebar_EBooks"];
+    public string Sidebar_AllProjects => _loc["Sidebar_AllProjects"];
+    public string Sidebar_TagSettings => _loc["Sidebar_TagSettings"];
+    public string Header_Search => _loc["Header_Search"];
+    public string Status_Ready => _loc["Status_Ready"];
+    public string Status_ProjectCount => _loc["Status_ProjectCount"];
+    public string Status_FolderCount => _loc["Status_FolderCount"];
+    public string Status_WorkspaceCount => _loc["Status_WorkspaceCount"];
+    public string Status_TagCount => _loc["Status_TagCount"];
+    public string Status_TaggedProjects => _loc["Status_TaggedProjects"];
 }
