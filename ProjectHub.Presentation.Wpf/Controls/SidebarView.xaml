@@ -144,7 +144,7 @@
                                     Content="+"
                                     FontSize="14"
                                     Style="{StaticResource IconButtonStyle}"
-                                    ToolTip="{Binding L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
 
                                 <!--  Delete Button (visible on hover)  -->
@@ -156,7 +156,7 @@
                                     Content="&#x00D7;"
                                     FontSize="14"
                                     Style="{StaticResource IconButtonStyle}"
-                                    ToolTip="{Binding L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                    ToolTip="{Binding DataContext.L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                     Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
                             </Grid>
                         </Border>

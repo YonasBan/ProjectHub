@@ -282,7 +282,7 @@ public class MainViewModel : ViewModelBase
         // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
         _localizationService.CultureChanged
             .ObserveOn(MainThreadScheduler)
-            .Subscribe(_ => 
+            .Subscribe(_ =>
             {
                 UpdateTestText();
                 BuildSidebarTree(); // 语言变化时重建树形结构
@@ -293,13 +293,11 @@ public class MainViewModel : ViewModelBase
         // 初始化测试文本
         UpdateTestText();
 
-        // 加载所有数据
-        _ = LoadAllDataAsync();
-        
         // 订阅数据集合变化，自动重建树形结构
         Projects.CollectionChanged += (_, _) => BuildSidebarTree();
         WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
         WorkSpaces.CollectionChanged += (_, _) => BuildSidebarTree();
+        _ = LoadAllDataAsync();
     }
 
     private async Task LoadAllDataAsync()
@@ -316,7 +314,7 @@ public class MainViewModel : ViewModelBase
         FavoriteProjectCount = Projects.Count(p => p.IsFavorite);
         TotalFolderCount = WorkFolders.Count;
         TotalWorkspaceCount = WorkSpaces.Count;
-        
+
         // 更新格式化后的状态栏文本（支持语言切换）
         ProjectCountText = string.Format(L.Status_ProjectCount, TotalProjectCount);
         FolderCountText = string.Format(L.Status_FolderCount, TotalFolderCount);
@@ -358,15 +356,15 @@ public class MainViewModel : ViewModelBase
         try
         {
             Logger.LogInformation("开始加载项目列表");
-            
+
             var projects = await _projectAppService.GetAllActiveAsync();
-            
+
             Projects.Clear();
             foreach (var project in projects)
             {
                 Projects.Add(new ProjectViewModel(project));
             }
-            
+
             Logger.LogInformation($"成功加载 {projects.Count} 个项目");
         }
         catch (Exception ex)
@@ -389,15 +387,15 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation($"搜索关键字：{SearchKeyword}");
-            
+
             var projects = await _projectAppService.SearchAsync(SearchKeyword);
-            
+
             Projects.Clear();
             foreach (var project in projects)
             {
                 Projects.Add(new ProjectViewModel(project));
             }
-            
+
             Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
         }
         catch (Exception ex)
@@ -414,12 +412,12 @@ public class MainViewModel : ViewModelBase
         try
         {
             Logger.LogInformation("开始刷新所有数据");
-            
+
             await LoadProjectsAsync();
             await LoadWorkFoldersAsync();
             await LoadWorkSpacesAsync();
             UpdateStatistics();
-            
+
             Logger.LogInformation("数据刷新完成");
         }
         catch (Exception ex)
@@ -435,15 +433,15 @@ public class MainViewModel : ViewModelBase
         try
         {
             Logger.LogInformation("加载工作文件夹列表");
-            
+
             var workFolders = await _workFolderAppService.GetAllWithProjectCountAsync();
-            
+
             WorkFolders.Clear();
             foreach (var workFolder in workFolders)
             {
                 WorkFolders.Add(new WorkFolderViewModel(workFolder));
             }
-            
+
             Logger.LogInformation($"成功加载 {workFolders.Count} 个工作文件夹");
         }
         catch (Exception ex)
@@ -457,15 +455,15 @@ public class MainViewModel : ViewModelBase
         try
         {
             Logger.LogInformation("加载工作空间列表");
-            
+
             var workSpaces = await _workSpaceAppService.GetAllWithProjectCountAsync();
-            
+
             WorkSpaces.Clear();
             foreach (var workSpace in workSpaces)
             {
                 WorkSpaces.Add(new WorkSpaceViewModel(workSpace));
             }
-            
+
             Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
         }
         catch (Exception ex)
