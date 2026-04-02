@@ -77,6 +77,7 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="16" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -116,9 +117,18 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
+                                <!--  Icon (using SharpVectors for SVG)  -->
+                                <svg:SvgViewbox
+                                    Grid.Column="1"
+                                    Width="16"
+                                    Height="16"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Source="{Binding IconPath}" />
+
                                 <!--  Label  -->
                                 <TextBlock
-                                    Grid.Column="1"
+                                    Grid.Column="2"
                                     Margin="8,0,0,0"
                                     VerticalAlignment="Center"
                                     FontSize="13"
@@ -127,7 +137,7 @@
 
                                 <!--  Count Badge  -->
                                 <Border
-                                    Grid.Column="2"
+                                    Grid.Column="3"
                                     Margin="8,0,0,0"
                                     Style="{StaticResource TreeCountBadgeStyle}">
                                     <TextBlock
@@ -138,7 +148,7 @@
 
                                 <!--  Add Button (visible on hover)  -->
                                 <Button
-                                    Grid.Column="3"
+                                    Grid.Column="4"
                                     Width="20"
                                     Height="20"
                                     Content="+"
@@ -149,7 +159,7 @@
 
                                 <!--  Delete Button (visible on hover)  -->
                                 <Button
-                                    Grid.Column="4"
+                                    Grid.Column="5"
                                     Width="20"
                                     Height="20"
                                     Margin="4,0,0,0"

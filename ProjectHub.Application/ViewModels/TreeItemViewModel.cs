@@ -80,6 +80,11 @@ public class TreeItemViewModel : ReactiveObject
     }
 
     /// <summary>
+    /// 图标路径 (指向 ProjectHub.Resources/Icons 中的 SVG 文件)
+    /// </summary>
+    public string IconPath => GetIconPathForType(ItemType);
+
+    /// <summary>
     /// 子节点集合
     /// </summary>
     public ObservableCollection<TreeItemViewModel> Children { get; }
@@ -151,6 +156,23 @@ public class TreeItemViewModel : ReactiveObject
     {
         if (OnDelete != null)
             await OnDelete();
+    }
+
+    /// <summary>
+    /// 根据节点类型获取对应的图标路径
+    /// </summary>
+    private static string GetIconPathForType(TreeItemType itemType)
+    {
+        return itemType switch
+        {
+            TreeItemType.RecentProject => "/Icons/lateuse.svg",
+            TreeItemType.FavoriteProject => "/Icons/favorites.svg",
+            TreeItemType.WorkSpace => "/Icons/workspace.svg",
+            TreeItemType.WorkFolder => "/Icons/folder.svg",
+            TreeItemType.AllProjects => "/Icons/project.svg",
+            TreeItemType.TagSettings => "/Icons/tags.svg",
+            _ => "/Icons/folder.svg" // 默认图标
+        };
     }
 }
 
