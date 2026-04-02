@@ -2,12 +2,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using ProjectHub.Application.DependencyInjection;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
+using ProjectHub.Infrastructure.Persistence;
 using ProjectHub.Presentation.Wpf.Services;
 using Splat.Microsoft.Extensions.DependencyInjection;
 using System.Reactive.Concurrency;
@@ -227,8 +229,14 @@ public partial class App : System.Windows.Application
             _logger.LogInformation("Environment: {Environment}",
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
 
-            // Create a scope to resolve scoped services
+            // Apply database migrations
+            _logger.LogInformation("Applying database migrations...");
             using var scope = Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            await dbContext.Database.MigrateAsync();
+            _logger.LogInformation("Database migrations applied successfully");
+
+            // Create a scope to resolve scoped services
             var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
             mainWindow?.Show();
 
