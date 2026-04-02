@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ProjectHub.Application.ViewModels;
 using Splat;
@@ -9,12 +10,20 @@ namespace ProjectHub.Presentation.Wpf.Controls;
 public partial class StatusBarView : UserControl
 {
     private readonly LocalizedStrings _l = Locator.Current.GetService<LocalizedStrings>()!;
+    private readonly ILocalizationService? _localizationService = Locator.Current.GetService<ILocalizationService>();
     public LocalizedStrings L => _l;
 
     public StatusBarView()
     {
         InitializeComponent();
         DataContextChanged += OnDataContextChanged;
+        
+        // 订阅语言改变事件
+        _localizationService?.CultureChanged.Subscribe(_ => 
+        {
+            if (DataContext is MainViewModel vm)
+                UpdateTexts(vm);
+        });
     }
 
     private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)

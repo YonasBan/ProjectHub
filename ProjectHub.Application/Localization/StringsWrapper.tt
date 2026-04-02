@@ -27,8 +27,11 @@ namespace ProjectHub.Application.Localization;
 
 public class LocalizedStrings : ReactiveObject
 {
+    private readonly ILocalizationService _loc;
+
     public LocalizedStrings(ILocalizationService loc)
     {
+        _loc = loc;
         loc.CultureChanged
            .Subscribe(_ => this.RaisePropertyChanged(string.Empty))
            .DisposeWith(Disposables);
@@ -38,6 +41,6 @@ public class LocalizedStrings : ReactiveObject
 <# foreach (var node in nodes) {
        var key = node.Attributes["name"].Value;
 #>
-    public string <#= key #> => ProjectHub.Resources.Strings.Strings.<#= key #>;
+    public string <#= key #> => _loc["<#= key #>"];
 <# } #>
 }
