@@ -115,13 +115,12 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <!--  Icon  -->
-                                <svg:SvgViewbox
+                                <!--  Icon (使用 TextBlock 显示 Emoji)  -->
+                                <TextBlock
                                     Grid.Column="1"
-                                    Width="18"
-                                    Height="18"
-                                    VerticalAlignment="Center"
-                                    Source="{Binding IconPath}" />
+                                    Text="{Binding Icon}"
+                                    FontSize="16"
+                                    VerticalAlignment="Center"/>
 
                                 <!--  Label  -->
                                 <TextBlock
