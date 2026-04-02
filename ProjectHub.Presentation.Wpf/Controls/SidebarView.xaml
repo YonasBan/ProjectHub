@@ -5,8 +5,9 @@
     xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
+    xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
+    d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
     d:DesignWidth="260"
     mc:Ignorable="d">
     <UserControl.Resources>
@@ -38,16 +39,16 @@
                     <TextBlock
                         Grid.Column="0"
                         Style="{StaticResource SidebarTitleStyle}"
-                        Text="{Binding L.Sidebar_WorkFolders, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                        Text="{Binding L.Sidebar_WorkFolders}" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <Button
                             Content="+"
                             Style="{StaticResource IconButtonStyle}"
-                            ToolTip="{Binding L.Sidebar_NewFolder, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            ToolTip="{Binding L.Sidebar_NewFolder}" />
                         <Button
                             Content="&#x27F3;"
                             Style="{StaticResource IconButtonStyle}"
-                            ToolTip="{Binding L.Sidebar_Refresh, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            ToolTip="{Binding L.Sidebar_Refresh}" />
                     </StackPanel>
                 </Grid>
             </Border>
@@ -59,8 +60,8 @@
                 Padding="0,8,0,8"
                 Background="Transparent"
                 BorderThickness="0"
-                ItemsSource="{Binding SidebarTreeItems}"
                 ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
+                ItemsSource="{Binding SidebarTreeItems}"
                 Loaded="NavigationTree_OnLoaded">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type viewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
