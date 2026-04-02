@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
+             d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="800">
     <Border Background="{StaticResource BgTertiaryBrush}"
@@ -35,31 +37,31 @@
 
             <!-- Project Count -->
             <TextBlock Grid.Column="1"
-                       Text="{Binding TotalProjectCount, StringFormat={}{0} 个项目}"
+                       Text="{Binding ProjectCountText}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Folder Count -->
             <TextBlock Grid.Column="2"
-                       Text="{Binding TotalFolderCount, StringFormat={}{0} 个文件夹}"
+                       Text="{Binding FolderCountText}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Workspace Count -->
             <TextBlock Grid.Column="3"
-                       Text="{Binding TotalWorkspaceCount, StringFormat={}{0} 个工作空间}"
+                       Text="{Binding WorkspaceCountText}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Tag Count -->
             <TextBlock Grid.Column="4"
-                       Text="{Binding TagCount, StringFormat={}{0} 个标签分类}"
+                       Text="{Binding TagCountText}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Tagged Projects (right aligned) -->
             <TextBlock Grid.Column="6"
-                       Text="{Binding FavoriteProjectCount, StringFormat=标签项目：{0}}"
+                       Text="{Binding TaggedProjectsText}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="0,0,16,0"/>
         </Grid>

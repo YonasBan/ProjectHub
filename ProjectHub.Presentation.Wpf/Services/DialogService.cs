@@ -22,8 +22,7 @@ public class DialogService : IDialogService
 
     public Task<DialogResult<string>> ShowInputAsync(string title, string message, string? defaultValue = null)
     {
-        // TODO: 实现自定义输入对话框
-        // 可以创建自定义 Window 来实现
+        
         return Task.FromResult(new DialogResult<string>(false, defaultValue));
     }
 
