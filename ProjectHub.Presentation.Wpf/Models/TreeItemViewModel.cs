@@ -19,10 +19,9 @@ public enum TreeItemType
 
 public class TreeItemViewModel : ReactiveObject
 {
-    public TreeItemViewModel(string name, string icon, int count, TreeItemType itemType = TreeItemType.Special, long id = 0)
+    public TreeItemViewModel(string name,  int count, TreeItemType itemType = TreeItemType.Special, long id = 0)
     {
         Name = name;
-        Icon = icon;
         Count = count;
         ItemType = itemType;
         Id = id;
@@ -32,7 +31,6 @@ public class TreeItemViewModel : ReactiveObject
 
     public long Id { get; }
     public string Name { get; }
-    public string Icon { get; }
     public string IconPath { get; }
     public int Count { get; set; }
     public bool IsSpecial => ItemType == TreeItemType.Special;

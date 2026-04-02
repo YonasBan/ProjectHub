@@ -40,36 +40,36 @@ public partial class SidebarView : UserControl
 
         // Recent (最近使用)
         var recentCount = vm.Projects.Count(p => p.LastOpenedAt.HasValue);
-        var recent = new TreeItemViewModel(L.Sidebar_Recent, "\uD83D\uDD52", recentCount, TreeItemType.RecentProject)
+        var recent = new TreeItemViewModel(L.Sidebar_Recent, recentCount, TreeItemType.RecentProject)
         { IsSelected = true };
         _treeItems.Add(recent);
 
         // Favorites (收藏夹)
         var favoriteCount = vm.Projects.Count(p => p.IsFavorite);
-        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, "\u2B50", favoriteCount, TreeItemType.FavoriteProject);
+        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, favoriteCount, TreeItemType.FavoriteProject);
         _treeItems.Add(favorites);
 
         // Workspaces (工作空间)
-        var workspaces = new TreeItemViewModel(L.Sidebar_Workspaces, "", vm.WorkSpaces.Count, TreeItemType.WorkSpace);
+        var workspaces = new TreeItemViewModel(L.Sidebar_Workspaces, vm.WorkSpaces.Count, TreeItemType.WorkSpace);
         foreach (var ws in vm.WorkSpaces)
         {
-            workspaces.Children.Add(new TreeItemViewModel(ws.Name, "\uD83D\uDCC1", ws.ProjectCount, TreeItemType.WorkSpace, ws.Id));
+            workspaces.Children.Add(new TreeItemViewModel(ws.Name, ws.ProjectCount, TreeItemType.WorkSpace, ws.Id));
         }
         _treeItems.Add(workspaces);
 
         // Work Folders (工作文件夹)
         foreach (var folder in vm.WorkFolders)
         {
-            var folderNode = new TreeItemViewModel(folder.Name, "\uD83D\uDCC1", folder.ProjectCount, TreeItemType.WorkFolder, folder.Id);
+            var folderNode = new TreeItemViewModel(folder.Name, folder.ProjectCount, TreeItemType.WorkFolder, folder.Id);
             _treeItems.Add(folderNode);
         }
 
         // All Projects (所有项目)
-        var allProjects = new TreeItemViewModel(L.Sidebar_AllProjects, "\uD83D\uDCE6", vm.Projects.Count, TreeItemType.AllProjects);
+        var allProjects = new TreeItemViewModel(L.Sidebar_AllProjects, vm.Projects.Count, TreeItemType.AllProjects);
         _treeItems.Add(allProjects);
 
         // Tag Settings (标签设置) - 暂时使用固定数量，后续从 TagAppService 获取
-        var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, "\uD83C\uDFF7\uFE0F", 0, TreeItemType.TagSettings);
+        var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, 0, TreeItemType.TagSettings);
         _treeItems.Add(tagSettings);
 
         // 刷新 TreeView
