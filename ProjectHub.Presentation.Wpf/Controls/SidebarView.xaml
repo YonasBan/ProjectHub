@@ -75,7 +75,6 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="24" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
@@ -115,16 +114,9 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <!--  Icon (使用 TextBlock 显示 Emoji)  -->
-                                <TextBlock
-                                    Grid.Column="1"
-                                    Text="{Binding Icon}"
-                                    FontSize="16"
-                                    VerticalAlignment="Center"/>
-
                                 <!--  Label  -->
                                 <TextBlock
-                                    Grid.Column="2"
+                                    Grid.Column="1"
                                     Margin="8,0,0,0"
                                     VerticalAlignment="Center"
                                     FontSize="13"
@@ -133,7 +125,7 @@
 
                                 <!--  Count Badge  -->
                                 <Border
-                                    Grid.Column="3"
+                                    Grid.Column="2"
                                     Margin="8,0,0,0"
                                     Style="{StaticResource TreeCountBadgeStyle}">
                                     <TextBlock
@@ -144,7 +136,7 @@
 
                                 <!--  Add Button (visible on hover)  -->
                                 <Button
-                                    Grid.Column="4"
+                                    Grid.Column="3"
                                     Width="20"
                                     Height="20"
                                     Content="+"
@@ -155,7 +147,7 @@
 
                                 <!--  Delete Button (visible on hover)  -->
                                 <Button
-                                    Grid.Column="5"
+                                    Grid.Column="4"
                                     Width="20"
                                     Height="20"
                                     Margin="4,0,0,0"

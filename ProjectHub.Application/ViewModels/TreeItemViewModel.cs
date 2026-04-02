@@ -30,26 +30,6 @@ public class TreeItemViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// 图标字符 (Emoji 或 Unicode 符号)
-    /// </summary>
-    private string _icon;
-    public string Icon
-    {
-        get => _icon;
-        set => this.RaiseAndSetIfChanged(ref _icon, value);
-    }
-
-    /// <summary>
-    /// 图标文件路径 (由平台层映射)
-    /// </summary>
-    private string _iconPath;
-    public string IconPath
-    {
-        get => _iconPath;
-        set => this.RaiseAndSetIfChanged(ref _iconPath, value);
-    }
-
-    /// <summary>
     /// 项目/文件夹数量
     /// </summary>
     private int _count;
@@ -128,38 +108,15 @@ public class TreeItemViewModel : ReactiveObject
 
     public TreeItemViewModel(
         string name, 
-        string icon, 
         int count, 
         TreeItemType itemType = TreeItemType.Special, 
         long id = 0)
     {
         Name = name;
-        Icon = icon;
         Count = count;
         ItemType = itemType;
         Id = id;
-        // 使用默认的图标路径生成逻辑（基于节点类型的简单映射）
-        IconPath = GetDefaultIconPath(itemType);
         Children = new ObservableCollection<TreeItemViewModel>();
-    }
-
-    /// <summary>
-    /// 获取默认图标路径（Application 层的默认实现）
-    /// 平台特定实现可以通过 ITreeItemIconProvider 覆盖此逻辑
-    /// </summary>
-    private static string GetDefaultIconPath(TreeItemType itemType)
-    {
-        // 这里使用 emoji 作为默认图标，平台特定的图标路径由平台层提供
-        return itemType switch
-        {
-            TreeItemType.RecentProject => "\uD83D\uDD52", // 🕒
-            TreeItemType.FavoriteProject => "\u2B50",     // ⭐
-            TreeItemType.WorkFolder => "\uD83D\uDCC1",    // 📁
-            TreeItemType.WorkSpace => "\uD83D\uDCC1",     // 📁
-            TreeItemType.AllProjects => "\uD83D\uDCE6",   // 📦
-            TreeItemType.TagSettings => "\uD83C\uDFF7\uFE0F", // 🏷️
-            _ => "\uD83D\uDCC1"                           // 📁
-        };
     }
 
     /// <summary>
