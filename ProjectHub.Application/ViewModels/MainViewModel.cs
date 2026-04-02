@@ -183,6 +183,58 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _tagCount, value);
     }
 
+    // ========== 状态栏格式化文本 (用于语言切换) ==========
+
+    /// <summary>
+    /// 项目计数显示文本
+    /// </summary>
+    private string _projectCountText = string.Empty;
+    public string ProjectCountText
+    {
+        get => _projectCountText;
+        set => this.RaiseAndSetIfChanged(ref _projectCountText, value);
+    }
+
+    /// <summary>
+    /// 文件夹计数显示文本
+    /// </summary>
+    private string _folderCountText = string.Empty;
+    public string FolderCountText
+    {
+        get => _folderCountText;
+        set => this.RaiseAndSetIfChanged(ref _folderCountText, value);
+    }
+
+    /// <summary>
+    /// 工作空间计数显示文本
+    /// </summary>
+    private string _workspaceCountText = string.Empty;
+    public string WorkspaceCountText
+    {
+        get => _workspaceCountText;
+        set => this.RaiseAndSetIfChanged(ref _workspaceCountText, value);
+    }
+
+    /// <summary>
+    /// 标签计数显示文本
+    /// </summary>
+    private string _tagCountText = string.Empty;
+    public string TagCountText
+    {
+        get => _tagCountText;
+        set => this.RaiseAndSetIfChanged(ref _tagCountText, value);
+    }
+
+    /// <summary>
+    /// 标签项目显示文本
+    /// </summary>
+    private string _taggedProjectsText = string.Empty;
+    public string TaggedProjectsText
+    {
+        get => _taggedProjectsText;
+        set => this.RaiseAndSetIfChanged(ref _taggedProjectsText, value);
+    }
+
     // ========== 侧边栏树形数据 ==========
 
     /// <summary>
@@ -234,6 +286,7 @@ public class MainViewModel : ViewModelBase
             {
                 UpdateTestText();
                 BuildSidebarTree(); // 语言变化时重建树形结构
+                UpdateStatistics(); // 语言变化时更新状态栏文本
             })
             .DisposeWith(Disposables);
 
@@ -263,6 +316,13 @@ public class MainViewModel : ViewModelBase
         FavoriteProjectCount = Projects.Count(p => p.IsFavorite);
         TotalFolderCount = WorkFolders.Count;
         TotalWorkspaceCount = WorkSpaces.Count;
+        
+        // 更新格式化后的状态栏文本（支持语言切换）
+        ProjectCountText = string.Format(L.Status_ProjectCount, TotalProjectCount);
+        FolderCountText = string.Format(L.Status_FolderCount, TotalFolderCount);
+        WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
+        TagCountText = string.Format(L.Status_TagCount, TagCount);
+        TaggedProjectsText = string.Format(L.Status_TaggedProjects, FavoriteProjectCount);
     }
 
     /// <summary>
