@@ -5,7 +5,7 @@
     xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="clr-namespace:ProjectHub.Presentation.Wpf.Models"
+    xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
     d:DesignWidth="260"
     mc:Ignorable="d">
@@ -62,7 +62,7 @@
                 ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
                 Loaded="NavigationTree_OnLoaded">
                 <TreeView.Resources>
-                    <HierarchicalDataTemplate DataType="{x:Type models:TreeItemViewModel}" ItemsSource="{Binding Children}">
+                    <HierarchicalDataTemplate DataType="{x:Type viewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
                         <Border
                             x:Name="ItemBorder"
                             Padding="8,6,16,6"
@@ -115,13 +115,12 @@
                                     </TextBlock.Style>
                                 </TextBlock>
 
-                                <!--  Icon  -->
-                                <svg:SvgViewbox
+                                <!--  Icon (使用 TextBlock 显示 Emoji)  -->
+                                <TextBlock
                                     Grid.Column="1"
-                                    Width="18"
-                                    Height="18"
-                                    VerticalAlignment="Center"
-                                    Source="{Binding IconPath}" />
+                                    Text="{Binding Icon}"
+                                    FontSize="16"
+                                    VerticalAlignment="Center"/>
 
                                 <!--  Label  -->
                                 <TextBlock

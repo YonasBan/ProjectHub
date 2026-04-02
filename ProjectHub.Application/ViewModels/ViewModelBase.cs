@@ -7,6 +7,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 using System.Runtime.InteropServices.JavaScript;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -45,6 +46,7 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
         
         // 订阅语言改变事件，触发 UI 刷新
         _localizationService?.CultureChanged
+            .ObserveOn(MainThreadScheduler) // 确保在 UI 线程执行
             .Subscribe(_ => this.RaisePropertyChanged(nameof(L)))
             .DisposeWith(Disposables);
     }

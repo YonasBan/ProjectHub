@@ -29,38 +29,37 @@
                         Background="{StaticResource SuccessBrush}"
                         VerticalAlignment="Center"
                         Margin="0,0,8,0"/>
-                <TextBlock x:Name="StatusReadyText"
-                           Text="&#x5C31;&#x7EEA;"
+                <TextBlock Text="{Binding L.Status_Ready}"
                            Style="{StaticResource StatusTextStyle}"/>
             </StackPanel>
 
             <!-- Project Count -->
-            <TextBlock Grid.Column="1" x:Name="ProjectCountText"
-                       Text="&#x1F4E6; &#x5171; 45 &#x4E2A;&#x9879;&#x76EE;"
+            <TextBlock Grid.Column="1"
+                       Text="{Binding TotalProjectCount, StringFormat={}{0} 个项目}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Folder Count -->
-            <TextBlock Grid.Column="2" x:Name="FolderCountText"
-                       Text="&#x1F4C1; 15 &#x4E2A;&#x6587;&#x4EF6;&#x5939;"
+            <TextBlock Grid.Column="2"
+                       Text="{Binding TotalFolderCount, StringFormat={}{0} 个文件夹}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Workspace Count -->
-            <TextBlock Grid.Column="3" x:Name="WorkspaceCountText"
-                       Text="&#x1F680; 8 &#x4E2A;&#x5DE5;&#x4F5C;&#x7A7A;&#x95F4;"
+            <TextBlock Grid.Column="3"
+                       Text="{Binding TotalWorkspaceCount, StringFormat={}{0} 个工作空间}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Tag Count -->
-            <TextBlock Grid.Column="4" x:Name="TagCountText"
-                       Text="&#x1F3F7;&#xFE0F; 8 &#x4E2A;&#x6807;&#x7B7E;&#x5206;&#x7C7B;"
+            <TextBlock Grid.Column="4"
+                       Text="{Binding TagCount, StringFormat={}{0} 个标签分类}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="24,0,0,0"/>
 
             <!-- Tagged Projects (right aligned) -->
-            <TextBlock Grid.Column="6" x:Name="TaggedProjectsText"
-                       Text="&#x6807;&#x7B7E;&#x9879;&#x76EE;: 156"
+            <TextBlock Grid.Column="6"
+                       Text="{Binding FavoriteProjectCount, StringFormat=标签项目：{0}}"
                        Style="{StaticResource StatusTextStyle}"
                        Margin="0,0,16,0"/>
         </Grid>

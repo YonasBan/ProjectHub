@@ -1,40 +1,19 @@
-using System.Windows;
 using System.Windows.Controls;
-using ProjectHub.Application.Localization;
-using ProjectHub.Application.ViewModels;
-using Splat;
 
 namespace ProjectHub.Presentation.Wpf.Controls;
 
+/// <summary>
+/// 状态栏视图 (WPF 特定实现)
+/// 
+/// DDD 设计要点:
+/// - 位于 Presentation 层，仅包含 WPF 特定代码
+/// - 所有数据通过绑定从 MainViewModel 获取
+/// - 语言切换由 ViewModelBase 中的订阅自动处理
+/// </summary>
 public partial class StatusBarView : UserControl
 {
-    private readonly LocalizedStrings _l = Locator.Current.GetService<LocalizedStrings>()!;
-    public LocalizedStrings L => _l;
-
     public StatusBarView()
     {
         InitializeComponent();
-        DataContextChanged += OnDataContextChanged;
-    }
-
-    private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-    {
-        if (DataContext is MainViewModel vm)
-        {
-            vm.Projects.CollectionChanged += (_, _) => UpdateTexts(vm);
-            vm.WorkFolders.CollectionChanged += (_, _) => UpdateTexts(vm);
-            vm.WorkSpaces.CollectionChanged += (_, _) => UpdateTexts(vm);
-            UpdateTexts(vm);
-        }
-    }
-
-    private void UpdateTexts(MainViewModel vm)
-    {
-        StatusReadyText.Text = L.Status_Ready;
-        ProjectCountText.Text = string.Format(L.Status_ProjectCount, vm.TotalProjectCount);
-        FolderCountText.Text = string.Format(L.Status_FolderCount, vm.TotalFolderCount);
-        WorkspaceCountText.Text = string.Format(L.Status_WorkspaceCount, vm.TotalWorkspaceCount);
-        TagCountText.Text = string.Format(L.Status_TagCount, vm.TagCount);
-        TaggedProjectsText.Text = string.Format(L.Status_TaggedProjects, vm.FavoriteProjectCount);
     }
 }

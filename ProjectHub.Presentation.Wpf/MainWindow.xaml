@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:ProjectHub.Presentation.Wpf.Controls"
-        xmlns:models="clr-namespace:ProjectHub.Presentation.Wpf.Models"
         xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
         Title="ProjectHub"
         Width="1280" Height="800"
@@ -29,8 +28,7 @@
         <controls:HeaderView Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"/>
 
         <!-- Left Sidebar -->
-        <controls:SidebarView Grid.Row="1" Grid.Column="0"
-                              DataContext="{Binding}"/>
+        <controls:SidebarView Grid.Row="1" Grid.Column="0"/>
 
         <!-- Main Content Area (placeholder) -->
         <Grid Grid.Row="1" Grid.Column="1"
