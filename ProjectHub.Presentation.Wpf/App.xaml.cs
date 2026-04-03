@@ -1,8 +1,8 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using ProjectHub.Application.DependencyInjection;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
@@ -11,10 +11,14 @@ using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
 using ProjectHub.Infrastructure.Persistence;
 using ProjectHub.Presentation.Wpf.Services;
+using ReactiveUI;
+using ReactiveUI.Builder;
+using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
 using System.Reactive.Concurrency;
 using System.Reflection;
 using System.Windows;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace ProjectHub.Presentation.Wpf;
 
@@ -46,13 +50,10 @@ public partial class App : System.Windows.Application
 
     public App()
     {
-        // Build the host with all configurations
         _host = CreateHostBuilder();
+        // ✅ 建完 Host 之后桥接
         _host.Services.UseMicrosoftDependencyResolver();
-        // Resolve logger and platform service after host is built
         _logger = Services.GetRequiredService<ILogger<App>>();
-
-        // Register global exception handler
         this.DispatcherUnhandledException += App_DispatcherUnhandledException;
     }
 
@@ -152,6 +153,16 @@ public partial class App : System.Windows.Application
     /// </summary>
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
+        // ✅ 在 ConfigureServices 最顶部做这三步
+        services.UseMicrosoftDependencyResolver();
+        var resolver = Locator.CurrentMutable;
+        resolver.InitializeSplat();
+
+        // ✅ 然后用 RxAppBuilder 注册平台服务
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithWpf()
+            .WithViewsFromAssembly(typeof(App).Assembly)
+            .BuildApp();
         var configuration = context.Configuration;
 
         // ========== Register Platform-Specific Services (WPF) ==========

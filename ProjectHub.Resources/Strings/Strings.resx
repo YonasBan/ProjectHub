@@ -206,4 +206,21 @@
   <data name="Status_TaggedProjects" xml:space="preserve">
     <value>标签项目: {0}</value>
   </data>
+
+  <!-- 文件夹对话框 -->
+  <data name="Folder_NamePlaceholder" xml:space="preserve">
+    <value>请输入文件夹名称</value>
+  </data>
+  <data name="Folder_InputLabel" xml:space="preserve">
+    <value>文件夹名称</value>
+  </data>
+  <data name="Folder_Error_EmptyName" xml:space="preserve">
+    <value>文件夹名称不能为空</value>
+  </data>
+  <data name="Folder_Error_NameTooLong" xml:space="preserve">
+    <value>文件夹名称不能超过 100 个字符</value>
+  </data>
+  <data name="Folder_Error_InvalidChars" xml:space="preserve">
+    <value>文件夹名称不能包含特殊字符 (\ / : * ? " &lt; &gt; |)</value>
+  </data>
 </root>

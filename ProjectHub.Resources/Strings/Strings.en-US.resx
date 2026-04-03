@@ -206,4 +206,21 @@
   <data name="Status_TaggedProjects" xml:space="preserve">
     <value>Tagged projects: {0}</value>
   </data>
+
+  <!-- Folder Dialog -->
+  <data name="Folder_NamePlaceholder" xml:space="preserve">
+    <value>Enter folder name</value>
+  </data>
+  <data name="Folder_InputLabel" xml:space="preserve">
+    <value>Folder Name</value>
+  </data>
+  <data name="Folder_Error_EmptyName" xml:space="preserve">
+    <value>Folder name cannot be empty</value>
+  </data>
+  <data name="Folder_Error_NameTooLong" xml:space="preserve">
+    <value>Folder name cannot exceed 100 characters</value>
+  </data>
+  <data name="Folder_Error_InvalidChars" xml:space="preserve">
+    <value>Folder name cannot contain special characters (\ / : * ? " &lt; &gt; |)</value>
+  </data>
 </root>

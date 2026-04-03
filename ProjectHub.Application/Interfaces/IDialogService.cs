@@ -28,7 +28,7 @@ namespace ProjectHub.Application.Interfaces
             string? defaultValue = null);
 
         // 自定义 ViewModel 弹窗
-        Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(
+       DialogResult<TResult> ShowDialog<TViewModel, TResult>(
             TViewModel viewModel)
             where TViewModel : IDialogViewModel<TResult>;
     }

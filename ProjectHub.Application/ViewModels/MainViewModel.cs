@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
+using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ReactiveUI;
+using Splat;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Reactive;
@@ -18,11 +20,12 @@ namespace ProjectHub.Application.ViewModels;
 /// </summary>
 public class MainViewModel : ViewModelBase
 {
-    // TODO: 注入应用服务
+    // 注入应用服务
     private readonly IProjectAppService _projectAppService;
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly ILocalizationService _localizationService;
+    private readonly IDialogService _dialogService;
 
     /// <summary>
     /// 项目列表 (Observable)
@@ -110,6 +113,21 @@ public class MainViewModel : ViewModelBase
     /// 切换到英文命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> SwitchToEnglishCommand { get; }
+
+    /// <summary>
+    /// 创建文件夹命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> CreateFolderCommand { get; }
+
+    /// <summary>
+    /// 正在加载标识
+    /// </summary>
+    private bool _isLoading;
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+    }
 
     /// <summary>
     /// 当前语言显示文本
@@ -253,6 +271,7 @@ public class MainViewModel : ViewModelBase
         IWorkFolderAppService workFolderAppService,
         IWorkSpaceAppService workSpaceAppService,
         ILocalizationService localizationService,
+        IDialogService dialogService,
         IScheduler mainThreadScheduler)
         : base(logger, mainThreadScheduler)
     {
@@ -260,6 +279,7 @@ public class MainViewModel : ViewModelBase
         _workFolderAppService = workFolderAppService;
         _workSpaceAppService = workSpaceAppService;
         _localizationService = localizationService;
+        _dialogService = dialogService;
 
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
@@ -271,6 +291,8 @@ public class MainViewModel : ViewModelBase
         SwitchToEnglishCommand = ReactiveCommand.CreateFromTask(
             SwitchToEnglishAsync,
             outputScheduler: MainThreadScheduler);
+        CreateFolderCommand = ReactiveCommand.CreateFromTask(
+            CreateFolderAsync);
 
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
@@ -278,6 +300,7 @@ public class MainViewModel : ViewModelBase
         RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
         SwitchToChineseCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换到中文时发生错误"));
         SwitchToEnglishCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换到英文时发生错误"));
+        CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
 
         // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
         _localizationService.CultureChanged
@@ -525,6 +548,70 @@ public class MainViewModel : ViewModelBase
         SidebarTreeItems.Add(tagSettings);
 
         Logger.LogDebug("侧边栏树形结构已重建");
+    }
+
+    /// <summary>
+    /// 创建文件夹
+    /// 
+    /// DDD 设计要点:
+    /// - 通过 IDialogService 显示对话框（支持跨平台）
+    /// - 调用应用服务完成业务逻辑
+    /// - 成功后刷新列表并重建树形结构
+    /// </summary>
+    private async Task CreateFolderAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            Logger.LogInformation("开始创建文件夹");
+
+            // 创建对话框 ViewModel
+            var dialogVm = new CreateFolderDialogViewModel(
+                Logger,
+                L,
+                MainThreadScheduler);
+
+            // 显示对话框
+            var result =  _dialogService.ShowDialog<CreateFolderDialogViewModel,string>(dialogVm);
+
+            if (result.Confirmed && !string.IsNullOrWhiteSpace(result.Value))
+            {
+                var folderName = (string)result.Value!;
+
+                // 创建文件夹 DTO
+                var createDto = new CreateWorkFolderDto
+                {
+                    Name = folderName,
+                    ParentId = SelectedWorkFolder?.Id // 如果选中了父文件夹，则创建为子文件夹
+                };
+
+                // 调用应用服务创建
+                var newFolder = await _workFolderAppService.CreateAsync(createDto);
+
+                Logger.LogInformation("成功创建文件夹: {FolderName}, ID: {FolderId}", folderName, newFolder.Id);
+
+                // 刷新文件夹列表
+                await LoadWorkFoldersAsync();
+
+                // 更新统计
+                UpdateStatistics();
+            }
+            else
+            {
+                Logger.LogInformation("用户取消创建文件夹");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "创建文件夹时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }
 

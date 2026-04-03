@@ -63,4 +63,11 @@ public class LocalizedStrings : ReactiveObject
     public string Status_WorkspaceCount => _loc["Status_WorkspaceCount"];
     public string Status_TagCount => _loc["Status_TagCount"];
     public string Status_TaggedProjects => _loc["Status_TaggedProjects"];
+
+    // 文件夹对话框
+    public string Folder_NamePlaceholder => _loc["Folder_NamePlaceholder"];
+    public string Folder_InputLabel => _loc["Folder_InputLabel"];
+    public string Folder_Error_EmptyName => _loc["Folder_Error_EmptyName"];
+    public string Folder_Error_NameTooLong => _loc["Folder_Error_NameTooLong"];
+    public string Folder_Error_InvalidChars => _loc["Folder_Error_InvalidChars"];
 }

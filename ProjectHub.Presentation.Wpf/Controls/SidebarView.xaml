@@ -42,6 +42,7 @@
                         Text="{Binding L.Sidebar_WorkFolders}" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <Button
+                            Command="{Binding CreateFolderCommand}"
                             Content="+"
                             Style="{StaticResource IconButtonStyle}"
                             ToolTip="{Binding L.Sidebar_NewFolder}" />
