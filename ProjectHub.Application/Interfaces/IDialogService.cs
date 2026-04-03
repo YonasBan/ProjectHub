@@ -24,7 +24,7 @@ namespace ProjectHub.Application.Interfaces
             string? confirmText = null, string? cancelText = null);
 
         // 输入框
-        Task<DialogResult<string>> ShowInputAsync(string title, string message,
+       DialogResult<string> ShowInput(string title, string message,
             string? defaultValue = null);
 
         // 自定义 ViewModel 弹窗

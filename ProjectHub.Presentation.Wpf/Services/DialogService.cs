@@ -1,6 +1,7 @@
-using System.Windows;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Presentation.Wpf.Dialogs;
+using ReactiveUI;
+using System.Windows;
 
 namespace ProjectHub.Presentation.Wpf.Services;
 
@@ -46,7 +47,7 @@ public class DialogService : IDialogService
         return Task.FromResult(result == MessageBoxResult.Yes);
     }
 
-    public async Task<DialogResult<string>> ShowInputAsync(string title, string message, string? defaultValue = null)
+    public DialogResult<string> ShowInput(string title, string message, string? defaultValue = null)
     {
         // 使用 InputDialog 作为通用输入对话框
         var dialog = new InputDialog();
@@ -73,19 +74,20 @@ public class DialogService : IDialogService
     public  DialogResult<TResult> ShowDialog<TViewModel, TResult>(TViewModel viewModel)
         where TViewModel : IDialogViewModel<TResult>
     {
-        var dialog = new InputDialog
-        {
-            DataContext = viewModel
-        };
-
+        var view = ViewLocator.Current.ResolveView(viewModel)
+           ?? throw new InvalidOperationException(
+               $"未找到 {typeof(TViewModel).Name} 对应的 View，" +
+               $"请确认 View 实现了 IViewFor<{typeof(TViewModel).Name}>");
+        if (view is not Window window)
+            throw new InvalidOperationException("Dialog 的 View 必须是 Window");
         // 获取父窗口作为 Owner
         var owner = GetActiveWindow();
         if (owner != null)
         {
-            dialog.Owner = owner;
+            window.Owner = owner;
         }
 
-        dialog.ShowDialog();
+        window.ShowDialog();
 
         // 返回结果
         var result =  viewModel.Result;

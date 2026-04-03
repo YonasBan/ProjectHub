@@ -10,6 +10,7 @@ using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Core.DependencyInjection;
 using ProjectHub.Infrastructure.Persistence;
+using ProjectHub.Presentation.Wpf.Dialogs;
 using ProjectHub.Presentation.Wpf.Services;
 using ReactiveUI;
 using ReactiveUI.Builder;
@@ -70,7 +71,62 @@ public partial class App : System.Windows.Application
             .Build();
         return host;
     }
+    /// <summary>
+    /// Registers all Views with dependency injection support.
+    /// </summary>
+    private static void RegisterViews(IServiceCollection services)
+    {
+        // MainWindow with injected ViewModel - Scoped to match MainViewModel's lifetime
+        services.AddScoped<MainWindow>(provider =>
+        {
+            var viewModel = provider.GetRequiredService<MainViewModel>();
+            return new MainWindow(viewModel);
+        });
+    }
+    /// <summary>
+    /// Registers all application services with the DI container.
+    /// Organized by architectural layers for clarity and maintainability.
+    /// </summary>
+    private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+    {
+        // ✅ 在 ConfigureServices 最顶部做这三步
+        services.UseMicrosoftDependencyResolver();
+        var resolver = Locator.CurrentMutable;
+        resolver.InitializeSplat();
 
+        // ✅ 然后用 RxAppBuilder 注册平台服务
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithWpf()
+            .WithViewsFromAssembly(typeof(App).Assembly)
+            .BuildApp();
+        var configuration = context.Configuration;
+
+        // ========== Register Platform-Specific Services (WPF) ==========
+        services.AddSingleton<IDialogService, DialogService>();
+        // 或者
+        var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
+        // ========== Register WPF Scheduler (must be before other registrations) ==========
+        services.AddSingleton<IScheduler>(scheduler);
+        // ========== Register Localization Service ==========
+        RegisterLocalizationServices(services);
+
+        // ========== Register Views ==========
+        RegisterViews(services);
+        RegisterDialogs(services);
+        // ========== Register UI Services (ViewModels) ==========
+        services.AddUIServices();
+
+        // ========== Register Application Services ==========
+        services.AddAppServices();
+
+        // ========== Register Infrastructure Services ==========
+        services.AddInfrastructureServices(configuration);
+    }
+
+    private void RegisterDialogs(IServiceCollection services)
+    {
+        AppLocator.CurrentMutable.Register(() => new InputDialog(), typeof(IViewFor<CreateFolderDialogViewModel>));
+    }
     /// <summary>
     /// Configures application settings from multiple sources.
     /// Supports JSON files, environment variables, command-line arguments, and in-memory configurations.
@@ -148,46 +204,6 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
-    /// Registers all application services with the DI container.
-    /// Organized by architectural layers for clarity and maintainability.
-    /// </summary>
-    private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
-    {
-        // ✅ 在 ConfigureServices 最顶部做这三步
-        services.UseMicrosoftDependencyResolver();
-        var resolver = Locator.CurrentMutable;
-        resolver.InitializeSplat();
-
-        // ✅ 然后用 RxAppBuilder 注册平台服务
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            .WithViewsFromAssembly(typeof(App).Assembly)
-            .BuildApp();
-        var configuration = context.Configuration;
-
-        // ========== Register Platform-Specific Services (WPF) ==========
-        services.AddSingleton<IDialogService, DialogService>();
-        // 或者
-        var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
-        // ========== Register WPF Scheduler (must be before other registrations) ==========
-        services.AddSingleton<IScheduler>(scheduler);
-        // ========== Register Localization Service ==========
-        RegisterLocalizationServices(services);
-
-        // ========== Register Views ==========
-        RegisterViews(services);
-
-        // ========== Register UI Services (ViewModels) ==========
-        services.AddUIServices();
-
-        // ========== Register Application Services ==========
-        services.AddAppServices();
-
-        // ========== Register Infrastructure Services ==========
-        services.AddInfrastructureServices(configuration);
-    }
-
-    /// <summary>
     /// Registers localization services.
     /// </summary>
     private static void RegisterLocalizationServices(IServiceCollection services)
@@ -206,19 +222,6 @@ public partial class App : System.Windows.Application
         {
             var loc = provider.GetRequiredService<ILocalizationService>();
             return new LocalizedStrings(loc);
-        });
-    }
-
-    /// <summary>
-    /// Registers all Views with dependency injection support.
-    /// </summary>
-    private static void RegisterViews(IServiceCollection services)
-    {
-        // MainWindow with injected ViewModel - Scoped to match MainViewModel's lifetime
-        services.AddScoped<MainWindow>(provider =>
-        {
-            var viewModel = provider.GetRequiredService<MainViewModel>();
-            return new MainWindow(viewModel);
         });
     }
 

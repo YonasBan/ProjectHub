@@ -3,6 +3,7 @@ using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ReactiveUI;
+using ReactiveUI.Builder;
 using Splat;
 using System.Collections.ObjectModel;
 using System.Globalization;

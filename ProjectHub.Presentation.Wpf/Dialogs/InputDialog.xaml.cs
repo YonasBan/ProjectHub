@@ -1,4 +1,7 @@
 ﻿using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.ViewModels;
+using ReactiveUI;
+using System.Reactive.Disposables.Fluent;
 using System.Windows;
 
 namespace ProjectHub.Presentation.Wpf.Dialogs;
@@ -12,51 +15,30 @@ namespace ProjectHub.Presentation.Wpf.Dialogs;
 /// - ViewModel 由外部传入
 /// - 支持键盘快捷键（Enter 确认，Escape 取消）
 /// </summary>
-public partial class InputDialog : Window
+public partial class InputDialog : Window,IViewFor<CreateFolderDialogViewModel>
 {
     public InputDialog()
     {
         InitializeComponent();
+        this.WhenActivated(d =>
+        {
+            this.WhenAnyValue(x => x.ViewModel)
+                .BindTo(this, x => x.DataContext)
+                .DisposeWith(d);
+        });
     }
-
-    /// <summary>
-    /// ViewModel 属性（用于 DataContext 绑定）
-    /// </summary>
-    public object? ViewModel
+    public CreateFolderDialogViewModel? ViewModel
     {
-        get => GetValue(ViewModelProperty);
+        get => (CreateFolderDialogViewModel?)GetValue(ViewModelProperty);
         set => SetValue(ViewModelProperty, value);
     }
+    object? IViewFor.ViewModel { get => ViewModel; set => ViewModel = (CreateFolderDialogViewModel?)value; }
 
     public static readonly DependencyProperty ViewModelProperty =
         DependencyProperty.Register(
             nameof(ViewModel),
-            typeof(object),
-            typeof(InputDialog),
-            new PropertyMetadata(null, OnViewModelChanged));
+            typeof(CreateFolderDialogViewModel),
+            typeof(InputDialog)
+           );
 
-    private static void OnViewModelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        if (d is InputDialog dialog)
-        {
-            dialog.DataContext = e.NewValue;
-        }
-    }
-
-    /// <summary>
-    /// 显示对话框并返回结果（通用版本）
-    /// </summary>
-    public async Task<DialogResult<object>> ShowDialogAsync(Window owner)
-    {
-        Owner = owner;
-        ShowDialog();
-
-        if (DataContext is IDialogViewModel<object> vm)
-        {
-            var result =  vm.Result;
-            return new DialogResult<object>(result.Confirmed, result.Value);
-        }
-
-        return new DialogResult<object>(false);
-    }
 }
