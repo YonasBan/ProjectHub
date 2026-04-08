@@ -61,7 +61,6 @@
                 Padding="0,8,0,8"
                 HorizontalAlignment="Stretch"
                 Background="Transparent"
-                ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
                 ItemsSource="{Binding SidebarTreeItems}"
                 Loaded="NavigationTree_OnLoaded">
                 <TreeView.Resources>
@@ -163,16 +162,7 @@
 
 
                             </Grid>
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="Transparent" />
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsHovered}" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource HoverBrush}" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
+
                         </Border>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>

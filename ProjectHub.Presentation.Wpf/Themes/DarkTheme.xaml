@@ -14,7 +14,6 @@
     <Color x:Key="SuccessColor">#FF4EC9B0</Color>
     <Color x:Key="WarningColor">#FFCCA700</Color>
     <Color x:Key="ErrorColor">#FFF44747</Color>
-    <Color x:Key="HoverColor">#330078D4</Color>
 
     <!--  ========== SolidColorBrushes ==========  -->
     <SolidColorBrush x:Key="BgPrimaryBrush" Color="{StaticResource BgPrimaryColor}" />
@@ -30,7 +29,6 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
-    <SolidColorBrush x:Key="HoverBrush" Color="{StaticResource HoverColor}" />
 
     <!--  ========== Converters ==========  -->
     <BooleanToVisibilityConverter x:Key="BoolToVis" />

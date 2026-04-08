@@ -95,54 +95,62 @@
         </Style.Triggers>
     </Style>
 
-    <Style TargetType="TreeViewItem">
+    <!--  ========== VSCode Dark Theme TreeViewItem Style ==========  -->
+    <Style TargetType="{x:Type TreeViewItem}">
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="TreeViewItem">
+                <ControlTemplate TargetType="{x:Type TreeViewItem}">
                     <StackPanel>
                         <Border
                             x:Name="Bd"
-                            MinHeight="32"
-                            Margin="2,1"
-                            Padding="{TemplateBinding Padding}"
-                            Background="{TemplateBinding Background}"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}"
+                            MinHeight="26"
+                            Padding="6,4"
+                            Background="Transparent"
+                            BorderThickness="0"
                             CornerRadius="4"
                             SnapsToDevicePixels="True">
 
-                            <Grid Margin="{Binding Converter={StaticResource TreeViewItemLeftMarginConverter}, RelativeSource={RelativeSource TemplatedParent}}">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
+                                <!--  Expand/Collapse Arrow  -->
                                 <ToggleButton
                                     x:Name="Expander"
                                     ClickMode="Press"
-                                    IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}}">
+                                    Focusable="False"
+                                    IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
                                     <ToggleButton.Style>
-                                        <Style TargetType="ToggleButton">
+                                        <Style TargetType="{x:Type ToggleButton}">
+                                            <Setter Property="OverridesDefaultStyle" Value="true" />
+                                            <Setter Property="Width" Value="16" />
+                                            <Setter Property="Height" Value="16" />
                                             <Setter Property="Template">
                                                 <Setter.Value>
-                                                    <ControlTemplate TargetType="ToggleButton">
+                                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
                                                         <Border
-                                                            Width="20"
-                                                            Height="20"
-                                                            Background="Transparent">
+                                                            x:Name="ArrowBorder"
+                                                            Background="Transparent"
+                                                            BorderThickness="0">
                                                             <Path
                                                                 x:Name="Arrow"
                                                                 HorizontalAlignment="Center"
                                                                 VerticalAlignment="Center"
-                                                                Data="M 0,0 L 4,4 L 0,8"
-                                                                RenderTransformOrigin="0.5,0.5"
-                                                                Stroke="#999"
+                                                                Data="M 2,0 L 6,5 L 2,10"
+                                                                Stroke="#858585"
                                                                 StrokeThickness="1.5">
                                                                 <Path.RenderTransform>
-                                                                    <RotateTransform Angle="0" />
+                                                                    <RotateTransform x:Name="ArrowRotation" Angle="0" CenterX="3" CenterY="5" />
                                                                 </Path.RenderTransform>
                                                             </Path>
                                                         </Border>
@@ -150,9 +158,12 @@
                                                             <Trigger Property="IsChecked" Value="True">
                                                                 <Setter TargetName="Arrow" Property="RenderTransform">
                                                                     <Setter.Value>
-                                                                        <RotateTransform Angle="45" />
+                                                                        <RotateTransform Angle="90" CenterX="3" CenterY="5" />
                                                                     </Setter.Value>
                                                                 </Setter>
+                                                            </Trigger>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="Arrow" Property="Stroke" Value="#CCCCCC" />
                                                             </Trigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>
@@ -171,34 +182,64 @@
                             </Grid>
                         </Border>
 
-                        <ItemsPresenter x:Name="ItemsHost" Visibility="Collapsed" />
+                        <ItemsPresenter
+                            x:Name="ItemsHost"
+                            Margin="0,0,0,0"
+                            Visibility="Collapsed" />
                     </StackPanel>
 
                     <ControlTemplate.Triggers>
+                        <!--  Expanded state  -->
                         <Trigger Property="IsExpanded" Value="True">
                             <Setter TargetName="ItemsHost" Property="Visibility" Value="Visible" />
                         </Trigger>
 
+                        <!--  No children - hide expander  -->
                         <Trigger Property="HasItems" Value="False">
                             <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
                         </Trigger>
 
+                        <!--  Selected state - VSCode Blue  -->
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="#330078D4" />
-                            <Setter Property="Foreground" Value="#0078D4" />
+                            <Setter TargetName="Bd" Property="Padding" Value="6,4" />
                         </Trigger>
 
-                        <Trigger SourceName="Bd" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#1A0078D4" />
-                        </Trigger>
+                        <!--  Hover state - VSCode hover color  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="False" />
+                                <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Bd" Property="Background" Value="#3E3E42" />
+                        </MultiTrigger>
 
+                        <!--  Selected + Hover state  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsSelected" Value="True" />
+                                <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Bd" Property="Background" Value="#4E4E52" />
+                        </MultiTrigger>
+
+                        <!--  Disabled state  -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+                            <Setter Property="Foreground" Value="#5A5A5A" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <!--  ========== VSCode Dark Theme TreeView Style ==========  -->
+    <Style TargetType="{x:Type TreeView}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
     </Style>
 
     <!--  ========== Global ScrollViewer Style (Dark Theme) ==========  -->
@@ -342,17 +383,6 @@
         <Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
         <Setter Property="Padding" Value="4,6" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-    </Style>
-
-    <!--  ========== TreeViewItem Style ==========  -->
-    <Style x:Key="SidebarTreeViewItemStyle" TargetType="TreeViewItem">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
     </Style>
 
     <!--  ========== TextBlock Styles ==========  -->
