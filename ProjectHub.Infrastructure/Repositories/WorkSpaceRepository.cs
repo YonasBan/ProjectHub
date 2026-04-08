@@ -10,52 +10,59 @@ namespace ProjectHub.Infrastructure.Repositories;
 /// </summary>
 public class WorkSpaceRepository : IWorkSpaceRepository
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IDbContextFactory<AppDbContext> _factory;
 
-    public WorkSpaceRepository(AppDbContext dbContext)
+    public WorkSpaceRepository(IDbContextFactory<AppDbContext> factory)
     {
-        _dbContext = dbContext;
+        _factory = factory;
     }
 
     public async Task<WorkSpace?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaces.FindAsync(new object[] { id }, cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaces.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaces.ToListAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaces.ToListAsync(cancellationToken);
     }
 
     public async Task<WorkSpace> AddAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
-        await _dbContext.WorkSpaces.AddAsync(entity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.WorkSpaces.AddAsync(entity, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task UpdateAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.WorkSpaces.Update(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        ctx.WorkSpaces.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.WorkSpaces.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        ctx.WorkSpaces.Remove(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
+        await using var ctx = _factory.CreateDbContext();
+        
         // 查询工作空间（包含关联的项目数量）
-        var workSpaces = await _dbContext.WorkSpaces
+        var workSpaces = await ctx.WorkSpaces
             .Select(w => new
             {
                 WorkSpace = w,
-                ProjectCount = _dbContext.ProjectWorkSpaces
+                ProjectCount = ctx.ProjectWorkSpaces
                     .Count(pws => pws.WorkSpaceId == w.Id && 
-                                  !_dbContext.Projects.Any(p => p.Id == pws.ProjectId))
+                                  !ctx.Projects.Any(p => p.Id == pws.ProjectId))
             })
             .OrderBy(x => x.WorkSpace.SortOrder)
             .ThenBy(x => x.WorkSpace.Name)
@@ -72,14 +79,16 @@ public class WorkSpaceRepository : IWorkSpaceRepository
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaces
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaces
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default)
     {
+        await using var ctx = _factory.CreateDbContext();
         // 按最近打开时间降序排序，获取指定数量的工作空间
-        return await _dbContext.WorkSpaces
+        return await ctx.WorkSpaces
             .Where(w => w.LastOpenedAt.HasValue)
             .OrderByDescending(w => w.LastOpenedAt)
             .Take(count)

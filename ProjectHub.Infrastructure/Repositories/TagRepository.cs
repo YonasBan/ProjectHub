@@ -10,40 +10,45 @@ namespace ProjectHub.Infrastructure.Repositories;
 /// </summary>
 public class TagRepository : ITagRepository
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IDbContextFactory<AppDbContext> _factory;
 
-    public TagRepository(AppDbContext dbContext)
+    public TagRepository(IDbContextFactory<AppDbContext> factory)
     {
-        _dbContext = dbContext;
+        _factory = factory;
     }
 
     public async Task<Tag?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Tags.FindAsync(new object[] { id }, cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Tags.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Tags.ToListAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Tags.ToListAsync(cancellationToken);
     }
 
     public async Task<Tag> AddAsync(Tag entity, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Tags.AddAsync(entity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.Tags.AddAsync(entity, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task UpdateAsync(Tag entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.Tags.Update(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        ctx.Tags.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(Tag entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.Tags.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        ctx.Tags.Remove(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     /// <summary>
@@ -51,7 +56,8 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<IReadOnlyList<Tag>> GetAllOrderedAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Tags
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Tags
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Name)
             .ToListAsync(cancellationToken);
@@ -62,7 +68,8 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Tags
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Tags
             .AnyAsync(t => t.Name == name, cancellationToken);
     }
 
@@ -71,7 +78,8 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<IReadOnlyList<long>> GetProjectIdsByTagIdAsync(long tagId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.ProjectTags
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.ProjectTags
             .Where(pt => pt.TagId == tagId)
             .Select(pt => pt.ProjectId)
             .ToListAsync(cancellationToken);
@@ -82,7 +90,8 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<IReadOnlyList<long>> GetWorkSpaceIdsByTagIdAsync(long tagId, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaceTags
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaceTags
             .Where(wst => wst.TagId == tagId)
             .Select(wst => wst.WorkSpaceId)
             .ToListAsync(cancellationToken);
@@ -93,12 +102,13 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<IReadOnlyList<Tag>> GetTagsByProjectIdAsync(long projectId, CancellationToken cancellationToken = default)
     {
-        var tagIds = await _dbContext.ProjectTags
+        await using var ctx = _factory.CreateDbContext();
+        var tagIds = await ctx.ProjectTags
             .Where(pt => pt.ProjectId == projectId)
             .Select(pt => pt.TagId)
             .ToListAsync(cancellationToken);
 
-        return await _dbContext.Tags
+        return await ctx.Tags
             .Where(t => tagIds.Contains(t.Id))
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Name)
@@ -110,12 +120,13 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<IReadOnlyList<Tag>> GetTagsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default)
     {
-        var tagIds = await _dbContext.WorkSpaceTags
+        await using var ctx = _factory.CreateDbContext();
+        var tagIds = await ctx.WorkSpaceTags
             .Where(wst => wst.WorkSpaceId == workSpaceId)
             .Select(wst => wst.TagId)
             .ToListAsync(cancellationToken);
 
-        return await _dbContext.Tags
+        return await ctx.Tags
             .Where(t => tagIds.Contains(t.Id))
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Name)
@@ -127,8 +138,9 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<ProjectTag> AddProjectTagAsync(ProjectTag projectTag, CancellationToken cancellationToken = default)
     {
-        await _dbContext.ProjectTags.AddAsync(projectTag, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.ProjectTags.AddAsync(projectTag, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return projectTag;
     }
 
@@ -137,13 +149,14 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task DeleteProjectTagAsync(long projectId, long tagId, CancellationToken cancellationToken = default)
     {
-        var projectTag = await _dbContext.ProjectTags
+        await using var ctx = _factory.CreateDbContext();
+        var projectTag = await ctx.ProjectTags
             .FirstOrDefaultAsync(pt => pt.ProjectId == projectId && pt.TagId == tagId, cancellationToken);
 
         if (projectTag != null)
         {
-            _dbContext.ProjectTags.Remove(projectTag);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            ctx.ProjectTags.Remove(projectTag);
+            await ctx.SaveChangesAsync(cancellationToken);
         }
     }
 
@@ -152,8 +165,9 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task<WorkSpaceTag> AddWorkSpaceTagAsync(WorkSpaceTag workSpaceTag, CancellationToken cancellationToken = default)
     {
-        await _dbContext.WorkSpaceTags.AddAsync(workSpaceTag, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.WorkSpaceTags.AddAsync(workSpaceTag, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return workSpaceTag;
     }
 
@@ -162,13 +176,14 @@ public class TagRepository : ITagRepository
     /// </summary>
     public async Task DeleteWorkSpaceTagAsync(long workSpaceId, long tagId, CancellationToken cancellationToken = default)
     {
-        var workSpaceTag = await _dbContext.WorkSpaceTags
+        await using var ctx = _factory.CreateDbContext();
+        var workSpaceTag = await ctx.WorkSpaceTags
             .FirstOrDefaultAsync(wst => wst.WorkSpaceId == workSpaceId && wst.TagId == tagId, cancellationToken);
 
         if (workSpaceTag != null)
         {
-            _dbContext.WorkSpaceTags.Remove(workSpaceTag);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            ctx.WorkSpaceTags.Remove(workSpaceTag);
+            await ctx.SaveChangesAsync(cancellationToken);
         }
     }
 }
