@@ -13,6 +13,7 @@ namespace ProjectHub.Application.Interfaces;
 public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable, IDialogViewModel<TResult>
 {
     private readonly TaskCompletionSource<DialogResult<TResult>> _tcs = new();
+    public Task<DialogResult<TResult>> WaitForResultAsync() => _tcs.Task;
 
     protected void Close(TResult result) =>
         _tcs.TrySetResult(new DialogResult<TResult>(true, result));
@@ -31,9 +32,7 @@ public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable
     /// </summary>
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
 
-    DialogResult<TResult>? IDialogViewModel<TResult>.Result
-    { get; }
-
+    public DialogResult<TResult>? Result => throw new NotImplementedException();
 
     protected DialogViewModelBase()
     {

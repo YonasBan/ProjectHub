@@ -573,7 +573,7 @@ public class MainViewModel : ViewModelBase
                 MainThreadScheduler);
 
             // 显示对话框
-            var result =  _dialogService.ShowDialog<CreateFolderDialogViewModel,string>(dialogVm);
+            var result = await _dialogService.ShowDialogAsync<CreateFolderDialogViewModel,string>(dialogVm);
 
             if (result.Confirmed && !string.IsNullOrWhiteSpace(result.Value))
             {

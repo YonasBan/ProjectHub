@@ -1,4 +1,5 @@
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.ViewModels;
 using ProjectHub.Presentation.Wpf.Dialogs;
 using ReactiveUI;
 using System.Windows;
@@ -47,31 +48,12 @@ public class DialogService : IDialogService
         return Task.FromResult(result == MessageBoxResult.Yes);
     }
 
-    public DialogResult<string> ShowInput(string title, string message, string? defaultValue = null)
+    public Task<DialogResult<string>> ShowInputAsync(string title, string message, string? defaultValue = null)
     {
-        // 使用 InputDialog 作为通用输入对话框
-        var dialog = new InputDialog();
-
-        // 获取父窗口作为 Owner
-        var owner = GetActiveWindow();
-        if (owner != null)
-        {
-            dialog.Owner = owner;
-        }
-
-        dialog.ShowDialog();
-
-        // 返回结果
-        if (dialog.DataContext is IDialogViewModel<string> vm)
-        {
-            var result =  vm.Result;
-            return new DialogResult<string>(result.Confirmed, result.Value);
-        }
-
-        return new DialogResult<string>(false, defaultValue);
+        throw new NotImplementedException();
     }
 
-    public  DialogResult<TResult> ShowDialog<TViewModel, TResult>(TViewModel viewModel)
+    public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(TViewModel viewModel)
         where TViewModel : IDialogViewModel<TResult>
     {
         var view = ViewLocator.Current.ResolveView(viewModel)
@@ -82,15 +64,16 @@ public class DialogService : IDialogService
             throw new InvalidOperationException("Dialog 的 View 必须是 Window");
         // 获取父窗口作为 Owner
         var owner = GetActiveWindow();
+        // ✅ 加这一行！否则 ViewModel 是 null
+        view.ViewModel = viewModel;
         if (owner != null)
         {
             window.Owner = owner;
         }
 
-        window.ShowDialog();
-
+        window.Show();
         // 返回结果
-        var result =  viewModel.Result;
+        var result = await viewModel.WaitForResultAsync();
         return new DialogResult<TResult>(result.Confirmed, result.Value);
     }
 }

@@ -2,6 +2,7 @@
 using ProjectHub.Application.ViewModels;
 using ReactiveUI;
 using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 using System.Windows;
 
 namespace ProjectHub.Presentation.Wpf.Dialogs;
@@ -15,15 +16,30 @@ namespace ProjectHub.Presentation.Wpf.Dialogs;
 /// - ViewModel 由外部传入
 /// - 支持键盘快捷键（Enter 确认，Escape 取消）
 /// </summary>
-public partial class InputDialog : Window,IViewFor<CreateFolderDialogViewModel>
+public partial class InputDialog : Window, IViewFor<CreateFolderDialogViewModel>
 {
     public InputDialog()
     {
         InitializeComponent();
         this.WhenActivated(d =>
         {
+            // ViewModel → DataContext
             this.WhenAnyValue(x => x.ViewModel)
                 .BindTo(this, x => x.DataContext)
+                .DisposeWith(d);
+
+            // 等 ViewModel 赋值后再订阅命令
+            this.WhenAnyValue(x => x.ViewModel)
+                .WhereNotNull()
+                .Subscribe(vm =>
+                {
+                    vm.CancelCommand
+                        .Subscribe(_ => this.Close())
+                        .DisposeWith(d);
+                    vm.ConfirmCommand
+                        .Subscribe(_ => this.Close())
+                        .DisposeWith(d);
+                })
                 .DisposeWith(d);
         });
     }

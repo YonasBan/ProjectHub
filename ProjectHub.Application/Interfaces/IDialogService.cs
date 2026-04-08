@@ -11,6 +11,8 @@ namespace ProjectHub.Application.Interfaces
     public interface IDialogViewModel<TResult>
     {
         DialogResult<TResult>? Result { get; }
+
+        Task<DialogResult<TResult>> WaitForResultAsync();
     }
 
     // 核心弹窗服务接口
@@ -24,11 +26,11 @@ namespace ProjectHub.Application.Interfaces
             string? confirmText = null, string? cancelText = null);
 
         // 输入框
-       DialogResult<string> ShowInput(string title, string message,
+       Task<DialogResult<string>> ShowInputAsync(string title, string message,
             string? defaultValue = null);
 
         // 自定义 ViewModel 弹窗
-       DialogResult<TResult> ShowDialog<TViewModel, TResult>(
+      Task< DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(
             TViewModel viewModel)
             where TViewModel : IDialogViewModel<TResult>;
     }
