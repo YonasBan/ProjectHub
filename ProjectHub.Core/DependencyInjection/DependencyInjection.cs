@@ -61,9 +61,7 @@ public static class DependencyInjection
         // 注册数据库上下文
         var connectionString = configuration.GetConnectionString("DefaultConnection") 
             ?? "Data Source=projecthub.db";
-        
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlite(connectionString));
+        services.AddDbContextFactory<AppDbContext>(options =>options.UseSqlite(connectionString));
 
         // 注册仓储
         services.AddScoped<IProjectRepository, ProjectRepository>();
