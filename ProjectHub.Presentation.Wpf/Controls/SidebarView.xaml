@@ -59,8 +59,10 @@
                 x:Name="NavigationTree"
                 Grid.Row="1"
                 Padding="0,8,0,8"
+                HorizontalAlignment="Stretch"
                 Background="Transparent"
-                BorderThickness="0"
+                BorderBrush="AliceBlue"
+                BorderThickness="2"
                 ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
                 ItemsSource="{Binding SidebarTreeItems}"
                 Loaded="NavigationTree_OnLoaded">
@@ -68,108 +70,111 @@
                     <HierarchicalDataTemplate DataType="{x:Type viewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
                         <Border
                             x:Name="ItemBorder"
-                            Padding="8,6,16,6"
-                            Background="Transparent"
+                            Width="220"
+                            Height="32"
+                            Padding="8,6,0,6"
+                            HorizontalAlignment="Stretch"
                             CornerRadius="0"
                             MouseEnter="ItemBorder_MouseEnter"
                             MouseLeave="ItemBorder_MouseLeave"
                             MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp"
                             Tag="{Binding}">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="Auto" />
-                                </Grid.ColumnDefinitions>
-
-                                <!--  Expand/Collapse Arrow  -->
-                                <TextBlock
-                                    x:Name="ExpandArrow"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontSize="10"
-                                    Foreground="{StaticResource TextMutedBrush}"
-                                    RenderTransformOrigin="0.5,0.5"
-                                    Tag="{Binding}"
-                                    Text="&#x25B6;">
-
-                                    <TextBlock.RenderTransform>
-                                        <RotateTransform x:Name="ExpandRotation" Angle="0" />
-                                    </TextBlock.RenderTransform>
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Children.Count}" Value="0">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsSpecial}" Value="True">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
-                                                    <Setter Property="Text" Value="&#x25BC;" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-
-                                <!--  Icon (using SharpVectors for SVG)  -->
-                                <svg:SvgViewbox
-                                    Grid.Column="1"
-                                    Width="16"
-                                    Height="16"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Source="{Binding IconPath}" />
-
-                                <!--  Label  -->
-                                <TextBlock
-                                    Grid.Column="2"
-                                    Margin="8,0,0,0"
-                                    VerticalAlignment="Center"
-                                    FontSize="13"
-                                    Foreground="{StaticResource TextPrimaryBrush}"
-                                    Text="{Binding Name}" />
-
-                                <!--  Count Badge  -->
-                                <Border
-                                    Grid.Column="3"
-                                    Margin="8,0,0,0"
-                                    Style="{StaticResource TreeCountBadgeStyle}">
+                            <Grid HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal">
                                     <TextBlock
-                                        FontSize="11"
+                                        x:Name="ExpandArrow"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        FontSize="10"
                                         Foreground="{StaticResource TextMutedBrush}"
-                                        Text="{Binding Count}" />
-                                </Border>
+                                        RenderTransformOrigin="0.5,0.5"
+                                        Tag="{Binding}"
+                                        Text="&#x25B6;">
+                                        <TextBlock.RenderTransform>
+                                            <RotateTransform x:Name="ExpandRotation" Angle="0" />
+                                        </TextBlock.RenderTransform>
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Children.Count}" Value="0">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSpecial}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
+                                                        <Setter Property="Text" Value="&#x25BC;" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <!--  Icon (using SharpVectors for SVG)  -->
+                                    <svg:SvgViewbox
+                                        Grid.Column="1"
+                                        Width="16"
+                                        Height="16"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Source="{Binding IconPath}" />
+                                    <!--  Label  -->
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        FontSize="13"
+                                        Foreground="{StaticResource TextPrimaryBrush}"
+                                        Text="{Binding Name}" />
 
-                                <!--  Add Button (visible on hover)  -->
-                                <Button
-                                    Grid.Column="4"
-                                    Width="20"
-                                    Height="20"
-                                    Content="+"
-                                    FontSize="14"
-                                    Style="{StaticResource IconButtonStyle}"
-                                    ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
+                                    <!--  Count Badge  -->
+                                    <Border
+                                        Grid.Column="3"
+                                        Margin="8,0,0,0"
+                                        Style="{StaticResource TreeCountBadgeStyle}">
+                                        <TextBlock
+                                            FontSize="11"
+                                            Foreground="{StaticResource TextMutedBrush}"
+                                            Text="{Binding Count}" />
+                                    </Border>
 
-                                <!--  Delete Button (visible on hover)  -->
-                                <Button
-                                    Grid.Column="5"
-                                    Width="20"
-                                    Height="20"
-                                    Margin="4,0,0,0"
-                                    Content="&#x00D7;"
-                                    FontSize="14"
-                                    Style="{StaticResource IconButtonStyle}"
-                                    ToolTip="{Binding DataContext.L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+                                <StackPanel
+                                    Grid.Column="1"
+                                    HorizontalAlignment="Right"
+                                    Orientation="Horizontal">
+                                    <Button
+                                        Width="20"
+                                        Height="20"
+                                        Content="+"
+                                        FontSize="14"
+                                        Style="{StaticResource IconButtonStyle}"
+                                        ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
+                                    <Button
+                                        Width="20"
+                                        Height="20"
+                                        Margin="4,0,0,0"
+                                        Content="&#x00D7;"
+                                        FontSize="14"
+                                        Style="{StaticResource IconButtonStyle}"
+                                        ToolTip="{Binding DataContext.L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
+                                </StackPanel>
+
+
                             </Grid>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Setter Property="Background" Value="Transparent" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsHovered}" Value="True">
+                                            <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
                         </Border>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>
