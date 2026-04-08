@@ -61,8 +61,6 @@
                 Padding="0,8,0,8"
                 HorizontalAlignment="Stretch"
                 Background="Transparent"
-                BorderBrush="AliceBlue"
-                BorderThickness="2"
                 ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
                 ItemsSource="{Binding SidebarTreeItems}"
                 Loaded="NavigationTree_OnLoaded">
@@ -74,7 +72,7 @@
                             Height="32"
                             Padding="8,6,0,6"
                             HorizontalAlignment="Stretch"
-                            CornerRadius="0"
+                            CornerRadius="3"
                             MouseEnter="ItemBorder_MouseEnter"
                             MouseLeave="ItemBorder_MouseLeave"
                             MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp"
