@@ -10,52 +10,64 @@ namespace ProjectHub.Infrastructure.Repositories;
 /// </summary>
 public class WorkFolderRepository : IWorkFolderRepository
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IDbContextFactory<AppDbContext> _factory;
 
-    public WorkFolderRepository(AppDbContext dbContext)
+    public WorkFolderRepository(IDbContextFactory<AppDbContext> factory)
     {
-        _dbContext = dbContext;
+        _factory = factory;
     }
 
     public async Task<WorkFolder?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkFolders.FindAsync(new object[] { id }, cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+
+        return await ctx.WorkFolders.FindAsync(new object[] { id }, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkFolder>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkFolders.ToListAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+
+        return await ctx.WorkFolders.ToListAsync(cancellationToken);
     }
 
     public async Task<WorkFolder> AddAsync(WorkFolder entity, CancellationToken cancellationToken = default)
     {
-        await _dbContext.WorkFolders.AddAsync(entity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+
+        await ctx.WorkFolders.AddAsync(entity, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task UpdateAsync(WorkFolder entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.WorkFolders.Update(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+
+        ctx.WorkFolders.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(WorkFolder entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.WorkFolders.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+
+        ctx.WorkFolders.Remove(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkFolder>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
+        await using var ctx = _factory.CreateDbContext();
+
         // 查询工作文件夹（包含关联的项目数量）
-        var workFolders = await _dbContext.WorkFolders
+        var workFolders = await ctx.WorkFolders
             .Select(w => new
             {
                 WorkFolder = w,
-                ProjectCount = _dbContext.ProjectWorkFolders
-                    .Count(pwf => pwf.WorkFolderId == w.Id && 
-                                  !_dbContext.Projects.Any(p => p.Id == pwf.ProjectId))
+                ProjectCount = ctx.ProjectWorkFolders
+                    .Count(pwf => pwf.WorkFolderId == w.Id &&
+                                  !ctx.Projects.Any(p => p.Id == pwf.ProjectId))
             })
             .OrderBy(x => x.WorkFolder.SortOrder)
             .ThenBy(x => x.WorkFolder.Name)
@@ -72,7 +84,9 @@ public class WorkFolderRepository : IWorkFolderRepository
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkFolders
+        await using var ctx = _factory.CreateDbContext();
+
+        return await ctx.WorkFolders
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
 }
