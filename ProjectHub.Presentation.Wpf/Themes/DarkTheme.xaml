@@ -15,6 +15,14 @@
     <Color x:Key="WarningColor">#FFCCA700</Color>
     <Color x:Key="ErrorColor">#FFF44747</Color>
 
+    <!--  ========== TreeViewItem Colors ==========  -->
+    <Color x:Key="TreeViewItemHoverBgColor">#FF3E3E42</Color>
+    <Color x:Key="TreeViewItemSelectedBgColor">#330078D4</Color>
+    <Color x:Key="TreeViewItemSelectedHoverBgColor">#FF4E4E52</Color>
+    <Color x:Key="TreeViewItemDisabledFgColor">#FF5A5A5A</Color>
+    <Color x:Key="TreeViewItemArrowColor">#FF858585</Color>
+    <Color x:Key="TreeViewItemArrowHoverColor">#FFCCCCCC</Color>
+
     <!--  ========== SolidColorBrushes ==========  -->
     <SolidColorBrush x:Key="BgPrimaryBrush" Color="{StaticResource BgPrimaryColor}" />
     <SolidColorBrush x:Key="BgSecondaryBrush" Color="{StaticResource BgSecondaryColor}" />
@@ -29,6 +37,12 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}" />
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}" />
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
+    <SolidColorBrush x:Key="TreeViewItemHoverBgBrush" Color="{StaticResource TreeViewItemHoverBgColor}" />
+    <SolidColorBrush x:Key="TreeViewItemSelectedBgBrush" Color="{StaticResource TreeViewItemSelectedBgColor}" />
+    <SolidColorBrush x:Key="TreeViewItemSelectedHoverBgBrush" Color="{StaticResource TreeViewItemSelectedHoverBgColor}" />
+    <SolidColorBrush x:Key="TreeViewItemDisabledFgBrush" Color="{StaticResource TreeViewItemDisabledFgColor}" />
+    <SolidColorBrush x:Key="TreeViewItemArrowBrush" Color="{StaticResource TreeViewItemArrowColor}" />
+    <SolidColorBrush x:Key="TreeViewItemArrowHoverBrush" Color="{StaticResource TreeViewItemArrowHoverColor}" />
 
     <!--  ========== Converters ==========  -->
     <BooleanToVisibilityConverter x:Key="BoolToVis" />

@@ -147,7 +147,7 @@
                                                                 HorizontalAlignment="Center"
                                                                 VerticalAlignment="Center"
                                                                 Data="M 2,0 L 6,5 L 2,10"
-                                                                Stroke="#858585"
+                                                                Stroke="{StaticResource TreeViewItemArrowBrush}"
                                                                 StrokeThickness="1.5">
                                                                 <Path.RenderTransform>
                                                                     <RotateTransform x:Name="ArrowRotation" Angle="0" CenterX="3" CenterY="5" />
@@ -163,7 +163,7 @@
                                                                 </Setter>
                                                             </Trigger>
                                                             <Trigger Property="IsMouseOver" Value="True">
-                                                                <Setter TargetName="Arrow" Property="Stroke" Value="#CCCCCC" />
+                                                                <Setter TargetName="Arrow" Property="Stroke" Value="{StaticResource TreeViewItemArrowHoverBrush}" />
                                                             </Trigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>
@@ -201,7 +201,7 @@
 
                         <!--  Selected state - VSCode Blue  -->
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#330078D4" />
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemSelectedBgBrush}" />
                             <Setter TargetName="Bd" Property="Padding" Value="6,4" />
                         </Trigger>
 
@@ -211,7 +211,7 @@
                                 <Condition Property="IsSelected" Value="False" />
                                 <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background" Value="#3E3E42" />
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemHoverBgBrush}" />
                         </MultiTrigger>
 
                         <!--  Selected + Hover state  -->
@@ -220,12 +220,12 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background" Value="#4E4E52" />
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemSelectedHoverBgBrush}" />
                         </MultiTrigger>
 
                         <!--  Disabled state  -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="#5A5A5A" />
+                            <Setter Property="Foreground" Value="{StaticResource TreeViewItemDisabledFgBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
