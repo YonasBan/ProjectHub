@@ -145,8 +145,10 @@
                                     <Button
                                         Width="20"
                                         Height="20"
+                                        Command="{Binding DataContext.CreateFolderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
                                         Content="+"
-                                        FontSize="14" Command="{Binding AddCommand}"
+                                        FontSize="14"
                                         Style="{StaticResource IconButtonStyle}"
                                         ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />

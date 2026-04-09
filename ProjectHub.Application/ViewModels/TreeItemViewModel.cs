@@ -89,28 +89,6 @@ public class TreeItemViewModel : ReactiveObject
     /// </summary>
     public ObservableCollection<TreeItemViewModel> Children { get; }
 
-    /// <summary>
-    /// 添加子节点命令
-    /// </summary>
-    private ReactiveCommand<Unit, Unit>? _addCommand;
-    public ReactiveCommand<Unit, Unit> AddCommand => _addCommand ??= ReactiveCommand.CreateFromTask(AddChildAsync);
-
-    /// <summary>
-    /// 删除节点命令
-    /// </summary>
-    private ReactiveCommand<Unit, Unit>? _deleteCommand;
-    public ReactiveCommand<Unit, Unit> DeleteCommand => _deleteCommand ??= ReactiveCommand.CreateFromTask(DeleteAsync);
-
-    /// <summary>
-    /// 委托：执行添加子节点的操作
-    /// </summary>
-    public Func<Task>? OnAddChild { get; set; }
-
-    /// <summary>
-    /// 委托：执行删除操作
-    /// </summary>
-    public Func<Task>? OnDelete { get; set; }
-
     public TreeItemViewModel(
         string name, 
         int count, 
@@ -138,24 +116,6 @@ public class TreeItemViewModel : ReactiveObject
     public void UpdateName(string newName)
     {
         Name = newName;
-    }
-
-    /// <summary>
-    /// 添加子节点的异步实现
-    /// </summary>
-    private async Task AddChildAsync()
-    {
-        if (OnAddChild != null)
-            await OnAddChild();
-    }
-
-    /// <summary>
-    /// 删除节点的异步实现
-    /// </summary>
-    private async Task DeleteAsync()
-    {
-        if (OnDelete != null)
-            await OnDelete();
     }
 
     /// <summary>

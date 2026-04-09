@@ -118,7 +118,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 创建文件夹命令
     /// </summary>
-    public ReactiveCommand<Unit, Unit> CreateFolderCommand { get; }
+    public ReactiveCommand<TreeItemViewModel, Unit> CreateFolderCommand { get; }
 
     /// <summary>
     /// 正在加载标识
@@ -292,7 +292,7 @@ public class MainViewModel : ViewModelBase
         SwitchToEnglishCommand = ReactiveCommand.CreateFromTask(
             SwitchToEnglishAsync,
             outputScheduler: MainThreadScheduler);
-        CreateFolderCommand = ReactiveCommand.CreateFromTask(
+        CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(
             CreateFolderAsync);
 
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
@@ -559,7 +559,7 @@ public class MainViewModel : ViewModelBase
     /// - 调用应用服务完成业务逻辑
     /// - 成功后刷新列表并重建树形结构
     /// </summary>
-    private async Task CreateFolderAsync()
+    private async Task CreateFolderAsync(TreeItemViewModel parent)
     {
         try
         {
@@ -583,7 +583,7 @@ public class MainViewModel : ViewModelBase
                 var createDto = new CreateWorkFolderDto
                 {
                     Name = folderName,
-                    ParentId = SelectedWorkFolder?.Id // 如果选中了父文件夹，则创建为子文件夹
+                    ParentId = parent?.Id // 如果选中了父文件夹，则创建为子文件夹
                 };
 
                 // 调用应用服务创建
