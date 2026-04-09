@@ -97,7 +97,7 @@ public partial class App : System.Windows.Application
         // ✅ 然后用 RxAppBuilder 注册平台服务
         RxAppBuilder.CreateReactiveUIBuilder()
             .WithWpf()
-            .WithViewsFromAssembly(typeof(App).Assembly)
+            //.WithViewsFromAssembly(typeof(App).Assembly)
             .BuildApp();
         var configuration = context.Configuration;
 

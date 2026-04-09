@@ -16,34 +16,11 @@ public partial class AddProjectDialog : Window, IViewFor<AddProjectDialogViewMod
     {
         InitializeComponent();
 
-        // 处理窗口关闭按钮（X）
-        Closing += (_, _) =>
-        {
-            if (ViewModel != null)
-            {
-                ViewModel.Cancel();
-            }
-        };
-
         this.WhenActivated(d =>
         {
             // ViewModel → DataContext
             this.WhenAnyValue(x => x.ViewModel)
                 .BindTo(this, x => x.DataContext)
-                .DisposeWith(d);
-
-            // 等 ViewModel 赋值后再订阅命令
-            this.WhenAnyValue(x => x.ViewModel)
-                .WhereNotNull()
-                .Subscribe(vm =>
-                {
-                    vm.CancelCommand
-                        .Subscribe(_ => this.Close())
-                        .DisposeWith(d);
-                    vm.ConfirmCommand
-                        .Subscribe(_ => this.Close())
-                        .DisposeWith(d);
-                })
                 .DisposeWith(d);
         });
     }

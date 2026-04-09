@@ -1,6 +1,7 @@
 ﻿using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.ViewModels;
 using ReactiveUI;
+using System.Diagnostics;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Windows;
@@ -21,35 +22,13 @@ public partial class InputDialog : Window, IViewFor<CreateFolderDialogViewModel>
     public InputDialog()
     {
         InitializeComponent();
-
-        // 处理窗口关闭按钮（X）
-        Closing += (_, _) =>
-        {
-            if (ViewModel != null)
-            {
-                ViewModel.Cancel();
-            }
-        };
+        Debug.WriteLine($"InputDialog 被创建！调用栈：\n{Environment.StackTrace}");
 
         this.WhenActivated(d =>
         {
             // ViewModel → DataContext
             this.WhenAnyValue(x => x.ViewModel)
                 .BindTo(this, x => x.DataContext)
-                .DisposeWith(d);
-
-            // 等 ViewModel 赋值后再订阅命令
-            this.WhenAnyValue(x => x.ViewModel)
-                .WhereNotNull()
-                .Subscribe(vm =>
-                {
-                    vm.CancelCommand
-                        .Subscribe(_ => this.Close())
-                        .DisposeWith(d);
-                    vm.ConfirmCommand
-                        .Subscribe(_ => this.Close())
-                        .DisposeWith(d);
-                })
                 .DisposeWith(d);
         });
     }

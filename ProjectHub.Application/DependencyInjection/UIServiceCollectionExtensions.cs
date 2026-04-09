@@ -19,9 +19,8 @@ public static class UIServiceCollectionExtensions
         // Main ViewModel - Scoped (because it depends on scoped services)
         services.AddScoped<ViewModels.MainViewModel>();
 
-
-        services.AddScoped<ViewModels.CreateFolderDialogViewModel>();
-        services.AddScoped<ViewModels.AddProjectDialogViewModel>();
+        services.AddTransient<ViewModels.CreateFolderDialogViewModel>();
+        services.AddTransient<ViewModels.AddProjectDialogViewModel>();
 
     }
 

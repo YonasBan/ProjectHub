@@ -11,6 +11,7 @@ namespace ProjectHub.Application.Interfaces
     public interface IDialogViewModel<TResult>
     {
         Task<DialogResult<TResult>> WaitForResultAsync();
+        void CloseWindow();
     }
 
     // 核心弹窗服务接口

@@ -1,10 +1,11 @@
-using System;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Presentation.Wpf.Dialogs;
 using ReactiveUI;
+using System;
+using System.Reactive.Concurrency;
 using System.Windows;
 
 namespace ProjectHub.Presentation.Wpf.Services;
@@ -20,10 +21,12 @@ namespace ProjectHub.Presentation.Wpf.Services;
 public class DialogService : IDialogService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IScheduler mainThreadScheduler;
 
-    public DialogService(IServiceProvider serviceProvider)
+    public DialogService(IServiceProvider serviceProvider, IScheduler mainThreadScheduler)
     {
         _serviceProvider = serviceProvider;
+        this.mainThreadScheduler = mainThreadScheduler;
     }
     /// <summary>
     /// 获取当前激活的窗口（用于对话框 Owner）
@@ -82,35 +85,56 @@ public class DialogService : IDialogService
     }
 
     /// <inheritdoc />
-    public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel,TResult>()
+    public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>()
         where TViewModel : IDialogViewModel<TResult>
     {
         var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
-        return await ShowDialogInternalAsync<TViewModel,TResult>(viewModel);
+        return await ShowDialogInternalAsync<TViewModel, TResult>(viewModel);
     }
 
     private async Task<DialogResult<TResult>> ShowDialogInternalAsync<TViewModel, TResult>(TViewModel viewModel)
         where TViewModel : IDialogViewModel<TResult>
     {
         var view = ViewLocator.Current.ResolveView(viewModel)
-           ?? throw new InvalidOperationException(
-               $"未找到 {typeof(TViewModel).Name} 对应的 View，" +
-               $"请确认 View 实现了 IViewFor<{typeof(TViewModel).Name}>");
+        ?? throw new InvalidOperationException(
+            $"未找到 {typeof(TViewModel).Name} 对应的 View，" +
+            $"请确认 View 实现了 IViewFor<{typeof(TViewModel).Name}>");
         if (view is not Window window)
             throw new InvalidOperationException("Dialog 的 View 必须是 Window");
         // 获取父窗口作为 Owner
-        var owner = GetActiveWindow();
-        // ✅ 加这一行！否则 ViewModel 是 null
-        view.ViewModel = viewModel;
-        if (owner != null)
+        try
         {
-            window.Owner = owner;
+            var owner = GetActiveWindow();
+            // ✅ 加这一行！否则 ViewModel 是 null
+            view.ViewModel = viewModel;
+            if (owner != null)
+            {
+                window.Owner = owner;
+            }
+
+            window.Show();
+            window.Closed += (s, e) =>
+            {
+                // 确保 ViewModel 收到关闭通知
+                viewModel.CloseWindow();
+            };
+            // 返回结果
+            var result = await viewModel.WaitForResultAsync();
+         
+            return new DialogResult<TResult>(result.Confirmed, result.Value);
+        }
+        finally
+        {
+            await window.Dispatcher.InvokeAsync(() =>
+            {
+                if (window.IsLoaded)
+                    window.Close();
+            });
+            // 释放 ViewModel 所有订阅
+            if (viewModel is IDisposable disposable)
+                disposable.Dispose();
         }
 
-        window.Show();
-        // 返回结果
-        var result = await viewModel.WaitForResultAsync();
-        return new DialogResult<TResult>(result.Confirmed, result.Value);
     }
 
 }

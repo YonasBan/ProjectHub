@@ -45,4 +45,9 @@ public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable
     {
         Disposables.Dispose();
     }
+
+    public void CloseWindow()
+    {
+        _tcs.TrySetResult(new DialogResult<TResult>(false));
+    }
 }

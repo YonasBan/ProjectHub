@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Windows;
 using ProjectHub.Application.ViewModels;
 
