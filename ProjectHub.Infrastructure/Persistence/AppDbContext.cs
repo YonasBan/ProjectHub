@@ -110,7 +110,8 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100);
             
-            entity.HasIndex(e => e.Name)
+            // 复合唯一索引：同级目录（相同 ParentId）下名称不能重复
+            entity.HasIndex(e => new { e.Name, e.ParentId })
                 .IsUnique();
             
             entity.Property(e => e.Description)

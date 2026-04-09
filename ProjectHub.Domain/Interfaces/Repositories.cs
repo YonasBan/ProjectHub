@@ -91,6 +91,13 @@ public interface IWorkFolderRepository : IRepository<WorkFolder>
     /// 检查工作文件夹名称是否已存在
     /// </summary>
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 检查同级目录下是否存在同名文件夹
+    /// </summary>
+    /// <param name="name">文件夹名称</param>
+    /// <param name="parentId">父文件夹ID（null表示根级）</param>
+    Task<bool> ExistsByNameAndParentIdAsync(string name, long? parentId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

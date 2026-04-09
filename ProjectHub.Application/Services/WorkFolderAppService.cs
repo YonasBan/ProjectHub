@@ -18,6 +18,12 @@ public class WorkFolderAppService : IWorkFolderAppService
 
     public async Task<WorkFolderDto> CreateAsync(CreateWorkFolderDto input, CancellationToken cancellationToken = default)
     {
+        // 检查同级目录下是否已存在同名文件夹
+        if (await _workFolderRepository.ExistsByNameAndParentIdAsync(input.Name, input.ParentId, cancellationToken))
+        {
+            throw new InvalidOperationException($"同级目录下已存在名称为 '{input.Name}' 的文件夹");
+        }
+
         var workFolder = Domain.Entities.WorkFolder.Create(
             input.Name, 
             input.SortOrder, 

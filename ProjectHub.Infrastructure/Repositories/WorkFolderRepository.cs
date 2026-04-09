@@ -89,4 +89,12 @@ public class WorkFolderRepository : IWorkFolderRepository
         return await ctx.WorkFolders
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
+
+    public async Task<bool> ExistsByNameAndParentIdAsync(string name, long? parentId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+
+        return await ctx.WorkFolders
+            .AnyAsync(w => w.Name == name && w.ParentId == parentId, cancellationToken);
+    }
 }
