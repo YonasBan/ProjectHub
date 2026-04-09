@@ -15,7 +15,7 @@ namespace ProjectHub.Application.ViewModels;
 /// </summary>
 public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<AddProjectDialogViewModel> _logger;
     private readonly IDialogService _dialogService;
     private readonly LocalizedStrings L;
 
@@ -108,7 +108,7 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
     public ReactiveCommand<Unit, Unit> BrowseIconCommand { get; }
 
     public AddProjectDialogViewModel(
-        ILogger logger,
+        ILogger<AddProjectDialogViewModel> logger,
         IDialogService dialogService,
         LocalizedStrings l)
     {
