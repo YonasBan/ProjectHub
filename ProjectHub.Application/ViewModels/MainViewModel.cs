@@ -533,11 +533,23 @@ public class MainViewModel : ViewModelBase
         }
         SidebarTreeItems.Add(workspaces);
 
-        // Work Folders (工作文件夹)
-        foreach (var folder in WorkFolders)
+        // Work Folders (工作文件夹) - 支持树形结构
+        var folderNodes = WorkFolders
+            .OrderBy(f => f.SortOrder)
+            .ToDictionary(f => f.Id, f => new TreeItemViewModel(f.Name, f.ProjectCount, TreeItemType.WorkFolder, f.Id));
+
+        foreach (var folder in WorkFolders.OrderBy(f => f.SortOrder))
         {
-            var folderNode = new TreeItemViewModel(folder.Name, folder.ProjectCount, TreeItemType.WorkFolder, folder.Id);
-            SidebarTreeItems.Add(folderNode);
+            if (folder.ParentId.HasValue && folderNodes.TryGetValue(folder.ParentId.Value, out var parentNode))
+            {
+                // 有父节点，添加到父节点的 Children 中
+                parentNode.Children.Add(folderNodes[folder.Id]);
+            }
+            else
+            {
+                // 根节点，直接添加到侧边栏
+                SidebarTreeItems.Add(folderNodes[folder.Id]);
+            }
         }
 
         // All Projects (所有项目)

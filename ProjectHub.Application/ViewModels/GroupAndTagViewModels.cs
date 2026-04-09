@@ -23,6 +23,8 @@ public partial class WorkFolderViewModel : ReactiveObject
     
     public int SortOrder => _workFolderDto.SortOrder;
 
+    public long? ParentId => _workFolderDto.ParentId;
+
     public WorkFolderViewModel(WorkFolderDto workFolderDto)
     {
         _workFolderDto = workFolderDto;
