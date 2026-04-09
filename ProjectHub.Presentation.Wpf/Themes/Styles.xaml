@@ -124,6 +124,17 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
 
+                                <!--  Selected Indicator (left bar)  -->
+                                <Rectangle
+                                    x:Name="SelectedIndicator"
+                                    Width="3"
+                                    Margin="-6,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    Fill="{StaticResource TreeViewItemSelectedIndicatorBrush}"
+                                    RadiusX="1.5"
+                                    RadiusY="1.5"
+                                    Visibility="Collapsed" />
+
                                 <!--  Expand/Collapse Arrow  -->
                                 <ToggleButton
                                     x:Name="Expander"
@@ -202,7 +213,9 @@
                         <!--  Selected state - VSCode Blue  -->
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemSelectedBgBrush}" />
+                            <Setter TargetName="Bd" Property="CornerRadius" Value="0" />
                             <Setter TargetName="Bd" Property="Padding" Value="6,4" />
+                            <Setter TargetName="SelectedIndicator" Property="Visibility" Value="Visible" />
                         </Trigger>
 
                         <!--  Hover state - VSCode hover color  -->
@@ -212,6 +225,7 @@
                                 <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemHoverBgBrush}" />
+                            <Setter TargetName="Bd" Property="CornerRadius" Value="0" />
                         </MultiTrigger>
 
                         <!--  Selected + Hover state  -->
@@ -221,6 +235,7 @@
                                 <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemSelectedHoverBgBrush}" />
+                            <Setter TargetName="Bd" Property="CornerRadius" Value="0" />
                         </MultiTrigger>
 
                         <!--  Disabled state  -->

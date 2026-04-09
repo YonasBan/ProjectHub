@@ -71,6 +71,7 @@
                             Height="32"
                             Padding="8,6,0,6"
                             HorizontalAlignment="Stretch"
+                            Background="Transparent"
                             CornerRadius="3"
                             MouseEnter="ItemBorder_MouseEnter"
                             MouseLeave="ItemBorder_MouseLeave"
@@ -145,7 +146,7 @@
                                         Width="20"
                                         Height="20"
                                         Content="+"
-                                        FontSize="14"
+                                        FontSize="14" Command="{Binding AddCommand}"
                                         Style="{StaticResource IconButtonStyle}"
                                         ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
