@@ -19,7 +19,7 @@ namespace ProjectHub.Application.ViewModels;
 /// </summary>
 public class CreateFolderDialogViewModel : DialogViewModelBase<string>
 {
-    private readonly ILogger _logger;
+    private readonly ILogger<CreateFolderDialogViewModel> _logger;
     private readonly LocalizedStrings L;
 
     /// <summary>
@@ -138,16 +138,15 @@ public class CreateFolderDialogViewModel : DialogViewModelBase<string>
     }
 
     public CreateFolderDialogViewModel(
-        ILogger logger,
+        ILogger<CreateFolderDialogViewModel> logger,
         LocalizedStrings l,
-        IScheduler mainThreadScheduler,
-        string? defaultName = null)
+        IScheduler mainThreadScheduler)
         : base()
     {
         _logger = logger;
         this.L = l;
-        DefaultFolderName = defaultName ?? string.Empty;
-        _folderName = DefaultFolderName;
+        DefaultFolderName = "";
+        _folderName = "";
 
         // 创建确认命令，带验证
         var canConfirm = this.WhenAnyValue(x => x.FolderName)

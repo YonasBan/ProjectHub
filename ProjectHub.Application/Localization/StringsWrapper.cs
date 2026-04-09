@@ -70,4 +70,15 @@ public class LocalizedStrings : ReactiveObject
     public string Folder_Error_EmptyName => _loc["Folder_Error_EmptyName"];
     public string Folder_Error_NameTooLong => _loc["Folder_Error_NameTooLong"];
     public string Folder_Error_InvalidChars => _loc["Folder_Error_InvalidChars"];
+
+    // 项目对话框
+    public string ProjectDialog_Title => _loc["ProjectDialog_Title"];
+    public string ProjectDialog_NameLabel => _loc["ProjectDialog_NameLabel"];
+    public string ProjectDialog_PathLabel => _loc["ProjectDialog_PathLabel"];
+    public string ProjectDialog_ProgramLabel => _loc["ProjectDialog_ProgramLabel"];
+    public string ProjectDialog_IconLabel => _loc["ProjectDialog_IconLabel"];
+    public string ProjectDialog_Error_EmptyName => _loc["ProjectDialog_Error_EmptyName"];
+    public string ProjectDialog_Error_EmptyPath => _loc["ProjectDialog_Error_EmptyPath"];
+    public string ProjectDialog_Error_EmptyProgram => _loc["ProjectDialog_Error_EmptyProgram"];
+    public string ProjectDialog_Browse => _loc["ProjectDialog_Browse"];
 }

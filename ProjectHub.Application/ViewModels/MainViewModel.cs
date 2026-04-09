@@ -578,14 +578,9 @@ public class MainViewModel : ViewModelBase
             IsLoading = true;
             Logger.LogInformation("开始创建文件夹");
 
-            // 创建对话框 ViewModel
-            var dialogVm = new CreateFolderDialogViewModel(
-                Logger,
-                L,
-                MainThreadScheduler);
 
             // 显示对话框
-            var result = await _dialogService.ShowDialogAsync<CreateFolderDialogViewModel,string>(dialogVm);
+            var result = await _dialogService.ShowDialogAsync<CreateFolderDialogViewModel,string>();
 
             if (result.Confirmed && !string.IsNullOrWhiteSpace(result.Value))
             {

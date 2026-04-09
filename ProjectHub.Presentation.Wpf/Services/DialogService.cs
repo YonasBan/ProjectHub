@@ -1,3 +1,6 @@
+using System;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Presentation.Wpf.Dialogs;
@@ -16,6 +19,12 @@ namespace ProjectHub.Presentation.Wpf.Services;
 /// </summary>
 public class DialogService : IDialogService
 {
+    private readonly IServiceProvider _serviceProvider;
+
+    public DialogService(IServiceProvider serviceProvider)
+    {
+        _serviceProvider = serviceProvider;
+    }
     /// <summary>
     /// 获取当前激活的窗口（用于对话框 Owner）
     /// </summary>
@@ -53,7 +62,34 @@ public class DialogService : IDialogService
         throw new NotImplementedException();
     }
 
+    public string? ShowOpenFileDialog(string filter, string title)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Filter = filter,
+            Title = title,
+            CheckFileExists = true,
+            CheckPathExists = true
+        };
+
+        return dialog.ShowDialog() == true ? dialog.FileName : null;
+    }
+
     public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(TViewModel viewModel)
+        where TViewModel : IDialogViewModel<TResult>
+    {
+        return await ShowDialogInternalAsync<TViewModel, TResult>(viewModel);
+    }
+
+    /// <inheritdoc />
+    public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel,TResult>()
+        where TViewModel : IDialogViewModel<TResult>
+    {
+        var viewModel = _serviceProvider.GetRequiredService<TViewModel>();
+        return await ShowDialogInternalAsync<TViewModel,TResult>(viewModel);
+    }
+
+    private async Task<DialogResult<TResult>> ShowDialogInternalAsync<TViewModel, TResult>(TViewModel viewModel)
         where TViewModel : IDialogViewModel<TResult>
     {
         var view = ViewLocator.Current.ResolveView(viewModel)
@@ -76,4 +112,5 @@ public class DialogService : IDialogService
         var result = await viewModel.WaitForResultAsync();
         return new DialogResult<TResult>(result.Confirmed, result.Value);
     }
+
 }

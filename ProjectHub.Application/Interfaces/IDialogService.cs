@@ -10,8 +10,6 @@ namespace ProjectHub.Application.Interfaces
     // 对话框 ViewModel 接口
     public interface IDialogViewModel<TResult>
     {
-        DialogResult<TResult>? Result { get; }
-
         Task<DialogResult<TResult>> WaitForResultAsync();
     }
 
@@ -29,9 +27,16 @@ namespace ProjectHub.Application.Interfaces
        Task<DialogResult<string>> ShowInputAsync(string title, string message,
             string? defaultValue = null);
 
-        // 自定义 ViewModel 弹窗
-      Task< DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(
+        // 打开文件对话框
+        string? ShowOpenFileDialog(string filter, string title);
+
+        // 自定义 ViewModel 弹窗（传入ViewModel实例）
+        Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(
             TViewModel viewModel)
+            where TViewModel : IDialogViewModel<TResult>;
+
+        // 自定义 ViewModel 弹窗（通过IoC获取ViewModel）
+        Task<DialogResult<TResult>> ShowDialogAsync<TViewModel,TResult>()
             where TViewModel : IDialogViewModel<TResult>;
     }
 }

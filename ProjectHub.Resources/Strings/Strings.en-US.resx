@@ -223,4 +223,33 @@
   <data name="Folder_Error_InvalidChars" xml:space="preserve">
     <value>Folder name cannot contain special characters (\ / : * ? " &lt; &gt; |)</value>
   </data>
+
+  <!-- Project Dialog -->
+  <data name="ProjectDialog_Title" xml:space="preserve">
+    <value>Add Project</value>
+  </data>
+  <data name="ProjectDialog_NameLabel" xml:space="preserve">
+    <value>Project Name</value>
+  </data>
+  <data name="ProjectDialog_PathLabel" xml:space="preserve">
+    <value>Open Path</value>
+  </data>
+  <data name="ProjectDialog_ProgramLabel" xml:space="preserve">
+    <value>Default Program</value>
+  </data>
+  <data name="ProjectDialog_IconLabel" xml:space="preserve">
+    <value>Project Icon</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyName" xml:space="preserve">
+    <value>Please enter project name</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyPath" xml:space="preserve">
+    <value>Please select open path</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyProgram" xml:space="preserve">
+    <value>Please select default program</value>
+  </data>
+  <data name="ProjectDialog_Browse" xml:space="preserve">
+    <value>Browse...</value>
+  </data>
 </root>

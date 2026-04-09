@@ -18,7 +18,7 @@ public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable
     protected void Close(TResult result) =>
         _tcs.TrySetResult(new DialogResult<TResult>(true, result));
 
-    protected void Cancel() =>
+    public void Cancel() =>
         _tcs.TrySetResult(new DialogResult<TResult>(false));
 
     /// <summary>
@@ -32,7 +32,6 @@ public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable
     /// </summary>
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
 
-    public DialogResult<TResult>? Result => throw new NotImplementedException();
 
     protected DialogViewModelBase()
     {

@@ -19,11 +19,12 @@ public static class UIServiceCollectionExtensions
         // Main ViewModel - Scoped (because it depends on scoped services)
         services.AddScoped<ViewModels.MainViewModel>();
 
-        // Other ViewModels - register as needed
-        // services.AddTransient<ProjectDetailViewModel>();
-        // services.AddTransient<SettingsViewModel>();
+
+        services.AddScoped<ViewModels.CreateFolderDialogViewModel>();
+        services.AddScoped<ViewModels.AddProjectDialogViewModel>();
+
     }
-    
+
     /// <summary>
     /// Registers all application services (platform-agnostic).
     /// Note: Platform-specific services (like DialogService) should be registered in the presentation layer.

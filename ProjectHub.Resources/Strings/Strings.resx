@@ -223,4 +223,33 @@
   <data name="Folder_Error_InvalidChars" xml:space="preserve">
     <value>文件夹名称不能包含特殊字符 (\ / : * ? " &lt; &gt; |)</value>
   </data>
+
+  <!-- 项目对话框 -->
+  <data name="ProjectDialog_Title" xml:space="preserve">
+    <value>添加项目</value>
+  </data>
+  <data name="ProjectDialog_NameLabel" xml:space="preserve">
+    <value>项目名称</value>
+  </data>
+  <data name="ProjectDialog_PathLabel" xml:space="preserve">
+    <value>打开路径</value>
+  </data>
+  <data name="ProjectDialog_ProgramLabel" xml:space="preserve">
+    <value>默认程序</value>
+  </data>
+  <data name="ProjectDialog_IconLabel" xml:space="preserve">
+    <value>项目图标</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyName" xml:space="preserve">
+    <value>请输入项目名称</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyPath" xml:space="preserve">
+    <value>请选择打开路径</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyProgram" xml:space="preserve">
+    <value>请选择默认程序</value>
+  </data>
+  <data name="ProjectDialog_Browse" xml:space="preserve">
+    <value>浏览...</value>
+  </data>
 </root>
