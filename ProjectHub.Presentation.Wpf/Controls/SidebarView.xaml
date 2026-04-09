@@ -79,36 +79,6 @@
                             Tag="{Binding}">
                             <Grid HorizontalAlignment="Stretch">
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBlock
-                                        x:Name="ExpandArrow"
-                                        Grid.Column="0"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center"
-                                        FontSize="10"
-                                        Foreground="{StaticResource TextMutedBrush}"
-                                        RenderTransformOrigin="0.5,0.5"
-                                        Tag="{Binding}"
-                                        Text="&#x25B6;">
-                                        <TextBlock.RenderTransform>
-                                            <RotateTransform x:Name="ExpandRotation" Angle="0" />
-                                        </TextBlock.RenderTransform>
-                                        <TextBlock.Style>
-                                            <Style TargetType="TextBlock">
-                                                <Setter Property="Visibility" Value="Visible" />
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding Children.Count}" Value="0">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsSpecial}" Value="True">
-                                                        <Setter Property="Visibility" Value="Collapsed" />
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsExpanded}" Value="True">
-                                                        <Setter Property="Text" Value="&#x25BC;" />
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBlock.Style>
-                                    </TextBlock>
                                     <!--  Icon (using SharpVectors for SVG)  -->
                                     <svg:SvgViewbox
                                         Grid.Column="1"
