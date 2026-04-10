@@ -53,31 +53,6 @@ public class CreateFolderDialogViewModel : DialogViewModelBase<string>
     }
 
     /// <summary>
-    /// 对话框标题
-    /// </summary>
-    public string Title => L.Sidebar_NewFolder;
-
-    /// <summary>
-    /// 文件夹名称占位符文本
-    /// </summary>
-    public string FolderNamePlaceholder => L.Folder_NamePlaceholder;
-
-    /// <summary>
-    /// 输入标签文本
-    /// </summary>
-    public string InputLabel => L.Folder_InputLabel;
-
-    /// <summary>
-    /// 确认按钮文本
-    /// </summary>
-    public string ConfirmText => L.Confirm;
-
-    /// <summary>
-    /// 取消按钮文本
-    /// </summary>
-    public string CancelText => L.Cancel;
-
-    /// <summary>
     /// 默认文件夹名称（用于预填充）
     /// </summary>
     public string DefaultFolderName { get; }

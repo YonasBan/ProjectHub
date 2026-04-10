@@ -78,15 +78,6 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
         private set => this.RaiseAndSetIfChanged(ref _hasError, value);
     }
 
-    // 本地化文本
-    public string Title => L.ProjectDialog_Title;
-    public string NameLabel => L.ProjectDialog_NameLabel;
-    public string PathLabel => L.ProjectDialog_PathLabel;
-    public string ProgramLabel => L.ProjectDialog_ProgramLabel;
-    public string IconLabel => L.ProjectDialog_IconLabel;
-    public string CancelText => L.Cancel;
-    public string ConfirmText => L.Confirm;
-
     /// <summary>
     /// 确认命令
     /// </summary>

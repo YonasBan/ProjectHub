@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:ProjectHub.Presentation.Wpf.Dialogs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
-    Title="{Binding Title}"
+    Title="{Binding L.Sidebar_NewFolder}"
     Width="420"
     Height="300"
     d:DataContext="{d:DesignInstance viewmodel:CreateFolderDialogViewModel}"
@@ -38,7 +38,7 @@
             FontSize="16"
             FontWeight="SemiBold"
             Foreground="{StaticResource TextPrimaryBrush}"
-            Text="{Binding Title}" />
+            Text="{Binding L.Sidebar_NewFolder}" />
 
         <!--  输入区域  -->
         <StackPanel Grid.Row="1">
@@ -46,7 +46,7 @@
                 Margin="0,0,0,6"
                 FontSize="13"
                 Foreground="{StaticResource TextSecondaryBrush}"
-                Text="{Binding InputLabel}" />
+                Text="{Binding L.Folder_InputLabel}" />
 
             <TextBox
                 x:Name="FolderNameTextBox"
@@ -90,12 +90,12 @@
                 Width="80"
                 Margin="0,0,10,0"
                 Command="{Binding CancelCommand}"
-                Content="{Binding CancelText}"
+                Content="{Binding L.Cancel}"
                 Style="{StaticResource SecondaryButtonStyle}" />
             <Button
                 Width="80"
                 Command="{Binding ConfirmCommand}"
-                Content="{Binding ConfirmText}"
+                Content="{Binding L.Confirm}"
                 Style="{StaticResource PrimaryButtonStyle}" />
         </StackPanel>
     </Grid>
