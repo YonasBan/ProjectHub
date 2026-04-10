@@ -20,13 +20,6 @@ public partial class SidebarView : UserControl
         InitializeComponent();
     }
 
-    /// <summary>
-    /// TreeView 加载完成事件
-    /// </summary>
-    private void NavigationTree_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        // TreeView 初始化完成后的操作（如果需要）
-    }
 
     /// <summary>
     /// 鼠标悬停事件 - 显示操作按钮
@@ -46,20 +39,5 @@ public partial class SidebarView : UserControl
     {
         if (sender is Border { Tag: TreeItemViewModel item })
             item.IsHovered = false;
-    }
-
-    /// <summary>
-    /// 鼠标点击事件 - 处理节点选择/展开折叠
-    /// </summary>
-    private void ItemBorder_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-    {
-        if (sender is Border { Tag: TreeItemViewModel item })
-        {
-            item.IsSelected = true;
-
-            // 有子节点的节点可以展开/折叠
-            if (item.Children.Count > 0)
-                item.IsExpanded = !item.IsExpanded;
-        }
     }
 }

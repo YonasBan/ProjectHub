@@ -60,9 +60,7 @@
                 Padding="0,8,0,8"
                 Background="Transparent"
                 BorderThickness="0"
-                ItemContainerStyle="{StaticResource SidebarTreeViewItemStyle}"
-                ItemsSource="{Binding SidebarTreeItems}"
-                Loaded="NavigationTree_OnLoaded">
+                ItemsSource="{Binding SidebarTreeItems}">
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type viewmodels:TreeItemViewModel}" ItemsSource="{Binding Children}">
                         <Border
@@ -72,7 +70,6 @@
                             CornerRadius="0"
                             MouseEnter="ItemBorder_MouseEnter"
                             MouseLeave="ItemBorder_MouseLeave"
-                            MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp"
                             Tag="{Binding}">
                             <Grid>
                                 <Grid.ColumnDefinitions>

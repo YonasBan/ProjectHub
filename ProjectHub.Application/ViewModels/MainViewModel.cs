@@ -68,7 +68,16 @@ public class MainViewModel : ViewModelBase
         get => _selectedWorkFolder;
         set => this.RaiseAndSetIfChanged(ref _selectedWorkFolder, value);
     }
+    /// <summary>
+    /// 当前选中的工作文件夹
+    /// </summary>
+    private TreeItemViewModel _selectedTreeItem;
 
+    public TreeItemViewModel SelectedTreeItem
+    {
+        get => _selectedTreeItem;
+        set => this.RaiseAndSetIfChanged(ref _selectedTreeItem, value);
+    }
     /// <summary>
     /// 搜索关键字
     /// </summary>
@@ -295,6 +304,7 @@ public class MainViewModel : ViewModelBase
         WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
         WorkSpaces.CollectionChanged += (_, _) => BuildSidebarTree();
         _ = LoadAllDataAsync();
+        SelectedTreeItem = SidebarTreeItems.First();
     }
 
     private async Task LoadAllDataAsync()
