@@ -122,6 +122,27 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<TreeItemViewModel, Unit> CreateFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> AddContentCommand { get; }
+
+    /// <summary>
+    /// 切换语言命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> ToggleLanguageCommand { get; }
+
+    /// <summary>
+    /// 切换主题命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> ToggleThemeCommand { get; }
+
+    /// <summary>
+    /// 当前主题 (Light/Dark)
+    /// </summary>
+    private string _currentTheme = "Dark";
+    public string CurrentTheme
+    {
+        get => _currentTheme;
+        set => this.RaiseAndSetIfChanged(ref _currentTheme, value);
+    }
+
     /// <summary>
     /// 正在加载标识
     /// </summary>
@@ -282,11 +303,17 @@ public class MainViewModel : ViewModelBase
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(
             CreateFolderAsync);
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
+
+        // 初始化语言和主题切换命令
+        ToggleLanguageCommand = ReactiveCommand.CreateFromTask(ToggleLanguageAsync);
+        ToggleThemeCommand = ReactiveCommand.Create(ToggleTheme);
+
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
         SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
         RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
+        ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
         // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
         L.CultureChanged
@@ -615,6 +642,32 @@ public class MainViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    /// <summary>
+    /// 切换语言
+    /// </summary>
+    private async Task ToggleLanguageAsync()
+    {
+        var currentCulture = L.CurrentCulture;
+        var newCulture = currentCulture.Name == "zh-CN" 
+            ? new System.Globalization.CultureInfo("en-US") 
+            : new System.Globalization.CultureInfo("zh-CN");
+        
+        await L.SetCultureAsync(newCulture);
+        Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
+    }
+
+    /// <summary>
+    /// 切换主题
+    /// </summary>
+    private void ToggleTheme()
+    {
+        CurrentTheme = CurrentTheme == "Dark" ? "Light" : "Dark";
+        Logger.LogInformation("主题已切换至: {Theme}", CurrentTheme);
+        
+        // TODO: 实际主题切换逻辑需要在 Presentation 层实现
+        // 可以通过事件或消息通知 MainWindow 切换资源字典
     }
 
 }

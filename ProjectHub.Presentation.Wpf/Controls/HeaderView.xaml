@@ -88,11 +88,40 @@
                 Margin="0,0,16,0"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
+                <!--  语言切换按钮  -->
                 <Button
-                    Padding="8"
+                    x:Name="LanguageButton"
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,8,0"
+                    Padding="4"
+                    Command="{Binding ToggleLanguageCommand}"
+                    Content="&#x1F310;"
+                    FontSize="14"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTip="{Binding L.Header_Language}" />
+                <!--  主题切换按钮  -->
+                <Button
+                    x:Name="ThemeButton"
+                    Width="32"
+                    Height="32"
+                    Margin="0,0,8,0"
+                    Padding="4"
+                    Command="{Binding ToggleThemeCommand}"
+                    Content="&#x2600;"
+                    FontSize="14"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTip="{Binding L.Header_Theme}" Cursor="Hand" />
+                <!--  设置按钮  -->
+                <Button
+                    x:Name="SettingsButton"
+                    Width="32"
+                    Height="32"
+                    Padding="4"
                     Content="&#x2699;"
                     FontSize="14"
-                    Style="{StaticResource SecondaryButtonStyle}" />
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTip="{Binding L.Header_Settings}" />
             </StackPanel>
         </Grid>
     </Border>

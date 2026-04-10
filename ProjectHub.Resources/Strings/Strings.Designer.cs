@@ -187,11 +187,38 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 切换语言 的本地化字符串。
+        /// </summary>
+        public static string Header_Language {
+            get {
+                return ResourceManager.GetString("Header_Language", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 搜索项目... 的本地化字符串。
         /// </summary>
         public static string Header_Search {
             get {
                 return ResourceManager.GetString("Header_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 设置 的本地化字符串。
+        /// </summary>
+        public static string Header_Settings {
+            get {
+                return ResourceManager.GetString("Header_Settings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 切换主题 的本地化字符串。
+        /// </summary>
+        public static string Header_Theme {
+            get {
+                return ResourceManager.GetString("Header_Theme", resourceCulture);
             }
         }
         

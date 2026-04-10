@@ -125,6 +125,9 @@ public class LocalizedStrings : ReactiveObject
     public string Sidebar_AllProjects => ProjectHub.Resources.Strings.Strings.Sidebar_AllProjects;
     public string Sidebar_TagSettings => ProjectHub.Resources.Strings.Strings.Sidebar_TagSettings;
     public string Header_Search => ProjectHub.Resources.Strings.Strings.Header_Search;
+    public string Header_Language => ProjectHub.Resources.Strings.Strings.Header_Language;
+    public string Header_Theme => ProjectHub.Resources.Strings.Strings.Header_Theme;
+    public string Header_Settings => ProjectHub.Resources.Strings.Strings.Header_Settings;
     public string Status_Ready => ProjectHub.Resources.Strings.Strings.Status_Ready;
     public string Status_ProjectCount => ProjectHub.Resources.Strings.Strings.Status_ProjectCount;
     public string Status_FolderCount => ProjectHub.Resources.Strings.Strings.Status_FolderCount;

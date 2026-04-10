@@ -187,6 +187,17 @@
     <value>搜索项目...</value>
   </data>
 
+  <!-- Header 按钮 -->
+  <data name="Header_Language" xml:space="preserve">
+    <value>切换语言</value>
+  </data>
+  <data name="Header_Theme" xml:space="preserve">
+    <value>切换主题</value>
+  </data>
+  <data name="Header_Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+
   <!-- 状态栏 -->
   <data name="Status_Ready" xml:space="preserve">
     <value>就绪</value>
