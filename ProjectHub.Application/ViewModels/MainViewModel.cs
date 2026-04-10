@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Domain.Entities;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -121,7 +122,7 @@ public class MainViewModel : ViewModelBase
     /// 创建文件夹命令
     /// </summary>
     public ReactiveCommand<TreeItemViewModel, Unit> CreateFolderCommand { get; }
-
+    public ReactiveCommand<Unit, Unit> AddContentCommand { get; }
     /// <summary>
     /// 正在加载标识
     /// </summary>
@@ -283,7 +284,7 @@ public class MainViewModel : ViewModelBase
 
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(
             CreateFolderAsync);
-
+        AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
         SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
@@ -311,6 +312,7 @@ public class MainViewModel : ViewModelBase
             .Take(1)
             .Subscribe(_ => SelectedTreeItem = SidebarTreeItems.First());
     }
+
 
     private async Task LoadAllDataAsync()
     {
@@ -583,6 +585,41 @@ public class MainViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+
+    private async Task AddContentAsync()
+    {
+        try
+        {
+            switch (SelectedTreeItem.ItemType)
+            {
+                case TreeItemType.AllProjects:
+                    // 显示对话框
+                    var result = await _dialogService.ShowDialogAsync<AddProjectDialogViewModel, Project?>();
+
+                    if (result.Confirmed)
+                    {
+
+                    }
+                    else
+                    {
+                        Logger.LogInformation("用户取消创建文件夹");
+                    }
+                    break;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
 }
 
 /// <summary>

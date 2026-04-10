@@ -5,6 +5,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ProjectHub.Presentation.Wpf.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
     xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     d:Background="AliceBlue"
     d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
@@ -13,14 +14,58 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <StackPanel Margin="24">
-            <TextBlock
-                FontSize="22"
-                Foreground="{StaticResource TextPrimaryBrush}"
-                Text="{Binding SelectedTreeItem.Name}" />
-        </StackPanel>
+
+        <!--  标题区域  -->
+        <Border
+            Grid.Row="0"
+            Margin="24,0,24,0"
+            BorderBrush="{StaticResource AccentBlueBrush}"
+            BorderThickness="0,0,0,1">
+            <Grid Margin="0,16,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  标题内容  -->
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <!--  Icon  -->
+                    <svg:SvgViewbox
+                        Width="22"
+                        Height="22"
+                        Margin="0,0,12,0"
+                        VerticalAlignment="Center"
+                        Source="{Binding SelectedTreeItem.IconPath}" />
+                    <!--  Name  -->
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Text="{Binding SelectedTreeItem.Name}" />
+                </StackPanel>
+
+                <!--  Add Button (显示在工作空间、工作文件夹、所有项目类型)  -->
+                <Button
+                    Grid.Column="1"
+                    Width="28"
+                    Height="28"
+                    Margin="16,0,0,0"
+                    Command="{Binding AddContentCommand}"
+                    Content="+"
+                    FontSize="18"
+                    Style="{StaticResource IconButtonStyle}"
+                    ToolTip="添加新项"
+                    Visibility="{Binding SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
+            </Grid>
+        </Border>
+
+        <!--  内容区域  -->
+        <Grid Grid.Row="1" />
     </Grid>
 </UserControl>

@@ -126,6 +126,7 @@ public partial class App : System.Windows.Application
     private void RegisterDialogs(IServiceCollection services)
     {
         AppLocator.CurrentMutable.Register(() => new InputDialog(), typeof(IViewFor<CreateFolderDialogViewModel>));
+        AppLocator.CurrentMutable.Register(() => new AddProjectDialog(), typeof(IViewFor<AddProjectDialogViewModel>));
     }
     /// <summary>
     /// Configures application settings from multiple sources.

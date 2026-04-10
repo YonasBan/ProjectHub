@@ -12,11 +12,6 @@
     d:DesignWidth="260"
     x:TypeArguments="viewmodels:MainViewModel"
     mc:Ignorable="d">
-    <UserControl.Resources>
-        <!--<converters:InverseBoolToVisibilityConverter x:Key="InvBoolVis" />-->
-        <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    </UserControl.Resources>
-
     <Border
         Background="{StaticResource BgSecondaryBrush}"
         BorderBrush="{StaticResource BorderBrush}"
@@ -44,6 +39,7 @@
                         Text="{Binding L.Sidebar_WorkFolders}" />
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
                         <Button
+                            Command="{Binding CreateFolderCommand}"
                             Content="+"
                             Style="{StaticResource IconButtonStyle}"
                             ToolTip="{Binding L.Sidebar_NewFolder}" />
@@ -70,15 +66,12 @@
                             Padding="8,6,16,6"
                             Background="Transparent"
                             CornerRadius="0"
-                            MouseEnter="ItemBorder_MouseEnter"
-                            MouseLeave="ItemBorder_MouseLeave"
                             Tag="{Binding}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="16" />
                                     <ColumnDefinition Width="16" />
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
@@ -145,30 +138,43 @@
                                         Text="{Binding Count}" />
                                 </Border>
 
-                                <!--  Add Button (visible on hover)  -->
-                                <Button
+                                <!--  Action Buttons Panel (Add/Delete)  -->
+                                <StackPanel
+                                    x:Name="ActionPanel"
                                     Grid.Column="4"
-                                    Width="20"
-                                    Height="20"
-                                    Content="+"
-                                    FontSize="14"
-                                    Style="{StaticResource IconButtonStyle}"
-                                    ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
+                                    Orientation="Horizontal"
+                                    Visibility="Collapsed">
+                                    <!--  Add Button  -->
+                                    <Button
+                                        Width="20"
+                                        Height="20"
+                                        Content="+"
+                                        FontSize="14"
+                                        Style="{StaticResource IconButtonStyle}"
+                                        ToolTip="{Binding DataContext.L.Sidebar_NewSubFolder, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 
-                                <!--  Delete Button (visible on hover)  -->
-                                <Button
-                                    Grid.Column="5"
-                                    Width="20"
-                                    Height="20"
-                                    Margin="4,0,0,0"
-                                    Content="&#x00D7;"
-                                    FontSize="14"
-                                    Style="{StaticResource IconButtonStyle}"
-                                    ToolTip="{Binding DataContext.L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                    Visibility="{Binding IsHovered, Converter={StaticResource BoolToVis}}" />
+                                    <!--  Delete Button  -->
+                                    <Button
+                                        Width="20"
+                                        Height="20"
+                                        Margin="4,0,0,0"
+                                        Content="&#x00D7;"
+                                        FontSize="14"
+                                        Style="{StaticResource IconButtonStyle}"
+                                        ToolTip="{Binding DataContext.L.Sidebar_DeleteFolder, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                                </StackPanel>
                             </Grid>
                         </Border>
+                        <HierarchicalDataTemplate.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding IsMouseOver, ElementName=ItemBorder}" Value="True" />
+                                    <Condition Binding="{Binding ItemType}" Value="WorkFolder" />
+                                </MultiDataTrigger.Conditions>
+                                <Setter TargetName="ActionPanel" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
+                            </MultiDataTrigger>
+                        </HierarchicalDataTemplate.Triggers>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>
             </TreeView>

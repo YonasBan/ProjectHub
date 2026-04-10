@@ -70,14 +70,16 @@ public class TreeItemViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// 是否鼠标悬停 (用于显示操作按钮)
+    /// 是否鼠标悬停 (由 View 通过 Trigger 设置)
     /// </summary>
-    private bool _isHovered;
-    public bool IsHovered
-    {
-        get => _isHovered;
-        set => this.RaiseAndSetIfChanged(ref _isHovered, value);
-    }
+    public bool IsHovered { get; set; }
+
+    /// <summary>
+    /// 是否允许添加子项（工作空间、工作文件夹、所有项目）
+    /// </summary>
+    public bool CanAddItem => ItemType == TreeItemType.WorkSpace 
+                           || ItemType == TreeItemType.WorkFolder 
+                           || ItemType == TreeItemType.AllProjects||ItemType== TreeItemType.TagSettings;
 
     /// <summary>
     /// 图标路径 (指向 ProjectHub.Resources/Icons 中的 SVG 文件)

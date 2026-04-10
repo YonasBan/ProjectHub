@@ -97,24 +97,4 @@ public partial class SidebarView :ReactiveUserControl<MainViewModel>
 
         return null;
     }
-
-    /// <summary>
-    /// 鼠标悬停事件 - 显示操作按钮
-    /// 
-    /// 注意：这是平台特定的 UI 交互，在 MAUI/Avalonia 中可能需要不同的实现方式
-    /// </summary>
-    private void ItemBorder_MouseEnter(object sender, MouseEventArgs e)
-    {
-        if (sender is Border { Tag: TreeItemViewModel item })
-            item.IsHovered = true;
-    }
-
-    /// <summary>
-    /// 鼠标离开事件 - 隐藏操作按钮
-    /// </summary>
-    private void ItemBorder_MouseLeave(object sender, MouseEventArgs e)
-    {
-        if (sender is Border { Tag: TreeItemViewModel item })
-            item.IsHovered = false;
-    }
 }
