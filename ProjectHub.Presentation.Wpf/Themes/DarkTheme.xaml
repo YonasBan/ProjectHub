@@ -24,6 +24,11 @@
     <Color x:Key="TreeViewItemArrowHoverColor">#FFCCCCCC</Color>
     <Color x:Key="TreeViewItemSelectedIndicatorColor">#FF0078D4</Color>
 
+    <!--  ========== GridSplitter Colors ==========  -->
+    <Color x:Key="GridSplitterColor">#FF2D2D30</Color>
+    <Color x:Key="GridSplitterHoverColor">#FF3E3E42</Color>
+    <Color x:Key="GridSplitterDraggingColor">#FF0078D4</Color>
+
     <!--  ========== SolidColorBrushes ==========  -->
     <SolidColorBrush x:Key="BgPrimaryBrush" Color="{StaticResource BgPrimaryColor}" />
     <SolidColorBrush x:Key="BgSecondaryBrush" Color="{StaticResource BgSecondaryColor}" />
@@ -45,6 +50,9 @@
     <SolidColorBrush x:Key="TreeViewItemArrowBrush" Color="{StaticResource TreeViewItemArrowColor}" />
     <SolidColorBrush x:Key="TreeViewItemArrowHoverBrush" Color="{StaticResource TreeViewItemArrowHoverColor}" />
     <SolidColorBrush x:Key="TreeViewItemSelectedIndicatorBrush" Color="{StaticResource TreeViewItemSelectedIndicatorColor}" />
+    <SolidColorBrush x:Key="GridSplitterBrush" Color="{StaticResource GridSplitterColor}" />
+    <SolidColorBrush x:Key="GridSplitterHoverBrush" Color="{StaticResource GridSplitterHoverColor}" />
+    <SolidColorBrush x:Key="GridSplitterDraggingBrush" Color="{StaticResource GridSplitterDraggingColor}" />
 
     <!--  ========== Converters ==========  -->
     <BooleanToVisibilityConverter x:Key="BoolToVis" />

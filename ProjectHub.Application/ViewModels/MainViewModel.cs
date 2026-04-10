@@ -1,12 +1,8 @@
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.Localization;
 using ReactiveUI;
-using ReactiveUI.Builder;
-using Splat;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables.Fluent;
@@ -16,13 +12,14 @@ namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
 /// 主窗口 ViewModel
-/// 
+///
 /// ⚠️ 注意：此文件仅为框架示例，实际实现需要在第二阶段完成
 /// </summary>
 public class MainViewModel : ViewModelBase
 {
     // 注入应用服务
     private readonly IProjectAppService _projectAppService;
+
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly ILocalizationService _localizationService;
@@ -32,6 +29,7 @@ public class MainViewModel : ViewModelBase
     /// 项目列表 (Observable)
     /// </summary>
     private ObservableCollection<ProjectViewModel>? _projects;
+
     public ObservableCollection<ProjectViewModel> Projects
     {
         get => _projects ??= new();
@@ -42,6 +40,7 @@ public class MainViewModel : ViewModelBase
     /// 工作文件夹列表 (Observable)
     /// </summary>
     private ObservableCollection<WorkFolderViewModel>? _workFolders;
+
     public ObservableCollection<WorkFolderViewModel> WorkFolders
     {
         get => _workFolders ??= new();
@@ -52,6 +51,7 @@ public class MainViewModel : ViewModelBase
     /// 工作空间列表 (Observable)
     /// </summary>
     private ObservableCollection<WorkSpaceViewModel>? _workSpaces;
+
     public ObservableCollection<WorkSpaceViewModel> WorkSpaces
     {
         get => _workSpaces ??= new();
@@ -62,6 +62,7 @@ public class MainViewModel : ViewModelBase
     /// 当前选中的工作文件夹
     /// </summary>
     private WorkFolderViewModel? _selectedWorkFolder;
+
     public WorkFolderViewModel? SelectedWorkFolder
     {
         get => _selectedWorkFolder;
@@ -72,6 +73,7 @@ public class MainViewModel : ViewModelBase
     /// 搜索关键字
     /// </summary>
     private string _searchKeyword = string.Empty;
+
     public string SearchKeyword
     {
         get => _searchKeyword;
@@ -82,6 +84,7 @@ public class MainViewModel : ViewModelBase
     /// 当前视图模式 (列表/卡片)
     /// </summary>
     private ViewMode _currentViewMode = ViewMode.List;
+
     public ViewMode CurrentViewMode
     {
         get => _currentViewMode;
@@ -106,16 +109,6 @@ public class MainViewModel : ViewModelBase
     public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
 
     /// <summary>
-    /// 切换到中文命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SwitchToChineseCommand { get; }
-
-    /// <summary>
-    /// 切换到英文命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SwitchToEnglishCommand { get; }
-
-    /// <summary>
     /// 创建文件夹命令
     /// </summary>
     public ReactiveCommand<TreeItemViewModel, Unit> CreateFolderCommand { get; }
@@ -124,30 +117,11 @@ public class MainViewModel : ViewModelBase
     /// 正在加载标识
     /// </summary>
     private bool _isLoading;
+
     public bool IsLoading
     {
         get => _isLoading;
         set => this.RaiseAndSetIfChanged(ref _isLoading, value);
-    }
-
-    /// <summary>
-    /// 当前语言显示文本
-    /// </summary>
-    private string _currentLanguageText = string.Empty;
-    public string CurrentLanguageText
-    {
-        get => _currentLanguageText;
-        set => this.RaiseAndSetIfChanged(ref _currentLanguageText, value);
-    }
-
-    /// <summary>
-    /// 测试文本 (用于验证本地化)
-    /// </summary>
-    private string _testText = string.Empty;
-    public string TestText
-    {
-        get => _testText;
-        set => this.RaiseAndSetIfChanged(ref _testText, value);
     }
 
     // ========== 侧边栏统计属性 ==========
@@ -156,6 +130,7 @@ public class MainViewModel : ViewModelBase
     /// 所有项目总数
     /// </summary>
     private int _totalProjectCount;
+
     public int TotalProjectCount
     {
         get => _totalProjectCount;
@@ -166,6 +141,7 @@ public class MainViewModel : ViewModelBase
     /// 收藏项目数量
     /// </summary>
     private int _favoriteProjectCount;
+
     public int FavoriteProjectCount
     {
         get => _favoriteProjectCount;
@@ -176,6 +152,7 @@ public class MainViewModel : ViewModelBase
     /// 工作文件夹总数
     /// </summary>
     private int _totalFolderCount;
+
     public int TotalFolderCount
     {
         get => _totalFolderCount;
@@ -186,6 +163,7 @@ public class MainViewModel : ViewModelBase
     /// 工作空间总数
     /// </summary>
     private int _totalWorkspaceCount;
+
     public int TotalWorkspaceCount
     {
         get => _totalWorkspaceCount;
@@ -196,6 +174,7 @@ public class MainViewModel : ViewModelBase
     /// 标签分类数量
     /// </summary>
     private int _tagCount;
+
     public int TagCount
     {
         get => _tagCount;
@@ -208,6 +187,7 @@ public class MainViewModel : ViewModelBase
     /// 项目计数显示文本
     /// </summary>
     private string _projectCountText = string.Empty;
+
     public string ProjectCountText
     {
         get => _projectCountText;
@@ -218,6 +198,7 @@ public class MainViewModel : ViewModelBase
     /// 文件夹计数显示文本
     /// </summary>
     private string _folderCountText = string.Empty;
+
     public string FolderCountText
     {
         get => _folderCountText;
@@ -228,6 +209,7 @@ public class MainViewModel : ViewModelBase
     /// 工作空间计数显示文本
     /// </summary>
     private string _workspaceCountText = string.Empty;
+
     public string WorkspaceCountText
     {
         get => _workspaceCountText;
@@ -238,6 +220,7 @@ public class MainViewModel : ViewModelBase
     /// 标签计数显示文本
     /// </summary>
     private string _tagCountText = string.Empty;
+
     public string TagCountText
     {
         get => _tagCountText;
@@ -248,6 +231,7 @@ public class MainViewModel : ViewModelBase
     /// 标签项目显示文本
     /// </summary>
     private string _taggedProjectsText = string.Empty;
+
     public string TaggedProjectsText
     {
         get => _taggedProjectsText;
@@ -260,6 +244,7 @@ public class MainViewModel : ViewModelBase
     /// 侧边栏树形节点集合
     /// </summary>
     private ObservableCollection<TreeItemViewModel>? _sidebarTreeItems;
+
     public ObservableCollection<TreeItemViewModel> SidebarTreeItems
     {
         get => _sidebarTreeItems ??= new();
@@ -286,12 +271,7 @@ public class MainViewModel : ViewModelBase
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
         SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
-        SwitchToChineseCommand = ReactiveCommand.CreateFromTask(
-            SwitchToChineseAsync,
-            outputScheduler: MainThreadScheduler);
-        SwitchToEnglishCommand = ReactiveCommand.CreateFromTask(
-            SwitchToEnglishAsync,
-            outputScheduler: MainThreadScheduler);
+
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(
             CreateFolderAsync);
 
@@ -299,8 +279,6 @@ public class MainViewModel : ViewModelBase
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
         SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
         RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
-        SwitchToChineseCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换到中文时发生错误"));
-        SwitchToEnglishCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换到英文时发生错误"));
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
 
         // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
@@ -308,15 +286,10 @@ public class MainViewModel : ViewModelBase
             .ObserveOn(MainThreadScheduler)
             .Subscribe(_ =>
             {
-                UpdateTestText();
                 BuildSidebarTree(); // 语言变化时重建树形结构
                 UpdateStatistics(); // 语言变化时更新状态栏文本
             })
             .DisposeWith(Disposables);
-
-        // 初始化测试文本
-        UpdateTestText();
-
         // 订阅数据集合变化，自动重建树形结构
         Projects.CollectionChanged += (_, _) => BuildSidebarTree();
         WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
@@ -330,7 +303,7 @@ public class MainViewModel : ViewModelBase
         await LoadWorkFoldersAsync();
         await LoadWorkSpacesAsync();
         UpdateStatistics();
-        
+
         // 初始加载时构建侧边栏树形结构
         BuildSidebarTree();
     }
@@ -348,31 +321,6 @@ public class MainViewModel : ViewModelBase
         WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
         TagCountText = string.Format(L.Status_TagCount, TagCount);
         TaggedProjectsText = string.Format(L.Status_TaggedProjects, FavoriteProjectCount);
-    }
-
-    /// <summary>
-    /// 更新测试文本
-    /// </summary>
-    private void UpdateTestText()
-    {
-        TestText = _localizationService["Project_Create"];
-        CurrentLanguageText = _localizationService.CurrentCulture.Name;
-    }
-
-    /// <summary>
-    /// 切换到中文（确保在 UI 线程执行）
-    /// </summary>
-    private async Task SwitchToChineseAsync()
-    {
-        await _localizationService.SetCultureAsync(new CultureInfo("zh-CN"));
-    }
-
-    /// <summary>
-    /// 切换到英文（确保在 UI 线程执行）
-    /// </summary>
-    private async Task SwitchToEnglishAsync()
-    {
-        await _localizationService.SetCultureAsync(new CultureInfo("en-US"));
     }
 
     /// <summary>
@@ -501,7 +449,7 @@ public class MainViewModel : ViewModelBase
 
     /// <summary>
     /// 构建侧边栏树形结构
-    /// 
+    ///
     /// DDD 设计要点:
     /// - 纯业务逻辑，不包含 UI 操作
     /// - 响应式调用，当数据或语言变化时自动重建
@@ -565,7 +513,7 @@ public class MainViewModel : ViewModelBase
 
     /// <summary>
     /// 创建文件夹
-    /// 
+    ///
     /// DDD 设计要点:
     /// - 通过 IDialogService 显示对话框（支持跨平台）
     /// - 调用应用服务完成业务逻辑
@@ -578,9 +526,8 @@ public class MainViewModel : ViewModelBase
             IsLoading = true;
             Logger.LogInformation("开始创建文件夹");
 
-
             // 显示对话框
-            var result = await _dialogService.ShowDialogAsync<CreateFolderDialogViewModel,string>();
+            var result = await _dialogService.ShowDialogAsync<CreateFolderDialogViewModel, string>();
 
             if (result.Confirmed && !string.IsNullOrWhiteSpace(result.Value))
             {
