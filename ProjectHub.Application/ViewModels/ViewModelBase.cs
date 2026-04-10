@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ReactiveUI;
 using Splat;
@@ -8,7 +7,6 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
-using System.Runtime.InteropServices.JavaScript;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace ProjectHub.Application.ViewModels;
@@ -30,8 +28,6 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
     protected readonly ILogger Logger;
     public LocalizedStrings L { get; }
     
-    private readonly ILocalizationService? _localizationService;
-    
     /// <summary>
     /// 主线程调度器 (由平台层提供，用于跨平台兼容)
     /// </summary>
@@ -41,11 +37,10 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
     {
         Logger = logger;
         MainThreadScheduler = mainThreadScheduler;
-        _localizationService = Locator.Current.GetService<ILocalizationService>();
         L = Locator.Current.GetService<LocalizedStrings>()!;
         
         // 订阅语言改变事件，触发 UI 刷新
-        _localizationService?.CultureChanged
+        L?.CultureChanged
             .ObserveOn(MainThreadScheduler) // 确保在 UI 线程执行
             .Subscribe(_ => this.RaisePropertyChanged(nameof(L)))
             .DisposeWith(Disposables);

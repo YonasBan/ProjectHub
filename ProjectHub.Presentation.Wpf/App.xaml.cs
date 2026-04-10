@@ -209,21 +209,8 @@ public partial class App : System.Windows.Application
     /// </summary>
     private static void RegisterLocalizationServices(IServiceCollection services)
     {
-        // 注册本地化服务，使用 ProjectHub.Resources.Strings 资源文件
-        services.AddSingleton<ILocalizationService>(provider =>
-        {
-            var assembly = Assembly.Load("ProjectHub.Resources");
-            var scheduler = provider.GetRequiredService<IScheduler>();
-            return new ResxLocalizationService(
-                "ProjectHub.Resources.Strings.Strings",
-                assembly,
-                scheduler);
-        });
-        services.AddSingleton<LocalizedStrings>(provider =>
-        {
-            var loc = provider.GetRequiredService<ILocalizationService>();
-            return new LocalizedStrings(loc);
-        });
+        // 注册本地化字符串包装类 - 直接访问资源文件
+        services.AddSingleton<LocalizedStrings>();
     }
 
     /// <summary>

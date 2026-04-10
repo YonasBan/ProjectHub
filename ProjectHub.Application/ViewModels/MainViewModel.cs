@@ -23,7 +23,6 @@ public class MainViewModel : ViewModelBase
 
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
-    private readonly ILocalizationService _localizationService;
     private readonly IDialogService _dialogService;
 
     /// <summary>
@@ -266,7 +265,6 @@ public class MainViewModel : ViewModelBase
         IProjectAppService projectAppService,
         IWorkFolderAppService workFolderAppService,
         IWorkSpaceAppService workSpaceAppService,
-        ILocalizationService localizationService,
         IDialogService dialogService,
         IScheduler mainThreadScheduler)
         : base(logger, mainThreadScheduler)
@@ -274,7 +272,6 @@ public class MainViewModel : ViewModelBase
         _projectAppService = projectAppService;
         _workFolderAppService = workFolderAppService;
         _workSpaceAppService = workSpaceAppService;
-        _localizationService = localizationService;
         _dialogService = dialogService;
 
         // 初始化命令 (使用方法的分组语法)
@@ -292,7 +289,7 @@ public class MainViewModel : ViewModelBase
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
 
         // 订阅语言切换事件，更新测试文本（确保在 UI 线程执行）
-        _localizationService.CultureChanged
+        L.CultureChanged
             .ObserveOn(MainThreadScheduler)
             .Subscribe(_ =>
             {
