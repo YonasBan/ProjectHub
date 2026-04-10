@@ -3,7 +3,6 @@ using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using ProjectHub.Application.ViewModels;
 using ReactiveUI;
 
@@ -17,44 +16,47 @@ namespace ProjectHub.Presentation.Wpf.Controls;
 /// - 所有业务逻辑都在 MainViewModel.SidebarTreeItems 中
 /// - 此文件内容在 MAUI/Avalonia 中需要重新实现，但 ViewModel 可以复用
 /// </summary>
-public partial class SidebarView :ReactiveUserControl<MainViewModel>
+public partial class SidebarView : ReactiveUserControl<MainViewModel>
 {
     public SidebarView()
     {
         InitializeComponent();
         this.WhenActivated(disposables =>
         {
-            // 订阅 TreeView 选中项变化事件，同步到 ViewModel
+            // UI -> ViewModel: 监听 TreeView 选中项变化
+            // 只在用户交互时触发，避免循环
             Observable.FromEventPattern<RoutedPropertyChangedEventArgs<object>>(
                 handler => NavigationTree.SelectedItemChanged += (s, e) => handler(s, e),
                 handler => NavigationTree.SelectedItemChanged -= (s, e) => handler(s, e))
-                .Subscribe(e =>
+                .Select(e => e.EventArgs.NewValue as TreeItemViewModel)
+                .Where(selected => selected != null)
+                .Subscribe(selected =>
                 {
-                    if (ViewModel == null) ViewModel = this.DataContext as MainViewModel;
-                    if (ViewModel != null && e.EventArgs.NewValue is TreeItemViewModel selectedItem)
+                    // 只在选中项真正变化时才更新 ViewModel
+                    if(ViewModel==null)
                     {
-                        ViewModel.SelectedTreeItem = selectedItem;
+                        ViewModel=this.DataContext as MainViewModel;
+                    }
+                    if (ViewModel?.SelectedTreeItem != selected)
+                    {
+                        ViewModel.SelectedTreeItem = selected;
                     }
                 })
                 .DisposeWith(disposables);
 
-            // 当 ViewModel 的 SelectedTreeItem 变化时，同步到 TreeView
+            // ViewModel -> UI: 当 ViewModel 的 SelectedTreeItem 变化时，同步到 TreeView
+            // 注意：TreeView.SelectedItem 是只读的，需要通过 TreeViewItem.IsSelected 设置
             this.WhenAnyValue(v => v.ViewModel!.SelectedTreeItem)
                 .Where(selected => selected != null)
                 .Subscribe(selected =>
                 {
                     if (selected != null)
                     {
-                        // 使用 Dispatcher 确保在 UI 线程执行
-                        Dispatcher.BeginInvoke(() =>
+                        var container = FindTreeViewItem(NavigationTree, selected);
+                        if (container != null && !container.IsSelected)
                         {
-                            var container = FindTreeViewItem(NavigationTree, selected);
-                            if (container != null)
-                            {
-                                container.IsSelected = true;
-                                container.BringIntoView();
-                            }
-                        }, System.Windows.Threading.DispatcherPriority.Background);
+                            container.IsSelected = true;
+                        }
                     }
                 })
                 .DisposeWith(disposables);
