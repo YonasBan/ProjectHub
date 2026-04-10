@@ -24,6 +24,7 @@ public class MainViewModel : ViewModelBase
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IDialogService _dialogService;
+    private readonly IThemeService _themeService;
 
     /// <summary>
     /// 项目列表 (Observable)
@@ -136,12 +137,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 当前主题 (Light/Dark)
     /// </summary>
-    private string _currentTheme = "Dark";
-    public string CurrentTheme
-    {
-        get => _currentTheme;
-        set => this.RaiseAndSetIfChanged(ref _currentTheme, value);
-    }
+    public string CurrentTheme => _themeService.CurrentTheme;
 
     /// <summary>
     /// 正在加载标识
@@ -287,6 +283,7 @@ public class MainViewModel : ViewModelBase
         IWorkFolderAppService workFolderAppService,
         IWorkSpaceAppService workSpaceAppService,
         IDialogService dialogService,
+        IThemeService themeService,
         IScheduler mainThreadScheduler)
         : base(logger, mainThreadScheduler)
     {
@@ -294,6 +291,7 @@ public class MainViewModel : ViewModelBase
         _workFolderAppService = workFolderAppService;
         _workSpaceAppService = workSpaceAppService;
         _dialogService = dialogService;
+        _themeService = themeService;
 
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
@@ -306,7 +304,7 @@ public class MainViewModel : ViewModelBase
 
         // 初始化语言和主题切换命令
         ToggleLanguageCommand = ReactiveCommand.CreateFromTask(ToggleLanguageAsync);
-        ToggleThemeCommand = ReactiveCommand.Create(ToggleTheme);
+        ToggleThemeCommand = ReactiveCommand.Create(_themeService.ToggleTheme);
 
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
@@ -656,18 +654,6 @@ public class MainViewModel : ViewModelBase
         
         await L.SetCultureAsync(newCulture);
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
-    }
-
-    /// <summary>
-    /// 切换主题
-    /// </summary>
-    private void ToggleTheme()
-    {
-        CurrentTheme = CurrentTheme == "Dark" ? "Light" : "Dark";
-        Logger.LogInformation("主题已切换至: {Theme}", CurrentTheme);
-        
-        // TODO: 实际主题切换逻辑需要在 Presentation 层实现
-        // 可以通过事件或消息通知 MainWindow 切换资源字典
     }
 
 }
