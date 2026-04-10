@@ -98,7 +98,7 @@
     <!--  ========== VSCode Dark Theme TreeViewItem Style ==========  -->
     <Style TargetType="{x:Type TreeViewItem}">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="0" />
@@ -135,7 +135,7 @@
                                     x:Name="SelectedBg"
                                     Grid.ColumnSpan="2"
                                     Margin="-6,-4"
-                                    Fill="{StaticResource TreeViewItemSelectedBgBrush}"
+                                    Fill="{DynamicResource TreeViewItemSelectedBgBrush}"
                                     IsHitTestVisible="False"
                                     Opacity="0" />
 
@@ -145,7 +145,7 @@
                                     Width="3"
                                     Margin="-6,0,0,0"
                                     HorizontalAlignment="Left"
-                                    Fill="{StaticResource TreeViewItemSelectedIndicatorBrush}"
+                                    Fill="{DynamicResource TreeViewItemSelectedIndicatorBrush}"
                                     Opacity="0"
                                     RadiusX="1.5"
                                     RadiusY="1.5"
@@ -177,9 +177,9 @@
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
                                                 Data="M 2,0 L 6,5 L 2,10"
-                                                Fill="{StaticResource TreeViewItemArrowBrush}"
+                                                Fill="{DynamicResource TreeViewItemArrowBrush}"
                                                 RenderTransformOrigin="0.5,0.5"
-                                                Stroke="{StaticResource TreeViewItemArrowBrush}"
+                                                Stroke="{DynamicResource TreeViewItemArrowBrush}"
                                                 StrokeThickness="1">
                                                 <Path.RenderTransform>
                                                     <RotateTransform Angle="0" />
@@ -389,7 +389,7 @@
                                 <Condition Property="IsSelected" Value="False" />
                                 <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemHoverBgBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TreeViewItemHoverBgBrush}" />
                             <Setter TargetName="Bd" Property="CornerRadius" Value="0" />
                         </MultiTrigger>
 
@@ -399,13 +399,13 @@
                                 <Condition Property="IsSelected" Value="True" />
                                 <Condition SourceName="Bd" Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource TreeViewItemSelectedHoverBgBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource TreeViewItemSelectedHoverBgBrush}" />
                             <Setter TargetName="Bd" Property="CornerRadius" Value="0" />
                         </MultiTrigger>
 
                         <!--  Disabled state  -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{StaticResource TreeViewItemDisabledFgBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TreeViewItemDisabledFgBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -470,7 +470,7 @@
         <Setter Property="Height" Value="28" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         <Setter Property="FontSize" Value="16" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
@@ -484,8 +484,8 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgHoverBrush}" />
-                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BgHoverBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -494,8 +494,8 @@
     </Style>
 
     <Style x:Key="PrimaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource AccentBlueBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource AccentBlueBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="Medium" />
@@ -513,7 +513,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource AccentBlueHoverBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource AccentBlueHoverBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -522,10 +522,10 @@
     </Style>
 
     <Style x:Key="SecondaryButtonStyle" TargetType="Button">
-        <Setter Property="Background" Value="{StaticResource BgTertiaryBrush}" />
-        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="Medium" />
         <Setter Property="Cursor" Value="Hand" />
@@ -544,8 +544,8 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgHoverBrush}" />
-                            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BgHoverBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -556,10 +556,10 @@
     <!--  ========== TextBox Style ==========  -->
     <Style x:Key="SearchTextBoxStyle" TargetType="TextBox">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
         <Setter Property="Padding" Value="4,6" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
@@ -568,22 +568,22 @@
     <Style x:Key="SidebarTitleStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
     <Style x:Key="StatusTextStyle" TargetType="TextBlock">
         <Setter Property="FontSize" Value="12" />
-        <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
     </Style>
 
     <Style x:Key="TreeCountBadgeStyle" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource BgTertiaryBrush}" />
+        <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
         <Setter Property="CornerRadius" Value="4" />
         <Setter Property="Padding" Value="6,2" />
     </Style>
 
     <Style TargetType="GridSplitter">
-        <Setter Property="Background" Value="{StaticResource GridSplitterBrush}" />
+        <Setter Property="Background" Value="{DynamicResource GridSplitterBrush}" />
         <Setter Property="Width" Value="5" />
         <Setter Property="HorizontalAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -611,7 +611,7 @@
                             Height="28"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Fill="{StaticResource TextMutedBrush}"
+                            Fill="{DynamicResource TextMutedBrush}"
                             Opacity="0"
                             RadiusX="1"
                             RadiusY="1"
@@ -626,7 +626,7 @@
                     <ControlTemplate.Triggers>
 
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource GridSplitterHoverBrush}" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource GridSplitterHoverBrush}" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard x:Name="HoverEnter">
                                     <Storyboard>
@@ -653,8 +653,8 @@
                         </Trigger>
 
                         <Trigger Property="IsDragging" Value="True">
-                            <Setter TargetName="RootBorder" Property="Background" Value="{StaticResource AccentBlueBrush}" />
-                            <Setter TargetName="DragLine" Property="Fill" Value="{StaticResource TextPrimaryBrush}" />
+                            <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource AccentBlueBrush}" />
+                            <Setter TargetName="DragLine" Property="Fill" Value="{DynamicResource TextPrimaryBrush}" />
                             <Trigger.EnterActions>
                                 <StopStoryboard BeginStoryboardName="HoverEnter" />
                                 <StopStoryboard BeginStoryboardName="HoverExit" />

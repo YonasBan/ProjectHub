@@ -27,4 +27,9 @@ public interface IThemeService
     /// 切换主题 (Light -> Dark, Dark -> Light)
     /// </summary>
     void ToggleTheme();
+
+    /// <summary>
+    /// 初始化默认主题 - 应在 Application 启动完成后调用
+    /// </summary>
+    void InitializeTheme();
 }

@@ -1,9 +1,11 @@
-﻿using ReactiveUI;
+﻿using ProjectHub.Application.Localization;
+using ReactiveUI;
 using System;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
+using Splat;
 
 namespace ProjectHub.Application.Interfaces;
 
@@ -14,6 +16,11 @@ public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable
 {
     private readonly TaskCompletionSource<DialogResult<TResult>> _tcs = new();
     public Task<DialogResult<TResult>> WaitForResultAsync() => _tcs.Task;
+
+    /// <summary>
+    /// 本地化字符串
+    /// </summary>
+    public LocalizedStrings L { get; }
 
     protected void Close(TResult result) =>
         _tcs.TrySetResult(new DialogResult<TResult>(true, result));
@@ -35,6 +42,7 @@ public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable
 
     protected DialogViewModelBase()
     {
+        L = Locator.Current.GetService<LocalizedStrings>()!;
         CancelCommand = ReactiveCommand.Create(Cancel);
     }
 

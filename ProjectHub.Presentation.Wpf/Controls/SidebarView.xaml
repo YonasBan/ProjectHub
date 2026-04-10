@@ -13,8 +13,8 @@
     x:TypeArguments="viewmodels:MainViewModel"
     mc:Ignorable="d">
     <Border
-        Background="{StaticResource BgSecondaryBrush}"
-        BorderBrush="{StaticResource BorderBrush}"
+        Background="{DynamicResource BgSecondaryBrush}"
+        BorderBrush="{DynamicResource BorderBrush}"
         BorderThickness="0,0,1,0">
         <Grid>
             <Grid.RowDefinitions>
@@ -26,7 +26,7 @@
             <Border
                 Grid.Row="0"
                 Padding="16,12"
-                BorderBrush="{StaticResource BorderBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="0,0,0,1">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -83,7 +83,7 @@
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
                                     FontSize="10"
-                                    Foreground="{StaticResource TextMutedBrush}"
+                                    Foreground="{DynamicResource TextMutedBrush}"
                                     RenderTransformOrigin="0.5,0.5"
                                     Tag="{Binding}"
                                     Text="&#x25B6;">
@@ -124,7 +124,7 @@
                                     Margin="8,0,0,0"
                                     VerticalAlignment="Center"
                                     FontSize="13"
-                                    Foreground="{StaticResource TextPrimaryBrush}"
+                                    Foreground="{DynamicResource TextPrimaryBrush}"
                                     Text="{Binding Name}" />
 
                                 <!--  Count Badge  -->
@@ -134,7 +134,7 @@
                                     Style="{StaticResource TreeCountBadgeStyle}">
                                     <TextBlock
                                         FontSize="11"
-                                        Foreground="{StaticResource TextMutedBrush}"
+                                        Foreground="{DynamicResource TextMutedBrush}"
                                         Text="{Binding Count}" />
                                 </Border>
 

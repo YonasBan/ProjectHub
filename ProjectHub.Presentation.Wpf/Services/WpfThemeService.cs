@@ -36,6 +36,14 @@ public class WpfThemeService : IThemeService
     }
 
     /// <summary>
+    /// 初始化默认主题 - 应在 Application 启动完成后调用
+    /// </summary>
+    public void InitializeTheme()
+    {
+        ApplyTheme(_currentTheme);
+    }
+
+    /// <summary>
     /// 应用主题资源字典
     /// </summary>
     private void ApplyTheme(string themeName)
@@ -43,17 +51,22 @@ public class WpfThemeService : IThemeService
         var app = System.Windows.Application.Current;
         if (app == null) return;
 
-        // 移除旧的主题资源
-        var oldTheme = app.Resources.MergedDictionaries
-            .FirstOrDefault(d => d.Source?.OriginalString.Contains("Theme.xaml") == true);
-        if (oldTheme != null)
+        // 在 UI 线程执行
+        app.Dispatcher.Invoke(() =>
         {
-            app.Resources.MergedDictionaries.Remove(oldTheme);
-        }
+            // 移除旧的主题资源（匹配 DarkTheme.xaml 或 LightTheme.xaml）
+            var oldTheme = app.Resources.MergedDictionaries
+                .FirstOrDefault(d => d.Source?.OriginalString.Contains("Theme.xaml") == true);
+            if (oldTheme != null)
+            {
+                app.Resources.MergedDictionaries.Remove(oldTheme);
+            }
 
-        // 添加新的主题资源
-        var themeUri = new Uri($"/Themes/{themeName}Theme.xaml", UriKind.Relative);
-        var newTheme = new ResourceDictionary { Source = themeUri };
-        app.Resources.MergedDictionaries.Add(newTheme);
+            // 添加新的主题资源 - 使用 Pack URI 格式
+            var assemblyName = typeof(WpfThemeService).Assembly.GetName().Name;
+            var themeUri = new Uri($"pack://application:,,,/{assemblyName};component/Themes/{themeName}Theme.xaml");
+            var newTheme = new ResourceDictionary { Source = themeUri };
+            app.Resources.MergedDictionaries.Insert(0, newTheme);
+        });
     }
 }

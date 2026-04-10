@@ -1,7 +1,5 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.Localization;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
 using System.Reactive;
@@ -17,7 +15,6 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
 {
     private readonly ILogger<AddProjectDialogViewModel> _logger;
     private readonly IDialogService _dialogService;
-    private readonly LocalizedStrings L;
 
     private string _projectName = string.Empty;
     public string ProjectName
@@ -100,12 +97,10 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
 
     public AddProjectDialogViewModel(
         ILogger<AddProjectDialogViewModel> logger,
-        IDialogService dialogService,
-        LocalizedStrings l)
+        IDialogService dialogService)
     {
         _logger = logger;
         _dialogService = dialogService;
-        L = l;
 
         // 初始化命令
         BrowsePathCommand = ReactiveCommand.Create(BrowsePath);

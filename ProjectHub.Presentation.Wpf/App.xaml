@@ -7,7 +7,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Themes/LightTheme.xaml" />
+                <!-- 默认主题 - 程序启动时加载，后续由 WpfThemeService 管理切换 -->
+                <ResourceDictionary Source="pack://application:,,,/ProjectHub.Presentation.Wpf;component/Themes/DarkTheme.xaml" />
                 <ResourceDictionary Source="Themes/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
 

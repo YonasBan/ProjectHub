@@ -12,11 +12,11 @@
     MinWidth="900"
     MinHeight="600"
     d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
-    Background="{StaticResource BgPrimaryBrush}"
+    Background="{DynamicResource BgPrimaryBrush}"
     WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
 
-    <Grid>
+    <Grid Background="{DynamicResource BgPrimaryBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -39,7 +39,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch" />
             <!--  Main Content Area (placeholder)  -->
-            <Grid Grid.Column="2" Background="{StaticResource BgPrimaryBrush}">
+            <Grid Grid.Column="2" Background="{DynamicResource BgPrimaryBrush}">
                 <controls:ContentView />
             </Grid>
         </Grid>

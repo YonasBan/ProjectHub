@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.Localization;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Concurrency;
@@ -20,7 +19,6 @@ namespace ProjectHub.Application.ViewModels;
 public class CreateFolderDialogViewModel : DialogViewModelBase<string>
 {
     private readonly ILogger<CreateFolderDialogViewModel> _logger;
-    private readonly LocalizedStrings L;
 
     /// <summary>
     /// 文件夹名称
@@ -114,12 +112,10 @@ public class CreateFolderDialogViewModel : DialogViewModelBase<string>
 
     public CreateFolderDialogViewModel(
         ILogger<CreateFolderDialogViewModel> logger,
-        LocalizedStrings l,
         IScheduler mainThreadScheduler)
         : base()
     {
         _logger = logger;
-        this.L = l;
         DefaultFolderName = "";
         _folderName = "";
 

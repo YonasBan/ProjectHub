@@ -7,8 +7,8 @@
              d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="800">
-    <Border Background="{StaticResource BgTertiaryBrush}"
-            BorderBrush="{StaticResource BorderBrush}"
+    <Border Background="{DynamicResource BgTertiaryBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
             BorderThickness="0,1,0,0">
         <Grid Height="32">
             <Grid.ColumnDefinitions>
@@ -28,7 +28,7 @@
                 <!-- Green Dot -->
                 <Border Width="8" Height="8"
                         CornerRadius="4"
-                        Background="{StaticResource SuccessBrush}"
+                        Background="{DynamicResource SuccessBrush}"
                         VerticalAlignment="Center"
                         Margin="0,0,8,0"/>
                 <TextBlock Text="{Binding L.Status_Ready}"

@@ -22,7 +22,7 @@
         <Border
             Grid.Row="0"
             Margin="24,0,24,0"
-            BorderBrush="{StaticResource AccentBlueBrush}"
+            BorderBrush="{DynamicResource AccentBlueBrush}"
             BorderThickness="0,0,0,1">
             <Grid Margin="0,16,0,8">
                 <Grid.ColumnDefinitions>
@@ -46,7 +46,7 @@
                     <TextBlock
                         FontSize="22"
                         FontWeight="SemiBold"
-                        Foreground="{StaticResource TextPrimaryBrush}"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
                         Text="{Binding SelectedTreeItem.Name}" />
                 </StackPanel>
 
