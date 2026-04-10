@@ -10,7 +10,7 @@
     Width="420"
     Height="300"
     d:DataContext="{d:DesignInstance viewmodel:CreateFolderDialogViewModel}"
-    Background="{StaticResource BgPrimaryBrush}"
+    Background="{DynamicResource BgPrimaryBrush}"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
@@ -37,7 +37,7 @@
             Margin="0,0,0,16"
             FontSize="16"
             FontWeight="SemiBold"
-            Foreground="{StaticResource TextPrimaryBrush}"
+            Foreground="{DynamicResource TextPrimaryBrush}"
             Text="{Binding L.Sidebar_NewFolder}" />
 
         <!--  输入区域  -->
@@ -45,26 +45,26 @@
             <TextBlock
                 Margin="0,0,0,6"
                 FontSize="13"
-                Foreground="{StaticResource TextSecondaryBrush}"
+                Foreground="{DynamicResource TextSecondaryBrush}"
                 Text="{Binding L.Folder_InputLabel}" />
 
             <TextBox
                 x:Name="FolderNameTextBox"
                 Padding="10,8"
-                Background="{StaticResource BgSecondaryBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
+                Background="{DynamicResource BgSecondaryBrush}"
+                BorderBrush="{DynamicResource BorderBrush}"
                 BorderThickness="1"
-                CaretBrush="{StaticResource TextPrimaryBrush}"
+                CaretBrush="{DynamicResource TextPrimaryBrush}"
                 FontSize="14"
-                Foreground="{StaticResource TextPrimaryBrush}"
+                Foreground="{DynamicResource TextPrimaryBrush}"
                 MaxLength="100"
-                SelectionBrush="{StaticResource AccentBlueBrush}"
+                SelectionBrush="{DynamicResource AccentBlueBrush}"
                 Text="{Binding FolderName, UpdateSourceTrigger=PropertyChanged}">
                 <TextBox.Style>
                     <Style TargetType="TextBox">
                         <Style.Triggers>
                             <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="BorderBrush" Value="{StaticResource AccentBlueBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
                             </Trigger>
                         </Style.Triggers>
                     </Style>

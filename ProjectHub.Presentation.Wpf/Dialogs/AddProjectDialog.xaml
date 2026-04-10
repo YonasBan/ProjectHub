@@ -8,7 +8,7 @@
     xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     Title="{Binding L.ProjectDialog_Title}"
     Width="520"
-    Height="420"
+    Height="480"
     d:DataContext="{d:DesignInstance viewmodels:AddProjectDialogViewModel}"
     Background="{StaticResource BgPrimaryBrush}"
     ResizeMode="NoResize"
