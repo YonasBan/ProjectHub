@@ -5,13 +5,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:ProjectHub.Presentation.Wpf.Controls"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
+    d:Background="AliceBlue"
+    d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
     <Grid>
-        <TextBlock
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Text="content" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Margin="24">
+            <TextBlock
+                FontSize="22"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                Text="{Binding SelectedTreeItem.Name}" />
+        </StackPanel>
     </Grid>
 </UserControl>

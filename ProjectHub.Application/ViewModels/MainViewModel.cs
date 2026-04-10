@@ -69,11 +69,11 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _selectedWorkFolder, value);
     }
     /// <summary>
-    /// 当前选中的工作文件夹
+    /// 当前选中的树形节点
     /// </summary>
-    private TreeItemViewModel _selectedTreeItem;
+    private TreeItemViewModel? _selectedTreeItem;
 
-    public TreeItemViewModel SelectedTreeItem
+    public TreeItemViewModel? SelectedTreeItem
     {
         get => _selectedTreeItem;
         set => this.RaiseAndSetIfChanged(ref _selectedTreeItem, value);
@@ -304,7 +304,12 @@ public class MainViewModel : ViewModelBase
         WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
         WorkSpaces.CollectionChanged += (_, _) => BuildSidebarTree();
         _ = LoadAllDataAsync();
-        SelectedTreeItem = SidebarTreeItems.First();
+
+        // 延迟设置默认选中项，等待树形结构构建完成
+        this.WhenAnyValue(x => x.SidebarTreeItems)
+            .Where(items => items != null && items.Count > 0)
+            .Take(1)
+            .Subscribe(_ => SelectedTreeItem = SidebarTreeItems.First());
     }
 
     private async Task LoadAllDataAsync()
