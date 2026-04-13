@@ -1,0 +1,68 @@
+<Window x:Class="ProjectHub.Presentation.Wpf.Controls.ToastNotification"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="Notification"
+        Width="320"
+        Height="Auto"
+        MinHeight="60"
+        MaxHeight="120"
+        Background="Transparent"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ShowInTaskbar="False"
+        Topmost="True"
+        ResizeMode="NoResize"
+        SizeToContent="Height">
+
+    <Window.Resources>
+        <!-- 图标路径 -->
+        <PathGeometry x:Key="InfoIcon" Figures="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        <PathGeometry x:Key="SuccessIcon" Figures="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        <PathGeometry x:Key="WarningIcon" Figures="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+        <PathGeometry x:Key="ErrorIcon" Figures="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+    </Window.Resources>
+
+    <Border x:Name="MainBorder"
+            Margin="10"
+            Background="{DynamicResource BgSecondaryBrush}"
+            BorderBrush="{DynamicResource BorderBrush}"
+            BorderThickness="1"
+            CornerRadius="8"
+            Padding="16,12">
+        <Border.Effect>
+            <DropShadowEffect ShadowDepth="0" 
+                              BlurRadius="10" 
+                              Opacity="0.3"
+                              Color="Black"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- 图标 -->
+            <Path x:Name="IconPath"
+                  Grid.Column="0"
+                  Width="24"
+                  Height="24"
+                  Margin="0,0,12,0"
+                  VerticalAlignment="Center"
+                  Fill="{DynamicResource AccentBlueBrush}"
+                  Data="{StaticResource InfoIcon}"/>
+
+            <!-- 消息文本 -->
+            <TextBlock x:Name="MessageTextBlock"
+                       Grid.Column="1"
+                       VerticalAlignment="Center"
+                       TextWrapping="Wrap"
+                       FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}"
+                       Text="Notification message"/>
+        </Grid>
+    </Border>
+</Window>

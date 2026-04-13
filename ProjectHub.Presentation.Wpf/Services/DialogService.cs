@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.ViewModels;
+using ProjectHub.Presentation.Wpf.Controls;
 using ProjectHub.Presentation.Wpf.Dialogs;
 using ReactiveUI;
 using System;
@@ -45,6 +46,19 @@ public class DialogService : IDialogService
         // 注意：MessageBox 不支持自定义按钮文本，这是 WPF 限制
         MessageBox.Show(GetActiveWindow(), message, title, button, image);
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 显示通知提示（自动消失的弹出提示）
+    /// </summary>
+    public void ShowNotification(string message, NotificationType type = NotificationType.Info, int durationMs = 3000)
+    {
+        // 在 UI 线程执行
+        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+        {
+            var toast = new ToastNotification(message, type, durationMs);
+            toast.Show();
+        });
     }
 
     public Task<bool> ShowConfirmAsync(string title, string message, string? confirmText = null, string? cancelText = null)

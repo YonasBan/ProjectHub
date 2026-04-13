@@ -4,6 +4,15 @@ using System.Text;
 
 namespace ProjectHub.Application.Interfaces
 {
+    // 通知类型
+    public enum NotificationType
+    {
+        Info,
+        Success,
+        Warning,
+        Error
+    }
+
     // 基础弹窗结果
     public record DialogResult<T>(bool Confirmed, T? Value = default);
 
@@ -17,8 +26,11 @@ namespace ProjectHub.Application.Interfaces
     // 核心弹窗服务接口
     public interface IDialogService
     {
-        // 消息提示
+        // 消息提示（弹窗，需要用户确认）
         Task ShowMessageAsync(string title, string message, string? okText = null);
+
+        // 显示提示通知（自动消失的弹出提示）
+        void ShowNotification(string message, NotificationType type = NotificationType.Info, int durationMs = 3000);
 
         // 确认对话框
         Task<bool> ShowConfirmAsync(string title, string message,

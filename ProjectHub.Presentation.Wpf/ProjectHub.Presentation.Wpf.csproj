@@ -46,9 +46,6 @@
     <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="search.svg" />
-  </ItemGroup>
-  <ItemGroup>
     <None Update="projecthub.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

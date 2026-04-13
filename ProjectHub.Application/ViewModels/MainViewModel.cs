@@ -633,9 +633,10 @@ public class MainViewModel : ViewModelBase
                             await LoadProjectsAsync();
                             
                             // 显示成功提示
-                            await _dialogService.ShowMessageAsync(
-                                L.Message_Success,
-                                string.Format(L.Message_ProjectCreated, createdProject.Name));
+                            _dialogService.ShowNotification(
+                                string.Format(L.Message_ProjectCreated, createdProject.Name),
+                                NotificationType.Success,
+                                3000);
                         }
                     }
                     else
