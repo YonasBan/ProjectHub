@@ -7,10 +7,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     Title="{Binding L.ProjectDialog_Title}"
-    Width="520"
-    Height="480"
+    Width="560"
+    Height="520"
     d:DataContext="{d:DesignInstance viewmodels:AddProjectDialogViewModel}"
-    Background="{StaticResource BgPrimaryBrush}"
+    Background="{DynamicResource BgPrimaryBrush}"
     ResizeMode="NoResize"
     ShowInTaskbar="False"
     WindowStartupLocation="CenterOwner"
@@ -38,161 +38,254 @@
             Margin="0,0,0,20"
             FontSize="16"
             FontWeight="SemiBold"
-            Foreground="{StaticResource TextPrimaryBrush}"
+            Foreground="{DynamicResource TextPrimaryBrush}"
             Text="{Binding L.ProjectDialog_Title}" />
 
         <!--  表单内容  -->
-        <StackPanel Grid.Row="1">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
 
-            <!--  项目图标  -->
-            <StackPanel
-                Margin="0,0,0,20"
-                HorizontalAlignment="Center"
-                Orientation="Horizontal">
+                <!--  步骤1：选择文件路径  -->
                 <Border
-                    Width="64"
-                    Height="64"
-                    Background="{StaticResource BgSecondaryBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
+                    Margin="0,0,0,16"
+                    Padding="16"
+                    Background="{DynamicResource BgSecondaryBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="8">
-                    <Image
-                        Width="48"
-                        Height="48"
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}" />
+                    <StackPanel>
+                        <TextBlock
+                            Margin="0,0,0,8"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource AccentBlueBrush}"
+                            Text="{Binding L.ProjectDialog_Step1_SelectFile}" />
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="{Binding L.ProjectDialog_PathLabel}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                Padding="10,8"
+                                Background="{DynamicResource BgPrimaryBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CaretBrush="{DynamicResource TextPrimaryBrush}"
+                                FontSize="13"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                MaxLength="500"
+                                SelectionBrush="{DynamicResource AccentBlueBrush}"
+                                Text="{Binding ProjectPath, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsFocused" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Padding="12,8"
+                                Command="{Binding BrowsePathCommand}"
+                                Content="{Binding L.ProjectDialog_Browse}"
+                                Style="{DynamicResource SecondaryButtonStyle}" />
+                        </Grid>
+                    </StackPanel>
                 </Border>
-                <Button
-                    Margin="12,0,0,0"
-                    VerticalAlignment="Center"
-                    Command="{Binding BrowseIconCommand}"
-                    Content="浏览..."
-                    Style="{StaticResource SecondaryButtonStyle}" />
+
+                <!--  步骤2：项目信息（选择文件后自动填充，可修改）  -->
+                <Border
+                    Margin="0,0,0,16"
+                    Padding="16"
+                    Background="{DynamicResource BgSecondaryBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock
+                            Margin="0,0,0,12"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource AccentBlueBrush}"
+                            Text="{Binding L.ProjectDialog_Step2_ProjectInfo}" />
+
+                        <!--  项目名称  -->
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="{Binding L.ProjectDialog_NameLabel}" />
+                        <TextBox
+                            Margin="0,0,0,12"
+                            Padding="10,8"
+                            Background="{DynamicResource BgPrimaryBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CaretBrush="{DynamicResource TextPrimaryBrush}"
+                            FontSize="13"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            MaxLength="100"
+                            SelectionBrush="{DynamicResource AccentBlueBrush}"
+                            Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+
+                        <!--  默认程序（可修改）  -->
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="{Binding L.ProjectDialog_ProgramLabel}" />
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox
+                                Grid.Column="0"
+                                Padding="10,8"
+                                Background="{DynamicResource BgPrimaryBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CaretBrush="{DynamicResource TextPrimaryBrush}"
+                                FontSize="13"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                MaxLength="500"
+                                SelectionBrush="{DynamicResource AccentBlueBrush}"
+                                Text="{Binding DefaultProgram, UpdateSourceTrigger=PropertyChanged}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsFocused" Value="True">
+                                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                            <Button
+                                Grid.Column="1"
+                                Margin="8,0,0,0"
+                                Padding="12,8"
+                                Command="{Binding BrowseProgramCommand}"
+                                Content="{Binding L.ProjectDialog_Browse}"
+                                Style="{DynamicResource SecondaryButtonStyle}" />
+                        </Grid>
+
+                        <!--  项目图标（可修改）  -->
+                        <TextBlock
+                            Margin="0,0,0,8"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="{Binding L.ProjectDialog_IconLabel}" />
+                        <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+                            <Border
+                                Width="48"
+                                Height="48"
+                                Background="{DynamicResource BgPrimaryBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="6">
+                                <Image
+                                    Width="32"
+                                    Height="32"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}" />
+                            </Border>
+                            <Button
+                                Margin="12,0,0,0"
+                                VerticalAlignment="Center"
+                                Padding="12,8"
+                                Command="{Binding BrowseIconCommand}"
+                                Content="{Binding L.ProjectDialog_Browse}"
+                                Style="{DynamicResource SecondaryButtonStyle}" />
+                            <Button
+                                Margin="8,0,0,0"
+                                VerticalAlignment="Center"
+                                Padding="12,8"
+                                Command="{Binding ResetIconCommand}"
+                                Content="{Binding L.ProjectDialog_ResetIcon}"
+                                Style="{DynamicResource SecondaryButtonStyle}" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!--  步骤3：项目描述  -->
+                <Border
+                    Padding="16"
+                    Background="{DynamicResource BgSecondaryBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="8">
+                    <StackPanel>
+                        <TextBlock
+                            Margin="0,0,0,8"
+                            FontSize="13"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource AccentBlueBrush}"
+                            Text="{Binding L.ProjectDialog_Step3_Description}" />
+                        <TextBlock
+                            Margin="0,0,0,6"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="{Binding L.ProjectDialog_DescriptionLabel}" />
+                        <TextBox
+                            Padding="10,8"
+                            Background="{DynamicResource BgPrimaryBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            BorderThickness="1"
+                            CaretBrush="{DynamicResource TextPrimaryBrush}"
+                            FontSize="13"
+                            Foreground="{DynamicResource TextPrimaryBrush}"
+                            MaxLength="500"
+                            AcceptsReturn="True"
+                            Height="60"
+                            SelectionBrush="{DynamicResource AccentBlueBrush}"
+                            Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                            TextWrapping="Wrap"
+                            VerticalContentAlignment="Top">
+                            <TextBox.Style>
+                                <Style TargetType="TextBox">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsFocused" Value="True">
+                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBox.Style>
+                        </TextBox>
+                    </StackPanel>
+                </Border>
+
+                <!--  错误提示  -->
+                <TextBlock
+                    Margin="0,12,0,0"
+                    FontSize="12"
+                    Foreground="#FFF44747"
+                    Text="{Binding ErrorMessage}"
+                    Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}" />
+
             </StackPanel>
-
-            <!--  项目名称  -->
-            <TextBlock
-                Margin="0,0,0,6"
-                FontSize="13"
-                Foreground="{StaticResource TextSecondaryBrush}"
-                Text="{Binding L.ProjectDialog_NameLabel}" />
-            <TextBox
-                x:Name="ProjectNameTextBox"
-                Padding="10,8"
-                Background="{StaticResource BgSecondaryBrush}"
-                BorderBrush="{StaticResource BorderBrush}"
-                BorderThickness="1"
-                CaretBrush="{StaticResource TextPrimaryBrush}"
-                FontSize="14"
-                Foreground="{StaticResource TextPrimaryBrush}"
-                MaxLength="100"
-                SelectionBrush="{StaticResource AccentBlueBrush}"
-                Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Style.Triggers>
-                            <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="BorderBrush" Value="{StaticResource AccentBlueBrush}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-
-            <!--  打开路径  -->
-            <TextBlock
-                Margin="0,16,0,6"
-                FontSize="13"
-                Foreground="{StaticResource TextSecondaryBrush}"
-                Text="{Binding L.ProjectDialog_PathLabel}" />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBox
-                    Grid.Column="0"
-                    Padding="10,8"
-                    Background="{StaticResource BgSecondaryBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
-                    BorderThickness="1"
-                    CaretBrush="{StaticResource TextPrimaryBrush}"
-                    FontSize="14"
-                    Foreground="{StaticResource TextPrimaryBrush}"
-                    MaxLength="500"
-                    SelectionBrush="{StaticResource AccentBlueBrush}"
-                    Text="{Binding ProjectPath, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="IsFocused" Value="True">
-                                    <Setter Property="BorderBrush" Value="{StaticResource AccentBlueBrush}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-                <Button
-                    Grid.Column="1"
-                    Margin="8,0,0,0"
-                    Command="{Binding BrowsePathCommand}"
-                    Content="..."
-                    Style="{StaticResource SecondaryButtonStyle}"
-                    ToolTip="浏览" />
-            </Grid>
-
-            <!--  默认程序  -->
-            <TextBlock
-                Margin="0,16,0,6"
-                FontSize="13"
-                Foreground="{StaticResource TextSecondaryBrush}"
-                Text="{Binding L.ProjectDialog_ProgramLabel}" />
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <TextBox
-                    Grid.Column="0"
-                    Padding="10,8"
-                    Background="{StaticResource BgSecondaryBrush}"
-                    BorderBrush="{StaticResource BorderBrush}"
-                    BorderThickness="1"
-                    CaretBrush="{StaticResource TextPrimaryBrush}"
-                    FontSize="14"
-                    Foreground="{StaticResource TextPrimaryBrush}"
-                    MaxLength="500"
-                    SelectionBrush="{StaticResource AccentBlueBrush}"
-                    Text="{Binding DefaultProgram, UpdateSourceTrigger=PropertyChanged}">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Style.Triggers>
-                                <Trigger Property="IsFocused" Value="True">
-                                    <Setter Property="BorderBrush" Value="{StaticResource AccentBlueBrush}" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-                <Button
-                    Grid.Column="1"
-                    Margin="8,0,0,0"
-                    Command="{Binding BrowseProgramCommand}"
-                    Content="..."
-                    Style="{StaticResource SecondaryButtonStyle}"
-                    ToolTip="浏览" />
-            </Grid>
-
-            <!--  错误提示  -->
-            <TextBlock
-                Margin="0,12,0,0"
-                FontSize="12"
-                Foreground="#FFF44747"
-                Text="{Binding ErrorMessage}"
-                Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}" />
-
-        </StackPanel>
+        </ScrollViewer>
 
         <!--  按钮区域  -->
         <StackPanel
@@ -205,12 +298,12 @@
                 Margin="0,0,10,0"
                 Command="{Binding CancelCommand}"
                 Content="{Binding L.Cancel}"
-                Style="{StaticResource SecondaryButtonStyle}" />
+                Style="{DynamicResource SecondaryButtonStyle}" />
             <Button
                 Width="90"
                 Command="{Binding ConfirmCommand}"
                 Content="{Binding L.Confirm}"
-                Style="{StaticResource PrimaryButtonStyle}" />
+                Style="{DynamicResource PrimaryButtonStyle}" />
         </StackPanel>
     </Grid>
 </Window>

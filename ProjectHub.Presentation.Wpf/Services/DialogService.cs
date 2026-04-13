@@ -33,9 +33,8 @@ public class DialogService : IDialogService
     /// </summary>
     private Window? GetActiveWindow()
     {
-        return System.Windows.Application.Current?.MainWindow?.IsActive == true
-            ? System.Windows.Application.Current.MainWindow
-            : System.Windows.Application.Current?.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
+        return System.Windows.Application.Current.MainWindow;
+
     }
 
     public Task ShowMessageAsync(string title, string message, string? okText = null)
@@ -120,7 +119,7 @@ public class DialogService : IDialogService
             };
             // 返回结果
             var result = await viewModel.WaitForResultAsync();
-         
+
             return new DialogResult<TResult>(result.Confirmed, result.Value);
         }
         finally

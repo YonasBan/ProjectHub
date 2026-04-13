@@ -104,6 +104,7 @@ public partial class App : System.Windows.Application
         // ========== Register Platform-Specific Services (WPF) ==========
         services.AddSingleton<IDialogService, DialogService>();
         services.AddSingleton<IThemeService, WpfThemeService>();
+        services.AddSingleton<IFileAssociationService, WindowsFileAssociationService>();
         // 或者
         var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
         // ========== Register WPF Scheduler (must be before other registrations) ==========

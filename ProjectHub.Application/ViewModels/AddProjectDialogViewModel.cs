@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
+using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Domain.Entities;
 using ReactiveUI;
 using System.Reactive;
 using System.Reactive.Disposables.Fluent;
@@ -11,10 +11,11 @@ namespace ProjectHub.Application.ViewModels;
 /// <summary>
 /// 添加项目对话框 ViewModel
 /// </summary>
-public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
+public class AddProjectDialogViewModel : DialogViewModelBase<CreateProjectDto?>
 {
     private readonly ILogger<AddProjectDialogViewModel> _logger;
     private readonly IDialogService _dialogService;
+    private readonly IFileAssociationService _fileAssociationService;
 
     private string _projectName = string.Empty;
     public string ProjectName
@@ -49,6 +50,16 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
             ValidateInput();
             UpdateIconFromProgram();
         }
+    }
+
+    /// <summary>
+    /// 项目描述
+    /// </summary>
+    private string _description = string.Empty;
+    public string Description
+    {
+        get => _description;
+        set => this.RaiseAndSetIfChanged(ref _description, value);
     }
 
     /// <summary>
@@ -95,17 +106,25 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
     /// </summary>
     public ReactiveCommand<Unit, Unit> BrowseIconCommand { get; }
 
+    /// <summary>
+    /// 重置图标命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> ResetIconCommand { get; }
+
     public AddProjectDialogViewModel(
         ILogger<AddProjectDialogViewModel> logger,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IFileAssociationService fileAssociationService)
     {
         _logger = logger;
         _dialogService = dialogService;
+        _fileAssociationService = fileAssociationService;
 
         // 初始化命令
         BrowsePathCommand = ReactiveCommand.Create(BrowsePath);
         BrowseProgramCommand = ReactiveCommand.Create(BrowseProgram);
         BrowseIconCommand = ReactiveCommand.Create(BrowseIcon);
+        ResetIconCommand = ReactiveCommand.Create(ResetIcon);
 
         var canConfirm = this.WhenAnyValue(
             x => x.ProjectName,
@@ -155,8 +174,107 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
         if (!string.IsNullOrEmpty(path))
         {
             ProjectPath = path;
+            
+            // 自动提取项目名称（从文件名）
+            if (string.IsNullOrWhiteSpace(ProjectName))
+            {
+                ProjectName = System.IO.Path.GetFileNameWithoutExtension(path);
+            }
+            
+            // 自动检测默认打开方式
+            DetectDefaultProgram(path);
+            
+            // 更新图标
+            UpdateIconFromPath();
+            
             _logger.LogInformation($"用户选择了路径: {path}");
         }
+    }
+
+    /// <summary>
+    /// 自动检测文件的默认打开方式
+    /// </summary>
+    private void DetectDefaultProgram(string filePath)
+    {
+        try
+        {
+            var extension = System.IO.Path.GetExtension(filePath).ToLowerInvariant();
+            
+            // 根据文件类型设置默认打开方式
+            string? defaultProgram = extension switch
+            {
+                ".sln" or ".slnx" or ".csproj" => DetectVisualStudio(),
+                ".exe" => filePath, // 可执行文件直接运行
+                ".bat" or ".cmd" => filePath,
+                ".ps1" => "powershell.exe",
+                ".sh" => "bash",
+                ".gradle" => DetectGradle(),
+                _ => GetDefaultProgramFromRegistry(extension)
+            };
+
+            if (!string.IsNullOrEmpty(defaultProgram))
+            {
+                DefaultProgram = defaultProgram;
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning($"检测默认程序失败: {ex.Message}");
+        }
+    }
+
+    /// <summary>
+    /// 检测 Visual Studio 路径
+    /// </summary>
+    private string? DetectVisualStudio()
+    {
+        // 尝试常见路径
+        var vsPaths = new[]
+        {
+            @"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.exe",
+            @"C:\Program Files\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"
+        };
+
+        foreach (var path in vsPaths)
+        {
+            if (File.Exists(path))
+                return path;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// 检测 Gradle 路径
+    /// </summary>
+    private string? DetectGradle()
+    {
+        // 尝试常见路径
+        var gradlePaths = new[]
+        {
+            @"C:\Program Files\Gradle\bin\gradle.bat",
+            @"C:\Gradle\bin\gradle.bat"
+        };
+
+        foreach (var path in gradlePaths)
+        {
+            if (File.Exists(path))
+                return path;
+        }
+
+        return "gradle";
+    }
+
+    /// <summary>
+    /// 从注册表获取默认程序（通过接口）
+    /// </summary>
+    private string? GetDefaultProgramFromRegistry(string extension)
+    {
+        return _fileAssociationService.GetDefaultProgramByExtension(extension);
     }
 
     private void BrowseProgram()
@@ -208,6 +326,12 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
         IconPath = DefaultProgram;
     }
 
+    private void ResetIcon()
+    {
+        UpdateIconFromPath();
+        _logger.LogInformation("重置图标为默认");
+    }
+
     private void SetDefaultIcon()
     {
         IconPath = null;
@@ -222,8 +346,17 @@ public class AddProjectDialogViewModel : DialogViewModelBase<Project?>
 
         _logger.LogInformation($"确认添加项目: {ProjectName}");
 
-        // 创建项目（这里只是示例，实际项目创建逻辑需要根据业务需求完善）
-        var project = Project.Create(ProjectName, ProjectType.Tool, ProjectPath);
-        Close(project);
+        // 创建 CreateProjectDto
+        var dto = new CreateProjectDto
+        {
+            Name = ProjectName,
+            //Type = ProjectType.Tool,
+            Path = ProjectPath,
+            Description = Description,
+            CustomIconPath = IconPath,
+            WorkFolderIds = [],
+            WorkSpaceIds = []
+        };
+        Close(dto);
     }
 }

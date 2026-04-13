@@ -616,15 +616,31 @@ public class MainViewModel : ViewModelBase
             {
                 case TreeItemType.AllProjects:
                     // 显示对话框
-                    var result = await _dialogService.ShowDialogAsync<AddProjectDialogViewModel, Project?>();
+                    var result = await _dialogService.ShowDialogAsync<AddProjectDialogViewModel, CreateProjectDto?>();
 
                     if (result.Confirmed)
                     {
-
+                        var newProjectDto = result.Value;
+                        if (newProjectDto != null)
+                        {
+                            IsLoading = true;
+                            
+                            // 保存新项目到数据库
+                            var createdProject = await _projectAppService.CreateAsync(newProjectDto);
+                            Logger.LogInformation("项目创建成功: {ProjectName}", createdProject.Name);
+                            
+                            // 刷新项目列表
+                            await LoadProjectsAsync();
+                            
+                            // 显示成功提示
+                            await _dialogService.ShowMessageAsync(
+                                L.Message_Success,
+                                string.Format(L.Message_ProjectCreated, createdProject.Name));
+                        }
                     }
                     else
                     {
-                        Logger.LogInformation("用户取消创建文件夹");
+                        Logger.LogInformation("用户取消创建项目");
                     }
                     break;
             }
@@ -653,7 +669,40 @@ public class MainViewModel : ViewModelBase
             : new System.Globalization.CultureInfo("zh-CN");
         
         await L.SetCultureAsync(newCulture);
+        
+        // 刷新侧边栏树节点名称以应用新语言
+        RefreshSidebarTreeNames();
+        
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
+    }
+
+    /// <summary>
+    /// 刷新侧边栏树节点名称
+    /// </summary>
+    private void RefreshSidebarTreeNames()
+    {
+        // 更新特殊节点的名称
+        foreach (var item in SidebarTreeItems)
+        {
+            switch (item.ItemType)
+            {
+                case TreeItemType.RecentProject:
+                    item.UpdateName(L.Sidebar_Recent);
+                    break;
+                case TreeItemType.FavoriteProject:
+                    item.UpdateName(L.Sidebar_Favorites);
+                    break;
+                case TreeItemType.WorkSpace:
+                    item.UpdateName(L.Sidebar_Workspaces);
+                    break;
+                case TreeItemType.AllProjects:
+                    item.UpdateName(L.Sidebar_AllProjects);
+                    break;
+                case TreeItemType.TagSettings:
+                    item.UpdateName(L.Sidebar_TagSettings);
+                    break;
+            }
+        }
     }
 
 }

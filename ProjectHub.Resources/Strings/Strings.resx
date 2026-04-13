@@ -263,4 +263,27 @@
   <data name="ProjectDialog_Browse" xml:space="preserve">
     <value>浏览...</value>
   </data>
+  <data name="ProjectDialog_DescriptionLabel" xml:space="preserve">
+    <value>项目描述</value>
+  </data>
+  <data name="ProjectDialog_Step1_SelectFile" xml:space="preserve">
+    <value>步骤 1：选择项目文件</value>
+  </data>
+  <data name="ProjectDialog_Step2_ProjectInfo" xml:space="preserve">
+    <value>步骤 2：项目信息（可修改）</value>
+  </data>
+  <data name="ProjectDialog_Step3_Description" xml:space="preserve">
+    <value>步骤 3：项目描述</value>
+  </data>
+  <data name="ProjectDialog_ResetIcon" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  
+  <!-- 消息提示 -->
+  <data name="Message_Success" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Message_ProjectCreated" xml:space="preserve">
+    <value>项目 "{0}" 创建成功！</value>
+  </data>
 </root>

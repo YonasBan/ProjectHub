@@ -148,4 +148,11 @@ public class LocalizedStrings : ReactiveObject
     public string ProjectDialog_Error_EmptyPath => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyPath;
     public string ProjectDialog_Error_EmptyProgram => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyProgram;
     public string ProjectDialog_Browse => ProjectHub.Resources.Strings.Strings.ProjectDialog_Browse;
+    public string ProjectDialog_DescriptionLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_DescriptionLabel;
+    public string ProjectDialog_Step1_SelectFile => ProjectHub.Resources.Strings.Strings.ProjectDialog_Step1_SelectFile;
+    public string ProjectDialog_Step2_ProjectInfo => ProjectHub.Resources.Strings.Strings.ProjectDialog_Step2_ProjectInfo;
+    public string ProjectDialog_Step3_Description => ProjectHub.Resources.Strings.Strings.ProjectDialog_Step3_Description;
+    public string ProjectDialog_ResetIcon => ProjectHub.Resources.Strings.Strings.ProjectDialog_ResetIcon;
+    public string Message_Success => ProjectHub.Resources.Strings.Strings.Message_Success;
+    public string Message_ProjectCreated => ProjectHub.Resources.Strings.Strings.Message_ProjectCreated;
 }

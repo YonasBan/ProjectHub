@@ -232,6 +232,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 项目 &quot;{0}&quot; 创建成功！ 的本地化字符串。
+        /// </summary>
+        public static string Message_ProjectCreated {
+            get {
+                return ResourceManager.GetString("Message_ProjectCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 保存失败 的本地化字符串。
         /// </summary>
         public static string Message_SaveFailed {
@@ -246,6 +255,15 @@ namespace ProjectHub.Resources.Strings {
         public static string Message_SaveSuccess {
             get {
                 return ResourceManager.GetString("Message_SaveSuccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 成功 的本地化字符串。
+        /// </summary>
+        public static string Message_Success {
+            get {
+                return ResourceManager.GetString("Message_Success", resourceCulture);
             }
         }
         
@@ -300,6 +318,15 @@ namespace ProjectHub.Resources.Strings {
         public static string ProjectDialog_Browse {
             get {
                 return ResourceManager.GetString("ProjectDialog_Browse", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 项目描述 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_DescriptionLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_DescriptionLabel", resourceCulture);
             }
         }
         
@@ -363,6 +390,42 @@ namespace ProjectHub.Resources.Strings {
         public static string ProjectDialog_ProgramLabel {
             get {
                 return ResourceManager.GetString("ProjectDialog_ProgramLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 重置 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_ResetIcon {
+            get {
+                return ResourceManager.GetString("ProjectDialog_ResetIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 步骤 1：选择项目文件 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Step1_SelectFile {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Step1_SelectFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 步骤 2：项目信息（可修改） 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Step2_ProjectInfo {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Step2_ProjectInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 步骤 3：项目描述 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Step3_Description {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Step3_Description", resourceCulture);
             }
         }
         

@@ -76,8 +76,8 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(1000);
             
-            entity.HasIndex(e => e.Path)
-                .IsUnique();
+            // 索引优化：Path 用于查询但不唯一（同一项目路径可属于不同工作空间）
+            entity.HasIndex(e => e.Path);
             
             entity.Property(e => e.Type)
                 .IsRequired();
