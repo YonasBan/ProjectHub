@@ -1,5 +1,6 @@
 using ProjectHub.Application.Interfaces;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 
@@ -15,6 +16,7 @@ public partial class ToastNotification : Window
 
     public ToastNotification(string message, NotificationType type, int durationMs = 3000)
     {
+        this.Owner = System.Windows.Application.Current.MainWindow;
         InitializeComponent();
         _durationMs = durationMs;
 
@@ -67,11 +69,14 @@ public partial class ToastNotification : Window
     /// </summary>
     public new void Show()
     {
-        // 定位到屏幕右下角
-        PositionWindow();
-
-        // 显示窗口
+        // 先显示窗口以计算实际大小
         base.Show();
+        
+        // 更新布局以获取实际高度
+        UpdateLayout();
+        
+        // 定位到主窗体中间
+        PositionWindow();
 
         // 启动进入动画
         BeginAnimation();
