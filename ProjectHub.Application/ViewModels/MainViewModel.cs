@@ -376,7 +376,7 @@ public class MainViewModel : ViewModelBase
             Projects.Clear();
             foreach (var project in projects)
             {
-                Projects.Add(new ProjectViewModel(project));
+                Projects.Add(new ProjectViewModel(project, _projectAppService));
             }
 
             Logger.LogInformation($"成功加载 {projects.Count} 个项目");
@@ -407,7 +407,7 @@ public class MainViewModel : ViewModelBase
             Projects.Clear();
             foreach (var project in projects)
             {
-                Projects.Add(new ProjectViewModel(project));
+                Projects.Add(new ProjectViewModel(project, _projectAppService));
             }
 
             Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");

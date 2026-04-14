@@ -3,6 +3,7 @@ using ProjectHub.Application.Interfaces;
 using ProjectHub.Core.Extensions;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
+using System.Reactive;
 
 namespace ProjectHub.Application.ViewModels;
 
@@ -17,8 +18,7 @@ namespace ProjectHub.Application.ViewModels;
 public partial class ProjectViewModel : ReactiveObject
 {
     private readonly ProjectDto _projectDto;
-    // TODO: Inject application service for operations
-    // private readonly IProjectAppService _projectAppService;
+    private readonly IProjectAppService? _projectAppService;
 
     public long Id => _projectDto.Id;
     
@@ -50,7 +50,12 @@ public partial class ProjectViewModel : ReactiveObject
     
     public string TotalUsageDurationDisplay => _projectDto.TotalUsageDuration.ToHumanReadableString();
     
-    public bool IsFavorite => _projectDto.IsFavorite;
+    private bool _isFavorite;
+    public bool IsFavorite
+    {
+        get => _isFavorite;
+        private set => this.RaiseAndSetIfChanged(ref _isFavorite, value);
+    }
     
     public DateTime? FavoritedAt => _projectDto.FavoritedAt;
     
@@ -69,9 +74,36 @@ public partial class ProjectViewModel : ReactiveObject
     /// </summary>
     public string TypeDisplayName => GetTypeDisplayName(_projectDto.Type);
 
-    public ProjectViewModel(ProjectDto projectDto)
+    /// <summary>
+    /// Icon path for display
+    /// If CustomIconPath is set, use it; otherwise use project path to extract default program icon
+    /// </summary>
+    public string IconPath => !string.IsNullOrEmpty(CustomIconPath) ? CustomIconPath : Path;
+
+    /// <summary>
+    /// Toggle favorite status command
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> ToggleFavoriteCommand { get; }
+
+    public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
     {
         _projectDto = projectDto;
+        _projectAppService = projectAppService;
+        _isFavorite = projectDto.IsFavorite;
+        
+        ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
+    }
+
+    /// <summary>
+    /// Toggle favorite status
+    /// </summary>
+    private async Task ToggleFavoriteAsync()
+    {
+        if (_projectAppService == null) return;
+        
+        var newFavoriteStatus = !IsFavorite;
+        await _projectAppService.SetFavoriteAsync(Id, newFavoriteStatus);
+        IsFavorite = newFavoriteStatus;
     }
 
     /// <summary>
@@ -88,23 +120,6 @@ public partial class ProjectViewModel : ReactiveObject
             ProjectType.Document => "Document",
             ProjectType.Folder => "Folder",
             _ => "Unknown"
-        };
-    }
-
-    /// <summary>
-    /// Get icon path for project type (can be customized as needed)
-    /// </summary>
-    public static string GetTypeIconPath(ProjectType type)
-    {
-        return type switch
-        {
-            ProjectType.VisualStudio => "/UI/Assets/Icons/vs_icon.png",
-            ProjectType.Android => "/UI/Assets/Icons/android_icon.png",
-            ProjectType.Cpp => "/UI/Assets/Icons/cpp_icon.png",
-            ProjectType.Tool => "/UI/Assets/Icons/tool_icon.png",
-            ProjectType.Document => "/UI/Assets/Icons/doc_icon.png",
-            ProjectType.Folder => "/UI/Assets/Icons/folder_icon.png",
-            _ => "/UI/Assets/Icons/default_icon.png"
         };
     }
 }

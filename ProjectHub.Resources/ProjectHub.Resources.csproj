@@ -23,6 +23,10 @@
     <PackageReference Include="ReactiveUI" Version="23.1.8" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Icons\start.svg" />
+    <Resource Include="Icons\edit.svg" />
+    <Resource Include="Icons\unlike.svg" />
+    <Resource Include="Icons\like.svg" />
     <Resource Include="Icons\folder.svg" />
     <Resource Include="Icons\lateuse.svg" />
     <Resource Include="Icons\project.svg" />
