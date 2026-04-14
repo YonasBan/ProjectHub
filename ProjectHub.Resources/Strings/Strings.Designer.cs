@@ -250,6 +250,24 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 项目 &quot;{0}&quot; 已删除 的本地化字符串。
+        /// </summary>
+        public static string Message_ProjectDeleted {
+            get {
+                return ResourceManager.GetString("Message_ProjectDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除失败 的本地化字符串。
+        /// </summary>
+        public static string Message_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Message_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 保存失败 的本地化字符串。
         /// </summary>
         public static string Message_SaveFailed {

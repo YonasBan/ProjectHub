@@ -91,9 +91,19 @@ public partial class ProjectViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> EditCommand { get; }
 
     /// <summary>
+    /// Delete project command - requests parent to handle deletion with confirmation
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
+
+    /// <summary>
     /// Event raised when edit is requested
     /// </summary>
     public event EventHandler<ProjectViewModel>? EditRequested;
+
+    /// <summary>
+    /// Event raised when delete is requested
+    /// </summary>
+    public event EventHandler<ProjectViewModel>? DeleteRequested;
 
     public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
     {
@@ -103,6 +113,7 @@ public partial class ProjectViewModel : ReactiveObject
         
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
         EditCommand = ReactiveCommand.Create(RequestEdit);
+        DeleteCommand = ReactiveCommand.Create(RequestDelete);
     }
 
     /// <summary>
@@ -139,6 +150,14 @@ public partial class ProjectViewModel : ReactiveObject
         // In a real scenario, you might want to recreate the ViewModel or use a more sophisticated update mechanism
         _projectDto = updatedDto;
         this.RaisePropertyChanged(string.Empty); // Notify all properties changed
+    }
+
+    /// <summary>
+    /// Request delete - raises event for parent ViewModel to handle with confirmation
+    /// </summary>
+    private void RequestDelete()
+    {
+        DeleteRequested?.Invoke(this, this);
     }
 
     /// <summary>

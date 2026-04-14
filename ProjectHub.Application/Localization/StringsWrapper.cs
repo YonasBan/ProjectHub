@@ -158,4 +158,6 @@ public class LocalizedStrings : ReactiveObject
     public string Message_Success => ProjectHub.Resources.Strings.Strings.Message_Success;
     public string Message_ProjectCreated => ProjectHub.Resources.Strings.Strings.Message_ProjectCreated;
     public string Message_ProjectUpdated => ProjectHub.Resources.Strings.Strings.Message_ProjectUpdated;
+    public string Message_ProjectDeleted => ProjectHub.Resources.Strings.Strings.Message_ProjectDeleted;
+    public string Message_DeleteFailed => ProjectHub.Resources.Strings.Strings.Message_DeleteFailed;
 }

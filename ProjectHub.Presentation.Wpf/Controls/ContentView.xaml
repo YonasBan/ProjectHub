@@ -243,6 +243,18 @@
                                                 Height="16"
                                                 Source="/Icons/edit.svg" />
                                         </Button>
+                                        <!--  删除按钮  -->
+                                        <Button
+                                            Width="32"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            Command="{Binding DeleteCommand}"
+                                            Style="{StaticResource IconButtonStyle}">
+                                            <svg:SvgViewbox
+                                                Width="16"
+                                                Height="16"
+                                                Source="/Icons/delete.svg" />
+                                        </Button>
                                     </StackPanel>
                                 </Grid>
                             </Grid>

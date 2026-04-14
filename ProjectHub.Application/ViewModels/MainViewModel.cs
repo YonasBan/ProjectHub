@@ -382,6 +382,7 @@ public class MainViewModel : ViewModelBase
             {
                 var projectVm = new ProjectViewModel(project, _projectAppService);
                 projectVm.EditRequested += OnProjectEditRequested;
+                projectVm.DeleteRequested += OnProjectDeleteRequested;
                 Projects.Add(projectVm);
             }
 
@@ -415,6 +416,7 @@ public class MainViewModel : ViewModelBase
             {
                 var projectVm = new ProjectViewModel(project, _projectAppService);
                 projectVm.EditRequested += OnProjectEditRequested;
+                projectVm.DeleteRequested += OnProjectDeleteRequested;
                 Projects.Add(projectVm);
             }
 
@@ -701,6 +703,55 @@ public class MainViewModel : ViewModelBase
             await _dialogService.ShowMessageAsync(
                 L.Message_SaveFailed,
                 ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 处理项目删除请求
+    /// </summary>
+    private async void OnProjectDeleteRequested(object? sender, ProjectViewModel projectVm)
+    {
+        try
+        {
+            Logger.LogInformation($"请求删除项目: {projectVm.Name}");
+            
+            // 显示确认对话框
+            var confirmed = await _dialogService.ShowConfirmAsync(
+                L.DeleteConfirm_Title,
+                string.Format(L.DeleteConfirm_Message, projectVm.Name));
+            
+            if (!confirmed)
+            {
+                Logger.LogInformation("用户取消删除项目");
+                return;
+            }
+            
+            IsLoading = true;
+            
+            // 执行删除
+            await _projectAppService.DeleteAsync(projectVm.Id);
+            
+            Logger.LogInformation($"项目删除成功: {projectVm.Name}");
+            
+            // 从列表中移除
+            Projects.Remove(projectVm);
+            
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_ProjectDeleted, projectVm.Name),
+                NotificationType.Success,
+                3000);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "删除项目时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_DeleteFailed,
+                ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
         }
     }
 

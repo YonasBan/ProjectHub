@@ -295,4 +295,10 @@
   <data name="Message_ProjectUpdated" xml:space="preserve">
     <value>项目 "{0}" 更新成功！</value>
   </data>
+  <data name="Message_ProjectDeleted" xml:space="preserve">
+    <value>项目 "{0}" 已删除</value>
+  </data>
+  <data name="Message_DeleteFailed" xml:space="preserve">
+    <value>删除失败</value>
+  </data>
 </root>
