@@ -239,6 +239,12 @@
   <data name="ProjectDialog_Title" xml:space="preserve">
     <value>添加项目</value>
   </data>
+  <data name="ProjectDialog_Title_Add" xml:space="preserve">
+    <value>添加项目</value>
+  </data>
+  <data name="ProjectDialog_Title_Edit" xml:space="preserve">
+    <value>编辑项目</value>
+  </data>
   <data name="ProjectDialog_NameLabel" xml:space="preserve">
     <value>项目名称</value>
   </data>
@@ -285,5 +291,8 @@
   </data>
   <data name="Message_ProjectCreated" xml:space="preserve">
     <value>项目 "{0}" 创建成功！</value>
+  </data>
+  <data name="Message_ProjectUpdated" xml:space="preserve">
+    <value>项目 "{0}" 更新成功！</value>
   </data>
 </root>

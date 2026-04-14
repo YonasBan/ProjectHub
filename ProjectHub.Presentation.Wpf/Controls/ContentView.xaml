@@ -236,6 +236,7 @@
                                             Width="32"
                                             Height="32"
                                             Margin="4,0,0,0"
+                                            Command="{Binding EditCommand}"
                                             Style="{StaticResource IconButtonStyle}">
                                             <svg:SvgViewbox
                                                 Width="16"

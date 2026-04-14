@@ -76,8 +76,8 @@ public partial class App : System.Windows.Application
     /// </summary>
     private static void RegisterViews(IServiceCollection services)
     {
-        // MainWindow with injected ViewModel - Scoped to match MainViewModel's lifetime
-        services.AddScoped<MainWindow>(provider =>
+        // MainWindow with injected ViewModel - Singleton to match MainViewModel's lifetime
+        services.AddSingleton<MainWindow>(provider =>
         {
             var viewModel = provider.GetRequiredService<MainViewModel>();
             return new MainWindow(viewModel);
@@ -128,7 +128,7 @@ public partial class App : System.Windows.Application
     private void RegisterDialogs(IServiceCollection services)
     {
         AppLocator.CurrentMutable.Register(() => new InputDialog(), typeof(IViewFor<CreateFolderDialogViewModel>));
-        AppLocator.CurrentMutable.Register(() => new AddProjectDialog(), typeof(IViewFor<AddProjectDialogViewModel>));
+        AppLocator.CurrentMutable.Register(() => new ProjectDialog(), typeof(IViewFor<ProjectDialogViewModel>));
     }
     /// <summary>
     /// Configures application settings from multiple sources.
@@ -233,9 +233,8 @@ public partial class App : System.Windows.Application
             _logger.LogInformation("Environment: {Environment}",
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
 
-            using var scope = Services.CreateScope();
-            // Create a scope to resolve scoped services
-            var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
+            // 直接使用 Services 而不是创建新的 Scope，避免 Scoped 服务被提前 dispose
+            var mainWindow = Services.GetRequiredService<MainWindow>();
             mainWindow?.Show();
 
             _logger.LogInformation("Application started successfully");

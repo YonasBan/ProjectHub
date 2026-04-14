@@ -241,6 +241,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 项目 &quot;{0}&quot; 更新成功！ 的本地化字符串。
+        /// </summary>
+        public static string Message_ProjectUpdated {
+            get {
+                return ResourceManager.GetString("Message_ProjectUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 保存失败 的本地化字符串。
         /// </summary>
         public static string Message_SaveFailed {
@@ -435,6 +444,24 @@ namespace ProjectHub.Resources.Strings {
         public static string ProjectDialog_Title {
             get {
                 return ResourceManager.GetString("ProjectDialog_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 添加项目 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Title_Add {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Title_Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编辑项目 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Title_Edit {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Title_Edit", resourceCulture);
             }
         }
         

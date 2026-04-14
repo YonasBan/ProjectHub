@@ -17,7 +17,7 @@ namespace ProjectHub.Application.ViewModels;
 /// </summary>
 public partial class ProjectViewModel : ReactiveObject
 {
-    private readonly ProjectDto _projectDto;
+    private ProjectDto _projectDto;
     private readonly IProjectAppService? _projectAppService;
 
     public long Id => _projectDto.Id;
@@ -85,6 +85,16 @@ public partial class ProjectViewModel : ReactiveObject
     /// </summary>
     public ReactiveCommand<Unit, Unit> ToggleFavoriteCommand { get; }
 
+    /// <summary>
+    /// Edit project command - requests parent to open edit dialog
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> EditCommand { get; }
+
+    /// <summary>
+    /// Event raised when edit is requested
+    /// </summary>
+    public event EventHandler<ProjectViewModel>? EditRequested;
+
     public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
     {
         _projectDto = projectDto;
@@ -92,7 +102,13 @@ public partial class ProjectViewModel : ReactiveObject
         _isFavorite = projectDto.IsFavorite;
         
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
+        EditCommand = ReactiveCommand.Create(RequestEdit);
     }
+
+    /// <summary>
+    /// Get the underlying DTO for editing
+    /// </summary>
+    public ProjectDto GetProjectDto() => _projectDto;
 
     /// <summary>
     /// Toggle favorite status
@@ -104,6 +120,25 @@ public partial class ProjectViewModel : ReactiveObject
         var newFavoriteStatus = !IsFavorite;
         await _projectAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
+    }
+
+    /// <summary>
+    /// Request edit - raises event for parent ViewModel to handle
+    /// </summary>
+    private void RequestEdit()
+    {
+        EditRequested?.Invoke(this, this);
+    }
+
+    /// <summary>
+    /// Update the ViewModel after project is edited
+    /// </summary>
+    public void UpdateFromDto(ProjectDto updatedDto)
+    {
+        // Note: This is a simplified update
+        // In a real scenario, you might want to recreate the ViewModel or use a more sophisticated update mechanism
+        _projectDto = updatedDto;
+        this.RaisePropertyChanged(string.Empty); // Notify all properties changed
     }
 
     /// <summary>

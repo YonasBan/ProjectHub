@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Domain.Entities;
@@ -20,6 +21,7 @@ public class MainViewModel : ViewModelBase
 {
     // 注入应用服务
     private readonly IProjectAppService _projectAppService;
+    private readonly IServiceProvider _serviceProvider;
 
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
@@ -284,7 +286,8 @@ public class MainViewModel : ViewModelBase
         IWorkSpaceAppService workSpaceAppService,
         IDialogService dialogService,
         IThemeService themeService,
-        IScheduler mainThreadScheduler)
+        IScheduler mainThreadScheduler,
+        IServiceProvider serviceProvider)
         : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
@@ -292,6 +295,7 @@ public class MainViewModel : ViewModelBase
         _workSpaceAppService = workSpaceAppService;
         _dialogService = dialogService;
         _themeService = themeService;
+        _serviceProvider = serviceProvider;
 
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
@@ -376,7 +380,9 @@ public class MainViewModel : ViewModelBase
             Projects.Clear();
             foreach (var project in projects)
             {
-                Projects.Add(new ProjectViewModel(project, _projectAppService));
+                var projectVm = new ProjectViewModel(project, _projectAppService);
+                projectVm.EditRequested += OnProjectEditRequested;
+                Projects.Add(projectVm);
             }
 
             Logger.LogInformation($"成功加载 {projects.Count} 个项目");
@@ -407,7 +413,9 @@ public class MainViewModel : ViewModelBase
             Projects.Clear();
             foreach (var project in projects)
             {
-                Projects.Add(new ProjectViewModel(project, _projectAppService));
+                var projectVm = new ProjectViewModel(project, _projectAppService);
+                projectVm.EditRequested += OnProjectEditRequested;
+                Projects.Add(projectVm);
             }
 
             Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
@@ -615,29 +623,25 @@ public class MainViewModel : ViewModelBase
             switch (SelectedTreeItem.ItemType)
             {
                 case TreeItemType.AllProjects:
-                    // 显示对话框
-                    var result = await _dialogService.ShowDialogAsync<AddProjectDialogViewModel, CreateProjectDto?>();
+                    // 显示添加项目对话框
+                    var viewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
+                    viewModel.InitializeForAdd();
+                    var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(viewModel);
 
-                    if (result.Confirmed)
+                    if (result.Confirmed && result.Value != null)
                     {
-                        var newProjectDto = result.Value;
-                        if (newProjectDto != null)
-                        {
-                            IsLoading = true;
-                            
-                            // 保存新项目到数据库
-                            var createdProject = await _projectAppService.CreateAsync(newProjectDto);
-                            Logger.LogInformation("项目创建成功: {ProjectName}", createdProject.Name);
-                            
-                            // 刷新项目列表
-                            await LoadProjectsAsync();
-                            
-                            // 显示成功提示
-                            _dialogService.ShowNotification(
-                                string.Format(L.Message_ProjectCreated, createdProject.Name),
-                                NotificationType.Success,
-                                3000);
-                        }
+                        IsLoading = true;
+                        
+                        Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
+                        
+                        // 刷新项目列表
+                        await LoadProjectsAsync();
+                        
+                        // 显示成功提示
+                        _dialogService.ShowNotification(
+                            string.Format(L.Message_ProjectCreated, result.Value.Name),
+                            NotificationType.Success,
+                            3000);
                     }
                     else
                     {
@@ -656,6 +660,47 @@ public class MainViewModel : ViewModelBase
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// 处理项目编辑请求
+    /// </summary>
+    private async void OnProjectEditRequested(object? sender, ProjectViewModel projectVm)
+    {
+        try
+        {
+            Logger.LogInformation($"打开编辑项目对话框: {projectVm.Name}");
+            
+            var dialogViewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
+            dialogViewModel.InitializeForEdit(projectVm.GetProjectDto());
+            
+            var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(dialogViewModel);
+            
+            if (result.Confirmed && result.Value != null)
+            {
+                Logger.LogInformation($"项目编辑成功: {result.Value.Name}");
+                
+                // 更新项目列表
+                await LoadProjectsAsync();
+                
+                // 显示成功提示
+                _dialogService.ShowNotification(
+                    string.Format(L.Message_ProjectUpdated, result.Value.Name),
+                    NotificationType.Success,
+                    3000);
+            }
+            else
+            {
+                Logger.LogInformation("用户取消编辑项目");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "编辑项目时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                ex.Message);
         }
     }
 

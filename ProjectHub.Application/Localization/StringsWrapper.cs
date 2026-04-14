@@ -140,6 +140,8 @@ public class LocalizedStrings : ReactiveObject
     public string Folder_Error_NameTooLong => ProjectHub.Resources.Strings.Strings.Folder_Error_NameTooLong;
     public string Folder_Error_InvalidChars => ProjectHub.Resources.Strings.Strings.Folder_Error_InvalidChars;
     public string ProjectDialog_Title => ProjectHub.Resources.Strings.Strings.ProjectDialog_Title;
+    public string ProjectDialog_Title_Add => ProjectHub.Resources.Strings.Strings.ProjectDialog_Title_Add;
+    public string ProjectDialog_Title_Edit => ProjectHub.Resources.Strings.Strings.ProjectDialog_Title_Edit;
     public string ProjectDialog_NameLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_NameLabel;
     public string ProjectDialog_PathLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_PathLabel;
     public string ProjectDialog_ProgramLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_ProgramLabel;
@@ -155,4 +157,5 @@ public class LocalizedStrings : ReactiveObject
     public string ProjectDialog_ResetIcon => ProjectHub.Resources.Strings.Strings.ProjectDialog_ResetIcon;
     public string Message_Success => ProjectHub.Resources.Strings.Strings.Message_Success;
     public string Message_ProjectCreated => ProjectHub.Resources.Strings.Strings.Message_ProjectCreated;
+    public string Message_ProjectUpdated => ProjectHub.Resources.Strings.Strings.Message_ProjectUpdated;
 }

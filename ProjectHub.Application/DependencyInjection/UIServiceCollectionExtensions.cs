@@ -16,11 +16,11 @@ public static class UIServiceCollectionExtensions
     /// </summary>
     public static void AddUIServices(this IServiceCollection services)
     {
-        // Main ViewModel - Scoped (because it depends on scoped services)
-        services.AddScoped<ViewModels.MainViewModel>();
+        // Main ViewModel - Singleton (because it needs to access IServiceProvider which has longer lifetime)
+        services.AddSingleton<ViewModels.MainViewModel>();
 
         services.AddTransient<ViewModels.CreateFolderDialogViewModel>();
-        services.AddTransient<ViewModels.AddProjectDialogViewModel>();
+        services.AddTransient<ViewModels.ProjectDialogViewModel>();
 
     }
 
