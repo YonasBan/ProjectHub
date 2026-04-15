@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +7,7 @@ using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
-using ProjectHub.Core.DependencyInjection;
+using ProjectHub.Infrastructure.DependencyInjection;
 using ProjectHub.Infrastructure.Persistence;
 using ProjectHub.Presentation.Wpf.Dialogs;
 using ProjectHub.Presentation.Wpf.Services;
@@ -119,7 +118,7 @@ public partial class App : System.Windows.Application
         services.AddUIServices();
 
         // ========== Register Application Services ==========
-        services.AddAppServices();
+        services.AddApplicationServices();
 
         // ========== Register Infrastructure Services ==========
         services.AddInfrastructureServices(configuration);

@@ -11,9 +11,4 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="10.0.5" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
-    <ProjectReference Include="..\ProjectHub.Infrastructure\ProjectHub.Infrastructure.csproj" />
-  </ItemGroup>
-
 </Project>

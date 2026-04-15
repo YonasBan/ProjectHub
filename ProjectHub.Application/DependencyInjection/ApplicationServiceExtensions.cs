@@ -6,6 +6,7 @@ namespace ProjectHub.Application.DependencyInjection;
 
 /// <summary>
 /// Application 层依赖注入扩展方法
+/// 包含应用服务和 UI 服务（ViewModels）的注册
 /// </summary>
 public static class ApplicationServiceExtensions
 {
@@ -28,6 +29,22 @@ public static class ApplicationServiceExtensions
 
         // TODO: 注册清理应用服务
         // services.AddScoped<ICleanupAppService, CleanupAppService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// 注册所有 UI 服务（ViewModels）
+    /// 这是平台无关的，可以在 WPF 和 Avalonia 之间共享
+    /// </summary>
+    public static IServiceCollection AddUIServices(this IServiceCollection services)
+    {
+        // Main ViewModel - Singleton（因为它需要访问具有更长生命周期的 IServiceProvider）
+        services.AddSingleton<ViewModels.MainViewModel>();
+
+        // 对话框 ViewModels - Transient（每次创建新实例）
+        services.AddTransient<ViewModels.CreateFolderDialogViewModel>();
+        services.AddTransient<ViewModels.ProjectDialogViewModel>();
 
         return services;
     }
