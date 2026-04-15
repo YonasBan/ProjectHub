@@ -202,9 +202,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         Description = project.Description ?? string.Empty;
         IconPath = project.CustomIconPath;
 
-        // TODO: DefaultProgram 需要从项目配置中获取
-        // 暂时使用项目路径作为默认程序
-        DefaultProgram = project.Path;
+        // 从项目配置中获取默认程序
+        DefaultProgram = project.DefaultProgram ?? string.Empty;
 
         this.RaisePropertyChanged(nameof(DialogTitle));
         this.RaisePropertyChanged(nameof(ConfirmButtonText));
