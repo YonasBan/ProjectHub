@@ -516,25 +516,17 @@ public class MainViewModel : ViewModelBase
         var recent = new TreeItemViewModel(L.Sidebar_Recent, recentCount, TreeItemType.RecentProject)
         { IsSelected = true };
         SidebarTreeItems.Add(recent);
-
         // Favorites (收藏夹)
         var favoriteCount = Projects.Count(p => p.IsFavorite);
         var favorites = new TreeItemViewModel(L.Sidebar_Favorites, favoriteCount, TreeItemType.FavoriteProject);
         SidebarTreeItems.Add(favorites);
-
         // Workspaces (工作空间)
         var workspaces = new TreeItemViewModel(L.Sidebar_Workspaces, WorkSpaces.Count, TreeItemType.WorkSpace);
-        foreach (var ws in WorkSpaces)
-        {
-            workspaces.Children.Add(new TreeItemViewModel(ws.Name, ws.ProjectCount, TreeItemType.WorkSpace, ws.Id));
-        }
         SidebarTreeItems.Add(workspaces);
-
         // Work Folders (工作文件夹) - 支持树形结构
         var folderNodes = WorkFolders
             .OrderBy(f => f.SortOrder)
             .ToDictionary(f => f.Id, f => new TreeItemViewModel(f.Name, f.ProjectCount, TreeItemType.WorkFolder, f.Id));
-
         foreach (var folder in WorkFolders.OrderBy(f => f.SortOrder))
         {
             if (folder.ParentId.HasValue && folderNodes.TryGetValue(folder.ParentId.Value, out var parentNode))
