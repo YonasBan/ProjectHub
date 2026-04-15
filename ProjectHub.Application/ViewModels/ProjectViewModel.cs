@@ -101,24 +101,24 @@ public partial class ProjectViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
 
     /// <summary>
-    /// Event raised when edit is requested
+    /// Send edit request message via MessageBus
     /// </summary>
-    public event EventHandler<ProjectViewModel>? EditRequested;
+    private void SendEditRequest() => MessageBus.Current.SendMessage(new ProjectEditRequestMessage(this));
 
     /// <summary>
-    /// Event raised when delete is requested
+    /// Send delete request message via MessageBus
     /// </summary>
-    public event EventHandler<ProjectViewModel>? DeleteRequested;
+    private void SendDeleteRequest() => MessageBus.Current.SendMessage(new ProjectDeleteRequestMessage(this));
 
     /// <summary>
-    /// Event raised when favorite status changed
+    /// Send favorite changed message via MessageBus
     /// </summary>
-    public event EventHandler<ProjectViewModel>? FavoriteChanged;
+    private void SendFavoriteChanged() => MessageBus.Current.SendMessage(new ProjectFavoriteChangedMessage(this));
 
     /// <summary>
-    /// Event raised when project is launched (launch count updated)
+    /// Send launched message via MessageBus
     /// </summary>
-    public event EventHandler<ProjectViewModel>? Launched;
+    private void SendLaunched() => MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
 
     public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
     {
@@ -127,8 +127,8 @@ public partial class ProjectViewModel : ReactiveObject
         _isFavorite = projectDto.IsFavorite;
         
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
-        EditCommand = ReactiveCommand.Create(RequestEdit);
-        DeleteCommand = ReactiveCommand.Create(RequestDelete);
+        EditCommand = ReactiveCommand.Create(SendEditRequest);
+        DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
     }
 
@@ -148,16 +148,8 @@ public partial class ProjectViewModel : ReactiveObject
         await _projectAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
         
-        // 通知收藏状态变化
-        FavoriteChanged?.Invoke(this, this);
-    }
-
-    /// <summary>
-    /// Request edit - raises event for parent ViewModel to handle
-    /// </summary>
-    private void RequestEdit()
-    {
-        EditRequested?.Invoke(this, this);
+        // 通过 MessageBus 通知收藏状态变化
+        SendFavoriteChanged();
     }
 
     /// <summary>
@@ -169,14 +161,6 @@ public partial class ProjectViewModel : ReactiveObject
         // In a real scenario, you might want to recreate the ViewModel or use a more sophisticated update mechanism
         _projectDto = updatedDto;
         this.RaisePropertyChanged(string.Empty); // Notify all properties changed
-    }
-
-    /// <summary>
-    /// Request delete - raises event for parent ViewModel to handle with confirmation
-    /// </summary>
-    private void RequestDelete()
-    {
-        DeleteRequested?.Invoke(this, this);
     }
 
     /// <summary>
@@ -197,8 +181,8 @@ public partial class ProjectViewModel : ReactiveObject
             this.RaisePropertyChanged(nameof(LaunchCount));
             this.RaisePropertyChanged(nameof(LastOpenedAt));
             
-            // 通知项目已启动
-            Launched?.Invoke(this, this);
+            // 通过 MessageBus 通知项目已启动
+            SendLaunched();
         }
     }
 
@@ -219,3 +203,25 @@ public partial class ProjectViewModel : ReactiveObject
         };
     }
 }
+
+// ========== MessageBus Messages ==========
+
+/// <summary>
+/// 项目编辑请求消息
+/// </summary>
+public record ProjectEditRequestMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 项目删除请求消息
+/// </summary>
+public record ProjectDeleteRequestMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 项目收藏状态变化消息
+/// </summary>
+public record ProjectFavoriteChangedMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 项目启动消息
+/// </summary>
+public record ProjectLaunchedMessage(ProjectViewModel Project);

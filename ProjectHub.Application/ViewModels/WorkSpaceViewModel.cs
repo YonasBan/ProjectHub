@@ -55,19 +55,19 @@ public partial class WorkSpaceViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> LaunchAllCommand { get; }
 
     /// <summary>
-    /// Event raised when edit is requested
+    /// Send edit request message via MessageBus
     /// </summary>
-    public event EventHandler<WorkSpaceViewModel>? EditRequested;
+    private void SendEditRequest() => MessageBus.Current.SendMessage(new WorkSpaceEditRequestMessage(this));
 
     /// <summary>
-    /// Event raised when delete is requested
+    /// Send delete request message via MessageBus
     /// </summary>
-    public event EventHandler<WorkSpaceViewModel>? DeleteRequested;
+    private void SendDeleteRequest() => MessageBus.Current.SendMessage(new WorkSpaceDeleteRequestMessage(this));
 
     /// <summary>
-    /// Event raised when favorite status changed
+    /// Send favorite changed message via MessageBus
     /// </summary>
-    public event EventHandler<WorkSpaceViewModel>? FavoriteChanged;
+    private void SendFavoriteChanged() => MessageBus.Current.SendMessage(new WorkSpaceFavoriteChangedMessage(this));
 
     public WorkSpaceViewModel(WorkSpaceDto workSpaceDto, IWorkSpaceAppService? workSpaceAppService = null)
     {
@@ -76,8 +76,8 @@ public partial class WorkSpaceViewModel : ReactiveObject
         _isFavorite = workSpaceDto.IsFavorite;
 
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
-        EditCommand = ReactiveCommand.Create(RequestEdit);
-        DeleteCommand = ReactiveCommand.Create(RequestDelete);
+        EditCommand = ReactiveCommand.Create(SendEditRequest);
+        DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchAllCommand = ReactiveCommand.CreateFromTask(LaunchAllAsync);
     }
 
@@ -97,16 +97,8 @@ public partial class WorkSpaceViewModel : ReactiveObject
         await _workSpaceAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
         
-        // 通知收藏状态变化
-        FavoriteChanged?.Invoke(this, this);
-    }
-
-    /// <summary>
-    /// Request edit - raises event for parent ViewModel to handle
-    /// </summary>
-    private void RequestEdit()
-    {
-        EditRequested?.Invoke(this, this);
+        // 通过 MessageBus 通知收藏状态变化
+        SendFavoriteChanged();
     }
 
     /// <summary>
@@ -119,14 +111,6 @@ public partial class WorkSpaceViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// Request delete - raises event for parent ViewModel to handle with confirmation
-    /// </summary>
-    private void RequestDelete()
-    {
-        DeleteRequested?.Invoke(this, this);
-    }
-
-    /// <summary>
     /// Launch all projects in the workspace
     /// </summary>
     private async Task LaunchAllAsync()
@@ -136,3 +120,20 @@ public partial class WorkSpaceViewModel : ReactiveObject
         await _workSpaceAppService.LaunchAllAsync(Id);
     }
 }
+
+// ========== MessageBus Messages ==========
+
+/// <summary>
+/// 工作空间编辑请求消息
+/// </summary>
+public record WorkSpaceEditRequestMessage(WorkSpaceViewModel WorkSpace);
+
+/// <summary>
+/// 工作空间删除请求消息
+/// </summary>
+public record WorkSpaceDeleteRequestMessage(WorkSpaceViewModel WorkSpace);
+
+/// <summary>
+/// 工作空间收藏状态变化消息
+/// </summary>
+public record WorkSpaceFavoriteChangedMessage(WorkSpaceViewModel WorkSpace);

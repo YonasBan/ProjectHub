@@ -340,6 +340,9 @@ public class MainViewModel : ViewModelBase
         // 订阅数据集合变化，自动重建树形结构
         WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
 
+        // 订阅 MessageBus 消息
+        SubscribeToMessageBus();
+
         // 首次加载：只加载项目和文件夹（用于显示最近使用和工作文件夹）
         _ = LoadInitialDataAsync();
 
@@ -347,6 +350,49 @@ public class MainViewModel : ViewModelBase
         this.WhenAnyValue(x => x.SelectedTreeItem)
             .Where(item => item != null)
             .Subscribe(item => UpdateContentItems(item!))
+            .DisposeWith(Disposables);
+    }
+
+    /// <summary>
+    /// 订阅 MessageBus 消息
+    /// </summary>
+    private void SubscribeToMessageBus()
+    {
+        // 项目相关消息
+        MessageBus.Current.Listen<ProjectEditRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectEditRequested(msg.Project))
+            .DisposeWith(Disposables);
+        
+        MessageBus.Current.Listen<ProjectDeleteRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectDeleteRequested(msg.Project))
+            .DisposeWith(Disposables);
+        
+        MessageBus.Current.Listen<ProjectFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
+            .DisposeWith(Disposables);
+        
+        MessageBus.Current.Listen<ProjectLaunchedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectLaunched(msg.Project))
+            .DisposeWith(Disposables);
+
+        // 工作空间相关消息
+        MessageBus.Current.Listen<WorkSpaceEditRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceEditRequested(msg.WorkSpace))
+            .DisposeWith(Disposables);
+        
+        MessageBus.Current.Listen<WorkSpaceDeleteRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceDeleteRequested(msg.WorkSpace))
+            .DisposeWith(Disposables);
+        
+        MessageBus.Current.Listen<WorkSpaceFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
             .DisposeWith(Disposables);
     }
 
@@ -434,10 +480,6 @@ public class MainViewModel : ViewModelBase
             foreach (var project in projects)
             {
                 var projectVm = new ProjectViewModel(project, _projectAppService);
-                projectVm.EditRequested += OnProjectEditRequested;
-                projectVm.DeleteRequested += OnProjectDeleteRequested;
-                projectVm.FavoriteChanged += OnProjectFavoriteChanged;
-                projectVm.Launched += OnProjectLaunched;
                 Projects.Add(projectVm);
             }
 
@@ -478,8 +520,6 @@ public class MainViewModel : ViewModelBase
             foreach (var project in projects)
             {
                 var projectVm = new ProjectViewModel(project, _projectAppService);
-                projectVm.EditRequested += OnProjectEditRequested;
-                projectVm.DeleteRequested += OnProjectDeleteRequested;
                 Projects.Add(projectVm);
             }
 
@@ -562,9 +602,6 @@ public class MainViewModel : ViewModelBase
             foreach (var workSpace in workSpaces)
             {
                 var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
-                workSpaceVm.EditRequested += OnWorkSpaceEditRequested;
-                workSpaceVm.DeleteRequested += OnWorkSpaceDeleteRequested;
-                workSpaceVm.FavoriteChanged += OnWorkSpaceFavoriteChanged;
                 WorkSpaces.Add(workSpaceVm);
             }
 
@@ -747,10 +784,6 @@ public class MainViewModel : ViewModelBase
             
             // 直接添加新项目到集合，无需重新查询数据库
             var projectVm = new ProjectViewModel(result.Value, _projectAppService);
-            projectVm.EditRequested += OnProjectEditRequested;
-            projectVm.DeleteRequested += OnProjectDeleteRequested;
-            projectVm.FavoriteChanged += OnProjectFavoriteChanged;
-            projectVm.Launched += OnProjectLaunched;
             Projects.Add(projectVm);
             
             // 刷新侧边栏树（项目数量变化）
@@ -862,7 +895,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理项目编辑请求
     /// </summary>
-    private async void OnProjectEditRequested(object? sender, ProjectViewModel projectVm)
+    private async void OnProjectEditRequested(ProjectViewModel projectVm)
     {
         try
         {
@@ -903,7 +936,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理项目删除请求
     /// </summary>
-    private async void OnProjectDeleteRequested(object? sender, ProjectViewModel projectVm)
+    private async void OnProjectDeleteRequested(ProjectViewModel projectVm)
     {
         try
         {
@@ -964,7 +997,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理项目收藏状态变化
     /// </summary>
-    private void OnProjectFavoriteChanged(object? sender, ProjectViewModel projectVm)
+    private void OnProjectFavoriteChanged(ProjectViewModel projectVm)
     {
         // 刷新侧边栏树（收藏数量变化）
         BuildSidebarTree();
@@ -982,7 +1015,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理项目启动（启动次数更新）
     /// </summary>
-    private void OnProjectLaunched(object? sender, ProjectViewModel projectVm)
+    private void OnProjectLaunched(ProjectViewModel projectVm)
     {
         // 如果当前选中的是最近使用，刷新内容区域（排序可能变化）
         if (SelectedTreeItem?.ItemType == TreeItemType.RecentProject)
@@ -1135,7 +1168,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理工作空间编辑请求
     /// </summary>
-    private async void OnWorkSpaceEditRequested(object? sender, WorkSpaceViewModel workSpaceVm)
+    private async void OnWorkSpaceEditRequested(WorkSpaceViewModel workSpaceVm)
     {
         try
         {
@@ -1176,7 +1209,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理工作空间删除请求
     /// </summary>
-    private async void OnWorkSpaceDeleteRequested(object? sender, WorkSpaceViewModel workSpaceVm)
+    private async void OnWorkSpaceDeleteRequested(WorkSpaceViewModel workSpaceVm)
     {
         try
         {
@@ -1231,7 +1264,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 处理工作空间收藏状态变化
     /// </summary>
-    private void OnWorkSpaceFavoriteChanged(object? sender, WorkSpaceViewModel workSpaceVm)
+    private void OnWorkSpaceFavoriteChanged(WorkSpaceViewModel workSpaceVm)
     {
         // 刷新侧边栏树（收藏数量变化）
         BuildSidebarTree();
