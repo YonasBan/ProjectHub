@@ -120,6 +120,16 @@ public interface IWorkSpaceRepository : IRepository<WorkSpace>
     /// </summary>
     /// <param name="count">返回数量</param>
     Task<IReadOnlyList<WorkSpace>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间中的所有项目 ID 列表
+    /// </summary>
+    Task<IReadOnlyList<long>> GetProjectIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间中启用的项目 ID 列表
+    /// </summary>
+    Task<IReadOnlyList<long>> GetEnabledProjectIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

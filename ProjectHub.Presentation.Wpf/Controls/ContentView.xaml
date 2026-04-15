@@ -204,7 +204,7 @@
         <DataTemplate x:Key="WorkSpaceCardTemplate">
             <Border
                 Width="320"
-                Height="140"
+                Height="160"
                 Margin="0,0,16,16"
                 CornerRadius="8"
                 Cursor="Hand"
@@ -301,10 +301,10 @@
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="0,0,0,1" />
 
-                    <Grid Grid.Row="3" Margin="16,8,16,12">
+                    <Grid Grid.Row="3" Margin="16,0,16,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock
                             Grid.Column="0"

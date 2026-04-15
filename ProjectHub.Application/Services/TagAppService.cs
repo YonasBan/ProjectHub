@@ -331,7 +331,6 @@ public class TagAppService : ITagAppService
             IsFavorite = workSpace.IsFavorite,
             FavoritedAt = workSpace.FavoritedAt,
             LastOpenedAt = workSpace.LastOpenedAt,
-            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList(),
             CreatedAt = workSpace.CreatedAt,
             UpdatedAt = workSpace.UpdatedAt
         };

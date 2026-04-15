@@ -22,6 +22,11 @@ public class ProjectWorkSpace : BaseEntity
     /// </summary>
     public int SortOrder { get; private set; }
 
+    /// <summary>
+    /// 是否启用启动（在工作空间启动时是否自动启动该项目）
+    /// </summary>
+    public bool IsEnabled { get; private set; }
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -34,13 +39,14 @@ public class ProjectWorkSpace : BaseEntity
     /// <summary>
     /// 工厂方法：创建关联
     /// </summary>
-    public static ProjectWorkSpace Create(long projectId, long workSpaceId, int sortOrder = 0)
+    public static ProjectWorkSpace Create(long projectId, long workSpaceId, int sortOrder = 0, bool isEnabled = true)
     {
         var association = new ProjectWorkSpace
         {
             ProjectId = projectId,
             WorkSpaceId = workSpaceId,
             SortOrder = sortOrder,
+            IsEnabled = isEnabled,
             CreatedAt = DateTime.UtcNow
         };
         return association;
@@ -52,6 +58,15 @@ public class ProjectWorkSpace : BaseEntity
     public void UpdateSortOrder(int sortOrder)
     {
         SortOrder = sortOrder;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置启用状态
+    /// </summary>
+    public void SetEnabled(bool isEnabled)
+    {
+        IsEnabled = isEnabled;
         UpdatedAt = DateTime.UtcNow;
     }
 }

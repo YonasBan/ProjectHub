@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Domain.Entities;
@@ -12,11 +13,19 @@ public class WorkSpaceAppService : IWorkSpaceAppService
 {
     private readonly IWorkSpaceRepository _workSpaceRepository;
     private readonly IProjectRepository _projectRepository;
+    private readonly IProjectAppService _projectAppService;
+    private readonly ILogger<WorkSpaceAppService> _logger;
 
-    public WorkSpaceAppService(IWorkSpaceRepository workSpaceRepository, IProjectRepository projectRepository)
+    public WorkSpaceAppService(
+        IWorkSpaceRepository workSpaceRepository,
+        IProjectRepository projectRepository,
+        IProjectAppService projectAppService,
+        ILogger<WorkSpaceAppService> logger)
     {
         _workSpaceRepository = workSpaceRepository;
         _projectRepository = projectRepository;
+        _projectAppService = projectAppService;
+        _logger = logger;
     }
 
     public async Task<WorkSpaceDto> CreateAsync(CreateWorkSpaceDto input, CancellationToken cancellationToken = default)
@@ -108,12 +117,14 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         // 暂时返回空列表，后续需要实现关联查询
         var allProjects = new List<ProjectDto>();
         
+        // 获取启用的项目 ID 列表
+        var enabledProjectIds = await _workSpaceRepository.GetEnabledProjectIdsByWorkSpaceIdAsync(workSpaceId, cancellationToken);
+
         return new WorkSpaceProjectSettingsDto
         {
             WorkSpaceId = workSpace.Id,
             WorkSpaceName = workSpace.Name,
-            AllProjects = allProjects,
-            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList()
+            AllProjects = allProjects
         };
     }
 
@@ -122,9 +133,28 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         var workSpace = await _workSpaceRepository.GetByIdAsync(input.WorkSpaceId, cancellationToken)
             ?? throw new KeyNotFoundException($"工作空间 (Id={input.WorkSpaceId}) 不存在");
 
-        // 更新已启用启动的项目 ID 列表
-        workSpace.SetEnabledProjectIds(input.EnabledProjectIds);
-        await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+        // 更新启动配置
+        if (input.UseCustomLaunchOrder.HasValue || input.DefaultLaunchIntervalSeconds.HasValue)
+        {
+            workSpace.UpdateLaunchConfig(
+                input.UseCustomLaunchOrder ?? workSpace.UseCustomLaunchOrder,
+                input.DefaultLaunchIntervalSeconds ?? workSpace.DefaultLaunchIntervalSeconds);
+            await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+        }
+
+        // 更新启动顺序配置
+        if (input.LaunchOrders != null)
+        {
+            var launchOrders = input.LaunchOrders
+                .Select(o => new WorkSpaceProjectLaunchOrder
+                {
+                    ProjectId = o.ProjectId,
+                    Order = o.Order,
+                    IntervalSeconds = o.IntervalSeconds
+                });
+            workSpace.SetLaunchOrder(launchOrders);
+            await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+        }
 
         // 重新获取设置并返回
         return await GetProjectSettingsAsync(input.WorkSpaceId, cancellationToken);
@@ -144,13 +174,73 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         var workSpace = await _workSpaceRepository.GetByIdAsync(id, cancellationToken)
             ?? throw new KeyNotFoundException($"工作空间 (Id={id}) 不存在");
 
-        // TODO: 获取工作空间中的所有项目并依次启动
-        // 暂时记录打开时间
+        // 记录打开时间
         workSpace.RecordOpen();
         await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
 
-        // 实际启动逻辑需要获取关联的项目列表并调用 IProjectAppService.LaunchAsync
-        await Task.CompletedTask;
+        // 获取工作空间中的所有项目 ID
+        var projectIds = await _workSpaceRepository.GetProjectIdsByWorkSpaceIdAsync(id, cancellationToken);
+
+        if (projectIds.Count == 0)
+        {
+            _logger.LogWarning("工作空间 '{WorkSpaceName}' (Id={WorkSpaceId}) 中没有项目", workSpace.Name, id);
+            return;
+        }
+
+        // 获取启用的项目 ID 列表
+        var enabledProjectIds = await _workSpaceRepository.GetEnabledProjectIdsByWorkSpaceIdAsync(id, cancellationToken);
+
+        // 确定要启动的项目列表
+        List<long> projectsToLaunch;
+        if (enabledProjectIds.Count > 0)
+        {
+            // 只启动用户启用的项目
+            projectsToLaunch = enabledProjectIds.ToList();
+            _logger.LogInformation("工作空间 '{WorkSpaceName}' 将启动 {Count} 个已启用项目", workSpace.Name, projectsToLaunch.Count);
+        }
+        else
+        {
+            // 启动所有项目
+            projectsToLaunch = projectIds.ToList();
+            _logger.LogInformation("工作空间 '{WorkSpaceName}' 将启动所有 {Count} 个项目", workSpace.Name, projectsToLaunch.Count);
+        }
+
+        if (projectsToLaunch.Count == 0)
+        {
+            _logger.LogWarning("工作空间 '{WorkSpaceName}' 中没有启用的项目", workSpace.Name);
+            return;
+        }
+
+        // 根据启动顺序配置排序
+        if (workSpace.UseCustomLaunchOrder)
+        {
+            var launchOrders = workSpace.GetLaunchOrder().ToDictionary(o => o.ProjectId, o => o.Order);
+            projectsToLaunch = projectsToLaunch
+                .OrderBy(pid => launchOrders.GetValueOrDefault(pid, int.MaxValue))
+                .ToList();
+        }
+
+        // 依次启动项目
+        foreach (var projectId in projectsToLaunch)
+        {
+            try
+            {
+                await _projectAppService.LaunchAsync(projectId, cancellationToken);
+
+                // 应用启动间隔（如果有配置）
+                if (workSpace.DefaultLaunchIntervalSeconds > 0)
+                {
+                    await Task.Delay(workSpace.DefaultLaunchIntervalSeconds * 1000, cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "启动项目 (Id={ProjectId}) 失败", projectId);
+                // 继续启动其他项目
+            }
+        }
+
+        _logger.LogInformation("工作空间 '{WorkSpaceName}' 的所有项目启动完成", workSpace.Name);
     }
 
     private static WorkSpaceDto MapToDto(WorkSpace workSpace)
@@ -168,7 +258,7 @@ public class WorkSpaceAppService : IWorkSpaceAppService
             LastOpenedAt = workSpace.LastOpenedAt,
             CreatedAt = workSpace.CreatedAt,
             UpdatedAt = workSpace.UpdatedAt,
-            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList(),
+
             UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder,
             DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds,
             LaunchOrders = workSpace.GetLaunchOrder()

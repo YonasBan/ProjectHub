@@ -352,12 +352,11 @@ public class MainViewModel : ViewModelBase
 
 
     /// <summary>
-    /// 首次加载数据（只加载必要数据）
+    /// 首次加载数据（只构建侧边栏树）
     /// </summary>
     private async Task LoadInitialDataAsync()
     {
-        // 只加载项目和工作文件夹（用于显示"最近使用"和侧边栏树）
-        await LoadProjectsAsync();
+        // 只加载工作文件夹用于构建侧边栏树结构
         await LoadWorkFoldersAsync();
         
         // 更新统计
@@ -366,7 +365,7 @@ public class MainViewModel : ViewModelBase
         // 构建侧边栏树形结构
         BuildSidebarTree();
         
-        // 默认选中"最近使用"，内容区域会自动显示最近使用的项目
+        // 默认选中"最近使用"
         if (SidebarTreeItems.Count > 0)
         {
             SelectedTreeItem = SidebarTreeItems.First(); // Recent
@@ -374,44 +373,29 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 根据选中的树节点类型按需加载数据
+    /// 根据选中的树节点类型实时加载数据
     /// </summary>
     private async Task LoadDataForSelectedItemAsync(TreeItemViewModel selectedItem)
     {
         switch (selectedItem.ItemType)
         {
-            case TreeItemType.WorkSpace:
-                // 切换到工作空间时才加载
-                if (WorkSpaces.Count == 0)
-                {
-                    await LoadWorkSpacesAsync();
-                }
-                break;
-
             case TreeItemType.AllProjects:
-                // 所有项目数据已在初始加载时加载完成
-                break;
-
             case TreeItemType.RecentProject:
             case TreeItemType.FavoriteProject:
             case TreeItemType.WorkFolder:
-                // 项目数据已在初始加载时加载完成
+                // 项目相关节点：实时加载项目数据
+                await LoadProjectsAsync();
+                break;
+
+            case TreeItemType.WorkSpace:
+                // 工作空间节点：实时加载工作空间数据
+                await LoadWorkSpacesAsync();
                 break;
 
             case TreeItemType.TagSettings:
                 // 标签数据按需加载（待实现）
                 break;
         }
-    }
-
-    private async Task LoadAllDataAsync()
-    {
-        await LoadProjectsAsync();
-        await LoadWorkFoldersAsync();
-        await LoadWorkSpacesAsync();
-        UpdateStatistics();
-        // 初始加载时构建侧边栏树形结构
-        BuildSidebarTree();
     }
 
     private void UpdateStatistics()
@@ -451,11 +435,8 @@ public class MainViewModel : ViewModelBase
 
             Logger.LogInformation($"成功加载 {projects.Count} 个项目");
 
-            // 刷新内容区域显示
-            if (SelectedTreeItem != null)
-            {
-                UpdateContentItems(SelectedTreeItem);
-            }
+            // 注意：不要在这里调用 UpdateContentItems，避免循环调用
+            // 数据加载后，UpdateContentItems 会继续执行显示内容
         }
         catch (Exception ex)
         {
@@ -472,7 +453,12 @@ public class MainViewModel : ViewModelBase
         {
             if (string.IsNullOrWhiteSpace(SearchKeyword))
             {
-                await LoadProjectsAsync();
+                // 搜索为空时，根据当前选中的树节点重新加载数据
+                if (SelectedTreeItem != null)
+                {
+                    await LoadDataForSelectedItemAsync(SelectedTreeItem);
+                    UpdateContentItems(SelectedTreeItem);
+                }
                 return;
             }
 
@@ -490,6 +476,12 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
+            
+            // 搜索后刷新内容显示
+            if (SelectedTreeItem != null)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
         }
         catch (Exception ex)
         {
@@ -506,9 +498,16 @@ public class MainViewModel : ViewModelBase
         {
             Logger.LogInformation("开始刷新所有数据");
 
-            await LoadProjectsAsync();
+            // 刷新工作文件夹（用于侧边栏树）
             await LoadWorkFoldersAsync();
-            await LoadWorkSpacesAsync();
+            
+            // 根据当前选中的节点刷新对应数据
+            if (SelectedTreeItem != null)
+            {
+                await LoadDataForSelectedItemAsync(SelectedTreeItem);
+                UpdateContentItems(SelectedTreeItem);
+            }
+            
             UpdateStatistics();
 
             Logger.LogInformation("数据刷新完成");
@@ -561,12 +560,6 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
-
-            // 如果当前选中工作空间节点，刷新内容区域
-            if (SelectedTreeItem?.ItemType == TreeItemType.WorkSpace)
-            {
-                UpdateContentItems(SelectedTreeItem);
-            }
         }
         catch (Exception ex)
         {

@@ -147,9 +147,6 @@ public class AppDbContext : DbContext
             entity.Property(e => e.IconPath)
                 .HasMaxLength(500);
 
-            entity.Property(e => e.EnabledProjectIdsJson)
-                .HasMaxLength(2000);
-
             entity.Property(e => e.LaunchOrderJson)
                 .HasMaxLength(4000);
 

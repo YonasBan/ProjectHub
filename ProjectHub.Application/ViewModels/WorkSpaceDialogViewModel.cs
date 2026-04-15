@@ -261,7 +261,10 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
         DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds;
         UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder;
 
-        await LoadProjectsAsync(cancellationToken, workSpace.EnabledProjectIds);
+        // 获取启用的项目 ID 列表（通过 Repository 查询）
+        // TODO: 需要通过 IWorkSpaceRepository 获取启用的项目列表
+        // 暂时传入 null，表示加载所有项目（后续需要重构对话框以支持从关联表加载）
+        await LoadProjectsAsync(cancellationToken, null);
     }
 
     /// <summary>
@@ -316,11 +319,13 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                 var settingsDto = new UpdateWorkSpaceProjectSettingsDto
                 {
                     WorkSpaceId = _workSpaceId.Value,
-                    EnabledProjectIds = selectedProjectIds,
                     UseCustomLaunchOrder = UseCustomLaunchOrder,
                     DefaultLaunchIntervalSeconds = DefaultLaunchIntervalSeconds
                 };
                 await _workSpaceAppService.UpdateProjectSettingsAsync(settingsDto);
+
+                // TODO: 更新项目的启用状态需要通过新的 Repository 方法操作 ProjectWorkSpace 关联表
+                // 暂时跳过，需要后续实现 IProjectWorkSpaceRepository
             }
             else
             {
@@ -334,17 +339,17 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                 var workSpace = await _workSpaceAppService.CreateAsync(createDto);
 
                 // 设置项目
-                if (selectedProjectIds.Any())
+                // TODO: 关联项目到工作空间需要通过新的 Repository 方法操作 ProjectWorkSpace 关联表
+                // 暂时跳过，需要后续实现 IProjectWorkSpaceRepository
+
+                // 更新启动配置
+                var settingsDto = new UpdateWorkSpaceProjectSettingsDto
                 {
-                    var settingsDto = new UpdateWorkSpaceProjectSettingsDto
-                    {
-                        WorkSpaceId = workSpace.Id,
-                        EnabledProjectIds = selectedProjectIds,
-                        UseCustomLaunchOrder = UseCustomLaunchOrder,
-                        DefaultLaunchIntervalSeconds = DefaultLaunchIntervalSeconds
-                    };
-                    await _workSpaceAppService.UpdateProjectSettingsAsync(settingsDto);
-                }
+                    WorkSpaceId = workSpace.Id,
+                    UseCustomLaunchOrder = UseCustomLaunchOrder,
+                    DefaultLaunchIntervalSeconds = DefaultLaunchIntervalSeconds
+                };
+                await _workSpaceAppService.UpdateProjectSettingsAsync(settingsDto);
             }
 
             Close(true);
