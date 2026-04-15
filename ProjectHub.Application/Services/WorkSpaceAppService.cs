@@ -14,17 +14,20 @@ public class WorkSpaceAppService : IWorkSpaceAppService
     private readonly IWorkSpaceRepository _workSpaceRepository;
     private readonly IProjectRepository _projectRepository;
     private readonly IProjectAppService _projectAppService;
+    private readonly IProjectWorkSpaceRepository _projectWorkSpaceRepository;
     private readonly ILogger<WorkSpaceAppService> _logger;
 
     public WorkSpaceAppService(
         IWorkSpaceRepository workSpaceRepository,
         IProjectRepository projectRepository,
         IProjectAppService projectAppService,
+        IProjectWorkSpaceRepository projectWorkSpaceRepository,
         ILogger<WorkSpaceAppService> logger)
     {
         _workSpaceRepository = workSpaceRepository;
         _projectRepository = projectRepository;
         _projectAppService = projectAppService;
+        _projectWorkSpaceRepository = projectWorkSpaceRepository;
         _logger = logger;
     }
 
@@ -114,17 +117,32 @@ public class WorkSpaceAppService : IWorkSpaceAppService
 
         // 获取该工作空间包含的所有项目
         // TODO: 需要通过 WorkSpace-Project 关联获取项目列表
-        // 暂时返回空列表，后续需要实现关联查询
-        var allProjects = new List<ProjectDto>();
+        // 获取工作空间中的所有项目关联
+        var projectWorkSpaces = await _projectWorkSpaceRepository.GetByWorkSpaceIdAsync(workSpaceId, cancellationToken);
         
-        // 获取启用的项目 ID 列表
-        var enabledProjectIds = await _workSpaceRepository.GetEnabledProjectIdsByWorkSpaceIdAsync(workSpaceId, cancellationToken);
+        // 获取项目详情
+        var projectSettings = new List<WorkSpaceProjectSettingItemDto>();
+        foreach (var pws in projectWorkSpaces)
+        {
+            var project = await _projectRepository.GetByIdAsync(pws.ProjectId, cancellationToken);
+            if (project != null)
+            {
+                projectSettings.Add(new WorkSpaceProjectSettingItemDto
+                {
+                    ProjectId = project.Id,
+                    ProjectName = project.Name,
+                    IsEnabled = pws.IsEnabled,
+                    SortOrder = pws.SortOrder
+                });
+            }
+        }
 
         return new WorkSpaceProjectSettingsDto
         {
             WorkSpaceId = workSpace.Id,
             WorkSpaceName = workSpace.Name,
-            AllProjects = allProjects
+            AllProjects = projectSettings.Select(p => new ProjectDto { Id = p.ProjectId, Name = p.ProjectName }).ToList(),
+            ProjectSettings = projectSettings
         };
     }
 
@@ -241,6 +259,31 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         }
 
         _logger.LogInformation("工作空间 '{WorkSpaceName}' 的所有项目启动完成", workSpace.Name);
+    }
+
+    /// <summary>
+    /// 设置工作空间的项目列表（全量替换）
+    /// </summary>
+    public async Task SetWorkSpaceProjectsAsync(long workSpaceId, IReadOnlyList<long> projectIds, CancellationToken cancellationToken = default)
+    {
+        var workSpace = await _workSpaceRepository.GetByIdAsync(workSpaceId, cancellationToken)
+            ?? throw new KeyNotFoundException($"工作空间 (Id={workSpaceId}) 不存在");
+
+        // 清除现有项目关联
+        await _projectWorkSpaceRepository.RemoveAllProjectsFromWorkSpaceAsync(workSpaceId, cancellationToken);
+
+        // 添加新的项目关联
+        for (int i = 0; i < projectIds.Count; i++)
+        {
+            await _projectWorkSpaceRepository.AddProjectToWorkSpaceAsync(
+                projectIds[i], workSpaceId, isEnabled: true, sortOrder: i, cancellationToken);
+        }
+
+        // 更新项目计数
+        workSpace.UpdateProjectCount(projectIds.Count);
+        await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+
+        _logger.LogInformation("工作空间 '{WorkSpaceName}' 的项目列表已更新，共 {ProjectCount} 个项目", workSpace.Name, projectIds.Count);
     }
 
     private static WorkSpaceDto MapToDto(WorkSpace workSpace)

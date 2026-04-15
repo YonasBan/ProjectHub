@@ -39,17 +39,12 @@ public class ProjectWorkSpace : BaseEntity
     /// <summary>
     /// 工厂方法：创建关联
     /// </summary>
-    public static ProjectWorkSpace Create(long projectId, long workSpaceId, int sortOrder = 0, bool isEnabled = true)
+    public ProjectWorkSpace(long projectId, long workSpaceId, int sortOrder = 0, bool isEnabled = true)
     {
-        var association = new ProjectWorkSpace
-        {
-            ProjectId = projectId,
-            WorkSpaceId = workSpaceId,
-            SortOrder = sortOrder,
-            IsEnabled = isEnabled,
-            CreatedAt = DateTime.UtcNow
-        };
-        return association;
+        ProjectId = projectId;
+        WorkSpaceId = workSpaceId;
+        SortOrder = sortOrder;
+        IsEnabled = isEnabled;
     }
 
     /// <summary>

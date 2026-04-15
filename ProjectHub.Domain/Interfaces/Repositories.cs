@@ -133,6 +133,37 @@ public interface IWorkSpaceRepository : IRepository<WorkSpace>
 }
 
 /// <summary>
+/// 项目与工作空间关联仓储接口
+/// </summary>
+public interface IProjectWorkSpaceRepository
+{
+    /// <summary>
+    /// 添加项目到工作空间
+    /// </summary>
+    Task AddProjectToWorkSpaceAsync(long projectId, long workSpaceId, bool isEnabled = true, int sortOrder = 0, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从工作空间移除项目
+    /// </summary>
+    Task RemoveProjectFromWorkSpaceAsync(long projectId, long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 设置项目在工作空间中的启用状态
+    /// </summary>
+    Task SetProjectEnabledAsync(long projectId, long workSpaceId, bool isEnabled, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间中的所有项目关联
+    /// </summary>
+    Task<IReadOnlyList<ProjectWorkSpace>> GetByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 删除工作空间的所有项目关联
+    /// </summary>
+    Task RemoveAllProjectsFromWorkSpaceAsync(long workSpaceId, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
 /// 标签仓储接口
 /// </summary>
 public interface ITagRepository : IRepository<Tag>

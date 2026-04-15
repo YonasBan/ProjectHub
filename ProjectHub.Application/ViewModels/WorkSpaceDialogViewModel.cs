@@ -261,10 +261,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
         DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds;
         UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder;
 
-        // 获取启用的项目 ID 列表（通过 Repository 查询）
-        // TODO: 需要通过 IWorkSpaceRepository 获取启用的项目列表
-        // 暂时传入 null，表示加载所有项目（后续需要重构对话框以支持从关联表加载）
-        await LoadProjectsAsync(cancellationToken, null);
+        // 获取工作空间中的项目 ID 列表
+        var settings = await _workSpaceAppService.GetProjectSettingsAsync(workSpaceId, cancellationToken);
+        var selectedIds = settings.ProjectSettings
+            .Where(p => p.IsEnabled)
+            .Select(p => p.ProjectId)
+            .ToList();
+        
+        await LoadProjectsAsync(cancellationToken, selectedIds);
     }
 
     /// <summary>
@@ -299,10 +303,6 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     {
         try
         {
-            var selectedProjectIds = _sourceList.Items
-                .Where(p => p.IsSelected)
-                .Select(p => p.ProjectId)
-                .ToList();
 
             if (IsEditMode && _workSpaceId.HasValue)
             {
@@ -324,8 +324,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                 };
                 await _workSpaceAppService.UpdateProjectSettingsAsync(settingsDto);
 
-                // TODO: 更新项目的启用状态需要通过新的 Repository 方法操作 ProjectWorkSpace 关联表
-                // 暂时跳过，需要后续实现 IProjectWorkSpaceRepository
+                // 更新工作空间的项目关联
+                var selectedProjectIds = _sourceList.Items
+                    .Where(p => p.IsSelected)
+                    .OrderBy(p => p.SortOrder)
+                    .Select(p => p.ProjectId)
+                    .ToList();
+                
+                await _workSpaceAppService.SetWorkSpaceProjectsAsync(_workSpaceId.Value, selectedProjectIds);
             }
             else
             {
@@ -338,9 +344,17 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                 };
                 var workSpace = await _workSpaceAppService.CreateAsync(createDto);
 
-                // 设置项目
-                // TODO: 关联项目到工作空间需要通过新的 Repository 方法操作 ProjectWorkSpace 关联表
-                // 暂时跳过，需要后续实现 IProjectWorkSpaceRepository
+                // 关联选中的项目到工作空间
+                var selectedProjectIds = _sourceList.Items
+                    .Where(p => p.IsSelected)
+                    .OrderBy(p => p.SortOrder)
+                    .Select(p => p.ProjectId)
+                    .ToList();
+                
+                if (selectedProjectIds.Count > 0)
+                {
+                    await _workSpaceAppService.SetWorkSpaceProjectsAsync(workSpace.Id, selectedProjectIds);
+                }
 
                 // 更新启动配置
                 var settingsDto = new UpdateWorkSpaceProjectSettingsDto

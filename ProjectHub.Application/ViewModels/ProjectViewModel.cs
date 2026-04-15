@@ -110,6 +110,16 @@ public partial class ProjectViewModel : ReactiveObject
     /// </summary>
     public event EventHandler<ProjectViewModel>? DeleteRequested;
 
+    /// <summary>
+    /// Event raised when favorite status changed
+    /// </summary>
+    public event EventHandler<ProjectViewModel>? FavoriteChanged;
+
+    /// <summary>
+    /// Event raised when project is launched (launch count updated)
+    /// </summary>
+    public event EventHandler<ProjectViewModel>? Launched;
+
     public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
     {
         _projectDto = projectDto;
@@ -137,6 +147,9 @@ public partial class ProjectViewModel : ReactiveObject
         var newFavoriteStatus = !IsFavorite;
         await _projectAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
+        
+        // 通知收藏状态变化
+        FavoriteChanged?.Invoke(this, this);
     }
 
     /// <summary>
@@ -174,6 +187,19 @@ public partial class ProjectViewModel : ReactiveObject
         if (_projectAppService == null) return;
         
         await _projectAppService.LaunchAsync(Id);
+        
+        // 更新启动次数（假设 LaunchAsync 会更新数据库中的计数）
+        // 这里需要重新获取项目信息来更新 LaunchCount
+        var updatedProject = await _projectAppService.GetByIdAsync(Id);
+        if (updatedProject != null)
+        {
+            _projectDto = updatedProject;
+            this.RaisePropertyChanged(nameof(LaunchCount));
+            this.RaisePropertyChanged(nameof(LastOpenedAt));
+            
+            // 通知项目已启动
+            Launched?.Invoke(this, this);
+        }
     }
 
     /// <summary>

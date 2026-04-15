@@ -352,17 +352,20 @@ public class MainViewModel : ViewModelBase
 
 
     /// <summary>
-    /// 首次加载数据（只构建侧边栏树）
+    /// 首次加载数据（加载项目和文件夹）
     /// </summary>
     private async Task LoadInitialDataAsync()
     {
-        // 只加载工作文件夹用于构建侧边栏树结构
+        // 加载项目数据（用于显示最近使用、收藏夹等）
+        await LoadProjectsAsync();
+        
+        // 加载工作文件夹用于构建侧边栏树结构
         await LoadWorkFoldersAsync();
         
         // 更新统计
         UpdateStatistics();
         
-        // 构建侧边栏树形结构
+        // 构建侧边栏树形结构（此时 Projects 已有数据）
         BuildSidebarTree();
         
         // 默认选中"最近使用"
@@ -430,6 +433,8 @@ public class MainViewModel : ViewModelBase
                 var projectVm = new ProjectViewModel(project, _projectAppService);
                 projectVm.EditRequested += OnProjectEditRequested;
                 projectVm.DeleteRequested += OnProjectDeleteRequested;
+                projectVm.FavoriteChanged += OnProjectFavoriteChanged;
+                projectVm.Launched += OnProjectLaunched;
                 Projects.Add(projectVm);
             }
 
@@ -731,8 +736,28 @@ public class MainViewModel : ViewModelBase
             
             Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
             
-            // 刷新项目列表
-            await LoadProjectsAsync();
+            // 直接添加新项目到集合，无需重新查询数据库
+            var projectVm = new ProjectViewModel(result.Value, _projectAppService);
+            projectVm.EditRequested += OnProjectEditRequested;
+            projectVm.DeleteRequested += OnProjectDeleteRequested;
+            projectVm.FavoriteChanged += OnProjectFavoriteChanged;
+            projectVm.Launched += OnProjectLaunched;
+            Projects.Add(projectVm);
+            
+            // 刷新侧边栏树（项目数量变化）
+            BuildSidebarTree();
+            
+            // 刷新内容区域显示（如果当前选中的是项目相关节点）
+            if (SelectedTreeItem != null && 
+                (SelectedTreeItem.ItemType == TreeItemType.AllProjects ||
+                 SelectedTreeItem.ItemType == TreeItemType.RecentProject ||
+                 SelectedTreeItem.ItemType == TreeItemType.FavoriteProject))
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
+            
+            // 更新统计
+            UpdateStatistics();
             
             // 显示成功提示
             _dialogService.ShowNotification(
@@ -886,6 +911,18 @@ public class MainViewModel : ViewModelBase
             // 从列表中移除
             Projects.Remove(projectVm);
             
+            // 刷新侧边栏树（项目数量变化）
+            BuildSidebarTree();
+            
+            // 刷新内容区域
+            if (SelectedTreeItem != null)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
+            
+            // 更新统计
+            UpdateStatistics();
+            
             // 显示成功提示
             _dialogService.ShowNotification(
                 string.Format(L.Message_ProjectDeleted, projectVm.Name),
@@ -903,6 +940,39 @@ public class MainViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    /// <summary>
+    /// 处理项目收藏状态变化
+    /// </summary>
+    private void OnProjectFavoriteChanged(object? sender, ProjectViewModel projectVm)
+    {
+        // 刷新侧边栏树（收藏数量变化）
+        BuildSidebarTree();
+        
+        // 如果当前选中的是收藏夹，刷新内容区域
+        if (SelectedTreeItem?.ItemType == TreeItemType.FavoriteProject)
+        {
+            UpdateContentItems(SelectedTreeItem);
+        }
+        
+        // 更新统计
+        UpdateStatistics();
+    }
+
+    /// <summary>
+    /// 处理项目启动（启动次数更新）
+    /// </summary>
+    private void OnProjectLaunched(object? sender, ProjectViewModel projectVm)
+    {
+        // 如果当前选中的是最近使用，刷新内容区域（排序可能变化）
+        if (SelectedTreeItem?.ItemType == TreeItemType.RecentProject)
+        {
+            UpdateContentItems(SelectedTreeItem);
+        }
+        
+        // 更新统计
+        UpdateStatistics();
     }
 
     /// <summary>

@@ -163,6 +163,11 @@ public interface IWorkSpaceAppService
     /// 启动工作空间中的所有项目
     /// </summary>
     Task LaunchAllAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 设置工作空间的项目列表（全量替换）
+    /// </summary>
+    Task SetWorkSpaceProjectsAsync(long workSpaceId, IReadOnlyList<long> projectIds, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
