@@ -130,6 +130,29 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         return await GetProjectSettingsAsync(input.WorkSpaceId, cancellationToken);
     }
 
+    public async Task SetFavoriteAsync(long id, bool isFavorite, CancellationToken cancellationToken = default)
+    {
+        var workSpace = await _workSpaceRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new KeyNotFoundException($"工作空间 (Id={id}) 不存在");
+
+        workSpace.SetFavorite(isFavorite);
+        await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+    }
+
+    public async Task LaunchAllAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var workSpace = await _workSpaceRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new KeyNotFoundException($"工作空间 (Id={id}) 不存在");
+
+        // TODO: 获取工作空间中的所有项目并依次启动
+        // 暂时记录打开时间
+        workSpace.RecordOpen();
+        await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
+
+        // 实际启动逻辑需要获取关联的项目列表并调用 IProjectAppService.LaunchAsync
+        await Task.CompletedTask;
+    }
+
     private static WorkSpaceDto MapToDto(WorkSpace workSpace)
     {
         return new WorkSpaceDto

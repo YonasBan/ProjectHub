@@ -153,6 +153,16 @@ public interface IWorkSpaceAppService
     /// 更新工作空间的项目启动设置
     /// </summary>
     Task<WorkSpaceProjectSettingsDto> UpdateProjectSettingsAsync(UpdateWorkSpaceProjectSettingsDto input, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 设置工作空间收藏状态
+    /// </summary>
+    Task SetFavoriteAsync(long id, bool isFavorite, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 启动工作空间中的所有项目
+    /// </summary>
+    Task LaunchAllAsync(long id, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

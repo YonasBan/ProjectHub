@@ -507,7 +507,10 @@ public class MainViewModel : ViewModelBase
             WorkSpaces.Clear();
             foreach (var workSpace in workSpaces)
             {
-                WorkSpaces.Add(new WorkSpaceViewModel(workSpace));
+                var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
+                workSpaceVm.EditRequested += OnWorkSpaceEditRequested;
+                workSpaceVm.DeleteRequested += OnWorkSpaceDeleteRequested;
+                WorkSpaces.Add(workSpaceVm);
             }
 
             Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
@@ -972,6 +975,102 @@ public class MainViewModel : ViewModelBase
         }
 
         Logger.LogDebug($"内容区域已更新: {selectedItem.ItemType}, 共 {ContentItems.Count} 项");
+    }
+
+    /// <summary>
+    /// 处理工作空间编辑请求
+    /// </summary>
+    private async void OnWorkSpaceEditRequested(object? sender, WorkSpaceViewModel workSpaceVm)
+    {
+        try
+        {
+            Logger.LogInformation($"打开编辑工作空间对话框: {workSpaceVm.Name}");
+
+            var dialogViewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
+            await dialogViewModel.InitializeForEditAsync(workSpaceVm.Id);
+
+            var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, bool>(dialogViewModel);
+
+            if (result.Confirmed && result.Value)
+            {
+                Logger.LogInformation($"工作空间编辑成功: {workSpaceVm.Name}");
+
+                // 刷新工作空间列表
+                await LoadWorkSpacesAsync();
+
+                // 显示成功提示
+                _dialogService.ShowNotification(
+                    string.Format(L.Message_WorkSpaceUpdated, workSpaceVm.Name),
+                    NotificationType.Success,
+                    3000);
+            }
+            else
+            {
+                Logger.LogInformation("用户取消编辑工作空间");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "编辑工作空间时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 处理工作空间删除请求
+    /// </summary>
+    private async void OnWorkSpaceDeleteRequested(object? sender, WorkSpaceViewModel workSpaceVm)
+    {
+        try
+        {
+            Logger.LogInformation($"请求删除工作空间: {workSpaceVm.Name}");
+
+            // 显示确认对话框
+            var confirmed = await _dialogService.ShowConfirmAsync(
+                L.DeleteConfirm_Title,
+                string.Format(L.DeleteConfirm_Message, workSpaceVm.Name));
+
+            if (!confirmed)
+            {
+                Logger.LogInformation("用户取消删除工作空间");
+                return;
+            }
+
+            IsLoading = true;
+
+            // 执行删除
+            await _workSpaceAppService.DeleteAsync(workSpaceVm.Id);
+
+            Logger.LogInformation($"工作空间删除成功: {workSpaceVm.Name}");
+
+            // 从列表中移除
+            WorkSpaces.Remove(workSpaceVm);
+
+            // 刷新内容区域
+            if (SelectedTreeItem != null)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
+
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_WorkSpaceDeleted, workSpaceVm.Name),
+                NotificationType.Success,
+                3000);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "删除工作空间时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_DeleteFailed,
+                ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 
 }
