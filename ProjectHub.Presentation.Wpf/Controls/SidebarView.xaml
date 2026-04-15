@@ -143,7 +143,8 @@
                                     x:Name="ActionPanel"
                                     Grid.Column="4"
                                     Orientation="Horizontal"
-                                    Visibility="Collapsed">
+                                    Opacity="0"
+                                    IsHitTestVisible="False">
                                     <!--  Add Button  -->
                                     <Button
                                         Width="20"
@@ -171,7 +172,8 @@
                                     <Condition Binding="{Binding IsMouseOver, ElementName=ItemBorder}" Value="True" />
                                     <Condition Binding="{Binding ItemType}" Value="WorkFolder" />
                                 </MultiDataTrigger.Conditions>
-                                <Setter TargetName="ActionPanel" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="ActionPanel" Property="Opacity" Value="1" />
+                                <Setter TargetName="ActionPanel" Property="IsHitTestVisible" Value="True" />
                             </MultiDataTrigger>
                         </HierarchicalDataTemplate.Triggers>
                     </HierarchicalDataTemplate>

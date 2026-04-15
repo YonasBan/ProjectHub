@@ -346,7 +346,6 @@ public class MainViewModel : ViewModelBase
         await LoadWorkFoldersAsync();
         await LoadWorkSpacesAsync();
         UpdateStatistics();
-
         // 初始加载时构建侧边栏树形结构
         BuildSidebarTree();
     }
