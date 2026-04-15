@@ -217,6 +217,19 @@
                                         Grid.Column="1"
                                         HorizontalAlignment="Right"
                                         Orientation="Horizontal">
+                                        <Button
+                                            Width="32"
+                                            Height="32"
+                                            Margin="4,0,0,0"
+                                            Command="{Binding ToggleFavoriteCommand}"
+                                            Style="{StaticResource IconButtonStyle}">
+                                            <Button.Content>
+                                                <svg:SvgViewbox
+                                                    Width="16"
+                                                    Height="16"
+                                                    Source="/Icons/start.svg" />
+                                            </Button.Content>
+                                        </Button>
                                         <!--  Like/Unlike 按钮  -->
                                         <Button
                                             Width="32"
