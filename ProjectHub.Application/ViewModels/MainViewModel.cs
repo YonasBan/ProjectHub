@@ -362,10 +362,13 @@ public class MainViewModel : ViewModelBase
         // 加载工作文件夹用于构建侧边栏树结构
         await LoadWorkFoldersAsync();
         
+        // 加载工作空间数据（用于显示侧边栏工作空间数量）
+        await LoadWorkSpacesAsync();
+        
         // 更新统计
         UpdateStatistics();
         
-        // 构建侧边栏树形结构（此时 Projects 已有数据）
+        // 构建侧边栏树形结构（此时 Projects 和 WorkSpaces 已有数据）
         BuildSidebarTree();
         
         // 默认选中"最近使用"
@@ -561,6 +564,7 @@ public class MainViewModel : ViewModelBase
                 var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
                 workSpaceVm.EditRequested += OnWorkSpaceEditRequested;
                 workSpaceVm.DeleteRequested += OnWorkSpaceDeleteRequested;
+                workSpaceVm.FavoriteChanged += OnWorkSpaceFavoriteChanged;
                 WorkSpaces.Add(workSpaceVm);
             }
 
@@ -587,13 +591,18 @@ public class MainViewModel : ViewModelBase
 
         SidebarTreeItems.Clear();
 
-        // Recent (最近使用)
-        var recentCount = Projects.Count(p => p.LastOpenedAt.HasValue);
+        // Recent (最近使用) - 包含项目和工作空间
+        var recentProjectCount = Projects.Count(p => p.LastOpenedAt.HasValue);
+        var recentWorkSpaceCount = WorkSpaces.Count(w => w.LastOpenedAt.HasValue);
+        var recentCount = recentProjectCount + recentWorkSpaceCount;
         var recent = new TreeItemViewModel(L.Sidebar_Recent, recentCount, TreeItemType.RecentProject)
         { IsSelected = true };
         SidebarTreeItems.Add(recent);
-        // Favorites (收藏夹)
-        var favoriteCount = Projects.Count(p => p.IsFavorite);
+        
+        // Favorites (收藏夹) - 包含项目和工作空间
+        var favoriteProjectCount = Projects.Count(p => p.IsFavorite);
+        var favoriteWorkSpaceCount = WorkSpaces.Count(w => w.IsFavorite);
+        var favoriteCount = favoriteProjectCount + favoriteWorkSpaceCount;
         var favorites = new TreeItemViewModel(L.Sidebar_Favorites, favoriteCount, TreeItemType.FavoriteProject);
         SidebarTreeItems.Add(favorites);
         // Workspaces (工作空间)
@@ -786,8 +795,18 @@ public class MainViewModel : ViewModelBase
             IsLoading = true;
             Logger.LogInformation("工作空间创建成功");
 
-            //// 刷新工作空间列表
+            // 刷新工作空间列表
             await LoadWorkSpacesAsync();
+            
+            // 刷新侧边栏树（工作空间数量变化）
+            BuildSidebarTree();
+            
+            // 刷新内容区域显示（如果当前选中的是工作空间节点）
+            if (SelectedTreeItem?.ItemType == TreeItemType.WorkSpace)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
+            
             // 更新统计
             UpdateStatistics();
             
@@ -1052,6 +1071,16 @@ public class MainViewModel : ViewModelBase
                 {
                     ContentItems.Add(project);
                 }
+
+                // 显示最近使用的工作空间（按最后打开时间排序）
+                var recentWorkSpaces = WorkSpaces
+                    .Where(w => w.LastOpenedAt.HasValue)
+                    .OrderByDescending(w => w.LastOpenedAt)
+                    .ToList();
+                foreach (var workSpace in recentWorkSpaces)
+                {
+                    ContentItems.Add(workSpace);
+                }
                 break;
 
             case TreeItemType.FavoriteProject:
@@ -1197,6 +1226,24 @@ public class MainViewModel : ViewModelBase
         {
             IsLoading = false;
         }
+    }
+
+    /// <summary>
+    /// 处理工作空间收藏状态变化
+    /// </summary>
+    private void OnWorkSpaceFavoriteChanged(object? sender, WorkSpaceViewModel workSpaceVm)
+    {
+        // 刷新侧边栏树（收藏数量变化）
+        BuildSidebarTree();
+        
+        // 如果当前选中的是收藏夹，刷新内容区域
+        if (SelectedTreeItem?.ItemType == TreeItemType.FavoriteProject)
+        {
+            UpdateContentItems(SelectedTreeItem);
+        }
+        
+        // 更新统计
+        UpdateStatistics();
     }
 
 }

@@ -64,6 +64,11 @@ public partial class WorkSpaceViewModel : ReactiveObject
     /// </summary>
     public event EventHandler<WorkSpaceViewModel>? DeleteRequested;
 
+    /// <summary>
+    /// Event raised when favorite status changed
+    /// </summary>
+    public event EventHandler<WorkSpaceViewModel>? FavoriteChanged;
+
     public WorkSpaceViewModel(WorkSpaceDto workSpaceDto, IWorkSpaceAppService? workSpaceAppService = null)
     {
         _workSpaceDto = workSpaceDto;
@@ -91,6 +96,9 @@ public partial class WorkSpaceViewModel : ReactiveObject
         var newFavoriteStatus = !IsFavorite;
         await _workSpaceAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
+        
+        // 通知收藏状态变化
+        FavoriteChanged?.Invoke(this, this);
     }
 
     /// <summary>
