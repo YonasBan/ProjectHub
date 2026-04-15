@@ -17,6 +17,360 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <converters:PathToIconConverter x:Key="PathToIconConverter" />
+        <converters:ContentTemplateSelector x:Key="ContentTemplateSelector" />
+
+        <!--  项目卡片模板  -->
+        <DataTemplate x:Key="ProjectCardTemplate">
+            <Border
+                Width="320"
+                Height="160"
+                Margin="0,0,16,16"
+                CornerRadius="8"
+                Cursor="Hand"
+                RenderTransformOrigin="0.5, 0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
+                <i:Interaction.Behaviors>
+                    <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchCommand}" />
+                </i:Interaction.Behaviors>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleY">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="16,16,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border
+                            Grid.Column="0"
+                            Width="48"
+                            Height="48"
+                            Margin="0,0,12,0"
+                            Background="{DynamicResource BgTertiaryBrush}"
+                            CornerRadius="8">
+                            <Image
+                                Width="32"
+                                Height="32"
+                                Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}"
+                                Stretch="Uniform" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                Text="{Binding Name}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                FontSize="11"
+                                Foreground="{DynamicResource TextMutedBrush}"
+                                Text="{Binding TypeDisplayName}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="16,0,16,8"
+                        FontSize="11"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{Binding Path}"
+                        TextTrimming="CharacterEllipsis"
+                        ToolTip="{Binding Path}" />
+
+                    <Border
+                        Grid.Row="2"
+                        Margin="16,0,16,8"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="0,0,0,1" />
+
+                    <TextBlock
+                        Grid.Row="3"
+                        Margin="16,0,16,8"
+                        FontSize="11"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{Binding Description}"
+                        TextTrimming="CharacterEllipsis"
+                        Visibility="{Binding Description, Converter={StaticResource BoolToVis}}" />
+
+                    <Grid Grid.Row="4" Margin="16,8,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource TextMutedBrush}"
+                            Text="{Binding LaunchCount, StringFormat=启动 {0} 次}" />
+                        <StackPanel
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding LaunchCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="/Icons/start.svg" />
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding ToggleFavoriteCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding EditCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/edit.svg" />
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding DeleteCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/delete.svg" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!--  工作空间卡片模板  -->
+        <DataTemplate x:Key="WorkSpaceCardTemplate">
+            <Border
+                Width="320"
+                Height="140"
+                Margin="0,0,16,16"
+                CornerRadius="8"
+                Cursor="Hand"
+                RenderTransformOrigin="0.5, 0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
+                <i:Interaction.Behaviors>
+                    <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchAllCommand}" />
+                </i:Interaction.Behaviors>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleY">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="16,16,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border
+                            Grid.Column="0"
+                            Width="48"
+                            Height="48"
+                            Margin="0,0,12,0"
+                            Background="{DynamicResource BgTertiaryBrush}"
+                            CornerRadius="8">
+                            <svg:SvgViewbox
+                                Width="32"
+                                Height="32"
+                                Source="/Icons/workspace.svg" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                Text="{Binding Name}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                FontSize="11"
+                                Foreground="{DynamicResource TextMutedBrush}"
+                                Text="{Binding ProjectCount, StringFormat={}{0} 个项目}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="16,0,16,8"
+                        FontSize="11"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{Binding Description}"
+                        TextTrimming="CharacterEllipsis"
+                        Visibility="{Binding Description, Converter={StaticResource BoolToVis}}" />
+
+                    <Border
+                        Grid.Row="2"
+                        Margin="16,0,16,8"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="0,0,0,1" />
+
+                    <Grid Grid.Row="3" Margin="16,8,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource TextMutedBrush}"
+                            Text="{Binding LastOpenedAt, StringFormat=上次打开 {0:yyyy-MM-dd HH:mm}}"
+                            Visibility="{Binding LastOpenedAt, Converter={StaticResource BoolToVis}}" />
+                        <StackPanel
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding LaunchAllCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="启动所有项目">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="/Icons/start.svg" />
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding ToggleFavoriteCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding EditCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/edit.svg" />
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding DeleteCommand}"
+                                Style="{StaticResource IconButtonStyle}">
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/delete.svg" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </DataTemplate>
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -74,211 +428,17 @@
 
         <!--  内容区域  -->
         <ScrollViewer Grid.Row="1" Margin="24,16,24,24">
-            <ItemsControl ItemsSource="{Binding Projects}">
+            <ItemsControl ItemsSource="{Binding ContentItems}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel Orientation="Horizontal" />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border
-                            Width="320"
-                            Height="160"
-                            Margin="0,0,16,16"
-                            CornerRadius="8"
-                            Cursor="Hand"
-                            RenderTransformOrigin="0.5, 0.5">
-                            <Border.RenderTransform>
-                                <ScaleTransform ScaleX="1" ScaleY="1" />
-                            </Border.RenderTransform>
-                            <i:Interaction.Behaviors>
-                                <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchCommand}" />
-                            </i:Interaction.Behaviors>
-                            <Border.Style>
-                                <Style TargetType="Border">
-                                    <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
-                                    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
-                                    <Setter Property="BorderThickness" Value="1" />
-                                    <Setter Property="Opacity" Value="1" />
-                                    <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                            <Setter Property="BorderThickness" Value="2" />
-                                            <Trigger.EnterActions>
-                                                <BeginStoryboard>
-                                                    <Storyboard>
-                                                        <!--  X轴弹跳  -->
-                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleX">
-                                                            <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
-                                                            <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
-                                                            <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
-                                                        </DoubleAnimationUsingKeyFrames>
-                                                        <!--  Y轴同步弹跳  -->
-                                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleY">
-                                                            <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
-                                                            <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
-                                                            <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
-                                                        </DoubleAnimationUsingKeyFrames>
-                                                    </Storyboard>
-                                                </BeginStoryboard>
-                                            </Trigger.EnterActions>
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Border.Style>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="*" />
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-
-                                <!--  上半部分：图标 + 项目信息  -->
-                                <Grid Grid.Row="0" Margin="16,16,16,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <!--  项目图标  -->
-                                    <Border
-                                        Grid.Column="0"
-                                        Width="48"
-                                        Height="48"
-                                        Margin="0,0,12,0"
-                                        Background="{DynamicResource BgTertiaryBrush}"
-                                        CornerRadius="8">
-                                        <Image
-                                            Width="32"
-                                            Height="32"
-                                            Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}"
-                                            Stretch="Uniform" />
-                                    </Border>
-
-                                    <!--  项目信息  -->
-                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                        <TextBlock
-                                            FontSize="16"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource TextPrimaryBrush}"
-                                            Text="{Binding Name}"
-                                            TextTrimming="CharacterEllipsis" />
-                                        <TextBlock
-                                            Margin="0,4,0,0"
-                                            FontSize="11"
-                                            Foreground="{DynamicResource TextMutedBrush}"
-                                            Text="{Binding TypeDisplayName}" />
-                                    </StackPanel>
-                                </Grid>
-
-                                <!--  项目路径  -->
-                                <TextBlock
-                                    Grid.Row="1"
-                                    Margin="16,0,16,8"
-                                    FontSize="11"
-                                    Foreground="{DynamicResource TextMutedBrush}"
-                                    Text="{Binding Path}"
-                                    TextTrimming="CharacterEllipsis"
-                                    ToolTip="{Binding Path}" />
-
-                                <!--  分割线  -->
-                                <Border
-                                    Grid.Row="2"
-                                    Margin="16,0,16,8"
-                                    BorderBrush="{DynamicResource BorderBrush}"
-                                    BorderThickness="0,0,0,1" />
-
-                                <!--  描述  -->
-                                <TextBlock
-                                    Grid.Row="3"
-                                    Margin="16,0,16,8"
-                                    FontSize="11"
-                                    Foreground="{DynamicResource TextMutedBrush}"
-                                    Text="{Binding Description}"
-                                    TextTrimming="CharacterEllipsis"
-                                    Visibility="{Binding Description, Converter={StaticResource BoolToVis}}" />
-
-                                <!--  下半部分：启动次数 + 按钮  -->
-                                <Grid Grid.Row="4" Margin="16,8,16,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <!--  启动次数  -->
-                                    <TextBlock
-                                        Grid.Column="0"
-                                        VerticalAlignment="Center"
-                                        FontSize="11"
-                                        Foreground="{DynamicResource TextMutedBrush}"
-                                        Text="{Binding LaunchCount, StringFormat=启动 {0} 次}" />
-
-                                    <!--  按钮组  -->
-                                    <StackPanel
-                                        Grid.Column="1"
-                                        HorizontalAlignment="Right"
-                                        Orientation="Horizontal">
-                                        <Button
-                                            Width="32"
-                                            Height="32"
-                                            Margin="4,0,0,0"
-                                            Command="{Binding LaunchCommand}"
-                                            Style="{StaticResource IconButtonStyle}">
-                                            <Button.Content>
-                                                <svg:SvgViewbox
-                                                    Width="16"
-                                                    Height="16"
-                                                    Source="/Icons/start.svg" />
-                                            </Button.Content>
-                                        </Button>
-                                        <!--  Like/Unlike 按钮  -->
-                                        <Button
-                                            Width="32"
-                                            Height="32"
-                                            Margin="4,0,0,0"
-                                            Command="{Binding ToggleFavoriteCommand}"
-                                            Style="{StaticResource IconButtonStyle}">
-                                            <Button.Content>
-                                                <svg:SvgViewbox
-                                                    Width="16"
-                                                    Height="16"
-                                                    Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
-                                            </Button.Content>
-                                        </Button>
-                                        <!--  设置按钮  -->
-                                        <Button
-                                            Width="32"
-                                            Height="32"
-                                            Margin="4,0,0,0"
-                                            Command="{Binding EditCommand}"
-                                            Style="{StaticResource IconButtonStyle}">
-                                            <svg:SvgViewbox
-                                                Width="16"
-                                                Height="16"
-                                                Source="/Icons/edit.svg" />
-                                        </Button>
-                                        <!--  删除按钮  -->
-                                        <Button
-                                            Width="32"
-                                            Height="32"
-                                            Margin="4,0,0,0"
-                                            Command="{Binding DeleteCommand}"
-                                            Style="{StaticResource IconButtonStyle}">
-                                            <svg:SvgViewbox
-                                                Width="16"
-                                                Height="16"
-                                                Source="/Icons/delete.svg" />
-                                        </Button>
-                                    </StackPanel>
-                                </Grid>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemTemplateSelector>
+                    <converters:ContentTemplateSelector
+                        ProjectTemplate="{StaticResource ProjectCardTemplate}"
+                        WorkSpaceTemplate="{StaticResource WorkSpaceCardTemplate}" />
+                </ItemsControl.ItemTemplateSelector>
             </ItemsControl>
         </ScrollViewer>
     </Grid>

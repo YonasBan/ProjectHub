@@ -62,6 +62,17 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// 内容项列表（统一显示项目和工作空间）
+    /// </summary>
+    private ObservableCollection<object>? _contentItems;
+
+    public ObservableCollection<object> ContentItems
+    {
+        get => _contentItems ??= new();
+        set => this.RaiseAndSetIfChanged(ref _contentItems, value);
+    }
+
+    /// <summary>
     /// 当前选中的工作文件夹
     /// </summary>
     private WorkFolderViewModel? _selectedWorkFolder;
@@ -337,6 +348,12 @@ public class MainViewModel : ViewModelBase
             .Where(items => items != null && items.Count > 0)
             .Take(1)
             .Subscribe(_ => SelectedTreeItem = SidebarTreeItems.First());
+
+        // 订阅 SelectedTreeItem 变化，更新右侧内容
+        this.WhenAnyValue(x => x.SelectedTreeItem)
+            .Where(item => item != null)
+            .Subscribe(item => UpdateContentItems(item!))
+            .DisposeWith(Disposables);
     }
 
 
@@ -386,6 +403,12 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation($"成功加载 {projects.Count} 个项目");
+
+            // 刷新内容区域显示
+            if (SelectedTreeItem != null)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
         }
         catch (Exception ex)
         {
@@ -488,6 +511,12 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
+
+            // 如果当前选中工作空间节点，刷新内容区域
+            if (SelectedTreeItem?.ItemType == TreeItemType.WorkSpace)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
         }
         catch (Exception ex)
         {
@@ -878,6 +907,71 @@ public class MainViewModel : ViewModelBase
                     break;
             }
         }
+    }
+
+    /// <summary>
+    /// 根据选中的树节点更新内容项
+    /// </summary>
+    private void UpdateContentItems(TreeItemViewModel selectedItem)
+    {
+        ContentItems.Clear();
+
+        switch (selectedItem.ItemType)
+        {
+            case TreeItemType.AllProjects:
+                // 显示所有项目
+                foreach (var project in Projects)
+                {
+                    ContentItems.Add(project);
+                }
+                break;
+
+            case TreeItemType.RecentProject:
+                // 显示最近使用的项目（按最后打开时间排序）
+                var recentProjects = Projects
+                    .Where(p => p.LastOpenedAt.HasValue)
+                    .OrderByDescending(p => p.LastOpenedAt)
+                    .ToList();
+                foreach (var project in recentProjects)
+                {
+                    ContentItems.Add(project);
+                }
+                break;
+
+            case TreeItemType.FavoriteProject:
+                // 显示收藏的项目
+                var favoriteProjects = Projects.Where(p => p.IsFavorite).ToList();
+                foreach (var project in favoriteProjects)
+                {
+                    ContentItems.Add(project);
+                }
+                break;
+
+            case TreeItemType.WorkSpace:
+                // 显示所有工作空间
+                foreach (var workSpace in WorkSpaces)
+                {
+                    ContentItems.Add(workSpace);
+                }
+                break;
+
+            case TreeItemType.WorkFolder:
+                // 显示该文件夹下的项目
+                var folderProjects = Projects
+                    .Where(p => p.WorkFolderIds.Contains(selectedItem.Id))
+                    .ToList();
+                foreach (var project in folderProjects)
+                {
+                    ContentItems.Add(project);
+                }
+                break;
+
+            case TreeItemType.TagSettings:
+                // 标签设置页面，可以显示所有标签或空
+                break;
+        }
+
+        Logger.LogDebug($"内容区域已更新: {selectedItem.ItemType}, 共 {ContentItems.Count} 项");
     }
 
 }
