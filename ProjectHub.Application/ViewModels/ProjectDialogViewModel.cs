@@ -252,7 +252,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     private void BrowsePath()
     {
         var path = _dialogService.ShowOpenFileDialog(
-            "选择项目入口文件|所有文件|*.*",
+            "选择项目入口文件|*.*",
             "选择项目路径");
 
         if (!string.IsNullOrEmpty(path))
@@ -465,6 +465,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     Id = EditProjectId.Value,
                     Name = ProjectName,
                     Description = Description,
+                    DefaultProgram = DefaultProgram,
                     WorkFolderIds = [],
                     WorkSpaceIds = []
                 };

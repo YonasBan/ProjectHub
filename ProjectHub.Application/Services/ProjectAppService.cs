@@ -10,10 +10,12 @@ namespace ProjectHub.Application.Services;
 public class ProjectAppService : IProjectAppService
 {
     private readonly IProjectRepository _projectRepository;
+    private readonly IProcessLauncherService _processLauncher;
 
-    public ProjectAppService(IProjectRepository projectRepository)
+    public ProjectAppService(IProjectRepository projectRepository, IProcessLauncherService processLauncher)
     {
         _projectRepository = projectRepository;
+        _processLauncher = processLauncher;
     }
 
     public async Task<ProjectDto> CreateAsync(CreateProjectDto input, CancellationToken cancellationToken = default)
@@ -28,7 +30,10 @@ public class ProjectAppService : IProjectAppService
         var project = await _projectRepository.GetByIdAsync(input.Id, cancellationToken)
             ?? throw new KeyNotFoundException($"Project (Id={input.Id}) not found");
 
-        // TODO: 实现更新逻辑
+        // 更新基本信息
+        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram);
+        
+        await _projectRepository.UpdateAsync(project, cancellationToken);
         return MapToDto(project);
     }
 
@@ -69,10 +74,36 @@ public class ProjectAppService : IProjectAppService
         var project = await _projectRepository.GetByIdAsync(id, cancellationToken)
             ?? throw new KeyNotFoundException($"Project (Id={id}) not found");
 
+        // 启动项目
+        await LaunchProjectAsync(project);
+
+        // 记录启动
         project.RecordLaunch();
         await _projectRepository.UpdateAsync(project, cancellationToken);
+    }
+
+    /// <summary>
+    /// 启动项目的实际逻辑
+    /// </summary>
+    private async Task LaunchProjectAsync(Domain.Entities.Project project)
+    {
+        var projectPath = project.Path;
         
-        // TODO: 实际启动项目的逻辑
+        // 检查路径是否存在
+        if (!_processLauncher.FileExists(projectPath))
+        {
+            throw new FileNotFoundException($"Project path not found: {projectPath}");
+        }
+
+        // 如果有 DefaultProgram，使用它启动
+        if (!string.IsNullOrEmpty(project.DefaultProgram))
+        {
+            await _processLauncher.LaunchWithProgramAsync(project.DefaultProgram, projectPath);
+            return;
+        }
+
+        // 使用系统默认方式启动
+        await _processLauncher.LaunchWithDefaultProgramAsync(projectPath);
     }
 
     public async Task LaunchMultipleAsync(IEnumerable<long> projectIds, int intervalSeconds = 0, CancellationToken cancellationToken = default)
@@ -118,6 +149,7 @@ public class ProjectAppService : IProjectAppService
             IsFavorite = project.IsFavorite,
             DiskSpaceBytes = project.DiskSpaceBytes,
             CleanableSpaceBytes = project.CleanableSpaceBytes,
+            DefaultProgram = project.DefaultProgram,
             Deadline = project.Deadline,
             CreatedAt = project.CreatedAt,
             UpdatedAt = project.UpdatedAt

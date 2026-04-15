@@ -96,6 +96,11 @@ public partial class ProjectViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
 
     /// <summary>
+    /// Launch project command - starts the project with default program
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
+
+    /// <summary>
     /// Event raised when edit is requested
     /// </summary>
     public event EventHandler<ProjectViewModel>? EditRequested;
@@ -114,6 +119,7 @@ public partial class ProjectViewModel : ReactiveObject
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
         EditCommand = ReactiveCommand.Create(RequestEdit);
         DeleteCommand = ReactiveCommand.Create(RequestDelete);
+        LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
     }
 
     /// <summary>
@@ -158,6 +164,16 @@ public partial class ProjectViewModel : ReactiveObject
     private void RequestDelete()
     {
         DeleteRequested?.Invoke(this, this);
+    }
+
+    /// <summary>
+    /// Launch the project
+    /// </summary>
+    private async Task LaunchAsync()
+    {
+        if (_projectAppService == null) return;
+        
+        await _projectAppService.LaunchAsync(Id);
     }
 
     /// <summary>

@@ -41,6 +41,11 @@
     <PackageReference Include="System.Reactive" Version="6.1.0" />
   </ItemGroup>
 
+  <!-- Microsoft.Xaml.Behaviors for Behaviors -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
+  </ItemGroup>
+
   <!-- SVG Support -->
   <ItemGroup>
     <PackageReference Include="SharpVectors.Wpf" Version="1.8.5" />

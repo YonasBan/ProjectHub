@@ -103,6 +103,12 @@ public class Project : BaseEntity
     /// </summary>
     public long? CleanableSpaceBytes { get; private set; }
 
+    /// <summary>
+    /// 默认启动程序路径 (可选)
+    /// 为空则使用系统默认关联程序
+    /// </summary>
+    public string? DefaultProgram { get; private set; }
+
     // ========== 导航属性 ==========
 
     /// <summary>
@@ -148,7 +154,7 @@ public class Project : BaseEntity
     /// 更新项目基本信息
     /// 封装不变性规则
     /// </summary>
-    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null)
+    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null, string? defaultProgram = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
@@ -156,6 +162,16 @@ public class Project : BaseEntity
         Name = name;
         Description = description;
         ColorTag = colorTag;
+        DefaultProgram = defaultProgram;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置默认启动程序
+    /// </summary>
+    public void SetDefaultProgram(string? defaultProgram)
+    {
+        DefaultProgram = defaultProgram;
         UpdatedAt = DateTime.UtcNow;
     }
 
