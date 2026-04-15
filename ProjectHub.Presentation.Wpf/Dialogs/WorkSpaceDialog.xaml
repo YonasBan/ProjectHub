@@ -144,6 +144,13 @@
                                                 Background="Transparent"
                                                 BorderBrush="{DynamicResource BorderBrush}"
                                                 BorderThickness="0,0,0,1">
+                                                <i:Interaction.Triggers>
+                                                    <i:EventTrigger EventName="MouseLeftButtonDown">
+                                                        <i:InvokeCommandAction
+                                                            Command="{Binding DataContext.ToggleSelectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}" />
+                                                    </i:EventTrigger>
+                                                </i:Interaction.Triggers>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
                                                         <ColumnDefinition Width="Auto" />
@@ -156,7 +163,8 @@
                                                     <CheckBox
                                                         Grid.Column="0"
                                                         VerticalAlignment="Center"
-                                                        IsChecked="{Binding IsSelected}" />
+                                                        IsChecked="{Binding IsSelected}"
+                                                        Style="{DynamicResource VSCodeCheckBoxStyle}" />
 
                                                     <!--  项目图标  -->
                                                     <Image

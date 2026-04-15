@@ -172,7 +172,6 @@
                                     <Condition Binding="{Binding ItemType}" Value="WorkFolder" />
                                 </MultiDataTrigger.Conditions>
                                 <Setter TargetName="ActionPanel" Property="Visibility" Value="Visible" />
-                                <Setter TargetName="ItemBorder" Property="Background" Value="{DynamicResource HoverBrush}" />
                             </MultiDataTrigger>
                         </HierarchicalDataTemplate.Triggers>
                     </HierarchicalDataTemplate>

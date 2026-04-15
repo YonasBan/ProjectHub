@@ -696,12 +696,10 @@ public class MainViewModel : ViewModelBase
         if (result.Confirmed && result.Value)
         {
             IsLoading = true;
-            
             Logger.LogInformation("工作空间创建成功");
-            
-            // 刷新工作空间列表
+
+            //// 刷新工作空间列表
             await LoadWorkSpacesAsync();
-            
             // 更新统计
             UpdateStatistics();
             

@@ -144,6 +144,11 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     public ReactiveCommand<Unit, Unit> ConfirmCommand { get; }
 
     /// <summary>
+    /// 切换选择命令
+    /// </summary>
+    public ReactiveCommand<SelectableProjectViewModel, Unit> ToggleSelectCommand { get; }
+
+    /// <summary>
     /// 上移项目命令
     /// </summary>
     public ReactiveCommand<SelectableProjectViewModel, Unit> MoveUpCommand { get; }
@@ -167,6 +172,7 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
             name => !string.IsNullOrWhiteSpace(name));
 
         ConfirmCommand = ReactiveCommand.CreateFromTask(ConfirmAsync, canConfirm);
+        ToggleSelectCommand = ReactiveCommand.Create<SelectableProjectViewModel>(ToggleSelect);
         MoveUpCommand = ReactiveCommand.Create<SelectableProjectViewModel>(MoveUp);
         MoveDownCommand = ReactiveCommand.Create<SelectableProjectViewModel>(MoveDown);
 
@@ -208,6 +214,17 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
         return item =>
             item.ProjectName.ToLowerInvariant().Contains(lower) ||
             item.ProjectPath.ToLowerInvariant().Contains(lower);
+    }
+
+    /// <summary>
+    /// 切换项目选择状态
+    /// </summary>
+    private void ToggleSelect(SelectableProjectViewModel project)
+    {
+        if (project != null)
+        {
+            project.IsSelected = !project.IsSelected;
+        }
     }
 
     /// <summary>

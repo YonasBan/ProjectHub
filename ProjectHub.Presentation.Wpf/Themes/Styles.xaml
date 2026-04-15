@@ -563,6 +563,81 @@
         </Setter>
     </Style>
 
+    <!--  ========== VSCode Style CheckBox ==========  -->
+    <Style x:Key="VSCodeCheckBoxStyle" TargetType="CheckBox">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="CheckBox">
+                    <BulletDecorator VerticalAlignment="Center" Background="Transparent">
+                        <BulletDecorator.Bullet>
+                            <Border
+                                x:Name="Border"
+                                Width="18"
+                                Height="18"
+                                Background="{DynamicResource BgSecondaryBrush}"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="3"
+                                SnapsToDevicePixels="True">
+                                <Path
+                                    x:Name="CheckMark"
+                                    Width="12"
+                                    Height="12"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="M 2,6 L 5,9 L 10,3"
+                                    Opacity="0"
+                                    Stroke="{DynamicResource TextPrimaryBrush}"
+                                    StrokeThickness="2" />
+                            </Border>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter
+                            Margin="8,0,0,0"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            RecognizesAccessKey="True"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <!--  Checked State  -->
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentBlueBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                            <Setter TargetName="CheckMark" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <!--  Hover State  -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource TextSecondaryBrush}" />
+                        </Trigger>
+                        <!--  Checked + Hover  -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource AccentBlueHoverBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource AccentBlueHoverBrush}" />
+                        </MultiTrigger>
+                        <!--  Disabled State  -->
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="Border" Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
+                            <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+                            <Setter TargetName="CheckMark" Property="Stroke" Value="{DynamicResource TextMutedBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!--  ========== TextBox Style ==========  -->
     <Style x:Key="SearchTextBoxStyle" TargetType="TextBox">
         <Setter Property="Background" Value="Transparent" />
