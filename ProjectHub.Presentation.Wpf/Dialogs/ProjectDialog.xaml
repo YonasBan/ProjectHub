@@ -50,11 +50,6 @@
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource AccentBlueBrush}"
                         Text="{Binding L.ProjectDialog_Step1_SelectFile}" />
-                    <TextBlock
-                        Margin="0,0,0,6"
-                        FontSize="12"
-                        Foreground="{DynamicResource TextSecondaryBrush}"
-                        Text="{Binding L.ProjectDialog_PathLabel}" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -62,27 +57,10 @@
                         </Grid.ColumnDefinitions>
                         <TextBox
                             Grid.Column="0"
-                            Padding="10,8"
-                            Background="{DynamicResource BgPrimaryBrush}"
-                            BorderBrush="{DynamicResource BorderBrush}"
-                            BorderThickness="1"
-                            CaretBrush="{DynamicResource TextPrimaryBrush}"
-                            FontSize="13"
-                            Foreground="{DynamicResource TextPrimaryBrush}"
                             IsReadOnly="{Binding IsEditMode}"
                             MaxLength="500"
-                            SelectionBrush="{DynamicResource AccentBlueBrush}"
-                            Text="{Binding ProjectPath, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                            Style="{DynamicResource VSCodeTextBoxStyle}"
+                            Text="{Binding ProjectPath, UpdateSourceTrigger=PropertyChanged}" />
                         <Button
                             Grid.Column="1"
                             Margin="8,0,0,0"
@@ -110,7 +88,6 @@
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource AccentBlueBrush}"
                         Text="{Binding L.ProjectDialog_Step2_ProjectInfo}" />
-
                     <!--  项目名称  -->
                     <TextBlock
                         Margin="0,0,0,6"
@@ -119,26 +96,9 @@
                         Text="{Binding L.ProjectDialog_NameLabel}" />
                     <TextBox
                         Margin="0,0,0,12"
-                        Padding="10,8"
-                        Background="{DynamicResource BgPrimaryBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1"
-                        CaretBrush="{DynamicResource TextPrimaryBrush}"
-                        FontSize="13"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
                         MaxLength="100"
-                        SelectionBrush="{DynamicResource AccentBlueBrush}"
-                        Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Triggers>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" />
 
                     <!--  默认程序（可修改）  -->
                     <TextBlock
@@ -153,26 +113,9 @@
                         </Grid.ColumnDefinitions>
                         <TextBox
                             Grid.Column="0"
-                            Padding="10,8"
-                            Background="{DynamicResource BgPrimaryBrush}"
-                            BorderBrush="{DynamicResource BorderBrush}"
-                            BorderThickness="1"
-                            CaretBrush="{DynamicResource TextPrimaryBrush}"
-                            FontSize="13"
-                            Foreground="{DynamicResource TextPrimaryBrush}"
                             MaxLength="500"
-                            SelectionBrush="{DynamicResource AccentBlueBrush}"
-                            Text="{Binding DefaultProgram, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
+                            Style="{DynamicResource VSCodeTextBoxStyle}"
+                            Text="{Binding DefaultProgram, UpdateSourceTrigger=PropertyChanged}" />
                         <Button
                             Grid.Column="1"
                             Margin="8,0,0,0"
@@ -235,36 +178,14 @@
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource AccentBlueBrush}"
                         Text="{Binding L.ProjectDialog_Step3_Description}" />
-                    <TextBlock
-                        Margin="0,0,0,6"
-                        FontSize="12"
-                        Foreground="{DynamicResource TextSecondaryBrush}"
-                        Text="{Binding L.ProjectDialog_DescriptionLabel}" />
                     <TextBox
                         Height="60"
-                        Padding="10,8"
                         VerticalContentAlignment="Top"
                         AcceptsReturn="True"
-                        Background="{DynamicResource BgPrimaryBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1"
-                        CaretBrush="{DynamicResource TextPrimaryBrush}"
-                        FontSize="13"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
                         MaxLength="500"
-                        SelectionBrush="{DynamicResource AccentBlueBrush}"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
                         Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Triggers>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 

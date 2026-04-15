@@ -61,6 +61,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 添加 的本地化字符串。
+        /// </summary>
+        public static string Add {
+            get {
+                return ResourceManager.GetString("Add", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 取消 的本地化字符串。
         /// </summary>
         public static string Cancel {
@@ -223,6 +232,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 删除失败 的本地化字符串。
+        /// </summary>
+        public static string Message_DeleteFailed {
+            get {
+                return ResourceManager.GetString("Message_DeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 加载失败 的本地化字符串。
         /// </summary>
         public static string Message_LoadFailed {
@@ -241,15 +259,6 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 项目 &quot;{0}&quot; 更新成功！ 的本地化字符串。
-        /// </summary>
-        public static string Message_ProjectUpdated {
-            get {
-                return ResourceManager.GetString("Message_ProjectUpdated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 项目 &quot;{0}&quot; 已删除 的本地化字符串。
         /// </summary>
         public static string Message_ProjectDeleted {
@@ -259,11 +268,11 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 删除失败 的本地化字符串。
+        ///   查找类似 项目 &quot;{0}&quot; 更新成功！ 的本地化字符串。
         /// </summary>
-        public static string Message_DeleteFailed {
+        public static string Message_ProjectUpdated {
             get {
-                return ResourceManager.GetString("Message_DeleteFailed", resourceCulture);
+                return ResourceManager.GetString("Message_ProjectUpdated", resourceCulture);
             }
         }
         
@@ -291,6 +300,33 @@ namespace ProjectHub.Resources.Strings {
         public static string Message_Success {
             get {
                 return ResourceManager.GetString("Message_Success", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 工作空间 &quot;{0}&quot; 创建成功！ 的本地化字符串。
+        /// </summary>
+        public static string Message_WorkSpaceCreated {
+            get {
+                return ResourceManager.GetString("Message_WorkSpaceCreated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 工作空间 &quot;{0}&quot; 已删除 的本地化字符串。
+        /// </summary>
+        public static string Message_WorkSpaceDeleted {
+            get {
+                return ResourceManager.GetString("Message_WorkSpaceDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 工作空间 &quot;{0}&quot; 更新成功！ 的本地化字符串。
+        /// </summary>
+        public static string Message_WorkSpaceUpdated {
+            get {
+                return ResourceManager.GetString("Message_WorkSpaceUpdated", resourceCulture);
             }
         }
         
@@ -489,15 +525,6 @@ namespace ProjectHub.Resources.Strings {
         public static string Save {
             get {
                 return ResourceManager.GetString("Save", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 添加 的本地化字符串。
-        /// </summary>
-        public static string Add {
-            get {
-                return ResourceManager.GetString("Add", resourceCulture);
             }
         }
         
@@ -727,6 +754,132 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 搜索 的本地化字符串。
+        /// </summary>
+        public static string WorkSapce_Search {
+            get {
+                return ResourceManager.GetString("WorkSapce_Search", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 创建工作空间 的本地化字符串。
+        /// </summary>
+        public static string WorkSpace_Create {
+            get {
+                return ResourceManager.GetString("WorkSpace_Create", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除工作空间 的本地化字符串。
+        /// </summary>
+        public static string WorkSpace_Delete {
+            get {
+                return ResourceManager.GetString("WorkSpace_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编辑工作空间 的本地化字符串。
+        /// </summary>
+        public static string WorkSpace_Edit {
+            get {
+                return ResourceManager.GetString("WorkSpace_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动所有项目 的本地化字符串。
+        /// </summary>
+        public static string WorkSpace_LaunchAll {
+            get {
+                return ResourceManager.GetString("WorkSpace_LaunchAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 描述（可选） 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_DescriptionLabel {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_DescriptionLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 取消全选 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_DeselectAll {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_DeselectAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 提示：设置项目启动之间的等待时间（秒），0 表示连续启动不等待 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_LaunchIntervalHint {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_LaunchIntervalHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 默认启动间隔： 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_LaunchIntervalLabel {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_LaunchIntervalLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 工作空间名称 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_NameLabel {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_NameLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全选 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_SelectAll {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_SelectAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 步骤 1：基本信息 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_Step1_BasicInfo {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_Step1_BasicInfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 步骤 2：选择项目 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_Step2_SelectProjects {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_Step2_SelectProjects", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 步骤 3：启动配置 的本地化字符串。
+        /// </summary>
+        public static string WorkSpaceDialog_Step3_LaunchConfig {
+            get {
+                return ResourceManager.GetString("WorkSpaceDialog_Step3_LaunchConfig", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 添加工作空间 的本地化字符串。
         /// </summary>
         public static string WorkSpaceDialog_Title_Add {
@@ -745,155 +898,11 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 步骤 1：基本信息 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_Step1_BasicInfo {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_Step1_BasicInfo", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 工作空间名称 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_NameLabel {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_NameLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 描述（可选） 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_DescriptionLabel {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_DescriptionLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 步骤 2：选择项目 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_Step2_SelectProjects {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_Step2_SelectProjects", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 全选 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_SelectAll {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_SelectAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 取消全选 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_DeselectAll {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_DeselectAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 步骤 3：启动配置 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_Step3_LaunchConfig {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_Step3_LaunchConfig", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 使用自定义启动顺序 的本地化字符串。
         /// </summary>
         public static string WorkSpaceDialog_UseCustomLaunchOrder {
             get {
                 return ResourceManager.GetString("WorkSpaceDialog_UseCustomLaunchOrder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 默认启动间隔： 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_LaunchIntervalLabel {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_LaunchIntervalLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 提示：设置项目启动之间的等待时间（秒），0 表示连续启动不等待 的本地化字符串。
-        /// </summary>
-        public static string WorkSpaceDialog_LaunchIntervalHint {
-            get {
-                return ResourceManager.GetString("WorkSpaceDialog_LaunchIntervalHint", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 创建工作空间 的本地化字符串。
-        /// </summary>
-        public static string WorkSpace_Create {
-            get {
-                return ResourceManager.GetString("WorkSpace_Create", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 编辑工作空间 的本地化字符串。
-        /// </summary>
-        public static string WorkSpace_Edit {
-            get {
-                return ResourceManager.GetString("WorkSpace_Edit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 删除工作空间 的本地化字符串。
-        /// </summary>
-        public static string WorkSpace_Delete {
-            get {
-                return ResourceManager.GetString("WorkSpace_Delete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 启动所有项目 的本地化字符串。
-        /// </summary>
-        public static string WorkSpace_LaunchAll {
-            get {
-                return ResourceManager.GetString("WorkSpace_LaunchAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 工作空间 "{0}" 创建成功！ 的本地化字符串。
-        /// </summary>
-        public static string Message_WorkSpaceCreated {
-            get {
-                return ResourceManager.GetString("Message_WorkSpaceCreated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 工作空间 "{0}" 更新成功！ 的本地化字符串。
-        /// </summary>
-        public static string Message_WorkSpaceUpdated {
-            get {
-                return ResourceManager.GetString("Message_WorkSpaceUpdated", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 工作空间 "{0}" 已删除 的本地化字符串。
-        /// </summary>
-        public static string Message_WorkSpaceDeleted {
-            get {
-                return ResourceManager.GetString("Message_WorkSpaceDeleted", resourceCulture);
             }
         }
     }

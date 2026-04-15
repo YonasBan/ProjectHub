@@ -50,26 +50,9 @@
 
             <TextBox
                 x:Name="FolderNameTextBox"
-                Padding="10,8"
-                Background="{DynamicResource BgSecondaryBrush}"
-                BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="1"
-                CaretBrush="{DynamicResource TextPrimaryBrush}"
-                FontSize="14"
-                Foreground="{DynamicResource TextPrimaryBrush}"
                 MaxLength="100"
-                SelectionBrush="{DynamicResource AccentBlueBrush}"
-                Text="{Binding FolderName, UpdateSourceTrigger=PropertyChanged}">
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Style.Triggers>
-                            <Trigger Property="IsFocused" Value="True">
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
+                Style="{DynamicResource VSCodeTextBoxStyle}"
+                Text="{Binding FolderName, UpdateSourceTrigger=PropertyChanged}" />
 
             <!--  错误提示  -->
             <TextBlock

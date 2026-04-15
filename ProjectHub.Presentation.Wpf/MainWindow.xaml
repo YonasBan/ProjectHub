@@ -7,7 +7,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     Title="ProjectHub"
-    Width="1280"
+    Width="1350"
     Height="800"
     MinWidth="900"
     MinHeight="600"

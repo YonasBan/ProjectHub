@@ -13,6 +13,7 @@
     Height="Auto"
     MinHeight="600"
     MaxHeight="800"
+    d:Background="AliceBlue"
     d:DataContext="{d:DesignInstance viewmodels:WorkSpaceDialogViewModel}"
     Background="{DynamicResource BgPrimaryBrush}"
     ResizeMode="NoResize"
@@ -39,10 +40,9 @@
 
         <!--  表单内容  -->
         <StackPanel Grid.Row="1">
-
             <!--  步骤1：工作空间基本信息  -->
             <Border
-                Margin="0,0,0,16"
+                Margin="0,0,0,8"
                 Padding="16"
                 Background="{DynamicResource BgSecondaryBrush}"
                 BorderBrush="{DynamicResource BorderBrush}"
@@ -64,26 +64,9 @@
                         Text="{Binding L.WorkSpaceDialog_NameLabel}" />
                     <TextBox
                         Margin="0,0,0,12"
-                        Padding="10,8"
-                        Background="{DynamicResource BgPrimaryBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1"
-                        CaretBrush="{DynamicResource TextPrimaryBrush}"
-                        FontSize="13"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
                         MaxLength="100"
-                        SelectionBrush="{DynamicResource AccentBlueBrush}"
-                        Text="{Binding WorkSpaceName, UpdateSourceTrigger=PropertyChanged}">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Triggers>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding WorkSpaceName, UpdateSourceTrigger=PropertyChanged}" />
 
                     <!--  描述  -->
                     <TextBlock
@@ -93,29 +76,12 @@
                         Text="{Binding L.WorkSpaceDialog_DescriptionLabel}" />
                     <TextBox
                         Height="60"
-                        Padding="10,8"
                         VerticalContentAlignment="Top"
                         AcceptsReturn="True"
-                        Background="{DynamicResource BgPrimaryBrush}"
-                        BorderBrush="{DynamicResource BorderBrush}"
-                        BorderThickness="1"
-                        CaretBrush="{DynamicResource TextPrimaryBrush}"
-                        FontSize="13"
-                        Foreground="{DynamicResource TextPrimaryBrush}"
                         MaxLength="500"
-                        SelectionBrush="{DynamicResource AccentBlueBrush}"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
                         Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
-                        TextWrapping="Wrap">
-                        <TextBox.Style>
-                            <Style TargetType="TextBox">
-                                <Style.Triggers>
-                                    <Trigger Property="IsFocused" Value="True">
-                                        <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </TextBox.Style>
-                    </TextBox>
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 
@@ -138,50 +104,20 @@
                     <!--  搜索和工具栏  -->
                     <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            Foreground="{DynamicResource TextSecondaryBrush}"
+                            Text="{Binding L.WorkSapce_Search}" />
                         <!--  搜索框  -->
                         <TextBox
-                            Grid.Column="0"
-                            Padding="10,8"
-                            Background="{DynamicResource BgPrimaryBrush}"
-                            BorderBrush="{DynamicResource BorderBrush}"
-                            BorderThickness="1"
-                            CaretBrush="{DynamicResource TextPrimaryBrush}"
-                            FontSize="13"
-                            Foreground="{DynamicResource TextPrimaryBrush}"
-                            SelectionBrush="{DynamicResource AccentBlueBrush}"
-                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-
-                        <!--  全选/取消全选按钮  -->
-                        <StackPanel
                             Grid.Column="1"
-                            Margin="8,0,0,0"
-                            Orientation="Horizontal">
-                            <Button
-                                Margin="0,0,8,0"
-                                Padding="12,8"
-                                Command="{Binding SelectAllCommand}"
-                                Content="{Binding L.WorkSpaceDialog_SelectAll}"
-                                Style="{DynamicResource SecondaryButtonStyle}" />
-                            <Button
-                                Padding="12,8"
-                                Command="{Binding DeselectAllCommand}"
-                                Content="{Binding L.WorkSpaceDialog_DeselectAll}"
-                                Style="{DynamicResource SecondaryButtonStyle}" />
-                        </StackPanel>
+                            Margin="24,0,0,0"
+                            Style="{DynamicResource VSCodeTextBoxStyle}"
+                            Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" />
                     </Grid>
 
                     <!--  已选择数量提示  -->
@@ -198,152 +134,122 @@
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="1"
                         CornerRadius="6">
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <ItemsControl ItemsSource="{Binding AvailableProjects}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border
-                                            Padding="12,8"
-                                            Background="Transparent"
-                                            BorderBrush="{DynamicResource BorderBrush}"
-                                            BorderThickness="0,0,0,1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                    <ColumnDefinition Width="*" />
-                                                    <ColumnDefinition Width="Auto" />
-                                                </Grid.ColumnDefinitions>
+                        <Grid>
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding AvailableProjects}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border
+                                                Padding="12,8"
+                                                Background="Transparent"
+                                                BorderBrush="{DynamicResource BorderBrush}"
+                                                BorderThickness="0,0,0,1">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
 
-                                                <!--  复选框  -->
-                                                <CheckBox
-                                                    Grid.Column="0"
-                                                    VerticalAlignment="Center"
-                                                    IsChecked="{Binding IsSelected}" />
+                                                    <!--  复选框  -->
+                                                    <CheckBox
+                                                        Grid.Column="0"
+                                                        VerticalAlignment="Center"
+                                                        IsChecked="{Binding IsSelected}" />
 
-                                                <!--  项目图标  -->
-                                                <Image
-                                                    Grid.Column="1"
-                                                    Width="24"
-                                                    Height="24"
-                                                    Margin="8,0"
-                                                    VerticalAlignment="Center"
-                                                    Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}" />
+                                                    <!--  项目图标  -->
+                                                    <Image
+                                                        Grid.Column="1"
+                                                        Width="24"
+                                                        Height="24"
+                                                        Margin="8,0"
+                                                        VerticalAlignment="Center"
+                                                        Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}" />
 
-                                                <!--  项目信息  -->
-                                                <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                                                    <TextBlock
-                                                        FontSize="13"
-                                                        Foreground="{DynamicResource TextPrimaryBrush}"
-                                                        Text="{Binding ProjectName}" />
-                                                    <TextBlock
-                                                        FontSize="11"
-                                                        Foreground="{DynamicResource TextSecondaryBrush}"
-                                                        Text="{Binding ProjectPath}"
-                                                        TextTrimming="CharacterEllipsis" />
-                                                </StackPanel>
+                                                    <!--  项目信息  -->
+                                                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                                        <TextBlock
+                                                            FontSize="13"
+                                                            Foreground="{DynamicResource TextPrimaryBrush}"
+                                                            Text="{Binding ProjectName}" />
+                                                        <TextBlock
+                                                            FontSize="11"
+                                                            Foreground="{DynamicResource TextSecondaryBrush}"
+                                                            Text="{Binding ProjectPath}"
+                                                            TextTrimming="CharacterEllipsis" />
+                                                    </StackPanel>
 
-                                                <!--  排序按钮（仅在自定义顺序模式下显示）  -->
-                                                <StackPanel
-                                                    Grid.Column="3"
-                                                    Orientation="Horizontal"
-                                                    Visibility="{Binding DataContext.UseCustomLaunchOrder, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                    <Button
-                                                        Width="28"
-                                                        Height="28"
-                                                        Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="↑"
-                                                        Style="{DynamicResource SecondaryButtonStyle}" />
-                                                    <Button
-                                                        Width="28"
-                                                        Height="28"
-                                                        Margin="4,0,0,0"
-                                                        Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                        CommandParameter="{Binding}"
-                                                        Content="↓"
-                                                        Style="{DynamicResource SecondaryButtonStyle}" />
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </ScrollViewer>
+                                                    <!--  排序按钮（仅在自定义顺序模式下显示）  -->
+                                                    <StackPanel
+                                                        Grid.Column="3"
+                                                        Orientation="Horizontal"
+                                                        Visibility="{Binding DataContext.UseCustomLaunchOrder, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                        <Button
+                                                            Width="28"
+                                                            Height="28"
+                                                            Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="↑"
+                                                            Style="{DynamicResource SecondaryButtonStyle}" />
+                                                        <Button
+                                                            Width="28"
+                                                            Height="28"
+                                                            Margin="4,0,0,0"
+                                                            Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                            CommandParameter="{Binding}"
+                                                            Content="↓"
+                                                            Style="{DynamicResource SecondaryButtonStyle}" />
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+
+                        </Grid>
                     </Border>
                 </StackPanel>
+
             </Border>
-
-            <!--  步骤3：启动配置  -->
-            <Border
-                Padding="16"
-                Background="{DynamicResource BgSecondaryBrush}"
-                BorderBrush="{DynamicResource BorderBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
-                <StackPanel>
-                    <TextBlock
-                        Margin="0,0,0,12"
-                        FontSize="13"
-                        FontWeight="SemiBold"
-                        Foreground="{DynamicResource AccentBlueBrush}"
-                        Text="{Binding L.WorkSpaceDialog_Step3_LaunchConfig}" />
-
+            <StackPanel Grid.Row="1" Margin="12,0,0,0">
+                <!--  默认启动间隔时间  -->
+                <StackPanel Orientation="Horizontal">
                     <!--  使用自定义启动顺序  -->
                     <CheckBox
-                        Margin="0,0,0,12"
+                        VerticalAlignment="Center"
                         Content="{Binding L.WorkSpaceDialog_UseCustomLaunchOrder}"
                         FontSize="13"
                         Foreground="{DynamicResource TextPrimaryBrush}"
                         IsChecked="{Binding UseCustomLaunchOrder}" />
-
-                    <!--  默认启动间隔时间  -->
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="12"
-                            Foreground="{DynamicResource TextSecondaryBrush}"
-                            Text="{Binding L.WorkSpaceDialog_LaunchIntervalLabel}" />
-                        <TextBox
-                            Width="60"
-                            Margin="8,0"
-                            Padding="8,6"
-                            HorizontalContentAlignment="Center"
-                            Background="{DynamicResource BgPrimaryBrush}"
-                            BorderBrush="{DynamicResource BorderBrush}"
-                            BorderThickness="1"
-                            CaretBrush="{DynamicResource TextPrimaryBrush}"
-                            FontSize="13"
-                            Foreground="{DynamicResource TextPrimaryBrush}"
-                            SelectionBrush="{DynamicResource AccentBlueBrush}"
-                            Text="{Binding DefaultLaunchIntervalSeconds, UpdateSourceTrigger=PropertyChanged}">
-                            <TextBox.Style>
-                                <Style TargetType="TextBox">
-                                    <Style.Triggers>
-                                        <Trigger Property="IsFocused" Value="True">
-                                            <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
-                                        </Trigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </TextBox.Style>
-                        </TextBox>
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            FontSize="12"
-                            Foreground="{DynamicResource TextSecondaryBrush}"
-                            Text="秒" />
-                    </StackPanel>
-
-                    <!--  提示信息  -->
                     <TextBlock
-                        Margin="0,8,0,0"
-                        FontSize="11"
+                        Margin="12,0,0,0"
+                        VerticalAlignment="Center"
+                        FontSize="12"
                         Foreground="{DynamicResource TextSecondaryBrush}"
-                        Text="{Binding L.WorkSpaceDialog_LaunchIntervalHint}"
-                        TextWrapping="Wrap" />
+                        Text="{Binding L.WorkSpaceDialog_LaunchIntervalLabel}" />
+                    <TextBox
+                        Width="60"
+                        Margin="8,0"
+                        VerticalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding DefaultLaunchIntervalSeconds, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Text="秒" />
                 </StackPanel>
-            </Border>
-
+                <!--  提示信息  -->
+                <TextBlock
+                    Margin="0,8,0,0"
+                    FontSize="11"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding L.WorkSpaceDialog_LaunchIntervalHint}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
             <!--  错误提示  -->
             <TextBlock
                 Margin="0,12,0,0"

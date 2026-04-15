@@ -4,6 +4,9 @@ using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
+using DynamicData;
+using DynamicData.Binding;
+using System.Reactive.Concurrency;
 
 namespace ProjectHub.Application.ViewModels;
 
@@ -15,6 +18,7 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
 {
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IProjectAppService _projectAppService;
+    private readonly IScheduler mainScheduler;
 
     // ========== 对话框状态 ==========
     private bool _isEditMode;
@@ -25,7 +29,8 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     private string? _description;
 
     // ========== 项目选择 ==========
-    private ObservableCollection<SelectableProjectViewModel> _availableProjects = new();
+    private readonly SourceList<SelectableProjectViewModel> _sourceList = new();
+    private readonly ReadOnlyObservableCollection<SelectableProjectViewModel> _filteredProjects;
     private string _searchText = string.Empty;
 
     // ========== 启动配置 ==========
@@ -121,16 +126,12 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     /// <summary>
     /// 可选项目列表（带选择状态）
     /// </summary>
-    public ObservableCollection<SelectableProjectViewModel> AvailableProjects
-    {
-        get => _availableProjects;
-        private set => this.RaiseAndSetIfChanged(ref _availableProjects, value);
-    }
+    public ReadOnlyObservableCollection<SelectableProjectViewModel> AvailableProjects => _filteredProjects;
 
     /// <summary>
     /// 已选择的项目数量
     /// </summary>
-    public int SelectedProjectCount => AvailableProjects.Count(p => p.IsSelected);
+    public int SelectedProjectCount => _sourceList.Items.Count(p => p.IsSelected);
 
     /// <summary>
     /// 是否有选择项目
@@ -141,16 +142,6 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     /// 确认命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> ConfirmCommand { get; }
-
-    /// <summary>
-    /// 全选命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SelectAllCommand { get; }
-
-    /// <summary>
-    /// 取消全选命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> DeselectAllCommand { get; }
 
     /// <summary>
     /// 上移项目命令
@@ -164,10 +155,11 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
 
     public WorkSpaceDialogViewModel(
         IWorkSpaceAppService workSpaceAppService,
-        IProjectAppService projectAppService)
+        IProjectAppService projectAppService,IScheduler mainScheduler)
     {
         _workSpaceAppService = workSpaceAppService;
         _projectAppService = projectAppService;
+        this.mainScheduler = mainScheduler;
 
         // 初始化命令
         var canConfirm = this.WhenAnyValue(
@@ -175,25 +167,47 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
             name => !string.IsNullOrWhiteSpace(name));
 
         ConfirmCommand = ReactiveCommand.CreateFromTask(ConfirmAsync, canConfirm);
-        SelectAllCommand = ReactiveCommand.Create(SelectAll);
-        DeselectAllCommand = ReactiveCommand.Create(DeselectAll);
         MoveUpCommand = ReactiveCommand.Create<SelectableProjectViewModel>(MoveUp);
         MoveDownCommand = ReactiveCommand.Create<SelectableProjectViewModel>(MoveDown);
 
+        // 构建过滤管道
+        var filterPredicate = this
+            .WhenAnyValue(x => x.SearchText)
+            .Throttle(TimeSpan.FromMilliseconds(150))
+            .DistinctUntilChanged()
+            .ObserveOn(mainScheduler)
+            .Select(BuildFilter);
+
+        _sourceList
+            .Connect()
+            .Filter(filterPredicate)
+            .ObserveOn(mainScheduler)
+            .Bind(out _filteredProjects)
+            .Subscribe();
+
         // 监听选择变化，更新计数
-        this.WhenAnyValue(x => x.AvailableProjects)
+        _sourceList
+            .Connect()
+            .WhenPropertyChanged(p => p.IsSelected)
             .Subscribe(_ =>
             {
-                foreach (var project in AvailableProjects)
-                {
-                    project.WhenAnyValue(p => p.IsSelected)
-                        .Subscribe(_ =>
-                        {
-                            this.RaisePropertyChanged(nameof(SelectedProjectCount));
-                            this.RaisePropertyChanged(nameof(HasSelectedProjects));
-                        });
-                }
+                this.RaisePropertyChanged(nameof(SelectedProjectCount));
+                this.RaisePropertyChanged(nameof(HasSelectedProjects));
             });
+    }
+
+    /// <summary>
+    /// 构建过滤条件
+    /// </summary>
+    private static Func<SelectableProjectViewModel, bool> BuildFilter(string? keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword))
+            return _ => true;
+
+        var lower = keyword.ToLowerInvariant();
+        return item =>
+            item.ProjectName.ToLowerInvariant().Contains(lower) ||
+            item.ProjectPath.ToLowerInvariant().Contains(lower);
     }
 
     /// <summary>
@@ -248,13 +262,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                 ProjectName = p.Name,
                 ProjectPath = p.Path,
                 ProjectType = p.Type.ToString(),
-                IconPath = p.CustomIconPath,
+                IconPath = !string.IsNullOrEmpty(p.CustomIconPath) ? p.CustomIconPath : p.Path,
                 IsSelected = selectedIdSet.Contains(p.Id),
                 SortOrder = index
             })
             .ToList();
 
-        AvailableProjects = new ObservableCollection<SelectableProjectViewModel>(viewModels);
+        _sourceList.Clear();
+        _sourceList.AddRange(viewModels);
     }
 
     /// <summary>
@@ -264,7 +279,7 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     {
         try
         {
-            var selectedProjectIds = AvailableProjects
+            var selectedProjectIds = _sourceList.Items
                 .Where(p => p.IsSelected)
                 .Select(p => p.ProjectId)
                 .ToList();
@@ -324,35 +339,6 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
         }
     }
 
-    /// <summary>
-    /// 取消
-    /// </summary>
-    private void OnCancel()
-    {
-        Close(false);
-    }
-
-    /// <summary>
-    /// 全选
-    /// </summary>
-    private void SelectAll()
-    {
-        foreach (var project in AvailableProjects)
-        {
-            project.IsSelected = true;
-        }
-    }
-
-    /// <summary>
-    /// 取消全选
-    /// </summary>
-    private void DeselectAll()
-    {
-        foreach (var project in AvailableProjects)
-        {
-            project.IsSelected = false;
-        }
-    }
 
     /// <summary>
     /// 上移项目（仅在自定义顺序模式下有效）
@@ -361,10 +347,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     {
         if (!UseCustomLaunchOrder) return;
 
-        var index = AvailableProjects.IndexOf(project);
+        var list = _sourceList.Items.ToList();
+        var index = list.IndexOf(project);
         if (index > 0)
         {
-            AvailableProjects.Move(index, index - 1);
+            list.RemoveAt(index);
+            list.Insert(index - 1, project);
+            _sourceList.Clear();
+            _sourceList.AddRange(list);
             UpdateSortOrders();
         }
     }
@@ -376,10 +366,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     {
         if (!UseCustomLaunchOrder) return;
 
-        var index = AvailableProjects.IndexOf(project);
-        if (index < AvailableProjects.Count - 1)
+        var list = _sourceList.Items.ToList();
+        var index = list.IndexOf(project);
+        if (index < list.Count - 1)
         {
-            AvailableProjects.Move(index, index + 1);
+            list.RemoveAt(index);
+            list.Insert(index + 1, project);
+            _sourceList.Clear();
+            _sourceList.AddRange(list);
             UpdateSortOrders();
         }
     }
@@ -389,9 +383,10 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
     /// </summary>
     private void UpdateSortOrders()
     {
-        for (int i = 0; i < AvailableProjects.Count; i++)
+        var list = _sourceList.Items.ToList();
+        for (int i = 0; i < list.Count; i++)
         {
-            AvailableProjects[i].SortOrder = i;
+            list[i].SortOrder = i;
         }
     }
 }

@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -31,7 +90,7 @@
               <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -58,8 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  
-  <!-- 通用 -->
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
   </data>
@@ -81,8 +138,6 @@
   <data name="Close" xml:space="preserve">
     <value>关闭</value>
   </data>
-  
-  <!-- 项目管理 -->
   <data name="Project_Create" xml:space="preserve">
     <value>创建项目</value>
   </data>
@@ -98,8 +153,6 @@
   <data name="Project_OpenFolder" xml:space="preserve">
     <value>打开文件夹</value>
   </data>
-  
-  <!-- 对话框 -->
   <data name="DeleteConfirm_Title" xml:space="preserve">
     <value>确认删除</value>
   </data>
@@ -109,8 +162,6 @@
   <data name="DeleteConfirm_Success" xml:space="preserve">
     <value>删除成功</value>
   </data>
-  
-  <!-- 消息提示 -->
   <data name="Message_SaveSuccess" xml:space="preserve">
     <value>保存成功</value>
   </data>
@@ -120,8 +171,6 @@
   <data name="Message_LoadFailed" xml:space="preserve">
     <value>加载失败</value>
   </data>
-  
-  <!-- 分组和标签 -->
   <data name="Group_Create" xml:space="preserve">
     <value>创建分组</value>
   </data>
@@ -131,8 +180,6 @@
   <data name="Tag_Remove" xml:space="preserve">
     <value>移除标签</value>
   </data>
-
-  <!-- 侧边栏 -->
   <data name="Sidebar_WorkFolders" xml:space="preserve">
     <value>📁 工作文件夹</value>
   </data>
@@ -184,13 +231,9 @@
   <data name="Sidebar_TagSettings" xml:space="preserve">
     <value>标签设置</value>
   </data>
-
-  <!-- 头部 -->
   <data name="Header_Search" xml:space="preserve">
     <value>搜索项目...</value>
   </data>
-
-  <!-- Header 按钮 -->
   <data name="Header_Language" xml:space="preserve">
     <value>切换语言</value>
   </data>
@@ -200,8 +243,6 @@
   <data name="Header_Settings" xml:space="preserve">
     <value>设置</value>
   </data>
-
-  <!-- 状态栏 -->
   <data name="Status_Ready" xml:space="preserve">
     <value>就绪</value>
   </data>
@@ -220,8 +261,6 @@
   <data name="Status_TaggedProjects" xml:space="preserve">
     <value>标签项目: {0}</value>
   </data>
-
-  <!-- 文件夹对话框 -->
   <data name="Folder_NamePlaceholder" xml:space="preserve">
     <value>请输入文件夹名称</value>
   </data>
@@ -237,8 +276,6 @@
   <data name="Folder_Error_InvalidChars" xml:space="preserve">
     <value>文件夹名称不能包含特殊字符 (\ / : * ? " &lt; &gt; |)</value>
   </data>
-
-  <!-- 项目对话框 -->
   <data name="ProjectDialog_Title" xml:space="preserve">
     <value>添加项目</value>
   </data>
@@ -287,8 +324,6 @@
   <data name="ProjectDialog_ResetIcon" xml:space="preserve">
     <value>重置</value>
   </data>
-  
-  <!-- 消息提示 -->
   <data name="Message_Success" xml:space="preserve">
     <value>成功</value>
   </data>
@@ -304,8 +339,6 @@
   <data name="Message_DeleteFailed" xml:space="preserve">
     <value>删除失败</value>
   </data>
-
-  <!-- 工作空间对话框 -->
   <data name="WorkSpaceDialog_Title_Add" xml:space="preserve">
     <value>添加工作空间</value>
   </data>
@@ -342,8 +375,6 @@
   <data name="WorkSpaceDialog_LaunchIntervalHint" xml:space="preserve">
     <value>提示：设置项目启动之间的等待时间（秒），0 表示连续启动不等待</value>
   </data>
-
-  <!-- 工作空间管理 -->
   <data name="WorkSpace_Create" xml:space="preserve">
     <value>创建工作空间</value>
   </data>
@@ -364,5 +395,8 @@
   </data>
   <data name="Message_WorkSpaceDeleted" xml:space="preserve">
     <value>工作空间 "{0}" 已删除</value>
+  </data>
+  <data name="WorkSapce_Search" xml:space="preserve">
+    <value>搜索</value>
   </data>
 </root>

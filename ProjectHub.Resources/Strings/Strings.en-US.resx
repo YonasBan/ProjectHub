@@ -279,6 +279,12 @@
   <data name="ProjectDialog_Title" xml:space="preserve">
     <value>Add Project</value>
   </data>
+  <data name="ProjectDialog_Title_Add" xml:space="preserve">
+    <value>Add Project</value>
+  </data>
+  <data name="ProjectDialog_Title_Edit" xml:space="preserve">
+    <value>Edit Project</value>
+  </data>
   <data name="ProjectDialog_NameLabel" xml:space="preserve">
     <value>Project Name</value>
   </data>
@@ -318,8 +324,6 @@
   <data name="ProjectDialog_ResetIcon" xml:space="preserve">
     <value>Reset</value>
   </data>
-  
-  <!-- 消息提示 -->
   <data name="Message_Success" xml:space="preserve">
     <value>Success</value>
   </data>
@@ -335,8 +339,6 @@
   <data name="Message_DeleteFailed" xml:space="preserve">
     <value>Delete failed</value>
   </data>
-
-  <!-- 工作空间对话框 -->
   <data name="WorkSpaceDialog_Title_Add" xml:space="preserve">
     <value>Add Workspace</value>
   </data>
@@ -373,8 +375,6 @@
   <data name="WorkSpaceDialog_LaunchIntervalHint" xml:space="preserve">
     <value>Tip: Set the wait time between project launches (seconds), 0 means continuous launch without waiting</value>
   </data>
-
-  <!-- 工作空间管理 -->
   <data name="WorkSpace_Create" xml:space="preserve">
     <value>Create Workspace</value>
   </data>
@@ -395,5 +395,8 @@
   </data>
   <data name="Message_WorkSpaceDeleted" xml:space="preserve">
     <value>Workspace "{0}" deleted</value>
+  </data>
+  <data name="WorkSapce_Search" xml:space="preserve">
+    <value>Search</value>
   </data>
 </root>

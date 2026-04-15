@@ -52,7 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="projecthub.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
