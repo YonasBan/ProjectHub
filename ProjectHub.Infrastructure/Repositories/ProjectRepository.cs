@@ -21,13 +21,17 @@ public class ProjectRepository : IProjectRepository
     public async Task<Project?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        return await ctx.Projects.FindAsync(new object[] { id }, cancellationToken);
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        return await ctx.Projects.ToListAsync(cancellationToken);
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Project> AddAsync(Project entity, CancellationToken cancellationToken = default)
@@ -48,7 +52,8 @@ public class ProjectRepository : IProjectRepository
     public async Task DeleteAsync(Project entity, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        ctx.Projects.Remove(entity);
+        entity.SoftDelete();
+        ctx.Projects.Update(entity);
         await ctx.SaveChangesAsync(cancellationToken);
     }
 
@@ -60,6 +65,7 @@ public class ProjectRepository : IProjectRepository
         {
             // 查询未归属工作文件夹的项目
             var allProjectIds = await ctx.Projects
+                .Where(p => !p.IsDeleted)
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
             
@@ -70,7 +76,7 @@ public class ProjectRepository : IProjectRepository
             var notInFolderIds = allProjectIds.Except(projectInFolderIds).ToList();
             
             return await ctx.Projects
-                .Where(p => notInFolderIds.Contains(p.Id))
+                .Where(p => !p.IsDeleted && notInFolderIds.Contains(p.Id))
                 .ToListAsync(cancellationToken);
         }
 
@@ -81,7 +87,7 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
 
         return await ctx.Projects
-            .Where(p => projectIds.Contains(p.Id))
+            .Where(p => !p.IsDeleted && projectIds.Contains(p.Id))
             .ToListAsync(cancellationToken);
     }
 
@@ -93,6 +99,7 @@ public class ProjectRepository : IProjectRepository
         {
             // 查询未归属工作空间的项目
             var allProjectIds = await ctx.Projects
+                .Where(p => !p.IsDeleted)
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
             
@@ -103,7 +110,7 @@ public class ProjectRepository : IProjectRepository
             var notInSpaceIds = allProjectIds.Except(projectInSpaceIds).ToList();
             
             return await ctx.Projects
-                .Where(p => notInSpaceIds.Contains(p.Id))
+                .Where(p => !p.IsDeleted && notInSpaceIds.Contains(p.Id))
                 .ToListAsync(cancellationToken);
         }
 
@@ -114,7 +121,7 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
 
         return await ctx.Projects
-            .Where(p => projectIds.Contains(p.Id))
+            .Where(p => !p.IsDeleted && projectIds.Contains(p.Id))
             .ToListAsync(cancellationToken);
     }
 
@@ -122,6 +129,7 @@ public class ProjectRepository : IProjectRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Projects
+            .Where(p => !p.IsDeleted)
             .Where(p => p.Name.Contains(keyword) || 
                        p.Path.Contains(keyword) || 
                        (p.Description != null && p.Description.Contains(keyword)))
@@ -132,7 +140,7 @@ public class ProjectRepository : IProjectRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Projects
-            .Where(p => p.LastOpenedAt != null)
+            .Where(p => !p.IsDeleted && p.LastOpenedAt != null)
             .OrderByDescending(p => p.LastOpenedAt)
             .Take(count)
             .ToListAsync(cancellationToken);
@@ -142,7 +150,7 @@ public class ProjectRepository : IProjectRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Projects
-            .Where(p => p.IsFavorite)
+            .Where(p => !p.IsDeleted && p.IsFavorite)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
     }
@@ -151,6 +159,7 @@ public class ProjectRepository : IProjectRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Projects
+            .Where(p => !p.IsDeleted)
             .AnyAsync(p => p.Path == path, cancellationToken);
     }
 
@@ -158,7 +167,7 @@ public class ProjectRepository : IProjectRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Projects
-            .Where(p => p.Type == type)
+            .Where(p => !p.IsDeleted && p.Type == type)
             .OrderBy(p => p.Name)
             .ToListAsync(cancellationToken);
     }

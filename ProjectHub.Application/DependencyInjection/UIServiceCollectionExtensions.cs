@@ -31,9 +31,9 @@ public static class UIServiceCollectionExtensions
     public static void AddAppServices(this IServiceCollection services)
     {
         // Application Services
-        services.AddScoped<IProjectAppService, ProjectAppService>();
-        services.AddScoped<IWorkFolderAppService, WorkFolderAppService>();
-        services.AddScoped<IWorkSpaceAppService, WorkSpaceAppService>();
-        services.AddScoped<ITagAppService, TagAppService>();
+        services.AddTransient<IProjectAppService, ProjectAppService>();
+        services.AddTransient<IWorkFolderAppService, WorkFolderAppService>();
+        services.AddTransient<IWorkSpaceAppService, WorkSpaceAppService>();
+        services.AddTransient<ITagAppService, TagAppService>();
     }
 }

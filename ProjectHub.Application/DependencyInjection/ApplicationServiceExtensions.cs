@@ -15,16 +15,16 @@ public static class ApplicationServiceExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         // 注册项目应用服务
-        services.AddScoped<IProjectAppService, ProjectAppService>();
+        services.AddTransient<IProjectAppService, ProjectAppService>();
 
         // 注册工作文件夹应用服务
-        services.AddScoped<IWorkFolderAppService, WorkFolderAppService>();
+        services.AddTransient<IWorkFolderAppService, WorkFolderAppService>();
 
         // 注册工作空间应用服务
-        services.AddScoped<IWorkSpaceAppService, WorkSpaceAppService>();
+        services.AddTransient<IWorkSpaceAppService, WorkSpaceAppService>();
 
         // 注册标签应用服务
-        services.AddScoped<ITagAppService, TagAppService>();
+        services.AddTransient<ITagAppService, TagAppService>();
 
         // TODO: 注册清理应用服务
         // services.AddScoped<ICleanupAppService, CleanupAppService>();

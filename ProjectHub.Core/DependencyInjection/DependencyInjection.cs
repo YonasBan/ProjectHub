@@ -64,10 +64,10 @@ public static class DependencyInjection
         services.AddDbContextFactory<AppDbContext>(options =>options.UseSqlite(connectionString));
 
         // 注册仓储
-        services.AddScoped<IProjectRepository, ProjectRepository>();
-        services.AddScoped<IWorkFolderRepository, WorkFolderRepository>();
-        services.AddScoped<IWorkSpaceRepository, WorkSpaceRepository>();
-        services.AddScoped<ITagRepository, TagRepository>();
+        services.AddTransient<IProjectRepository, ProjectRepository>();
+        services.AddTransient<IWorkFolderRepository, WorkFolderRepository>();
+        services.AddTransient<IWorkSpaceRepository, WorkSpaceRepository>();
+        services.AddTransient<ITagRepository, TagRepository>();
 
         return services;
     }

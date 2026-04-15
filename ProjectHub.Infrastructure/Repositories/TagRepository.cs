@@ -20,13 +20,17 @@ public class TagRepository : ITagRepository
     public async Task<Tag?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        return await ctx.Tags.FindAsync(new object[] { id }, cancellationToken);
+        return await ctx.Tags
+            .Where(t => !t.IsDeleted)
+            .FirstOrDefaultAsync(t => t.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Tag>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        return await ctx.Tags.ToListAsync(cancellationToken);
+        return await ctx.Tags
+            .Where(t => !t.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Tag> AddAsync(Tag entity, CancellationToken cancellationToken = default)
@@ -47,7 +51,8 @@ public class TagRepository : ITagRepository
     public async Task DeleteAsync(Tag entity, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        ctx.Tags.Remove(entity);
+        entity.SoftDelete();
+        ctx.Tags.Update(entity);
         await ctx.SaveChangesAsync(cancellationToken);
     }
 
@@ -58,6 +63,7 @@ public class TagRepository : ITagRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Tags
+            .Where(t => !t.IsDeleted)
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Name)
             .ToListAsync(cancellationToken);
@@ -70,6 +76,7 @@ public class TagRepository : ITagRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.Tags
+            .Where(t => !t.IsDeleted)
             .AnyAsync(t => t.Name == name, cancellationToken);
     }
 
@@ -109,7 +116,7 @@ public class TagRepository : ITagRepository
             .ToListAsync(cancellationToken);
 
         return await ctx.Tags
-            .Where(t => tagIds.Contains(t.Id))
+            .Where(t => !t.IsDeleted && tagIds.Contains(t.Id))
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Name)
             .ToListAsync(cancellationToken);
@@ -127,7 +134,7 @@ public class TagRepository : ITagRepository
             .ToListAsync(cancellationToken);
 
         return await ctx.Tags
-            .Where(t => tagIds.Contains(t.Id))
+            .Where(t => !t.IsDeleted && tagIds.Contains(t.Id))
             .OrderBy(t => t.SortOrder)
             .ThenBy(t => t.Name)
             .ToListAsync(cancellationToken);

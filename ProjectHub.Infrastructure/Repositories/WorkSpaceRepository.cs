@@ -20,13 +20,17 @@ public class WorkSpaceRepository : IWorkSpaceRepository
     public async Task<WorkSpace?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        return await ctx.WorkSpaces.FindAsync(new object[] { id }, cancellationToken);
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        return await ctx.WorkSpaces.ToListAsync(cancellationToken);
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<WorkSpace> AddAsync(WorkSpace entity, CancellationToken cancellationToken = default)
@@ -47,7 +51,8 @@ public class WorkSpaceRepository : IWorkSpaceRepository
     public async Task DeleteAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        ctx.WorkSpaces.Remove(entity);
+        entity.SoftDelete();
+        ctx.WorkSpaces.Update(entity);
         await ctx.SaveChangesAsync(cancellationToken);
     }
 
@@ -57,12 +62,13 @@ public class WorkSpaceRepository : IWorkSpaceRepository
         
         // 查询工作空间（包含关联的项目数量）
         var workSpaces = await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
             .Select(w => new
             {
                 WorkSpace = w,
                 ProjectCount = ctx.ProjectWorkSpaces
                     .Count(pws => pws.WorkSpaceId == w.Id && 
-                                  !ctx.Projects.Any(p => p.Id == pws.ProjectId))
+                                  !ctx.Projects.Any(p => p.Id == pws.ProjectId && !p.IsDeleted))
             })
             .OrderBy(x => x.WorkSpace.SortOrder)
             .ThenBy(x => x.WorkSpace.Name)
@@ -81,6 +87,7 @@ public class WorkSpaceRepository : IWorkSpaceRepository
     {
         await using var ctx = _factory.CreateDbContext();
         return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
 
@@ -89,7 +96,7 @@ public class WorkSpaceRepository : IWorkSpaceRepository
         await using var ctx = _factory.CreateDbContext();
         // 按最近打开时间降序排序，获取指定数量的工作空间
         return await ctx.WorkSpaces
-            .Where(w => w.LastOpenedAt.HasValue)
+            .Where(w => !w.IsDeleted && w.LastOpenedAt.HasValue)
             .OrderByDescending(w => w.LastOpenedAt)
             .Take(count)
             .ToListAsync(cancellationToken);

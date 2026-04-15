@@ -20,15 +20,17 @@ public class WorkFolderRepository : IWorkFolderRepository
     public async Task<WorkFolder?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-
-        return await ctx.WorkFolders.FindAsync(new object[] { id }, cancellationToken);
+        return await ctx.WorkFolders
+            .Where(w => !w.IsDeleted)
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkFolder>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-
-        return await ctx.WorkFolders.ToListAsync(cancellationToken);
+        return await ctx.WorkFolders
+            .Where(w => !w.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<WorkFolder> AddAsync(WorkFolder entity, CancellationToken cancellationToken = default)
@@ -51,8 +53,8 @@ public class WorkFolderRepository : IWorkFolderRepository
     public async Task DeleteAsync(WorkFolder entity, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-
-        ctx.WorkFolders.Remove(entity);
+        entity.SoftDelete();
+        ctx.WorkFolders.Update(entity);
         await ctx.SaveChangesAsync(cancellationToken);
     }
 
@@ -62,12 +64,13 @@ public class WorkFolderRepository : IWorkFolderRepository
 
         // 查询工作文件夹（包含关联的项目数量）
         var workFolders = await ctx.WorkFolders
+            .Where(w => !w.IsDeleted)
             .Select(w => new
             {
                 WorkFolder = w,
                 ProjectCount = ctx.ProjectWorkFolders
                     .Count(pwf => pwf.WorkFolderId == w.Id &&
-                                  !ctx.Projects.Any(p => p.Id == pwf.ProjectId))
+                                  !ctx.Projects.Any(p => p.Id == pwf.ProjectId && !p.IsDeleted))
             })
             .OrderBy(x => x.WorkFolder.SortOrder)
             .ThenBy(x => x.WorkFolder.Name)
@@ -87,6 +90,7 @@ public class WorkFolderRepository : IWorkFolderRepository
         await using var ctx = _factory.CreateDbContext();
 
         return await ctx.WorkFolders
+            .Where(w => !w.IsDeleted)
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
 
@@ -95,6 +99,7 @@ public class WorkFolderRepository : IWorkFolderRepository
         await using var ctx = _factory.CreateDbContext();
 
         return await ctx.WorkFolders
+            .Where(w => !w.IsDeleted)
             .AnyAsync(w => w.Name == name && w.ParentId == parentId, cancellationToken);
     }
 }
