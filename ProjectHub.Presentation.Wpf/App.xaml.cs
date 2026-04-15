@@ -129,6 +129,7 @@ public partial class App : System.Windows.Application
     {
         AppLocator.CurrentMutable.Register(() => new InputDialog(), typeof(IViewFor<CreateFolderDialogViewModel>));
         AppLocator.CurrentMutable.Register(() => new ProjectDialog(), typeof(IViewFor<ProjectDialogViewModel>));
+        AppLocator.CurrentMutable.Register(() => new WorkSpaceDialog(), typeof(IViewFor<WorkSpaceDialogViewModel>));
     }
     /// <summary>
     /// Configures application settings from multiple sources.

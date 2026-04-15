@@ -45,6 +45,7 @@ public static class ApplicationServiceExtensions
         // 对话框 ViewModels - Transient（每次创建新实例）
         services.AddTransient<ViewModels.CreateFolderDialogViewModel>();
         services.AddTransient<ViewModels.ProjectDialogViewModel>();
+        services.AddTransient<ViewModels.WorkSpaceDialogViewModel>();
 
         return services;
     }

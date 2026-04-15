@@ -64,6 +64,12 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         await _workSpaceRepository.DeleteAsync(workSpace, cancellationToken);
     }
 
+    public async Task<WorkSpaceDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+    {
+        var workSpace = await _workSpaceRepository.GetByIdAsync(id, cancellationToken);
+        return workSpace == null ? null : MapToDto(workSpace);
+    }
+
     public async Task<IReadOnlyList<WorkSpaceDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
         var workSpaces = await _workSpaceRepository.GetAllWithProjectCountAsync(cancellationToken);
@@ -139,7 +145,17 @@ public class WorkSpaceAppService : IWorkSpaceAppService
             LastOpenedAt = workSpace.LastOpenedAt,
             CreatedAt = workSpace.CreatedAt,
             UpdatedAt = workSpace.UpdatedAt,
-            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList()
+            EnabledProjectIds = workSpace.GetEnabledProjectIds().ToList(),
+            UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder,
+            DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds,
+            LaunchOrders = workSpace.GetLaunchOrder()
+                .Select(o => new WorkSpaceProjectLaunchOrderDto
+                {
+                    ProjectId = o.ProjectId,
+                    Order = o.Order,
+                    IntervalSeconds = o.IntervalSeconds
+                })
+                .ToList()
         };
     }
 }

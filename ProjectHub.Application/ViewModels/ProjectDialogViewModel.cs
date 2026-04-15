@@ -196,21 +196,21 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         Mode = DialogMode.Edit;
         EditProjectId = project.Id;
-        
+
         ProjectName = project.Name;
         ProjectPath = project.Path;
         Description = project.Description ?? string.Empty;
         IconPath = project.CustomIconPath;
-        
+
         // TODO: DefaultProgram 需要从项目配置中获取
         // 暂时使用项目路径作为默认程序
         DefaultProgram = project.Path;
-        
+
         this.RaisePropertyChanged(nameof(DialogTitle));
         this.RaisePropertyChanged(nameof(ConfirmButtonText));
         this.RaisePropertyChanged(nameof(IsEditMode));
         this.RaisePropertyChanged(nameof(IsAddMode));
-        
+
         _logger.LogInformation($"初始化编辑模式，项目ID: {project.Id}");
     }
 
@@ -258,19 +258,19 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         if (!string.IsNullOrEmpty(path))
         {
             ProjectPath = path;
-            
+
             // 自动提取项目名称（从文件名）
             if (string.IsNullOrWhiteSpace(ProjectName) || Mode == DialogMode.Add)
             {
                 ProjectName = System.IO.Path.GetFileNameWithoutExtension(path);
             }
-            
+
             // 自动检测默认打开方式
             DetectDefaultProgram(path);
-            
+
             // 更新图标
             UpdateIconFromPath();
-            
+
             _logger.LogInformation($"用户选择了路径: {path}");
         }
     }
@@ -283,19 +283,9 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         try
         {
             var extension = System.IO.Path.GetExtension(filePath).ToLowerInvariant();
-            
-            // 根据文件类型设置默认打开方式
-            string? defaultProgram = extension switch
-            {
-                ".sln" or ".slnx" or ".csproj" => DetectVisualStudio(),
-                ".exe" => filePath, // 可执行文件直接运行
-                ".bat" or ".cmd" => filePath,
-                ".ps1" => "powershell.exe",
-                ".sh" => "bash",
-                ".gradle" => DetectGradle(),
-                _ => GetDefaultProgramFromRegistry(extension)
-            };
 
+            // 根据文件类型设置默认打开方式
+            string? defaultProgram = GetDefaultProgramFromRegistry(extension);
             if (!string.IsNullOrEmpty(defaultProgram))
             {
                 DefaultProgram = defaultProgram;
@@ -431,7 +421,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         if (Mode == DialogMode.Add)
         {
             _logger.LogInformation($"确认添加项目: {ProjectName}");
-            
+
             // 创建 CreateProjectDto
             var dto = new CreateProjectDto
             {
@@ -442,7 +432,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 WorkFolderIds = [],
                 WorkSpaceIds = []
             };
-            
+
             if (_projectAppService != null)
             {
                 var result = await _projectAppService.CreateAsync(dto);
@@ -457,7 +447,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         else
         {
             _logger.LogInformation($"确认编辑项目: {ProjectName}, ID: {EditProjectId}");
-            
+
             if (_projectAppService != null && EditProjectId.HasValue)
             {
                 var updateDto = new UpdateProjectDto
@@ -469,7 +459,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     WorkFolderIds = [],
                     WorkSpaceIds = []
                 };
-                
+
                 var result = await _projectAppService.UpdateAsync(updateDto);
                 Close(result);
             }

@@ -120,6 +120,11 @@ public interface IWorkSpaceAppService
     Task DeleteAsync(long id, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// 获取工作空间详情
+    /// </summary>
+    Task<WorkSpaceDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// 获取所有工作空间 (含项目数量)
     /// </summary>
     Task<IReadOnlyList<WorkSpaceDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);

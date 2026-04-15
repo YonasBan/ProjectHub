@@ -622,36 +622,23 @@ public class MainViewModel : ViewModelBase
     {
         try
         {
+            if (SelectedTreeItem == null) return;
+
             switch (SelectedTreeItem.ItemType)
             {
                 case TreeItemType.AllProjects:
-                    // 显示添加项目对话框
-                    var viewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
-                    viewModel.InitializeForAdd();
-                    var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(viewModel);
+                    await AddProjectAsync();
+                    break;
 
-                    if (result.Confirmed && result.Value != null)
-                    {
-                        IsLoading = true;
-                        
-                        Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
-                        
-                        // 刷新项目列表
-                        await LoadProjectsAsync();
-                        
-                        // 显示成功提示
-                        _dialogService.ShowNotification(
-                            string.Format(L.Message_ProjectCreated, result.Value.Name),
-                            NotificationType.Success,
-                            3000);
-                    }
-                    else
-                    {
-                        Logger.LogInformation("用户取消创建项目");
-                    }
+                case TreeItemType.WorkSpace:
+                    await AddWorkSpaceAsync();
+                    break;
+
+                case TreeItemType.WorkFolder:
+                    // 在工作文件夹下添加项目（可以扩展）
+                    await AddProjectToFolderAsync(SelectedTreeItem.Id);
                     break;
             }
-
         }
         catch (Exception ex)
         {
@@ -662,6 +649,108 @@ public class MainViewModel : ViewModelBase
         finally
         {
             IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// 添加项目
+    /// </summary>
+    private async Task AddProjectAsync()
+    {
+        // 显示添加项目对话框
+        var viewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
+        viewModel.InitializeForAdd();
+        var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(viewModel);
+
+        if (result.Confirmed && result.Value != null)
+        {
+            IsLoading = true;
+            
+            Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
+            
+            // 刷新项目列表
+            await LoadProjectsAsync();
+            
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_ProjectCreated, result.Value.Name),
+                NotificationType.Success,
+                3000);
+        }
+        else
+        {
+            Logger.LogInformation("用户取消创建项目");
+        }
+    }
+
+    /// <summary>
+    /// 添加工作空间
+    /// </summary>
+    private async Task AddWorkSpaceAsync()
+    {
+        // 显示添加工作空间对话框
+        var viewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
+        await viewModel.InitializeForAddAsync();
+        var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, bool>(viewModel);
+
+        if (result.Confirmed && result.Value)
+        {
+            IsLoading = true;
+            
+            Logger.LogInformation("工作空间创建成功");
+            
+            // 刷新工作空间列表
+            await LoadWorkSpacesAsync();
+            
+            // 更新统计
+            UpdateStatistics();
+            
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_WorkSpaceCreated, viewModel.WorkSpaceName),
+                NotificationType.Success,
+                3000);
+        }
+        else
+        {
+            Logger.LogInformation("用户取消创建工作空间");
+        }
+    }
+
+    /// <summary>
+    /// 在指定文件夹下添加项目
+    /// </summary>
+    private async Task AddProjectToFolderAsync(long? folderId)
+    {
+        // 显示添加项目对话框
+        var viewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
+        viewModel.InitializeForAdd();
+        var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(viewModel);
+
+        if (result.Confirmed && result.Value != null)
+        {
+            IsLoading = true;
+            
+            // 如果指定了文件夹，将项目移动到该文件夹
+            if (folderId.HasValue)
+            {
+                await _workFolderAppService.MoveProjectToWorkFolderAsync(result.Value.Id, folderId.Value);
+            }
+            
+            Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
+            
+            // 刷新项目列表
+            await LoadProjectsAsync();
+            
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_ProjectCreated, result.Value.Name),
+                NotificationType.Success,
+                3000);
+        }
+        else
+        {
+            Logger.LogInformation("用户取消创建项目");
         }
     }
 

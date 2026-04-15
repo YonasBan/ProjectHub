@@ -129,6 +129,9 @@
   <data name="Save" xml:space="preserve">
     <value>Save</value>
   </data>
+  <data name="Add" xml:space="preserve">
+    <value>Add</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>Edit</value>
   </data>
@@ -322,5 +325,75 @@
   </data>
   <data name="Message_ProjectCreated" xml:space="preserve">
     <value>Project "{0}" created successfully!</value>
+  </data>
+  <data name="Message_ProjectUpdated" xml:space="preserve">
+    <value>Project "{0}" updated successfully!</value>
+  </data>
+  <data name="Message_ProjectDeleted" xml:space="preserve">
+    <value>Project "{0}" deleted</value>
+  </data>
+  <data name="Message_DeleteFailed" xml:space="preserve">
+    <value>Delete failed</value>
+  </data>
+
+  <!-- 工作空间对话框 -->
+  <data name="WorkSpaceDialog_Title_Add" xml:space="preserve">
+    <value>Add Workspace</value>
+  </data>
+  <data name="WorkSpaceDialog_Title_Edit" xml:space="preserve">
+    <value>Edit Workspace</value>
+  </data>
+  <data name="WorkSpaceDialog_Step1_BasicInfo" xml:space="preserve">
+    <value>Step 1: Basic Information</value>
+  </data>
+  <data name="WorkSpaceDialog_NameLabel" xml:space="preserve">
+    <value>Workspace Name</value>
+  </data>
+  <data name="WorkSpaceDialog_DescriptionLabel" xml:space="preserve">
+    <value>Description (Optional)</value>
+  </data>
+  <data name="WorkSpaceDialog_Step2_SelectProjects" xml:space="preserve">
+    <value>Step 2: Select Projects</value>
+  </data>
+  <data name="WorkSpaceDialog_SelectAll" xml:space="preserve">
+    <value>Select All</value>
+  </data>
+  <data name="WorkSpaceDialog_DeselectAll" xml:space="preserve">
+    <value>Deselect All</value>
+  </data>
+  <data name="WorkSpaceDialog_Step3_LaunchConfig" xml:space="preserve">
+    <value>Step 3: Launch Configuration</value>
+  </data>
+  <data name="WorkSpaceDialog_UseCustomLaunchOrder" xml:space="preserve">
+    <value>Use Custom Launch Order</value>
+  </data>
+  <data name="WorkSpaceDialog_LaunchIntervalLabel" xml:space="preserve">
+    <value>Default Launch Interval:</value>
+  </data>
+  <data name="WorkSpaceDialog_LaunchIntervalHint" xml:space="preserve">
+    <value>Tip: Set the wait time between project launches (seconds), 0 means continuous launch without waiting</value>
+  </data>
+
+  <!-- 工作空间管理 -->
+  <data name="WorkSpace_Create" xml:space="preserve">
+    <value>Create Workspace</value>
+  </data>
+  <data name="WorkSpace_Edit" xml:space="preserve">
+    <value>Edit Workspace</value>
+  </data>
+  <data name="WorkSpace_Delete" xml:space="preserve">
+    <value>Delete Workspace</value>
+  </data>
+  <data name="WorkSpace_LaunchAll" xml:space="preserve">
+    <value>Launch All Projects</value>
+  </data>
+  <data name="Message_WorkSpaceCreated" xml:space="preserve">
+    <value>Workspace "{0}" created successfully!</value>
+  </data>
+  <data name="Message_WorkSpaceUpdated" xml:space="preserve">
+    <value>Workspace "{0}" updated successfully!</value>
+  </data>
+  <data name="Message_WorkSpaceDeleted" xml:space="preserve">
+    <value>Workspace "{0}" deleted</value>
   </data>
 </root>

@@ -91,6 +91,7 @@ public class LocalizedStrings : ReactiveObject
     public string Cancel => ProjectHub.Resources.Strings.Strings.Cancel;
     public string Delete => ProjectHub.Resources.Strings.Strings.Delete;
     public string Save => ProjectHub.Resources.Strings.Strings.Save;
+    public string Add => ProjectHub.Resources.Strings.Strings.Add;
     public string Edit => ProjectHub.Resources.Strings.Strings.Edit;
     public string Close => ProjectHub.Resources.Strings.Strings.Close;
     public string Project_Create => ProjectHub.Resources.Strings.Strings.Project_Create;
@@ -160,4 +161,23 @@ public class LocalizedStrings : ReactiveObject
     public string Message_ProjectUpdated => ProjectHub.Resources.Strings.Strings.Message_ProjectUpdated;
     public string Message_ProjectDeleted => ProjectHub.Resources.Strings.Strings.Message_ProjectDeleted;
     public string Message_DeleteFailed => ProjectHub.Resources.Strings.Strings.Message_DeleteFailed;
+    public string WorkSpaceDialog_Title_Add => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_Title_Add;
+    public string WorkSpaceDialog_Title_Edit => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_Title_Edit;
+    public string WorkSpaceDialog_Step1_BasicInfo => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_Step1_BasicInfo;
+    public string WorkSpaceDialog_NameLabel => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_NameLabel;
+    public string WorkSpaceDialog_DescriptionLabel => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_DescriptionLabel;
+    public string WorkSpaceDialog_Step2_SelectProjects => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_Step2_SelectProjects;
+    public string WorkSpaceDialog_SelectAll => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_SelectAll;
+    public string WorkSpaceDialog_DeselectAll => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_DeselectAll;
+    public string WorkSpaceDialog_Step3_LaunchConfig => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_Step3_LaunchConfig;
+    public string WorkSpaceDialog_UseCustomLaunchOrder => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_UseCustomLaunchOrder;
+    public string WorkSpaceDialog_LaunchIntervalLabel => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_LaunchIntervalLabel;
+    public string WorkSpaceDialog_LaunchIntervalHint => ProjectHub.Resources.Strings.Strings.WorkSpaceDialog_LaunchIntervalHint;
+    public string WorkSpace_Create => ProjectHub.Resources.Strings.Strings.WorkSpace_Create;
+    public string WorkSpace_Edit => ProjectHub.Resources.Strings.Strings.WorkSpace_Edit;
+    public string WorkSpace_Delete => ProjectHub.Resources.Strings.Strings.WorkSpace_Delete;
+    public string WorkSpace_LaunchAll => ProjectHub.Resources.Strings.Strings.WorkSpace_LaunchAll;
+    public string Message_WorkSpaceCreated => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceCreated;
+    public string Message_WorkSpaceUpdated => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceUpdated;
+    public string Message_WorkSpaceDeleted => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceDeleted;
 }

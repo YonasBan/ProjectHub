@@ -72,6 +72,9 @@
   <data name="Save" xml:space="preserve">
     <value>保存</value>
   </data>
+  <data name="Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>编辑</value>
   </data>
@@ -300,5 +303,66 @@
   </data>
   <data name="Message_DeleteFailed" xml:space="preserve">
     <value>删除失败</value>
+  </data>
+
+  <!-- 工作空间对话框 -->
+  <data name="WorkSpaceDialog_Title_Add" xml:space="preserve">
+    <value>添加工作空间</value>
+  </data>
+  <data name="WorkSpaceDialog_Title_Edit" xml:space="preserve">
+    <value>编辑工作空间</value>
+  </data>
+  <data name="WorkSpaceDialog_Step1_BasicInfo" xml:space="preserve">
+    <value>步骤 1：基本信息</value>
+  </data>
+  <data name="WorkSpaceDialog_NameLabel" xml:space="preserve">
+    <value>工作空间名称</value>
+  </data>
+  <data name="WorkSpaceDialog_DescriptionLabel" xml:space="preserve">
+    <value>描述（可选）</value>
+  </data>
+  <data name="WorkSpaceDialog_Step2_SelectProjects" xml:space="preserve">
+    <value>步骤 2：选择项目</value>
+  </data>
+  <data name="WorkSpaceDialog_SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="WorkSpaceDialog_DeselectAll" xml:space="preserve">
+    <value>取消全选</value>
+  </data>
+  <data name="WorkSpaceDialog_Step3_LaunchConfig" xml:space="preserve">
+    <value>步骤 3：启动配置</value>
+  </data>
+  <data name="WorkSpaceDialog_UseCustomLaunchOrder" xml:space="preserve">
+    <value>使用自定义启动顺序</value>
+  </data>
+  <data name="WorkSpaceDialog_LaunchIntervalLabel" xml:space="preserve">
+    <value>默认启动间隔：</value>
+  </data>
+  <data name="WorkSpaceDialog_LaunchIntervalHint" xml:space="preserve">
+    <value>提示：设置项目启动之间的等待时间（秒），0 表示连续启动不等待</value>
+  </data>
+
+  <!-- 工作空间管理 -->
+  <data name="WorkSpace_Create" xml:space="preserve">
+    <value>创建工作空间</value>
+  </data>
+  <data name="WorkSpace_Edit" xml:space="preserve">
+    <value>编辑工作空间</value>
+  </data>
+  <data name="WorkSpace_Delete" xml:space="preserve">
+    <value>删除工作空间</value>
+  </data>
+  <data name="WorkSpace_LaunchAll" xml:space="preserve">
+    <value>启动所有项目</value>
+  </data>
+  <data name="Message_WorkSpaceCreated" xml:space="preserve">
+    <value>工作空间 "{0}" 创建成功！</value>
+  </data>
+  <data name="Message_WorkSpaceUpdated" xml:space="preserve">
+    <value>工作空间 "{0}" 更新成功！</value>
+  </data>
+  <data name="Message_WorkSpaceDeleted" xml:space="preserve">
+    <value>工作空间 "{0}" 已删除</value>
   </data>
 </root>
