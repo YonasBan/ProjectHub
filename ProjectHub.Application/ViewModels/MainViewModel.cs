@@ -338,16 +338,10 @@ public class MainViewModel : ViewModelBase
             })
             .DisposeWith(Disposables);
         // 订阅数据集合变化，自动重建树形结构
-        Projects.CollectionChanged += (_, _) => BuildSidebarTree();
         WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
-        WorkSpaces.CollectionChanged += (_, _) => BuildSidebarTree();
-        _ = LoadAllDataAsync();
 
-        // 延迟设置默认选中项，等待树形结构构建完成
-        this.WhenAnyValue(x => x.SidebarTreeItems)
-            .Where(items => items != null && items.Count > 0)
-            .Take(1)
-            .Subscribe(_ => SelectedTreeItem = SidebarTreeItems.First());
+        // 首次加载：只加载项目和文件夹（用于显示最近使用和工作文件夹）
+        _ = LoadInitialDataAsync();
 
         // 订阅 SelectedTreeItem 变化，更新右侧内容
         this.WhenAnyValue(x => x.SelectedTreeItem)
@@ -356,6 +350,59 @@ public class MainViewModel : ViewModelBase
             .DisposeWith(Disposables);
     }
 
+
+    /// <summary>
+    /// 首次加载数据（只加载必要数据）
+    /// </summary>
+    private async Task LoadInitialDataAsync()
+    {
+        // 只加载项目和工作文件夹（用于显示"最近使用"和侧边栏树）
+        await LoadProjectsAsync();
+        await LoadWorkFoldersAsync();
+        
+        // 更新统计
+        UpdateStatistics();
+        
+        // 构建侧边栏树形结构
+        BuildSidebarTree();
+        
+        // 默认选中"最近使用"，内容区域会自动显示最近使用的项目
+        if (SidebarTreeItems.Count > 0)
+        {
+            SelectedTreeItem = SidebarTreeItems.First(); // Recent
+        }
+    }
+
+    /// <summary>
+    /// 根据选中的树节点类型按需加载数据
+    /// </summary>
+    private async Task LoadDataForSelectedItemAsync(TreeItemViewModel selectedItem)
+    {
+        switch (selectedItem.ItemType)
+        {
+            case TreeItemType.WorkSpace:
+                // 切换到工作空间时才加载
+                if (WorkSpaces.Count == 0)
+                {
+                    await LoadWorkSpacesAsync();
+                }
+                break;
+
+            case TreeItemType.AllProjects:
+                // 所有项目数据已在初始加载时加载完成
+                break;
+
+            case TreeItemType.RecentProject:
+            case TreeItemType.FavoriteProject:
+            case TreeItemType.WorkFolder:
+                // 项目数据已在初始加载时加载完成
+                break;
+
+            case TreeItemType.TagSettings:
+                // 标签数据按需加载（待实现）
+                break;
+        }
+    }
 
     private async Task LoadAllDataAsync()
     {
@@ -915,8 +962,11 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 根据选中的树节点更新内容项
     /// </summary>
-    private void UpdateContentItems(TreeItemViewModel selectedItem)
+    private async void UpdateContentItems(TreeItemViewModel selectedItem)
     {
+        // 按需加载数据
+        await LoadDataForSelectedItemAsync(selectedItem);
+
         ContentItems.Clear();
 
         switch (selectedItem.ItemType)
@@ -942,11 +992,24 @@ public class MainViewModel : ViewModelBase
                 break;
 
             case TreeItemType.FavoriteProject:
-                // 显示收藏的项目
-                var favoriteProjects = Projects.Where(p => p.IsFavorite).ToList();
+                // 显示收藏的项目（按收藏时间排序）
+                var favoriteProjects = Projects
+                    .Where(p => p.IsFavorite)
+                    .OrderByDescending(p => p.FavoritedAt)
+                    .ToList();
                 foreach (var project in favoriteProjects)
                 {
                     ContentItems.Add(project);
+                }
+
+                // 显示收藏的工作空间（按收藏时间排序）
+                var favoriteWorkSpaces = WorkSpaces
+                    .Where(w => w.IsFavorite)
+                    .OrderByDescending(w => w.FavoritedAt)
+                    .ToList();
+                foreach (var workSpace in favoriteWorkSpaces)
+                {
+                    ContentItems.Add(workSpace);
                 }
                 break;
 
