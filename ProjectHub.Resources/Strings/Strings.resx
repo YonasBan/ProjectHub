@@ -402,4 +402,28 @@
   <data name="WorkSapce_Search" xml:space="preserve">
     <value>搜索</value>
   </data>
+  <data name="Project_LaunchCount" xml:space="preserve">
+    <value>启动 {0} 次</value>
+  </data>
+  <data name="WorkSpace_ProjectCount" xml:space="preserve">
+    <value>{0} 个项目</value>
+  </data>
+  <data name="WorkSpace_LastOpened" xml:space="preserve">
+    <value>上次打开 {0:yyyy-MM-dd HH:mm}</value>
+  </data>
+  <data name="Tooltip_Launch" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="Tooltip_Favorite" xml:space="preserve">
+    <value>收藏</value>
+  </data>
+  <data name="Tooltip_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Tooltip_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Tooltip_AddItem" xml:space="preserve">
+    <value>添加新项</value>
+  </data>
 </root>

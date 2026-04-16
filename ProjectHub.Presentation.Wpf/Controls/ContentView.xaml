@@ -141,7 +141,7 @@
                             VerticalAlignment="Center"
                             FontSize="11"
                             Foreground="{DynamicResource TextMutedBrush}"
-                            Text="{Binding LaunchCount, StringFormat=启动 {0} 次}" />
+                            Text="{Binding LaunchCountDisplay}" />
                         <StackPanel
                             Grid.Column="1"
                             HorizontalAlignment="Right"
@@ -151,7 +151,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding LaunchCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Launch, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <Button.Content>
                                     <svg:SvgViewbox
                                         Width="16"
@@ -164,7 +165,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding ToggleFavoriteCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Favorite, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <Button.Content>
                                     <svg:SvgViewbox
                                         Width="16"
@@ -177,7 +179,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding EditCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Edit, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <svg:SvgViewbox
                                     Width="16"
                                     Height="16"
@@ -188,7 +191,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding DeleteCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Delete, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <svg:SvgViewbox
                                     Width="16"
                                     Height="16"
@@ -282,7 +286,7 @@
                                 Margin="0,4,0,0"
                                 FontSize="11"
                                 Foreground="{DynamicResource TextMutedBrush}"
-                                Text="{Binding ProjectCount, StringFormat={}{0} 个项目}" />
+                                Text="{Binding ProjectCountDisplay}" />
                         </StackPanel>
                     </Grid>
 
@@ -311,7 +315,7 @@
                             VerticalAlignment="Center"
                             FontSize="11"
                             Foreground="{DynamicResource TextMutedBrush}"
-                            Text="{Binding LastOpenedAt, StringFormat=上次打开 {0:yyyy-MM-dd HH:mm}}"
+                            Text="{Binding LastOpenedDisplay}"
                             Visibility="{Binding LastOpenedAt, Converter={StaticResource BoolToVis}}" />
                         <StackPanel
                             Grid.Column="1"
@@ -323,7 +327,7 @@
                                 Margin="4,0,0,0"
                                 Command="{Binding LaunchAllCommand}"
                                 Style="{StaticResource IconButtonStyle}"
-                                ToolTip="启动所有项目">
+                                ToolTip="{Binding DataContext.L.WorkSpace_LaunchAll, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <Button.Content>
                                     <svg:SvgViewbox
                                         Width="16"
@@ -336,7 +340,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding ToggleFavoriteCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Favorite, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <Button.Content>
                                     <svg:SvgViewbox
                                         Width="16"
@@ -349,7 +354,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding EditCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Edit, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <svg:SvgViewbox
                                     Width="16"
                                     Height="16"
@@ -360,7 +366,8 @@
                                 Height="32"
                                 Margin="4,0,0,0"
                                 Command="{Binding DeleteCommand}"
-                                Style="{StaticResource IconButtonStyle}">
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Delete, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
                                 <svg:SvgViewbox
                                     Width="16"
                                     Height="16"
@@ -421,7 +428,7 @@
                     Content="+"
                     FontSize="18"
                     Style="{StaticResource IconButtonStyle}"
-                    ToolTip="添加新项"
+                    ToolTip="{Binding L.Tooltip_AddItem}"
                     Visibility="{Binding SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
             </Grid>
         </Border>
@@ -435,9 +442,7 @@
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplateSelector>
-                    <converters:ContentTemplateSelector
-                        ProjectTemplate="{StaticResource ProjectCardTemplate}"
-                        WorkSpaceTemplate="{StaticResource WorkSpaceCardTemplate}" />
+                    <converters:ContentTemplateSelector ProjectTemplate="{StaticResource ProjectCardTemplate}" WorkSpaceTemplate="{StaticResource WorkSpaceCardTemplate}" />
                 </ItemsControl.ItemTemplateSelector>
             </ItemsControl>
         </ScrollViewer>

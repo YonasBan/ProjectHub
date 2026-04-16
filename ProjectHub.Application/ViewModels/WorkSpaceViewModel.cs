@@ -1,6 +1,8 @@
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Localization;
 using ReactiveUI;
+using Splat;
 using System.Reactive;
 
 namespace ProjectHub.Application.ViewModels;
@@ -33,6 +35,23 @@ public partial class WorkSpaceViewModel : ReactiveObject
     public DateTime? FavoritedAt => _workSpaceDto.FavoritedAt;
 
     public DateTime? LastOpenedAt => _workSpaceDto.LastOpenedAt;
+    
+    /// <summary>
+    /// 本地化字符串访问器
+    /// </summary>
+    private static LocalizedStrings L => Locator.Current.GetService<LocalizedStrings>()!;
+    
+    /// <summary>
+    /// 项目数量显示文本（支持本地化）
+    /// </summary>
+    public string ProjectCountDisplay => string.Format(L.WorkSpace_ProjectCount, ProjectCount);
+    
+    /// <summary>
+    /// 上次打开时间显示文本（支持本地化）
+    /// </summary>
+    public string LastOpenedDisplay => LastOpenedAt.HasValue 
+        ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value) 
+        : "";
 
     /// <summary>
     /// Toggle favorite status command
@@ -79,6 +98,13 @@ public partial class WorkSpaceViewModel : ReactiveObject
         EditCommand = ReactiveCommand.Create(SendEditRequest);
         DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchAllCommand = ReactiveCommand.CreateFromTask(LaunchAllAsync);
+        
+        // 订阅语言变化，刷新本地化显示属性
+        L?.CultureChanged.Subscribe(_ =>
+        {
+            this.RaisePropertyChanged(nameof(ProjectCountDisplay));
+            this.RaisePropertyChanged(nameof(LastOpenedDisplay));
+        });
     }
 
     /// <summary>

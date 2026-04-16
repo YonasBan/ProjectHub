@@ -1,8 +1,10 @@
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Localization;
 using ProjectHub.Core.Extensions;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
+using Splat;
 using System.Reactive;
 
 namespace ProjectHub.Application.ViewModels;
@@ -47,6 +49,16 @@ public partial class ProjectViewModel : ReactiveObject
     public string LastOpenedDisplay => _projectDto.LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
     
     public int LaunchCount => _projectDto.LaunchCount;
+    
+    /// <summary>
+    /// 本地化字符串访问器
+    /// </summary>
+    private static LocalizedStrings L => Locator.Current.GetService<LocalizedStrings>()!;
+    
+    /// <summary>
+    /// 启动次数显示文本（支持本地化）
+    /// </summary>
+    public string LaunchCountDisplay => string.Format(L.Project_LaunchCount, LaunchCount);
     
     public string TotalUsageDurationDisplay => _projectDto.TotalUsageDuration.ToHumanReadableString();
     
@@ -130,6 +142,12 @@ public partial class ProjectViewModel : ReactiveObject
         EditCommand = ReactiveCommand.Create(SendEditRequest);
         DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
+        
+        // 订阅语言变化，刷新本地化显示属性
+        L?.CultureChanged.Subscribe(_ =>
+        {
+            this.RaisePropertyChanged(nameof(LaunchCountDisplay));
+        });
     }
 
     /// <summary>

@@ -402,4 +402,28 @@
   <data name="WorkSapce_Search" xml:space="preserve">
     <value>Search</value>
   </data>
+  <data name="Project_LaunchCount" xml:space="preserve">
+    <value>Launched {0} times</value>
+  </data>
+  <data name="WorkSpace_ProjectCount" xml:space="preserve">
+    <value>{0} projects</value>
+  </data>
+  <data name="WorkSpace_LastOpened" xml:space="preserve">
+    <value>Last opened {0:yyyy-MM-dd HH:mm}</value>
+  </data>
+  <data name="Tooltip_Launch" xml:space="preserve">
+    <value>Launch</value>
+  </data>
+  <data name="Tooltip_Favorite" xml:space="preserve">
+    <value>Favorite</value>
+  </data>
+  <data name="Tooltip_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Tooltip_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Tooltip_AddItem" xml:space="preserve">
+    <value>Add new item</value>
+  </data>
 </root>

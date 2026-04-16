@@ -710,7 +710,7 @@ public class MainViewModel : ViewModelBase
                 Logger.LogInformation("成功创建文件夹: {FolderName}, ID: {FolderId}", folderName, newFolder.Id);
 
                 parent.Children.Add(new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
-               
+
             }
             else
             {
@@ -740,7 +740,7 @@ public class MainViewModel : ViewModelBase
             {
                 return node;
             }
-            
+
             // 递归查找子节点
             var foundInChildren = FindParentNode(node.Children, target);
             if (foundInChildren != null)
@@ -757,29 +757,29 @@ public class MainViewModel : ViewModelBase
     private async Task DeleteFolderAsync(TreeItemViewModel current)
     {
         if (current == null) return;
-        
+
         try
         {
             Logger.LogInformation($"请求删除文件夹: {current.Name}");
-            
+
             // 显示确认对话框
             var confirmed = await _dialogService.ShowConfirmAsync(
                 L.DeleteConfirm_Title,
                 string.Format(L.DeleteConfirm_Message, current.Name));
-            
+
             if (!confirmed)
             {
                 Logger.LogInformation("用户取消删除文件夹");
                 return;
             }
-            
+
             IsLoading = true;
-            
+
             // 执行删除
             await _workFolderAppService.DeleteAsync(current.Id);
-            
+
             Logger.LogInformation($"文件夹删除成功: {current.Name}");
-            
+
             // 从侧边栏树中移除（查找父节点）
             var parentNode = FindParentNode(SidebarTreeItems, current);
             if (parentNode != null)
@@ -792,7 +792,7 @@ public class MainViewModel : ViewModelBase
                 // 从根节点移除
                 SidebarTreeItems.Remove(current);
             }
-            
+
             _dialogService.ShowNotification(
                 string.Format(L.Message_FolderDeleted, current.Name),
                 NotificationType.Success,
@@ -1148,6 +1148,10 @@ public class MainViewModel : ViewModelBase
                 case TreeItemType.TagSettings:
                     item.UpdateName(L.Sidebar_TagSettings);
                     break;
+            }
+            if (SelectedTreeItem.ItemType == item.ItemType&& SelectedTreeItem.ItemType != TreeItemType.WorkFolder)
+            {
+                SelectedTreeItem.Name = item.Name;
             }
         }
     }

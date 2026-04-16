@@ -376,6 +376,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 启动 {0} 次 的本地化字符串。
+        /// </summary>
+        public static string Project_LaunchCount {
+            get {
+                return ResourceManager.GetString("Project_LaunchCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 打开文件夹 的本地化字符串。
         /// </summary>
         public static string Project_OpenFolder {
@@ -763,6 +772,51 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 添加新项 的本地化字符串。
+        /// </summary>
+        public static string Tooltip_AddItem {
+            get {
+                return ResourceManager.GetString("Tooltip_AddItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除 的本地化字符串。
+        /// </summary>
+        public static string Tooltip_Delete {
+            get {
+                return ResourceManager.GetString("Tooltip_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编辑 的本地化字符串。
+        /// </summary>
+        public static string Tooltip_Edit {
+            get {
+                return ResourceManager.GetString("Tooltip_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 收藏 的本地化字符串。
+        /// </summary>
+        public static string Tooltip_Favorite {
+            get {
+                return ResourceManager.GetString("Tooltip_Favorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动 的本地化字符串。
+        /// </summary>
+        public static string Tooltip_Launch {
+            get {
+                return ResourceManager.GetString("Tooltip_Launch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 搜索 的本地化字符串。
         /// </summary>
         public static string WorkSapce_Search {
@@ -799,11 +853,29 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 上次打开 {0:yyyy-MM-dd HH:mm} 的本地化字符串。
+        /// </summary>
+        public static string WorkSpace_LastOpened {
+            get {
+                return ResourceManager.GetString("WorkSpace_LastOpened", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 启动所有项目 的本地化字符串。
         /// </summary>
         public static string WorkSpace_LaunchAll {
             get {
                 return ResourceManager.GetString("WorkSpace_LaunchAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0} 个项目 的本地化字符串。
+        /// </summary>
+        public static string WorkSpace_ProjectCount {
+            get {
+                return ResourceManager.GetString("WorkSpace_ProjectCount", resourceCulture);
             }
         }
         

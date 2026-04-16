@@ -182,4 +182,12 @@ public class LocalizedStrings : ReactiveObject
     public string Message_WorkSpaceDeleted => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceDeleted;
     public string Message_FolderDeleted => ProjectHub.Resources.Strings.Strings.Message_FolderDeleted;
     public string WorkSapce_Search => ProjectHub.Resources.Strings.Strings.WorkSapce_Search;
+    public string Project_LaunchCount => ProjectHub.Resources.Strings.Strings.Project_LaunchCount;
+    public string WorkSpace_ProjectCount => ProjectHub.Resources.Strings.Strings.WorkSpace_ProjectCount;
+    public string WorkSpace_LastOpened => ProjectHub.Resources.Strings.Strings.WorkSpace_LastOpened;
+    public string Tooltip_Launch => ProjectHub.Resources.Strings.Strings.Tooltip_Launch;
+    public string Tooltip_Favorite => ProjectHub.Resources.Strings.Strings.Tooltip_Favorite;
+    public string Tooltip_Edit => ProjectHub.Resources.Strings.Strings.Tooltip_Edit;
+    public string Tooltip_Delete => ProjectHub.Resources.Strings.Strings.Tooltip_Delete;
+    public string Tooltip_AddItem => ProjectHub.Resources.Strings.Strings.Tooltip_AddItem;
 }
