@@ -396,6 +396,9 @@
   <data name="Message_WorkSpaceDeleted" xml:space="preserve">
     <value>Workspace "{0}" deleted</value>
   </data>
+  <data name="Message_FolderDeleted" xml:space="preserve">
+    <value>Folder "{0}" deleted</value>
+  </data>
   <data name="WorkSapce_Search" xml:space="preserve">
     <value>Search</value>
   </data>

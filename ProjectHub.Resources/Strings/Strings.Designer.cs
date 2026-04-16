@@ -241,6 +241,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 文件夹 &quot;{0}&quot; 已删除 的本地化字符串。
+        /// </summary>
+        public static string Message_FolderDeleted {
+            get {
+                return ResourceManager.GetString("Message_FolderDeleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 加载失败 的本地化字符串。
         /// </summary>
         public static string Message_LoadFailed {

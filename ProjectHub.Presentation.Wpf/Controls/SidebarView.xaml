@@ -127,6 +127,8 @@
                                         Width="20"
                                         Height="20"
                                         Margin="4,0,0,0"
+                                        Command="{Binding DataContext.DeleteFolderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
                                         Content="&#x00D7;"
                                         FontSize="14"
                                         Style="{StaticResource IconButtonStyle}"

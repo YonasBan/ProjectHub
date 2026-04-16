@@ -135,6 +135,7 @@ public class MainViewModel : ViewModelBase
     /// 创建文件夹命令
     /// </summary>
     public ReactiveCommand<TreeItemViewModel, Unit> CreateFolderCommand { get; }
+    public ReactiveCommand<TreeItemViewModel, Unit> DeleteFolderCommand { get; }
     public ReactiveCommand<Unit, Unit> AddContentCommand { get; }
 
     /// <summary>
@@ -728,10 +729,86 @@ public class MainViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+    /// <summary>
+    /// 在树中查找指定节点的父节点
+    /// </summary>
+    private TreeItemViewModel? FindParentNode(ObservableCollection<TreeItemViewModel> nodes, TreeItemViewModel target)
+    {
+        foreach (var node in nodes)
+        {
+            if (node.Children.Contains(target))
+            {
+                return node;
+            }
+            
+            // 递归查找子节点
+            var foundInChildren = FindParentNode(node.Children, target);
+            if (foundInChildren != null)
+            {
+                return foundInChildren;
+            }
+        }
+        return null;
+    }
+
+    /// <summary>
+    /// 删除文件夹
+    /// </summary>
     private async Task DeleteFolderAsync(TreeItemViewModel current)
     {
-       
-           
+        if (current == null) return;
+        
+        try
+        {
+            Logger.LogInformation($"请求删除文件夹: {current.Name}");
+            
+            // 显示确认对话框
+            var confirmed = await _dialogService.ShowConfirmAsync(
+                L.DeleteConfirm_Title,
+                string.Format(L.DeleteConfirm_Message, current.Name));
+            
+            if (!confirmed)
+            {
+                Logger.LogInformation("用户取消删除文件夹");
+                return;
+            }
+            
+            IsLoading = true;
+            
+            // 执行删除
+            await _workFolderAppService.DeleteAsync(current.Id);
+            
+            Logger.LogInformation($"文件夹删除成功: {current.Name}");
+            
+            // 从侧边栏树中移除（查找父节点）
+            var parentNode = FindParentNode(SidebarTreeItems, current);
+            if (parentNode != null)
+            {
+                // 从父节点的 Children 中移除
+                parentNode.Children.Remove(current);
+            }
+            else
+            {
+                // 从根节点移除
+                SidebarTreeItems.Remove(current);
+            }
+            
+            _dialogService.ShowNotification(
+                string.Format(L.Message_FolderDeleted, current.Name),
+                NotificationType.Success,
+                3000);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "删除文件夹时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_DeleteFailed,
+                ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
     private async Task AddContentAsync()
     {

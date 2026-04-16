@@ -180,5 +180,6 @@ public class LocalizedStrings : ReactiveObject
     public string Message_WorkSpaceCreated => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceCreated;
     public string Message_WorkSpaceUpdated => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceUpdated;
     public string Message_WorkSpaceDeleted => ProjectHub.Resources.Strings.Strings.Message_WorkSpaceDeleted;
+    public string Message_FolderDeleted => ProjectHub.Resources.Strings.Strings.Message_FolderDeleted;
     public string WorkSapce_Search => ProjectHub.Resources.Strings.Strings.WorkSapce_Search;
 }
