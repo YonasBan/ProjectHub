@@ -50,16 +50,6 @@ public class TreeItemViewModel : ReactiveObject
     public TreeItemType ItemType { get; }
 
     /// <summary>
-    /// 是否已展开
-    /// </summary>
-    private bool _isExpanded;
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set => this.RaiseAndSetIfChanged(ref _isExpanded, value);
-    }
-
-    /// <summary>
     /// 是否被选中
     /// </summary>
     private bool _isSelected;
@@ -68,11 +58,6 @@ public class TreeItemViewModel : ReactiveObject
         get => _isSelected;
         set => this.RaiseAndSetIfChanged(ref _isSelected, value);
     }
-
-    /// <summary>
-    /// 是否鼠标悬停 (由 View 通过 Trigger 设置)
-    /// </summary>
-    public bool IsHovered { get; set; }
 
     /// <summary>
     /// 是否允许添加子项（工作空间、工作文件夹、所有项目）
@@ -91,27 +76,6 @@ public class TreeItemViewModel : ReactiveObject
     /// </summary>
     public ObservableCollection<TreeItemViewModel> Children { get; }
 
-    /// <summary>
-    /// 添加子节点命令
-    /// </summary>
-    private ReactiveCommand<Unit, Unit>? _addCommand;
-    public ReactiveCommand<Unit, Unit> AddCommand => _addCommand ??= ReactiveCommand.CreateFromTask(AddChildAsync);
-
-    /// <summary>
-    /// 删除节点命令
-    /// </summary>
-    private ReactiveCommand<Unit, Unit>? _deleteCommand;
-    public ReactiveCommand<Unit, Unit> DeleteCommand => _deleteCommand ??= ReactiveCommand.CreateFromTask(DeleteAsync);
-
-    /// <summary>
-    /// 委托：执行添加子节点的操作
-    /// </summary>
-    public Func<Task>? OnAddChild { get; set; }
-
-    /// <summary>
-    /// 委托：执行删除操作
-    /// </summary>
-    public Func<Task>? OnDelete { get; set; }
 
     public TreeItemViewModel(
         string name, 
@@ -142,23 +106,6 @@ public class TreeItemViewModel : ReactiveObject
         Name = newName;
     }
 
-    /// <summary>
-    /// 添加子节点的异步实现
-    /// </summary>
-    private async Task AddChildAsync()
-    {
-        if (OnAddChild != null)
-            await OnAddChild();
-    }
-
-    /// <summary>
-    /// 删除节点的异步实现
-    /// </summary>
-    private async Task DeleteAsync()
-    {
-        if (OnDelete != null)
-            await OnDelete();
-    }
 
     /// <summary>
     /// 根据节点类型获取对应的图标路径

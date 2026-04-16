@@ -44,22 +44,22 @@ public partial class SidebarView : ReactiveUserControl<MainViewModel>
                 })
                 .DisposeWith(disposables);
 
-            // ViewModel -> UI: 当 ViewModel 的 SelectedTreeItem 变化时，同步到 TreeView
-            // 注意：TreeView.SelectedItem 是只读的，需要通过 TreeViewItem.IsSelected 设置
-            this.WhenAnyValue(v => v.ViewModel!.SelectedTreeItem)
-                .Where(selected => selected != null)
-                .Subscribe(selected =>
-                {
-                    if (selected != null)
-                    {
-                        var container = FindTreeViewItem(NavigationTree, selected);
-                        if (container != null && !container.IsSelected)
-                        {
-                            container.IsSelected = true;
-                        }
-                    }
-                })
-                .DisposeWith(disposables);
+            //// ViewModel -> UI: 当 ViewModel 的 SelectedTreeItem 变化时，同步到 TreeView
+            //// 注意：TreeView.SelectedItem 是只读的，需要通过 TreeViewItem.IsSelected 设置
+            //this.WhenAnyValue(v => v.ViewModel!.SelectedTreeItem)
+            //    .Where(selected => selected != null)
+            //    .Subscribe(selected =>
+            //    {
+            //        if (selected != null)
+            //        {
+            //            var container = FindTreeViewItem(NavigationTree, selected);
+            //            if (container != null && !container.IsSelected)
+            //            {
+            //                container.IsSelected = true;
+            //            }
+            //        }
+            //    })
+            //    .DisposeWith(disposables);
         });
     }
 

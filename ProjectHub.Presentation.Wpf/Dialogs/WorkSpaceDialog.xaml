@@ -75,7 +75,7 @@
                         Foreground="{DynamicResource TextSecondaryBrush}"
                         Text="{Binding L.WorkSpaceDialog_DescriptionLabel}" />
                     <TextBox
-                        Height="60"
+                        Height="32"
                         VerticalContentAlignment="Top"
                         AcceptsReturn="True"
                         MaxLength="500"
@@ -146,9 +146,7 @@
                                                 BorderThickness="0,0,0,1">
                                                 <i:Interaction.Triggers>
                                                     <i:EventTrigger EventName="MouseLeftButtonDown">
-                                                        <i:InvokeCommandAction
-                                                            Command="{Binding DataContext.ToggleSelectCommand, RelativeSource={RelativeSource AncestorType=Window}}"
-                                                            CommandParameter="{Binding}" />
+                                                        <i:InvokeCommandAction Command="{Binding DataContext.ToggleSelectCommand, RelativeSource={RelativeSource AncestorType=Window}}" CommandParameter="{Binding}" />
                                                     </i:EventTrigger>
                                                 </i:Interaction.Triggers>
                                                 <Grid>

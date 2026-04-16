@@ -438,10 +438,7 @@ public class MainViewModel : ViewModelBase
                 // 项目相关节点：实时加载项目数据
                 await LoadProjectsAsync();
                 break;
-
             case TreeItemType.WorkSpace:
-                // 工作空间节点：实时加载工作空间数据
-                await LoadWorkSpacesAsync();
                 break;
 
             case TreeItemType.TagSettings:
@@ -506,7 +503,6 @@ public class MainViewModel : ViewModelBase
                 // 搜索为空时，根据当前选中的树节点重新加载数据
                 if (SelectedTreeItem != null)
                 {
-                    await LoadDataForSelectedItemAsync(SelectedTreeItem);
                     UpdateContentItems(SelectedTreeItem);
                 }
                 return;
@@ -552,7 +548,6 @@ public class MainViewModel : ViewModelBase
             // 根据当前选中的节点刷新对应数据
             if (SelectedTreeItem != null)
             {
-                await LoadDataForSelectedItemAsync(SelectedTreeItem);
                 UpdateContentItems(SelectedTreeItem);
             }
             
@@ -1079,11 +1074,7 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private async void UpdateContentItems(TreeItemViewModel selectedItem)
     {
-        // 按需加载数据
-        await LoadDataForSelectedItemAsync(selectedItem);
-
         ContentItems.Clear();
-
         switch (selectedItem.ItemType)
         {
             case TreeItemType.AllProjects:

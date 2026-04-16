@@ -70,48 +70,14 @@
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="16" />
-                                    <ColumnDefinition Width="16" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <!--  Expand/Collapse Arrow  -->
-                                <TextBlock
-                                    x:Name="ExpandArrow"
-                                    Grid.Column="0"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    FontSize="10"
-                                    Foreground="{DynamicResource TextMutedBrush}"
-                                    RenderTransformOrigin="0.5,0.5"
-                                    Tag="{Binding}"
-                                    Text="&#x25B6;">
-
-                                    <TextBlock.RenderTransform>
-                                        <RotateTransform x:Name="ExpandRotation" Angle="0" />
-                                    </TextBlock.RenderTransform>
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Visible" />
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Children.Count}" Value="0">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsSpecial}" Value="True">
-                                                    <Setter Property="Visibility" Value="Collapsed" />
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding IsExpanded}" Value="True">
-                                                    <Setter Property="Text" Value="&#x25BC;" />
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-
                                 <!--  Icon (using SharpVectors for SVG)  -->
                                 <svg:SvgViewbox
-                                    Grid.Column="1"
+                                    Grid.Column="0"
                                     Width="16"
                                     Height="16"
                                     HorizontalAlignment="Center"
@@ -120,8 +86,8 @@
 
                                 <!--  Label  -->
                                 <TextBlock
-                                    Grid.Column="2"
-                                    Margin="8,0,0,0"
+                                    Grid.Column="1"
+                                    Margin="2,0,0,0"
                                     VerticalAlignment="Center"
                                     FontSize="13"
                                     Foreground="{DynamicResource TextPrimaryBrush}"
@@ -129,7 +95,7 @@
 
                                 <!--  Count Badge  -->
                                 <Border
-                                    Grid.Column="3"
+                                    Grid.Column="2"
                                     Margin="8,0,0,0"
                                     Style="{StaticResource TreeCountBadgeStyle}">
                                     <TextBlock
@@ -141,14 +107,16 @@
                                 <!--  Action Buttons Panel (Add/Delete)  -->
                                 <StackPanel
                                     x:Name="ActionPanel"
-                                    Grid.Column="4"
-                                    Orientation="Horizontal"
+                                    Grid.Column="3"
+                                    IsHitTestVisible="False"
                                     Opacity="0"
-                                    IsHitTestVisible="False">
+                                    Orientation="Horizontal">
                                     <!--  Add Button  -->
                                     <Button
                                         Width="20"
                                         Height="20"
+                                        Command="{Binding DataContext.CreateFolderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
                                         Content="+"
                                         FontSize="14"
                                         Style="{StaticResource IconButtonStyle}"
