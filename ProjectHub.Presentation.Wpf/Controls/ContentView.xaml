@@ -35,6 +35,67 @@
                 <i:Interaction.Behaviors>
                     <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchCommand}" />
                 </i:Interaction.Behaviors>
+                <Border.ContextMenu>
+                    <ContextMenu Background="{DynamicResource BgSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}">
+                        <MenuItem
+                            Command="{Binding LaunchCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_Launch, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/start.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Command="{Binding ToggleFavoriteCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_ToggleFavorite, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/like.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Command="{Binding EditCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_Edit, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/edit.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Command="{Binding MoveToFolderCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_MoveToFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/folder.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Command="{Binding DeleteCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_Delete, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/delete.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </Border.ContextMenu>
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
@@ -220,6 +281,55 @@
                 <i:Interaction.Behaviors>
                     <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchAllCommand}" />
                 </i:Interaction.Behaviors>
+                <Border.ContextMenu>
+                    <ContextMenu Background="{DynamicResource BgSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}">
+                        <MenuItem
+                            Command="{Binding LaunchAllCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_LaunchAll, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <TextBlock FontSize="14" Text="▶" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Command="{Binding ToggleFavoriteCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_ToggleFavorite, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <TextBlock FontSize="14" Text="⭐" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Command="{Binding EditCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_Edit, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <TextBlock FontSize="14" Text="✎" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Command="{Binding MoveToFolderCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_MoveToFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <TextBlock FontSize="14" Text="📂" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Command="{Binding DeleteCommand}"
+                            Header="{Binding DataContext.L.ContextMenu_Delete, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <TextBlock
+                                    FontSize="14"
+                                    Foreground="#FF6B6B"
+                                    Text="🗑" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </Border.ContextMenu>
                 <Border.Style>
                     <Style TargetType="Border">
                         <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />

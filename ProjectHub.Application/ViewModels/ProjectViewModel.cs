@@ -113,6 +113,11 @@ public partial class ProjectViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
 
     /// <summary>
+    /// Move to folder command - requests parent to show folder selector
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> MoveToFolderCommand { get; }
+
+    /// <summary>
     /// Send edit request message via MessageBus
     /// </summary>
     private void SendEditRequest() => MessageBus.Current.SendMessage(new ProjectEditRequestMessage(this));
@@ -132,6 +137,11 @@ public partial class ProjectViewModel : ReactiveObject
     /// </summary>
     private void SendLaunched() => MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
 
+    /// <summary>
+    /// Send move to folder request message via MessageBus
+    /// </summary>
+    private void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new ProjectMoveToFolderRequestMessage(this));
+
     public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
     {
         _projectDto = projectDto;
@@ -142,6 +152,7 @@ public partial class ProjectViewModel : ReactiveObject
         EditCommand = ReactiveCommand.Create(SendEditRequest);
         DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
+        MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
         
         // 订阅语言变化，刷新本地化显示属性
         L?.CultureChanged.Subscribe(_ =>
@@ -243,3 +254,8 @@ public record ProjectFavoriteChangedMessage(ProjectViewModel Project);
 /// 项目启动消息
 /// </summary>
 public record ProjectLaunchedMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 项目移动到文件夹请求消息
+/// </summary>
+public record ProjectMoveToFolderRequestMessage(ProjectViewModel Project);

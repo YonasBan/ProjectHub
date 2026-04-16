@@ -97,6 +97,26 @@ public interface IWorkFolderAppService
     /// 将项目移动到工作文件夹
     /// </summary>
     Task MoveProjectToWorkFolderAsync(long projectId, long? workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加项目到文件夹
+    /// </summary>
+    Task AddProjectToFolderAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从文件夹移除项目
+    /// </summary>
+    Task RemoveProjectFromFolderAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加工作空间到文件夹
+    /// </summary>
+    Task AddWorkSpaceToFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从文件夹移除工作空间
+    /// </summary>
+    Task RemoveWorkSpaceFromFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

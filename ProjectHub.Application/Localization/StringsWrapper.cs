@@ -190,4 +190,17 @@ public class LocalizedStrings : ReactiveObject
     public string Tooltip_Edit => ProjectHub.Resources.Strings.Strings.Tooltip_Edit;
     public string Tooltip_Delete => ProjectHub.Resources.Strings.Strings.Tooltip_Delete;
     public string Tooltip_AddItem => ProjectHub.Resources.Strings.Strings.Tooltip_AddItem;
+    public string ContextMenu_Launch => ProjectHub.Resources.Strings.Strings.ContextMenu_Launch;
+    public string ContextMenu_LaunchAll => ProjectHub.Resources.Strings.Strings.ContextMenu_LaunchAll;
+    public string ContextMenu_ToggleFavorite => ProjectHub.Resources.Strings.Strings.ContextMenu_ToggleFavorite;
+    public string ContextMenu_Edit => ProjectHub.Resources.Strings.Strings.ContextMenu_Edit;
+    public string ContextMenu_Delete => ProjectHub.Resources.Strings.Strings.ContextMenu_Delete;
+    public string ContextMenu_MoveToFolder => ProjectHub.Resources.Strings.Strings.ContextMenu_MoveToFolder;
+    public string Folder_CreateNew => ProjectHub.Resources.Strings.Strings.Folder_CreateNew;
+    public string Folder_NewFolderName => ProjectHub.Resources.Strings.Strings.Folder_NewFolderName;
+    public string Folder_NameRequired => ProjectHub.Resources.Strings.Strings.Folder_NameRequired;
+    public string Folder_SelectRequired => ProjectHub.Resources.Strings.Strings.Folder_SelectRequired;
+    public string Dialog_MoveToFolderTitle => ProjectHub.Resources.Strings.Strings.Dialog_MoveToFolderTitle;
+    public string Message_MovedToFolder => ProjectHub.Resources.Strings.Strings.Message_MovedToFolder;
+    public string Message_MoveToFolderFailed => ProjectHub.Resources.Strings.Strings.Message_MoveToFolderFailed;
 }

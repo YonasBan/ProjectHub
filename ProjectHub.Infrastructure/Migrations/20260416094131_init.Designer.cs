@@ -11,8 +11,8 @@ using ProjectHub.Infrastructure.Persistence;
 namespace ProjectHub.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260413024403_RemoveProjectPathUniqueConstraint")]
-    partial class RemoveProjectPathUniqueConstraint
+    [Migration("20260416094131_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,10 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime?>("Deadline")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<string>("DefaultProgram")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -108,7 +111,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -144,7 +147,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -181,10 +184,13 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsEnabled")
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("ProjectId")
@@ -223,7 +229,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -265,7 +271,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
@@ -321,15 +327,11 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<int>("DefaultLaunchIntervalSeconds")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Description")
                         .HasMaxLength(500)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("EnabledProjectIdsJson")
-                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime?>("FavoritedAt")
@@ -392,7 +394,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -428,7 +430,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime?>("DeleteedTime")
+                    b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDeleted")
@@ -453,7 +455,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.HasIndex("WorkSpaceId", "WorkFolderId")
                         .IsUnique();
 
-                    b.ToTable("WorkSpaceWorkFolder");
+                    b.ToTable("WorkSpaceWorkFolders");
                 });
 
             modelBuilder.Entity("ProjectHub.Domain.Entities.ProjectTag", b =>

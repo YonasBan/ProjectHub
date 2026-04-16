@@ -51,5 +51,8 @@ namespace ProjectHub.Application.Interfaces
         // 自定义 ViewModel 弹窗（通过IoC获取ViewModel）
         Task<DialogResult<TResult>> ShowDialogAsync<TViewModel,TResult>()
             where TViewModel : IDialogViewModel<TResult>;
+
+        // 显示对话框（返回是否确认）
+        Task<bool> ShowDialogAsync(DialogViewModelBase viewModel);
     }
 }

@@ -1,5 +1,6 @@
-using Microsoft.Extensions.Logging;
+using DynamicData;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Domain.Entities;
@@ -395,6 +396,17 @@ public class MainViewModel : ViewModelBase
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
             .DisposeWith(Disposables);
+
+        // 移动到文件夹请求消息
+        MessageBus.Current.Listen<ProjectMoveToFolderRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectMoveToFolderRequested(msg.Project))
+            .DisposeWith(Disposables);
+
+        MessageBus.Current.Listen<WorkSpaceMoveToFolderRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceMoveToFolderRequested(msg.WorkSpace))
+            .DisposeWith(Disposables);
     }
 
 
@@ -708,8 +720,14 @@ public class MainViewModel : ViewModelBase
                 var newFolder = await _workFolderAppService.CreateAsync(createDto);
 
                 Logger.LogInformation("成功创建文件夹: {FolderName}, ID: {FolderId}", folderName, newFolder.Id);
-
-                parent.Children.Add(new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
+                if (parent != null)
+                {
+                    parent.Children.Add(new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
+                }
+                else
+                {
+                    this.SidebarTreeItems.Add(new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
+                }
 
             }
             else
@@ -1149,7 +1167,7 @@ public class MainViewModel : ViewModelBase
                     item.UpdateName(L.Sidebar_TagSettings);
                     break;
             }
-            if (SelectedTreeItem.ItemType == item.ItemType&& SelectedTreeItem.ItemType != TreeItemType.WorkFolder)
+            if (SelectedTreeItem.ItemType == item.ItemType && SelectedTreeItem.ItemType != TreeItemType.WorkFolder)
             {
                 SelectedTreeItem.Name = item.Name;
             }
@@ -1343,6 +1361,162 @@ public class MainViewModel : ViewModelBase
 
         // 更新统计
         UpdateStatistics();
+    }
+
+    /// <summary>
+    /// 处理项目移动到文件夹请求
+    /// </summary>
+    private async void OnProjectMoveToFolderRequested(ProjectViewModel projectVm)
+    {
+        await ShowFolderSelectorAndMoveAsync(projectVm, isProject: true);
+    }
+
+    /// <summary>
+    /// 处理工作空间移动到文件夹请求
+    /// </summary>
+    private async void OnWorkSpaceMoveToFolderRequested(WorkSpaceViewModel workSpaceVm)
+    {
+        await ShowFolderSelectorAndMoveAsync(workSpaceVm, isProject: false);
+    }
+
+    /// <summary>
+    /// 显示文件夹选择器并执行移动操作
+    /// </summary>
+    private async Task ShowFolderSelectorAndMoveAsync(object itemVm, bool isProject)
+    {
+        try
+        {
+            var itemName = isProject ? ((ProjectViewModel)itemVm).Name : ((WorkSpaceViewModel)itemVm).Name;
+            var itemId = isProject ? ((ProjectViewModel)itemVm).Id : ((WorkSpaceViewModel)itemVm).Id;
+
+            // 创建对话框 ViewModel
+            var dialogVm = new SelectFolderDialogViewModel
+            {
+                Title = string.Format(L.Dialog_MoveToFolderTitle, itemName),
+                ItemName = itemName
+            };
+
+            // 加载文件夹树
+            var folderItems = BuildFolderTreeItems(_workFolders);
+            dialogVm.LoadFolders(folderItems);
+
+            // 显示对话框
+            var result = await _dialogService.ShowDialogAsync(dialogVm);
+
+            if (!result)
+            {
+                Logger.LogInformation("用户取消移动到文件夹");
+                return;
+            }
+
+            // 处理新建文件夹
+            var newFolderName = dialogVm.GetNewFolderName();
+            long? targetFolderId = null;
+
+            if (!string.IsNullOrEmpty(newFolderName))
+            {
+                // 创建新文件夹
+                var createDto = new CreateWorkFolderDto
+                {
+                    Name = newFolderName,
+                    SortOrder = 0,
+                    ParentId = dialogVm.SelectedFolder?.Id
+                };
+
+                var newFolder = await _workFolderAppService.CreateAsync(createDto);
+                targetFolderId = newFolder.Id;
+
+                // 刷新文件夹列表
+                await LoadWorkFoldersAsync();
+                BuildSidebarTree();
+            }
+            else
+            {
+                targetFolderId = dialogVm.GetSelectedFolderId();
+            }
+
+            if (!targetFolderId.HasValue)
+            {
+                Logger.LogWarning("未选择目标文件夹");
+                return;
+            }
+
+            IsLoading = true;
+
+            // 执行移动操作
+            if (isProject)
+            {
+                await _workFolderAppService.AddProjectToFolderAsync(itemId, targetFolderId.Value);
+                Logger.LogInformation($"项目 '{itemName}' 已添加到文件夹");
+            }
+            else
+            {
+                await _workFolderAppService.AddWorkSpaceToFolderAsync(itemId, targetFolderId.Value);
+                Logger.LogInformation($"工作空间 '{itemName}' 已添加到文件夹");
+            }
+
+            // 刷新侧边栏树（文件夹数量变化）
+            await LoadWorkFoldersAsync();
+            BuildSidebarTree();
+
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_MovedToFolder, itemName),
+                NotificationType.Success,
+                3000);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "移动到文件夹时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_MoveToFolderFailed,
+                ex.Message);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    /// <summary>
+    /// 构建文件夹树形结构
+    /// </summary>
+    private ObservableCollection<FolderTreeItemViewModel> BuildFolderTreeItems(IEnumerable<WorkFolderViewModel> folders)
+    {
+        var result = new ObservableCollection<FolderTreeItemViewModel>();
+        var folderList = folders.ToList();
+
+        // 获取根级文件夹
+        var rootFolders = folderList.Where(f => f.ParentId == null).OrderBy(f => f.SortOrder);
+
+        foreach (var root in rootFolders)
+        {
+            var item = CreateFolderTreeItem(root, folderList);
+            result.Add(item);
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// 递归创建文件夹树节点
+    /// </summary>
+    private FolderTreeItemViewModel CreateFolderTreeItem(WorkFolderViewModel folder, List<WorkFolderViewModel> allFolders)
+    {
+        var item = new FolderTreeItemViewModel(folder.Id, folder.Name, folder.ParentId)
+        {
+            FullPath = folder.Name
+        };
+
+        // 获取子文件夹
+        var children = allFolders.Where(f => f.ParentId == folder.Id).OrderBy(f => f.SortOrder);
+        foreach (var child in children)
+        {
+            var childItem = CreateFolderTreeItem(child, allFolders);
+            item.Children.Add(childItem);
+        }
+
+        return item;
     }
 
 }

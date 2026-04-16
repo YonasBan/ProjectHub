@@ -98,6 +98,46 @@ public interface IWorkFolderRepository : IRepository<WorkFolder>
     /// <param name="name">文件夹名称</param>
     /// <param name="parentId">父文件夹ID（null表示根级）</param>
     Task<bool> ExistsByNameAndParentIdAsync(string name, long? parentId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 检查项目与文件夹的关联是否已存在
+    /// </summary>
+    Task<bool> ExistsProjectFolderAssociationAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 检查工作空间与文件夹的关联是否已存在
+    /// </summary>
+    Task<bool> ExistsWorkSpaceFolderAssociationAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取文件夹中项目的最大排序值
+    /// </summary>
+    Task<int> GetMaxProjectSortOrderAsync(long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取文件夹中工作空间的最大排序值
+    /// </summary>
+    Task<int> GetMaxWorkSpaceSortOrderAsync(long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加项目-文件夹关联
+    /// </summary>
+    Task AddProjectAssociationAsync(ProjectWorkFolder association, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 移除项目-文件夹关联
+    /// </summary>
+    Task RemoveProjectAssociationAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加工作空间-文件夹关联
+    /// </summary>
+    Task AddWorkSpaceAssociationAsync(WorkSpaceWorkFolder association, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 移除工作空间-文件夹关联
+    /// </summary>
+    Task RemoveWorkSpaceAssociationAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

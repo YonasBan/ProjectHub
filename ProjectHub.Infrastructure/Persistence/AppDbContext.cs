@@ -59,6 +59,11 @@ public class AppDbContext : DbContext
     /// </summary>
     public DbSet<ProjectWorkSpace> ProjectWorkSpaces => Set<ProjectWorkSpace>();
 
+    /// <summary>
+    /// 工作空间 - 工作文件夹关联 DbSet
+    /// </summary>
+    public DbSet<WorkSpaceWorkFolder> WorkSpaceWorkFolders => Set<WorkSpaceWorkFolder>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

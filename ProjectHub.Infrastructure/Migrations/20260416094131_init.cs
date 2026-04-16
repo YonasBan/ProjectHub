@@ -31,10 +31,11 @@ namespace ProjectHub.Infrastructure.Migrations
                     FavoritedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Deadline = table.Column<DateTime>(type: "TEXT", nullable: true),
                     CustomerId = table.Column<long>(type: "INTEGER", nullable: true),
+                    DefaultProgram = table.Column<string>(type: "TEXT", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -54,7 +55,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -77,7 +78,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -104,14 +105,13 @@ namespace ProjectHub.Infrastructure.Migrations
                     IsFavorite = table.Column<bool>(type: "INTEGER", nullable: false),
                     FavoritedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     LastOpenedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
-                    EnabledProjectIdsJson = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
                     UseCustomLaunchOrder = table.Column<bool>(type: "INTEGER", nullable: false),
                     DefaultLaunchIntervalSeconds = table.Column<int>(type: "INTEGER", nullable: false),
                     LaunchOrderJson = table.Column<string>(type: "TEXT", maxLength: 4000, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -129,7 +129,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -160,7 +160,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -188,10 +188,11 @@ namespace ProjectHub.Infrastructure.Migrations
                     ProjectId = table.Column<long>(type: "INTEGER", nullable: false),
                     WorkSpaceId = table.Column<long>(type: "INTEGER", nullable: false),
                     SortOrder = table.Column<int>(type: "INTEGER", nullable: false),
+                    IsEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -221,7 +222,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -241,7 +242,7 @@ namespace ProjectHub.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WorkSpaceWorkFolder",
+                name: "WorkSpaceWorkFolders",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "INTEGER", nullable: false)
@@ -252,19 +253,19 @@ namespace ProjectHub.Infrastructure.Migrations
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),
-                    DeleteedTime = table.Column<DateTime>(type: "TEXT", nullable: true)
+                    DeletedAt = table.Column<DateTime>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkSpaceWorkFolder", x => x.Id);
+                    table.PrimaryKey("PK_WorkSpaceWorkFolders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WorkSpaceWorkFolder_WorkFolders_WorkFolderId",
+                        name: "FK_WorkSpaceWorkFolders_WorkFolders_WorkFolderId",
                         column: x => x.WorkFolderId,
                         principalTable: "WorkFolders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WorkSpaceWorkFolder_WorkSpaces_WorkSpaceId",
+                        name: "FK_WorkSpaceWorkFolders_WorkSpaces_WorkSpaceId",
                         column: x => x.WorkSpaceId,
                         principalTable: "WorkSpaces",
                         principalColumn: "Id",
@@ -289,8 +290,7 @@ namespace ProjectHub.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Projects_Path",
                 table: "Projects",
-                column: "Path",
-                unique: true);
+                column: "Path");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectTags_ProjectId",
@@ -342,9 +342,9 @@ namespace ProjectHub.Infrastructure.Migrations
                 column: "SortOrder");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkFolders_Name",
+                name: "IX_WorkFolders_Name_ParentId",
                 table: "WorkFolders",
-                column: "Name",
+                columns: new[] { "Name", "ParentId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -390,13 +390,13 @@ namespace ProjectHub.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkSpaceWorkFolder_WorkFolderId",
-                table: "WorkSpaceWorkFolder",
+                name: "IX_WorkSpaceWorkFolders_WorkFolderId",
+                table: "WorkSpaceWorkFolders",
                 column: "WorkFolderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WorkSpaceWorkFolder_WorkSpaceId_WorkFolderId",
-                table: "WorkSpaceWorkFolder",
+                name: "IX_WorkSpaceWorkFolders_WorkSpaceId_WorkFolderId",
+                table: "WorkSpaceWorkFolders",
                 columns: new[] { "WorkSpaceId", "WorkFolderId" },
                 unique: true);
         }
@@ -417,7 +417,7 @@ namespace ProjectHub.Infrastructure.Migrations
                 name: "WorkSpaceTags");
 
             migrationBuilder.DropTable(
-                name: "WorkSpaceWorkFolder");
+                name: "WorkSpaceWorkFolders");
 
             migrationBuilder.DropTable(
                 name: "Projects");

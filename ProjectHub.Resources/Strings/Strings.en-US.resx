@@ -426,4 +426,43 @@
   <data name="Tooltip_AddItem" xml:space="preserve">
     <value>Add new item</value>
   </data>
+  <data name="ContextMenu_Launch" xml:space="preserve">
+    <value>Launch</value>
+  </data>
+  <data name="ContextMenu_LaunchAll" xml:space="preserve">
+    <value>Launch All</value>
+  </data>
+  <data name="ContextMenu_ToggleFavorite" xml:space="preserve">
+    <value>Favorite/Unfavorite</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="ContextMenu_MoveToFolder" xml:space="preserve">
+    <value>Move to Folder</value>
+  </data>
+  <data name="Folder_CreateNew" xml:space="preserve">
+    <value>+ New Folder</value>
+  </data>
+  <data name="Folder_NewFolderName" xml:space="preserve">
+    <value>New folder name</value>
+  </data>
+  <data name="Folder_NameRequired" xml:space="preserve">
+    <value>Please enter folder name</value>
+  </data>
+  <data name="Folder_SelectRequired" xml:space="preserve">
+    <value>Please select a folder</value>
+  </data>
+  <data name="Dialog_MoveToFolderTitle" xml:space="preserve">
+    <value>Move to Folder - {0}</value>
+  </data>
+  <data name="Message_MovedToFolder" xml:space="preserve">
+    <value>"{0}" moved to folder</value>
+  </data>
+  <data name="Message_MoveToFolderFailed" xml:space="preserve">
+    <value>Failed to move to folder</value>
+  </data>
 </root>

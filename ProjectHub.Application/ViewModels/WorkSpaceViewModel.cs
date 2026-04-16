@@ -74,6 +74,11 @@ public partial class WorkSpaceViewModel : ReactiveObject
     public ReactiveCommand<Unit, Unit> LaunchAllCommand { get; }
 
     /// <summary>
+    /// Move to folder command - requests parent to show folder selector
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> MoveToFolderCommand { get; }
+
+    /// <summary>
     /// Send edit request message via MessageBus
     /// </summary>
     private void SendEditRequest() => MessageBus.Current.SendMessage(new WorkSpaceEditRequestMessage(this));
@@ -88,6 +93,11 @@ public partial class WorkSpaceViewModel : ReactiveObject
     /// </summary>
     private void SendFavoriteChanged() => MessageBus.Current.SendMessage(new WorkSpaceFavoriteChangedMessage(this));
 
+    /// <summary>
+    /// Send move to folder request message via MessageBus
+    /// </summary>
+    private void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new WorkSpaceMoveToFolderRequestMessage(this));
+
     public WorkSpaceViewModel(WorkSpaceDto workSpaceDto, IWorkSpaceAppService? workSpaceAppService = null)
     {
         _workSpaceDto = workSpaceDto;
@@ -98,6 +108,7 @@ public partial class WorkSpaceViewModel : ReactiveObject
         EditCommand = ReactiveCommand.Create(SendEditRequest);
         DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchAllCommand = ReactiveCommand.CreateFromTask(LaunchAllAsync);
+        MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
         
         // 订阅语言变化，刷新本地化显示属性
         L?.CultureChanged.Subscribe(_ =>
@@ -163,3 +174,8 @@ public record WorkSpaceDeleteRequestMessage(WorkSpaceViewModel WorkSpace);
 /// 工作空间收藏状态变化消息
 /// </summary>
 public record WorkSpaceFavoriteChangedMessage(WorkSpaceViewModel WorkSpace);
+
+/// <summary>
+/// 工作空间移动到文件夹请求消息
+/// </summary>
+public record WorkSpaceMoveToFolderRequestMessage(WorkSpaceViewModel WorkSpace);

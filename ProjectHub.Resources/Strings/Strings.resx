@@ -426,4 +426,43 @@
   <data name="Tooltip_AddItem" xml:space="preserve">
     <value>添加新项</value>
   </data>
+  <data name="ContextMenu_Launch" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="ContextMenu_LaunchAll" xml:space="preserve">
+    <value>全部启动</value>
+  </data>
+  <data name="ContextMenu_ToggleFavorite" xml:space="preserve">
+    <value>收藏/取消收藏</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="ContextMenu_MoveToFolder" xml:space="preserve">
+    <value>移动到文件夹</value>
+  </data>
+  <data name="Folder_CreateNew" xml:space="preserve">
+    <value>+ 新建文件夹</value>
+  </data>
+  <data name="Folder_NewFolderName" xml:space="preserve">
+    <value>新文件夹名称</value>
+  </data>
+  <data name="Folder_NameRequired" xml:space="preserve">
+    <value>请输入文件夹名称</value>
+  </data>
+  <data name="Folder_SelectRequired" xml:space="preserve">
+    <value>请选择一个文件夹</value>
+  </data>
+  <data name="Dialog_MoveToFolderTitle" xml:space="preserve">
+    <value>移动到文件夹 - {0}</value>
+  </data>
+  <data name="Message_MovedToFolder" xml:space="preserve">
+    <value>"{0}" 已移动到文件夹</value>
+  </data>
+  <data name="Message_MoveToFolderFailed" xml:space="preserve">
+    <value>移动到文件夹失败</value>
+  </data>
 </root>

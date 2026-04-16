@@ -102,4 +102,74 @@ public class WorkFolderRepository : IWorkFolderRepository
             .Where(w => !w.IsDeleted)
             .AnyAsync(w => w.Name == name && w.ParentId == parentId, cancellationToken);
     }
+
+    public async Task<bool> ExistsProjectFolderAssociationAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.ProjectWorkFolders
+            .AnyAsync(pwf => pwf.ProjectId == projectId && pwf.WorkFolderId == workFolderId, cancellationToken);
+    }
+
+    public async Task<bool> ExistsWorkSpaceFolderAssociationAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaceWorkFolders
+            .AnyAsync(wwf => wwf.WorkSpaceId == workSpaceId && wwf.WorkFolderId == workFolderId, cancellationToken);
+    }
+
+    public async Task<int> GetMaxProjectSortOrderAsync(long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        var maxOrder = await ctx.ProjectWorkFolders
+            .Where(pwf => pwf.WorkFolderId == workFolderId)
+            .MaxAsync(pwf => (int?)pwf.SortOrder, cancellationToken);
+        return maxOrder ?? 0;
+    }
+
+    public async Task<int> GetMaxWorkSpaceSortOrderAsync(long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        var maxOrder = await ctx.WorkSpaceWorkFolders
+            .Where(wwf => wwf.WorkFolderId == workFolderId)
+            .MaxAsync(wwf => (int?)wwf.SortOrder, cancellationToken);
+        return maxOrder ?? 0;
+    }
+
+    public async Task AddProjectAssociationAsync(ProjectWorkFolder association, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.ProjectWorkFolders.AddAsync(association, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RemoveProjectAssociationAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        var association = await ctx.ProjectWorkFolders
+            .FirstOrDefaultAsync(pwf => pwf.ProjectId == projectId && pwf.WorkFolderId == workFolderId, cancellationToken);
+        if (association != null)
+        {
+            ctx.ProjectWorkFolders.Remove(association);
+            await ctx.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public async Task AddWorkSpaceAssociationAsync(WorkSpaceWorkFolder association, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.WorkSpaceWorkFolders.AddAsync(association, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task RemoveWorkSpaceAssociationAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        var association = await ctx.WorkSpaceWorkFolders
+            .FirstOrDefaultAsync(wwf => wwf.WorkSpaceId == workSpaceId && wwf.WorkFolderId == workFolderId, cancellationToken);
+        if (association != null)
+        {
+            ctx.WorkSpaceWorkFolders.Remove(association);
+            await ctx.SaveChangesAsync(cancellationToken);
+        }
+    }
 }

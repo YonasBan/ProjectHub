@@ -150,4 +150,45 @@ public class DialogService : IDialogService
 
     }
 
+    /// <summary>
+    /// 显示对话框（返回是否确认）
+    /// </summary>
+    public async Task<bool> ShowDialogAsync(DialogViewModelBase viewModel)
+    {
+        // 根据 ViewModel 类型创建对应的对话框窗口
+        Window? window = viewModel switch
+        {
+            SelectFolderDialogViewModel => new SelectFolderDialog(),
+            _ => throw new NotSupportedException($"不支持的对话框类型: {viewModel.GetType().Name}")
+        };
+
+        if (window == null)
+            throw new InvalidOperationException("无法创建对话框窗口");
+
+        // 设置数据上下文
+        window.DataContext = viewModel;
+
+        // 获取父窗口
+        var owner = GetActiveWindow();
+        if (owner != null)
+        {
+            window.Owner = owner;
+        }
+
+        // 创建任务完成源来等待对话框结果
+        var tcs = new TaskCompletionSource<bool>();
+
+        // 订阅 ViewModel 的关闭事件
+        viewModel.CloseRequested += (sender, confirmed) =>
+        {
+            tcs.TrySetResult(confirmed);
+            window.Close();
+        };
+
+        // 显示对话框（模态）
+        window.ShowDialog();
+
+        return await tcs.Task;
+    }
+
 }

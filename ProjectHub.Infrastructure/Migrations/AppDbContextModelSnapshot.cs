@@ -452,7 +452,7 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.HasIndex("WorkSpaceId", "WorkFolderId")
                         .IsUnique();
 
-                    b.ToTable("WorkSpaceWorkFolder");
+                    b.ToTable("WorkSpaceWorkFolders");
                 });
 
             modelBuilder.Entity("ProjectHub.Domain.Entities.ProjectTag", b =>

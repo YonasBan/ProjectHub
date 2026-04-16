@@ -10,7 +10,36 @@ using Splat;
 namespace ProjectHub.Application.Interfaces;
 
 /// <summary>
-/// 所有弹窗 ViewModel 的基类
+/// 简单对话框 ViewModel 基类（无返回值）
+/// </summary>
+public abstract class DialogViewModelBase : ReactiveObject
+{
+    /// <summary>
+    /// 关闭请求事件
+    /// </summary>
+    public event EventHandler<bool>? CloseRequested;
+
+    /// <summary>
+    /// 本地化字符串
+    /// </summary>
+    public LocalizedStrings L { get; }
+
+    /// <summary>
+    /// 关闭对话框
+    /// </summary>
+    protected void Close(bool confirmed = true)
+    {
+        CloseRequested?.Invoke(this, confirmed);
+    }
+
+    protected DialogViewModelBase()
+    {
+        L = Locator.Current.GetService<LocalizedStrings>()!;
+    }
+}
+
+/// <summary>
+/// 所有弹窗 ViewModel 的基类（带返回值）
 /// </summary>
 public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable, IDialogViewModel<TResult>
 {

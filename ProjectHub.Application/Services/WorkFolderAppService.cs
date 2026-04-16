@@ -1,5 +1,6 @@
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Domain.Entities;
 using ProjectHub.Domain.Interfaces;
 
 namespace ProjectHub.Application.Services;
@@ -60,6 +61,90 @@ public class WorkFolderAppService : IWorkFolderAppService
     {
         // TODO: 实现项目移动
         await Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 添加项目到文件夹
+    /// </summary>
+    public async Task AddProjectToFolderAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        var workFolder = await _workFolderRepository.GetByIdAsync(workFolderId, cancellationToken)
+            ?? throw new KeyNotFoundException($"WorkFolder (Id={workFolderId}) not found");
+
+        // 检查是否已存在关联
+        var exists = await _workFolderRepository.ExistsProjectFolderAssociationAsync(projectId, workFolderId, cancellationToken);
+        if (exists)
+        {
+            throw new InvalidOperationException("该项目已在所选文件夹中");
+        }
+
+        // 获取当前最大排序值
+        var maxSortOrder = await _workFolderRepository.GetMaxProjectSortOrderAsync(workFolderId, cancellationToken);
+
+        // 创建关联
+        var association = ProjectWorkFolder.Create(projectId, workFolderId, maxSortOrder + 1);
+        await _workFolderRepository.AddProjectAssociationAsync(association, cancellationToken);
+
+        // 更新项目计数
+        workFolder.UpdateProjectCount(workFolder.ProjectCount + 1);
+        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
+    }
+
+    /// <summary>
+    /// 从文件夹移除项目
+    /// </summary>
+    public async Task RemoveProjectFromFolderAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        var workFolder = await _workFolderRepository.GetByIdAsync(workFolderId, cancellationToken)
+            ?? throw new KeyNotFoundException($"WorkFolder (Id={workFolderId}) not found");
+
+        await _workFolderRepository.RemoveProjectAssociationAsync(projectId, workFolderId, cancellationToken);
+
+        // 更新项目计数
+        workFolder.UpdateProjectCount(Math.Max(0, workFolder.ProjectCount - 1));
+        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
+    }
+
+    /// <summary>
+    /// 添加工作空间到文件夹
+    /// </summary>
+    public async Task AddWorkSpaceToFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        var workFolder = await _workFolderRepository.GetByIdAsync(workFolderId, cancellationToken)
+            ?? throw new KeyNotFoundException($"WorkFolder (Id={workFolderId}) not found");
+
+        // 检查是否已存在关联
+        var exists = await _workFolderRepository.ExistsWorkSpaceFolderAssociationAsync(workSpaceId, workFolderId, cancellationToken);
+        if (exists)
+        {
+            throw new InvalidOperationException("该工作空间已在所选文件夹中");
+        }
+
+        // 获取当前最大排序值
+        var maxSortOrder = await _workFolderRepository.GetMaxWorkSpaceSortOrderAsync(workFolderId, cancellationToken);
+
+        // 创建关联
+        var association = WorkSpaceWorkFolder.Create(workSpaceId, workFolderId, maxSortOrder + 1);
+        await _workFolderRepository.AddWorkSpaceAssociationAsync(association, cancellationToken);
+
+        // 更新项目计数
+        workFolder.UpdateProjectCount(workFolder.ProjectCount + 1);
+        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
+    }
+
+    /// <summary>
+    /// 从文件夹移除工作空间
+    /// </summary>
+    public async Task RemoveWorkSpaceFromFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default)
+    {
+        var workFolder = await _workFolderRepository.GetByIdAsync(workFolderId, cancellationToken)
+            ?? throw new KeyNotFoundException($"WorkFolder (Id={workFolderId}) not found");
+
+        await _workFolderRepository.RemoveWorkSpaceAssociationAsync(workSpaceId, workFolderId, cancellationToken);
+
+        // 更新项目计数
+        workFolder.UpdateProjectCount(Math.Max(0, workFolder.ProjectCount - 1));
+        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
     }
 
     private static WorkFolderDto MapToDto(Domain.Entities.WorkFolder workFolder)
