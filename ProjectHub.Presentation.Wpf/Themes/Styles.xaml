@@ -162,29 +162,30 @@
                                 <!--  Expand/Collapse Arrow  -->
                                 <ToggleButton
                                     x:Name="Expander"
-                                    Width="24"
-                                    Height="24"
+                                    Width="32"
+                                    Height="32"
                                     ClickMode="Press"
                                     Focusable="False"
                                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}">
                                     <ToggleButton.Template>
                                         <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                            <Path
-                                                x:Name="ExpanderArrow"
-                                                Width="10"
-                                                Height="10"
-                                                Margin="3,0,3,0"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"
-                                                Data="M 2,0 L 6,5 L 2,10"
-                                                Fill="{DynamicResource TreeViewItemArrowBrush}"
-                                                RenderTransformOrigin="0.5,0.5"
-                                                Stroke="{DynamicResource TreeViewItemArrowBrush}"
-                                                StrokeThickness="1">
-                                                <Path.RenderTransform>
-                                                    <RotateTransform Angle="0" />
-                                                </Path.RenderTransform>
-                                            </Path>
+                                            <Grid Background="Transparent">
+                                                <Path
+                                                    x:Name="ExpanderArrow"
+                                                    Width="10"
+                                                    Height="10"
+                                                    HorizontalAlignment="Center"
+                                                    VerticalAlignment="Center"
+                                                    Data="M 2,0 L 6,5 L 2,10"
+                                                    Fill="{DynamicResource TreeViewItemArrowBrush}"
+                                                    RenderTransformOrigin="0.5,0.5"
+                                                    Stroke="{DynamicResource TreeViewItemArrowBrush}"
+                                                    StrokeThickness="1">
+                                                    <Path.RenderTransform>
+                                                        <RotateTransform Angle="0" />
+                                                    </Path.RenderTransform>
+                                                </Path>
+                                            </Grid>
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsChecked" Value="True">
                                                     <Setter TargetName="ExpanderArrow" Property="RenderTransform">

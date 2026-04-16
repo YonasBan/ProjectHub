@@ -313,8 +313,8 @@ public class MainViewModel : ViewModelBase
         SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
 
-        CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(
-            CreateFolderAsync);
+        CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
+        DeleteFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(DeleteFolderAsync);
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
 
         // 初始化语言和主题切换命令
@@ -363,17 +363,17 @@ public class MainViewModel : ViewModelBase
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnProjectEditRequested(msg.Project))
             .DisposeWith(Disposables);
-        
+
         MessageBus.Current.Listen<ProjectDeleteRequestMessage>()
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnProjectDeleteRequested(msg.Project))
             .DisposeWith(Disposables);
-        
+
         MessageBus.Current.Listen<ProjectFavoriteChangedMessage>()
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
             .DisposeWith(Disposables);
-        
+
         MessageBus.Current.Listen<ProjectLaunchedMessage>()
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnProjectLaunched(msg.Project))
@@ -384,12 +384,12 @@ public class MainViewModel : ViewModelBase
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnWorkSpaceEditRequested(msg.WorkSpace))
             .DisposeWith(Disposables);
-        
+
         MessageBus.Current.Listen<WorkSpaceDeleteRequestMessage>()
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnWorkSpaceDeleteRequested(msg.WorkSpace))
             .DisposeWith(Disposables);
-        
+
         MessageBus.Current.Listen<WorkSpaceFavoriteChangedMessage>()
             .ObserveOn(MainThreadScheduler)
             .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
@@ -404,19 +404,19 @@ public class MainViewModel : ViewModelBase
     {
         // 加载项目数据（用于显示最近使用、收藏夹等）
         await LoadProjectsAsync();
-        
+
         // 加载工作文件夹用于构建侧边栏树结构
         await LoadWorkFoldersAsync();
-        
+
         // 加载工作空间数据（用于显示侧边栏工作空间数量）
         await LoadWorkSpacesAsync();
-        
+
         // 更新统计
         UpdateStatistics();
-        
+
         // 构建侧边栏树形结构（此时 Projects 和 WorkSpaces 已有数据）
         BuildSidebarTree();
-        
+
         // 默认选中"最近使用"
         if (SidebarTreeItems.Count > 0)
         {
@@ -524,7 +524,7 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
-            
+
             // 搜索后刷新内容显示
             if (SelectedTreeItem != null)
             {
@@ -548,14 +548,14 @@ public class MainViewModel : ViewModelBase
 
             // 刷新工作文件夹（用于侧边栏树）
             await LoadWorkFoldersAsync();
-            
+
             // 根据当前选中的节点刷新对应数据
             if (SelectedTreeItem != null)
             {
                 await LoadDataForSelectedItemAsync(SelectedTreeItem);
                 UpdateContentItems(SelectedTreeItem);
             }
-            
+
             UpdateStatistics();
 
             Logger.LogInformation("数据刷新完成");
@@ -635,7 +635,7 @@ public class MainViewModel : ViewModelBase
         var recent = new TreeItemViewModel(L.Sidebar_Recent, recentCount, TreeItemType.RecentProject)
         { IsSelected = true };
         SidebarTreeItems.Add(recent);
-        
+
         // Favorites (收藏夹) - 包含项目和工作空间
         var favoriteProjectCount = Projects.Count(p => p.IsFavorite);
         var favoriteWorkSpaceCount = WorkSpaces.Count(w => w.IsFavorite);
@@ -708,11 +708,8 @@ public class MainViewModel : ViewModelBase
 
                 Logger.LogInformation("成功创建文件夹: {FolderName}, ID: {FolderId}", folderName, newFolder.Id);
 
-                // 刷新文件夹列表
-                await LoadWorkFoldersAsync();
-
-                // 更新统计
-                UpdateStatistics();
+                parent.Children.Add(new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
+               
             }
             else
             {
@@ -731,7 +728,11 @@ public class MainViewModel : ViewModelBase
             IsLoading = false;
         }
     }
-
+    private async Task DeleteFolderAsync(TreeItemViewModel current)
+    {
+       
+           
+    }
     private async Task AddContentAsync()
     {
         try
@@ -779,28 +780,28 @@ public class MainViewModel : ViewModelBase
         if (result.Confirmed && result.Value != null)
         {
             IsLoading = true;
-            
+
             Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
-            
+
             // 直接添加新项目到集合，无需重新查询数据库
             var projectVm = new ProjectViewModel(result.Value, _projectAppService);
             Projects.Add(projectVm);
-            
+
             // 刷新侧边栏树（项目数量变化）
             BuildSidebarTree();
-            
+
             // 刷新内容区域显示（如果当前选中的是项目相关节点）
-            if (SelectedTreeItem != null && 
+            if (SelectedTreeItem != null &&
                 (SelectedTreeItem.ItemType == TreeItemType.AllProjects ||
                  SelectedTreeItem.ItemType == TreeItemType.RecentProject ||
                  SelectedTreeItem.ItemType == TreeItemType.FavoriteProject))
             {
                 UpdateContentItems(SelectedTreeItem);
             }
-            
+
             // 更新统计
             UpdateStatistics();
-            
+
             // 显示成功提示
             _dialogService.ShowNotification(
                 string.Format(L.Message_ProjectCreated, result.Value.Name),
@@ -830,19 +831,19 @@ public class MainViewModel : ViewModelBase
 
             // 刷新工作空间列表
             await LoadWorkSpacesAsync();
-            
+
             // 刷新侧边栏树（工作空间数量变化）
             BuildSidebarTree();
-            
+
             // 刷新内容区域显示（如果当前选中的是工作空间节点）
             if (SelectedTreeItem?.ItemType == TreeItemType.WorkSpace)
             {
                 UpdateContentItems(SelectedTreeItem);
             }
-            
+
             // 更新统计
             UpdateStatistics();
-            
+
             // 显示成功提示
             _dialogService.ShowNotification(
                 string.Format(L.Message_WorkSpaceCreated, viewModel.WorkSpaceName),
@@ -868,18 +869,18 @@ public class MainViewModel : ViewModelBase
         if (result.Confirmed && result.Value != null)
         {
             IsLoading = true;
-            
+
             // 如果指定了文件夹，将项目移动到该文件夹
             if (folderId.HasValue)
             {
                 await _workFolderAppService.MoveProjectToWorkFolderAsync(result.Value.Id, folderId.Value);
             }
-            
+
             Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
-            
+
             // 刷新项目列表
             await LoadProjectsAsync();
-            
+
             // 显示成功提示
             _dialogService.ShowNotification(
                 string.Format(L.Message_ProjectCreated, result.Value.Name),
@@ -900,19 +901,19 @@ public class MainViewModel : ViewModelBase
         try
         {
             Logger.LogInformation($"打开编辑项目对话框: {projectVm.Name}");
-            
+
             var dialogViewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
             dialogViewModel.InitializeForEdit(projectVm.GetProjectDto());
-            
+
             var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(dialogViewModel);
-            
+
             if (result.Confirmed && result.Value != null)
             {
                 Logger.LogInformation($"项目编辑成功: {result.Value.Name}");
-                
+
                 // 更新项目列表
                 await LoadProjectsAsync();
-                
+
                 // 显示成功提示
                 _dialogService.ShowNotification(
                     string.Format(L.Message_ProjectUpdated, result.Value.Name),
@@ -941,40 +942,40 @@ public class MainViewModel : ViewModelBase
         try
         {
             Logger.LogInformation($"请求删除项目: {projectVm.Name}");
-            
+
             // 显示确认对话框
             var confirmed = await _dialogService.ShowConfirmAsync(
                 L.DeleteConfirm_Title,
                 string.Format(L.DeleteConfirm_Message, projectVm.Name));
-            
+
             if (!confirmed)
             {
                 Logger.LogInformation("用户取消删除项目");
                 return;
             }
-            
+
             IsLoading = true;
-            
+
             // 执行删除
             await _projectAppService.DeleteAsync(projectVm.Id);
-            
+
             Logger.LogInformation($"项目删除成功: {projectVm.Name}");
-            
+
             // 从列表中移除
             Projects.Remove(projectVm);
-            
+
             // 刷新侧边栏树（项目数量变化）
             BuildSidebarTree();
-            
+
             // 刷新内容区域
             if (SelectedTreeItem != null)
             {
                 UpdateContentItems(SelectedTreeItem);
             }
-            
+
             // 更新统计
             UpdateStatistics();
-            
+
             // 显示成功提示
             _dialogService.ShowNotification(
                 string.Format(L.Message_ProjectDeleted, projectVm.Name),
@@ -1001,13 +1002,13 @@ public class MainViewModel : ViewModelBase
     {
         // 刷新侧边栏树（收藏数量变化）
         BuildSidebarTree();
-        
+
         // 如果当前选中的是收藏夹，刷新内容区域
         if (SelectedTreeItem?.ItemType == TreeItemType.FavoriteProject)
         {
             UpdateContentItems(SelectedTreeItem);
         }
-        
+
         // 更新统计
         UpdateStatistics();
     }
@@ -1022,7 +1023,7 @@ public class MainViewModel : ViewModelBase
         {
             UpdateContentItems(SelectedTreeItem);
         }
-        
+
         // 更新统计
         UpdateStatistics();
     }
@@ -1033,15 +1034,15 @@ public class MainViewModel : ViewModelBase
     private async Task ToggleLanguageAsync()
     {
         var currentCulture = L.CurrentCulture;
-        var newCulture = currentCulture.Name == "zh-CN" 
-            ? new System.Globalization.CultureInfo("en-US") 
+        var newCulture = currentCulture.Name == "zh-CN"
+            ? new System.Globalization.CultureInfo("en-US")
             : new System.Globalization.CultureInfo("zh-CN");
-        
+
         await L.SetCultureAsync(newCulture);
-        
+
         // 刷新侧边栏树节点名称以应用新语言
         RefreshSidebarTreeNames();
-        
+
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
     }
 
@@ -1268,13 +1269,13 @@ public class MainViewModel : ViewModelBase
     {
         // 刷新侧边栏树（收藏数量变化）
         BuildSidebarTree();
-        
+
         // 如果当前选中的是收藏夹，刷新内容区域
         if (SelectedTreeItem?.ItemType == TreeItemType.FavoriteProject)
         {
             UpdateContentItems(SelectedTreeItem);
         }
-        
+
         // 更新统计
         UpdateStatistics();
     }
