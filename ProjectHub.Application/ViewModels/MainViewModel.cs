@@ -1177,46 +1177,30 @@ public class MainViewModel : ViewModelBase
                 break;
 
             case TreeItemType.RecentProject:
-                // 显示最近使用的项目（按最后打开时间排序）
-                var recentProjects = Projects
+                // 显示最近使用的项目和工作空间（混合按最后打开时间排序）
+                var recentItems = Projects
                     .Where(p => p.LastOpenedAt.HasValue)
-                    .OrderByDescending(p => p.LastOpenedAt)
+                    .Select(p => (object)p)
+                    .Concat(WorkSpaces.Where(w => w.LastOpenedAt.HasValue).Select(w => (object)w))
+                    .OrderByDescending(item => item is ProjectViewModel p ? p.LastOpenedAt : ((WorkSpaceViewModel)item).LastOpenedAt)
                     .ToList();
-                foreach (var project in recentProjects)
+                foreach (var item in recentItems)
                 {
-                    ContentItems.Add(project);
-                }
-
-                // 显示最近使用的工作空间（按最后打开时间排序）
-                var recentWorkSpaces = WorkSpaces
-                    .Where(w => w.LastOpenedAt.HasValue)
-                    .OrderByDescending(w => w.LastOpenedAt)
-                    .ToList();
-                foreach (var workSpace in recentWorkSpaces)
-                {
-                    ContentItems.Add(workSpace);
+                    ContentItems.Add(item);
                 }
                 break;
 
             case TreeItemType.FavoriteProject:
-                // 显示收藏的项目（按收藏时间排序）
-                var favoriteProjects = Projects
+                // 显示收藏的项目和工作空间（混合按收藏时间排序）
+                var favoriteItems = Projects
                     .Where(p => p.IsFavorite)
-                    .OrderByDescending(p => p.FavoritedAt)
+                    .Select(p => (object)p)
+                    .Concat(WorkSpaces.Where(w => w.IsFavorite).Select(w => (object)w))
+                    .OrderByDescending(item => item is ProjectViewModel p ? p.FavoritedAt : ((WorkSpaceViewModel)item).FavoritedAt)
                     .ToList();
-                foreach (var project in favoriteProjects)
+                foreach (var item in favoriteItems)
                 {
-                    ContentItems.Add(project);
-                }
-
-                // 显示收藏的工作空间（按收藏时间排序）
-                var favoriteWorkSpaces = WorkSpaces
-                    .Where(w => w.IsFavorite)
-                    .OrderByDescending(w => w.FavoritedAt)
-                    .ToList();
-                foreach (var workSpace in favoriteWorkSpaces)
-                {
-                    ContentItems.Add(workSpace);
+                    ContentItems.Add(item);
                 }
                 break;
 
