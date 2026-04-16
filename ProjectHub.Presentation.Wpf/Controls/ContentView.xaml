@@ -18,6 +18,7 @@
     <UserControl.Resources>
         <converters:PathToIconConverter x:Key="PathToIconConverter" />
         <converters:ContentTemplateSelector x:Key="ContentTemplateSelector" />
+        <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVis" />
 
         <!--  项目卡片模板  -->
         <DataTemplate x:Key="ProjectCardTemplate">
@@ -129,7 +130,7 @@
                         Foreground="{DynamicResource TextMutedBrush}"
                         Text="{Binding Description}"
                         TextTrimming="CharacterEllipsis"
-                        Visibility="{Binding Description, Converter={StaticResource BoolToVis}}" />
+                        Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToVis}}" />
 
                     <Grid Grid.Row="4" Margin="16,8,16,12">
                         <Grid.ColumnDefinitions>
@@ -297,7 +298,7 @@
                         Foreground="{DynamicResource TextMutedBrush}"
                         Text="{Binding Description}"
                         TextTrimming="CharacterEllipsis"
-                        Visibility="{Binding Description, Converter={StaticResource BoolToVis}}" />
+                        Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToVis}}" />
 
                     <Border
                         Grid.Row="2"
@@ -316,7 +317,7 @@
                             FontSize="11"
                             Foreground="{DynamicResource TextMutedBrush}"
                             Text="{Binding LastOpenedDisplay}"
-                            Visibility="{Binding LastOpenedAt, Converter={StaticResource BoolToVis}}" />
+                            Visibility="{Binding LastOpenedAt, Converter={StaticResource NullOrEmptyToVis}}" />
                         <StackPanel
                             Grid.Column="1"
                             HorizontalAlignment="Right"
