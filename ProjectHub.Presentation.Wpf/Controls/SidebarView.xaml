@@ -8,9 +8,9 @@
     xmlns:rxui="http://reactiveui.net"
     xmlns:svg="http://sharpvectors.codeplex.com/svgc/"
     xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
-    d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
+    d:DataContext="{d:DesignInstance viewmodels:SidebarViewModel}"
     d:DesignWidth="260"
-    x:TypeArguments="viewmodels:MainViewModel"
+    x:TypeArguments="viewmodels:SidebarViewModel"
     mc:Ignorable="d">
     <Border
         Background="{DynamicResource BgSecondaryBrush}"

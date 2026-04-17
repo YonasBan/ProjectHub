@@ -36,8 +36,11 @@ public static class ApplicationServiceExtensions
     /// </summary>
     public static IServiceCollection AddUIServices(this IServiceCollection services)
     {
-        // Main ViewModel - Singleton（因为它需要访问具有更长生命周期的 IServiceProvider）
+        // Main ViewModel - Singleton
         services.AddSingleton<ViewModels.MainViewModel>();
+
+        // Sidebar ViewModel - Singleton（与 MainViewModel 生命周期一致）
+        services.AddSingleton<ViewModels.SidebarViewModel>();
 
         // 对话框 ViewModels - Transient（每次创建新实例）
         services.AddTransient<CreateFolderDialogViewModel>();

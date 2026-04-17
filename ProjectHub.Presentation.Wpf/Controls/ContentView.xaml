@@ -550,14 +550,14 @@
                         Height="22"
                         Margin="0,0,12,0"
                         VerticalAlignment="Center"
-                        Source="{Binding SelectedTreeItem.IconPath}"
+                        Source="{Binding SidebarViewModel.SelectedTreeItem.IconPath}"
                         Stretch="Uniform" />
                     <!--  Name  -->
                     <TextBlock
                         FontSize="22"
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource TextPrimaryBrush}"
-                        Text="{Binding SelectedTreeItem.Name}" />
+                        Text="{Binding SidebarViewModel.SelectedTreeItem.Name}" />
                 </StackPanel>
 
                 <!--  Add Button (显示在工作空间、工作文件夹、所有项目类型)  -->
@@ -571,7 +571,7 @@
                     FontSize="18"
                     Style="{StaticResource IconButtonStyle}"
                     ToolTip="{Binding L.Tooltip_AddItem}"
-                    Visibility="{Binding SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
+                    Visibility="{Binding SidebarViewModel.SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" Cursor="Hand" />
             </Grid>
         </Border>
 
