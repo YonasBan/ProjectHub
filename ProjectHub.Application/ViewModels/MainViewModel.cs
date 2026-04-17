@@ -901,20 +901,33 @@ public class MainViewModel : ViewModelBase
         // 显示添加工作空间对话框
         var viewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
         await viewModel.InitializeForAddAsync();
-        var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, bool>(viewModel);
+        var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, WorkSpaceDto?>(viewModel);
 
-        if (result.Confirmed && result.Value)
+        if (result.Confirmed && result.Value != null)
         {
             IsLoading = true;
-            Logger.LogInformation("工作空间创建成功");
+            Logger.LogInformation("工作空间创建成功: {WorkSpaceName}", result.Value.Name);
+
+            // 直接添加新工作空间到集合，无需重新查询数据库
+            var workSpaceVm = new WorkSpaceViewModel(result.Value, _workSpaceAppService);
+            WorkSpaces.Add(workSpaceVm);
+
+            // 更新侧边栏工作空间节点计数
+            var workSpaceTreeView = this.SidebarTreeItems.Where(r => r.ItemType == TreeItemType.WorkSpace).First();
+            workSpaceTreeView.Count++;
+
+            // 刷新内容区域显示（如果当前选中的是工作空间节点）
+            if (SelectedTreeItem?.ItemType == TreeItemType.WorkSpace)
+            {
+                UpdateContentItems(SelectedTreeItem);
+            }
 
             // 更新统计
             UpdateStatistics();
-            var workSpaceTreeView = this.SidebarTreeItems.Where(r => r.ItemType == TreeItemType.WorkSpace).First();
-            workSpaceTreeView.Count++;
+
             // 显示成功提示
             _dialogService.ShowNotification(
-                string.Format(L.Message_WorkSpaceCreated, viewModel.WorkSpaceName),
+                string.Format(L.Message_WorkSpaceCreated, result.Value.Name),
                 NotificationType.Success,
                 3000);
         }
@@ -980,9 +993,6 @@ public class MainViewModel : ViewModelBase
             {
                 Logger.LogInformation($"项目编辑成功: {result.Value.Name}");
 
-                // 更新项目列表
-                await LoadProjectsAsync();
-
                 // 显示成功提示
                 _dialogService.ShowNotification(
                     string.Format(L.Message_ProjectUpdated, result.Value.Name),
@@ -1032,9 +1042,7 @@ public class MainViewModel : ViewModelBase
 
             // 从列表中移除
             Projects.Remove(projectVm);
-
-            // 刷新侧边栏树（项目数量变化）
-            BuildSidebarTree();
+            UpdateStatistics();
 
             // 刷新内容区域
             if (SelectedTreeItem != null)
@@ -1252,11 +1260,12 @@ public class MainViewModel : ViewModelBase
             var dialogViewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
             await dialogViewModel.InitializeForEditAsync(workSpaceVm.Id);
 
-            var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, bool>(dialogViewModel);
+            var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, WorkSpaceDto?>(dialogViewModel);
 
-            if (result.Confirmed && result.Value)
+            if (result.Confirmed && result.Value != null)
             {
-                workSpaceVm.UpdateProjectCount(dialogViewModel.SelectedProjectCount);
+                // 更新工作空间的项目计数
+                workSpaceVm.UpdateProjectCount(result.Value.ProjectCount);
                 Logger.LogInformation($"工作空间编辑成功: {workSpaceVm.Name}");
                 // 显示成功提示
                 _dialogService.ShowNotification(

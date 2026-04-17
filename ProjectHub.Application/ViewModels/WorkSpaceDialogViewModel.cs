@@ -14,7 +14,7 @@ namespace ProjectHub.Application.ViewModels;
 /// 工作空间对话框 ViewModel
 /// 支持添加和编辑工作空间
 /// </summary>
-public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
+public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
 {
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IProjectAppService _projectAppService;
@@ -332,6 +332,10 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                     .ToList();
                 
                 await _workSpaceAppService.SetWorkSpaceProjectsAsync(_workSpaceId.Value, selectedProjectIds);
+
+                // 获取更新后的工作空间
+                var updatedWorkSpace = await _workSpaceAppService.GetByIdAsync(_workSpaceId.Value);
+                Close(updatedWorkSpace);
             }
             else
             {
@@ -364,9 +368,11 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<bool>
                     DefaultLaunchIntervalSeconds = DefaultLaunchIntervalSeconds
                 };
                 await _workSpaceAppService.UpdateProjectSettingsAsync(settingsDto);
-            }
 
-            Close(true);
+                // 获取完整的 WorkSpaceDto（包含 ProjectCount）
+                var resultWorkSpace = await _workSpaceAppService.GetByIdAsync(workSpace.Id);
+                Close(resultWorkSpace);
+            }
         }
         catch (Exception ex)
         {
