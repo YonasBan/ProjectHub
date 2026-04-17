@@ -863,6 +863,27 @@
     </Style>
 
     <!--  ========== ContextMenu Styles (Dark Theme) ==========  -->
+    <Style x:Key="DarkContextMenuStyle" TargetType="ContextMenu">
+        <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="4" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="6">
+                        <ItemsPresenter />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
     <!--  深色上下文菜单项样式  -->
     <Style x:Key="DarkContextMenuItemStyle" TargetType="MenuItem">
         <Setter Property="Background" Value="Transparent" />
@@ -882,11 +903,18 @@
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="24" />
                             </Grid.ColumnDefinitions>
-                            <ContentPresenter
+                            <Border
                                 Grid.Column="0"
-                                Margin="4,0,0,0"
-                                VerticalAlignment="Center"
-                                ContentSource="Icon" />
+                                Width="28"
+                                Background="Transparent">
+                                <ContentPresenter
+                                    Width="16"
+                                    Height="16"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Content="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}"
+                                    SnapsToDevicePixels="True" />
+                            </Border>
                             <ContentPresenter
                                 Grid.Column="1"
                                 Margin="8,0,0,0"
@@ -922,7 +950,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Separator">
-                    <Border Background="{TemplateBinding Background}" Height="{TemplateBinding Height}" />
+                    <Border Height="{TemplateBinding Height}" Background="{TemplateBinding Background}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

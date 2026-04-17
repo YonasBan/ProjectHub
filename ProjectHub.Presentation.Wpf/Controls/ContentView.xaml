@@ -20,6 +20,9 @@
         <converters:ContentTemplateSelector x:Key="ContentTemplateSelector" />
         <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVis" />
 
+        <!--  BindingProxy 用于解决 ContextMenu 绑定问题  -->
+        <converters:BindingProxy x:Key="LocalizedStringsProxy" Data="{Binding L}" />
+
         <!--  项目卡片模板  -->
         <DataTemplate x:Key="ProjectCardTemplate">
             <Border
@@ -36,10 +39,14 @@
                     <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchCommand}" />
                 </i:Interaction.Behaviors>
                 <Border.ContextMenu>
-                    <ContextMenu Background="{DynamicResource BgSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}">
+                    <ContextMenu
+                        Background="{DynamicResource BgSecondaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        Style="{StaticResource DarkContextMenuStyle}">
                         <MenuItem
+                            Height="26"
                             Command="{Binding LaunchCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_Launch, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Launch}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
                                 <svg:SvgViewbox
@@ -49,8 +56,9 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Height="26"
                             Command="{Binding ToggleFavoriteCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_ToggleFavorite, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_ToggleFavorite}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
                                 <svg:SvgViewbox
@@ -60,8 +68,9 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Height="26"
                             Command="{Binding EditCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_Edit, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Edit}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
                                 <svg:SvgViewbox
@@ -72,8 +81,9 @@
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
+                            Height="26"
                             Command="{Binding MoveToFolderCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_MoveToFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_MoveToFolder}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
                                 <svg:SvgViewbox
@@ -84,8 +94,9 @@
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
+                            Height="26"
                             Command="{Binding DeleteCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_Delete, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Delete}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
                                 <svg:SvgViewbox
@@ -282,50 +293,70 @@
                     <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchAllCommand}" />
                 </i:Interaction.Behaviors>
                 <Border.ContextMenu>
-                    <ContextMenu Background="{DynamicResource BgSecondaryBrush}" BorderBrush="{DynamicResource BorderBrush}">
+                    <ContextMenu
+                        Background="{DynamicResource BgSecondaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        Style="{StaticResource DarkContextMenuStyle}">
                         <MenuItem
+                            Height="26"
                             Command="{Binding LaunchAllCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_LaunchAll, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_LaunchAll}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
-                                <TextBlock FontSize="14" Text="▶" />
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/start.svg" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Height="26"
                             Command="{Binding ToggleFavoriteCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_ToggleFavorite, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_ToggleFavorite}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
-                                <TextBlock FontSize="14" Text="⭐" />
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/like.svg" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
+                            Height="26"
                             Command="{Binding EditCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_Edit, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Edit}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
-                                <TextBlock FontSize="14" Text="✎" />
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/edit.svg" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
+                            Height="26"
                             Command="{Binding MoveToFolderCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_MoveToFolder, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_MoveToFolder}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
-                                <TextBlock FontSize="14" Text="📂" />
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/folder.svg" />
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
+                            Height="26"
                             Command="{Binding DeleteCommand}"
-                            Header="{Binding DataContext.L.ContextMenu_Delete, RelativeSource={RelativeSource AncestorType=ContextMenu}}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Delete}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
                             <MenuItem.Icon>
-                                <TextBlock
-                                    FontSize="14"
-                                    Foreground="#FF6B6B"
-                                    Text="🗑" />
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/delete.svg" />
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
