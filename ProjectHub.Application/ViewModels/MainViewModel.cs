@@ -133,11 +133,6 @@ public class MainViewModel : ViewModelBase
 
     #region Reactive Commands
 
-    /// <summary>
-    /// 加载项目命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> LoadProjectsCommand { get; }
-
 
     /// <summary>
     /// 刷新数据命令
@@ -344,8 +339,6 @@ public class MainViewModel : ViewModelBase
         _themeService = themeService;
         _serviceProvider = serviceProvider;
 
-        // 初始化命令 (使用方法的分组语法)
-        LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
 
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
@@ -357,7 +350,6 @@ public class MainViewModel : ViewModelBase
         ToggleThemeCommand = ReactiveCommand.Create(_themeService.ToggleTheme);
 
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
-        LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
         RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
         ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
@@ -371,8 +363,6 @@ public class MainViewModel : ViewModelBase
                 UpdateStatistics(); // 语言变化时更新状态栏文本
             })
             .DisposeWith(Disposables);
-        // 订阅数据集合变化，自动重建树形结构
-        WorkFolders.CollectionChanged += (_, _) => BuildSidebarTree();
 
         // 订阅 MessageBus 消息
         SubscribeToMessageBus();
@@ -458,6 +448,7 @@ public class MainViewModel : ViewModelBase
         await LoadProjectsAsync();
 
         // 加载工作文件夹用于构建侧边栏树结构
+        //todo 懒加载
         await LoadWorkFoldersAsync();
 
         // 加载工作空间数据（用于显示侧边栏工作空间数量）
@@ -876,10 +867,8 @@ public class MainViewModel : ViewModelBase
             // 直接添加新项目到集合，无需重新查询数据库
             var projectVm = new ProjectViewModel(result.Value, _projectAppService);
             Projects.Add(projectVm);
-
-            // 刷新侧边栏树（项目数量变化）
-            BuildSidebarTree();
-
+            var projectTreeView = this.SidebarTreeItems.Where(r => r.ItemType == TreeItemType.AllProjects).First();
+            projectTreeView.Count++;
             // 刷新内容区域显示（如果当前选中的是项目相关节点）
             if (SelectedTreeItem != null &&
                 (SelectedTreeItem.ItemType == TreeItemType.AllProjects ||
@@ -919,21 +908,10 @@ public class MainViewModel : ViewModelBase
             IsLoading = true;
             Logger.LogInformation("工作空间创建成功");
 
-            // 刷新工作空间列表
-            await LoadWorkSpacesAsync();
-
-            // 刷新侧边栏树（工作空间数量变化）
-            BuildSidebarTree();
-
-            // 刷新内容区域显示（如果当前选中的是工作空间节点）
-            if (SelectedTreeItem?.ItemType == TreeItemType.WorkSpace)
-            {
-                UpdateContentItems(SelectedTreeItem);
-            }
-
             // 更新统计
             UpdateStatistics();
-
+            var workSpaceTreeView = this.SidebarTreeItems.Where(r => r.ItemType == TreeItemType.WorkSpace).First();
+            workSpaceTreeView.Count++;
             // 显示成功提示
             _dialogService.ShowNotification(
                 string.Format(L.Message_WorkSpaceCreated, viewModel.WorkSpaceName),
@@ -967,9 +945,6 @@ public class MainViewModel : ViewModelBase
             }
 
             Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
-
-            // 刷新项目列表
-            await LoadProjectsAsync();
 
             // 显示成功提示
             _dialogService.ShowNotification(
