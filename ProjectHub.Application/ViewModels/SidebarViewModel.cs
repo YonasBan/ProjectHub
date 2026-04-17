@@ -255,7 +255,7 @@ public class SidebarViewModel : ViewModelBase
         // 订阅命令异常
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
         DeleteFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "删除文件夹时发生错误"));
-        _ = LoadInitialDataAsync();
+        //_ = LoadInitialDataAsync();
         // 订阅语言切换事件
         L.CultureChanged
             .ObserveOn(MainThreadScheduler)
