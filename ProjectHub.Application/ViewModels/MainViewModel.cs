@@ -138,10 +138,6 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<Unit, Unit> LoadProjectsCommand { get; }
 
-    /// <summary>
-    /// 搜索项目命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> SearchProjectsCommand { get; }
 
     /// <summary>
     /// 刷新数据命令
@@ -350,7 +346,6 @@ public class MainViewModel : ViewModelBase
 
         // 初始化命令 (使用方法的分组语法)
         LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
-        SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
         RefreshCommand = CreateCommand(RefreshAsync);
 
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
@@ -363,7 +358,6 @@ public class MainViewModel : ViewModelBase
 
         // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
         LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
-        SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
         RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
         ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
@@ -482,31 +476,6 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    /// <summary>
-    /// 根据选中的树节点类型实时加载数据
-    /// </summary>
-    private async Task LoadDataForSelectedItemAsync(TreeItemViewModel selectedItem)
-    {
-        switch (selectedItem.ItemType)
-        {
-            case TreeItemType.AllProjects:
-            case TreeItemType.RecentProject:
-            case TreeItemType.FavoriteProject:
-            case TreeItemType.WorkFolder:
-                // 项目相关节点：实时加载项目数据
-                await LoadProjectsAsync();
-                break;
-
-            case TreeItemType.WorkSpace:
-                // 工作空间节点：实时加载工作空间数据
-                await LoadWorkSpacesAsync();
-                break;
-
-            case TreeItemType.TagSettings:
-                // 标签数据按需加载（待实现）
-                break;
-        }
-    }
 
     private void UpdateStatistics()
     {
@@ -553,49 +522,6 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 搜索项目
-    /// </summary>
-    private async Task SearchProjectsAsync()
-    {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(SearchKeyword))
-            {
-                // 搜索为空时，根据当前选中的树节点重新加载数据
-                if (SelectedTreeItem != null)
-                {
-                    await LoadDataForSelectedItemAsync(SelectedTreeItem);
-                    UpdateContentItems(SelectedTreeItem);
-                }
-                return;
-            }
-
-            Logger.LogInformation($"搜索关键字：{SearchKeyword}");
-
-            var projects = await _projectAppService.SearchAsync(SearchKeyword);
-
-            Projects.Clear();
-            foreach (var project in projects)
-            {
-                var projectVm = new ProjectViewModel(project, _projectAppService);
-                Projects.Add(projectVm);
-            }
-
-            Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
-
-            // 搜索后刷新内容显示
-            if (SelectedTreeItem != null)
-            {
-                UpdateContentItems(SelectedTreeItem);
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "搜索项目时发生错误");
-        }
-    }
-
-    /// <summary>
     /// 刷新所有数据
     /// </summary>
     private async Task RefreshAsync()
@@ -610,7 +536,6 @@ public class MainViewModel : ViewModelBase
             // 根据当前选中的节点刷新对应数据
             if (SelectedTreeItem != null)
             {
-                await LoadDataForSelectedItemAsync(SelectedTreeItem);
                 UpdateContentItems(SelectedTreeItem);
             }
 
@@ -1261,11 +1186,7 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private async void UpdateContentItems(TreeItemViewModel selectedItem)
     {
-        // 按需加载数据
-        await LoadDataForSelectedItemAsync(selectedItem);
-
         ContentItems.Clear();
-
         switch (selectedItem.ItemType)
         {
             case TreeItemType.AllProjects:
