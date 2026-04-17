@@ -1043,8 +1043,8 @@ public class MainViewModel : ViewModelBase
             // 从列表中移除
             Projects.Remove(projectVm);
 
-            // 更新侧边栏树形节点计数
-            UpdateSidebarTreeCountsAfterProjectDelete(projectVm);
+            // 更新侧边栏树形节点计数（异步）
+            await UpdateSidebarTreeCountsAfterProjectDeleteAsync(projectVm);
 
             // 刷新内容区域
             if (SelectedTreeItem != null)
@@ -1077,7 +1077,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 删除项目后更新侧边栏树形节点计数
     /// </summary>
-    private void UpdateSidebarTreeCountsAfterProjectDelete(ProjectViewModel projectVm)
+    private async Task UpdateSidebarTreeCountsAfterProjectDeleteAsync(ProjectViewModel projectVm)
     {
         foreach (var item in SidebarTreeItems)
         {
@@ -1095,29 +1095,53 @@ public class MainViewModel : ViewModelBase
                         item.Count--;
                     break;
             }
-
-            // 递归更新文件夹计数
-            UpdateFolderCountsRecursive(item.Children, projectVm.Id, isProject: true);
         }
+
+        // 重新加载文件夹数据以更新文件夹计数
+        await LoadWorkFoldersAsync();
+        // 重建文件夹树形结构（保持其他节点不变）
+        RebuildFolderTreeOnly();
     }
 
     /// <summary>
-    /// 递归更新文件夹计数
+    /// 仅重建文件夹树形结构（保持其他节点不变）
     /// </summary>
-    private void UpdateFolderCountsRecursive(ObservableCollection<TreeItemViewModel> children, long itemId, bool isProject)
+    private void RebuildFolderTreeOnly()
     {
-        foreach (var child in children)
+        // 移除所有文件夹节点
+        var folderNodesToRemove = SidebarTreeItems.Where(i => i.ItemType == TreeItemType.WorkFolder).ToList();
+        foreach (var node in folderNodesToRemove)
         {
-            if (child.ItemType == TreeItemType.WorkFolder)
-            {
-                // 文件夹计数减1（因为删除了一个项目或工作空间）
-                child.Count--;
-            }
+            SidebarTreeItems.Remove(node);
+        }
 
-            // 递归处理子节点
-            if (child.Children.Count > 0)
+        // 找到工作空间节点的索引
+        var workSpaceIndex = -1;
+        for (int i = 0; i < SidebarTreeItems.Count; i++)
+        {
+            if (SidebarTreeItems[i].ItemType == TreeItemType.WorkSpace)
             {
-                UpdateFolderCountsRecursive(child.Children, itemId, isProject);
+                workSpaceIndex = i;
+                break;
+            }
+        }
+
+        // 重新添加文件夹节点
+        var insertIndex = workSpaceIndex + 1;
+        var folderNodes = WorkFolders
+            .OrderBy(f => f.SortOrder)
+            .ToDictionary(f => f.Id, f => new TreeItemViewModel(f.Name, f.TotalCount, TreeItemType.WorkFolder, f.Id));
+
+        foreach (var folder in WorkFolders.OrderBy(f => f.SortOrder))
+        {
+            if (folder.ParentId.HasValue && folderNodes.TryGetValue(folder.ParentId.Value, out var parentNode))
+            {
+                parentNode.Children.Add(folderNodes[folder.Id]);
+            }
+            else
+            {
+                SidebarTreeItems.Insert(insertIndex, folderNodes[folder.Id]);
+                insertIndex++;
             }
         }
     }
@@ -1231,12 +1255,13 @@ public class MainViewModel : ViewModelBase
                 break;
 
             case TreeItemType.RecentProject:
-                // 显示最近使用的项目和工作空间（混合按最后打开时间排序）
+                // 显示最近使用的项目和工作空间（混合按最后打开时间排序，最多20个）
                 var recentItems = Projects
                     .Where(p => p.LastOpenedAt.HasValue)
                     .Select(p => (object)p)
                     .Concat(WorkSpaces.Where(w => w.LastOpenedAt.HasValue).Select(w => (object)w))
                     .OrderByDescending(item => item is ProjectViewModel p ? p.LastOpenedAt : ((WorkSpaceViewModel)item).LastOpenedAt)
+                    .Take(20)
                     .ToList();
                 foreach (var item in recentItems)
                 {
@@ -1367,8 +1392,8 @@ public class MainViewModel : ViewModelBase
             // 从列表中移除
             WorkSpaces.Remove(workSpaceVm);
 
-            // 更新侧边栏树形节点计数
-            UpdateSidebarTreeCountsAfterWorkSpaceDelete(workSpaceVm);
+            // 更新侧边栏树形节点计数（异步）
+            await UpdateSidebarTreeCountsAfterWorkSpaceDeleteAsync(workSpaceVm);
 
             // 刷新内容区域
             if (SelectedTreeItem != null)
@@ -1401,7 +1426,7 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 删除工作空间后更新侧边栏树形节点计数
     /// </summary>
-    private void UpdateSidebarTreeCountsAfterWorkSpaceDelete(WorkSpaceViewModel workSpaceVm)
+    private async Task UpdateSidebarTreeCountsAfterWorkSpaceDeleteAsync(WorkSpaceViewModel workSpaceVm)
     {
         foreach (var item in SidebarTreeItems)
         {
@@ -1419,10 +1444,12 @@ public class MainViewModel : ViewModelBase
                         item.Count--;
                     break;
             }
-
-            // 递归更新文件夹计数
-            UpdateFolderCountsRecursive(item.Children, workSpaceVm.Id, isProject: false);
         }
+
+        // 重新加载文件夹数据以更新文件夹计数
+        await LoadWorkFoldersAsync();
+        // 重建文件夹树形结构（保持其他节点不变）
+        RebuildFolderTreeOnly();
     }
 
     /// <summary>
