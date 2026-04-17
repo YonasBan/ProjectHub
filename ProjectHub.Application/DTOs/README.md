@@ -11,9 +11,7 @@
 | `ProjectDtos.cs` | 项目相关的DTO（ProjectDto, CreateProjectDto, UpdateProjectDto） |
 | `WorkFolderDtos.cs` | 工作文件夹相关的DTO（WorkFolderDto, CreateWorkFolderDto, UpdateWorkFolderDto） |
 | `WorkSpaceDtos.cs` | 工作空间相关的DTO（WorkSpaceDto, CreateWorkSpaceDto, UpdateWorkSpaceDto, WorkSpaceProjectSettingsDto, UpdateWorkSpaceProjectSettingsDto） |
-| `TagDtos.cs` | 标签相关的DTO（TagDto, CreateTagDto, UpdateTagDto, AddProjectTagDto, AddWorkSpaceTagDto） |
-| `ProjectBundleDtos.cs` | 项目包相关的DTO（ProjectBundleDto, ProjectBundleItemDto, CreateProjectBundleDto, UpdateProjectBundleDto, ProjectBundleItemInput） |
-| `CleanupDtos.cs` | 清理功能相关的DTO（CleanupScanResultDto, CleanupItemInfoDto, CleanupProfileDto） |
+| `TagDtos.cs` | 标签相关的DTO（TagDto, CreateTagDto, UpdateTagDto） |
 
 ## 命名规范
 
@@ -28,7 +26,7 @@
   - 例如: `UpdateProjectDto`, `UpdateTagDto`
 
 - **操作DTO**: 描述特定操作的输入参数
-  - 例如: `AddProjectTagDto`, `AddWorkSpaceTagDto`, `UpdateWorkSpaceProjectSettingsDto`
+  - 例如: `UpdateWorkSpaceProjectSettingsDto`
 
 ### 命名空间
 所有 DTO 都使用统一命名空间: `ProjectHub.Application.DTOs`
@@ -47,16 +45,14 @@ var createDto = new CreateProjectDto
 };
 var projectDto = await _projectAppService.CreateAsync(createDto);
 
-// 更新标签
-var updateDto = new UpdateTagDto
+// 更新工作空间设置
+var updateDto = new UpdateWorkSpaceProjectSettingsDto
 {
-    Id = 1,
-    Name = "Important",
-    Color = "#FF5733",
-    Description = "重要项目",
-    SortOrder = 1
+    WorkSpaceId = 1,
+    ProjectIds = new List<long> { 1, 2, 3 },
+    LaunchIntervalSeconds = 5
 };
-var tagDto = await _tagAppService.UpdateAsync(updateDto);
+var settings = await _workSpaceAppService.UpdateProjectSettingsAsync(updateDto);
 ```
 
 ## 设计原则

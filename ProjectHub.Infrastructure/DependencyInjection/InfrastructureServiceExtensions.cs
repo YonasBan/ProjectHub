@@ -27,7 +27,6 @@ public static class InfrastructureServiceExtensions
         services.AddTransient<IProjectRepository, ProjectRepository>();
         services.AddTransient<IWorkFolderRepository, WorkFolderRepository>();
         services.AddTransient<IWorkSpaceRepository, WorkSpaceRepository>();
-        services.AddTransient<ITagRepository, TagRepository>();
         services.AddTransient<IProjectWorkSpaceRepository, ProjectWorkSpaceRepository>();
 
         return services;

@@ -24,11 +24,7 @@ public static class ApplicationServiceExtensions
         // 注册工作空间应用服务
         services.AddTransient<IWorkSpaceAppService, WorkSpaceAppService>();
 
-        // 注册标签应用服务
-        services.AddTransient<ITagAppService, TagAppService>();
 
-        // TODO: 注册清理应用服务
-        // services.AddScoped<ICleanupAppService, CleanupAppService>();
 
         return services;
     }
