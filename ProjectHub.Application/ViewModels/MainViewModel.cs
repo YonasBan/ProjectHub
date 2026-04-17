@@ -25,7 +25,6 @@ public class MainViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IDialogService _dialogService;
     private readonly IWorkFolderAppService _workFolderAppService;
-    private readonly IProjectAppService _projectAppService;
 
     #endregion
 
@@ -113,7 +112,6 @@ public class MainViewModel : ViewModelBase
         IServiceProvider serviceProvider,
         IDialogService dialogService,
         IWorkFolderAppService workFolderAppService,
-        IProjectAppService projectAppService,
         SidebarViewModel sidebarViewModel,
         ContentViewModel contentViewModel)
         : base(logger, mainThreadScheduler)
@@ -122,7 +120,6 @@ public class MainViewModel : ViewModelBase
         _serviceProvider = serviceProvider;
         _dialogService = dialogService;
         _workFolderAppService = workFolderAppService;
-        _projectAppService = projectAppService;
         SidebarViewModel = sidebarViewModel;
         ContentViewModel = contentViewModel;
 
@@ -157,27 +154,6 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private void SubscribeToMessageBus()
     {
-        // 项目相关消息
-        MessageBus.Current.Listen<ProjectEditRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectEditRequested(msg.Project))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<ProjectDeleteRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectDeleteRequested(msg.Project))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<ProjectFavoriteChangedMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<ProjectLaunchedMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectLaunched(msg.Project))
-            .DisposeWith(Disposables);
-
         // 移动到文件夹请求消息
         MessageBus.Current.Listen<ProjectMoveToFolderRequestMessage>()
             .ObserveOn(MainThreadScheduler)
@@ -204,145 +180,7 @@ public class MainViewModel : ViewModelBase
 
     #endregion
 
-    #region 项目消息处理方法
-
-    /// <summary>
-    /// 处理项目编辑请求
-    /// </summary>
-    private async void OnProjectEditRequested(ProjectViewModel projectVm)
-    {
-        try
-        {
-            Logger.LogInformation($"打开编辑项目对话框: {projectVm.Name}");
-
-            var dialogViewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
-            dialogViewModel.InitializeForEdit(projectVm.GetProjectDto());
-
-            var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(dialogViewModel);
-
-            if (result.Confirmed && result.Value != null)
-            {
-                Logger.LogInformation($"项目编辑成功: {result.Value.Name}");
-
-                // 显示成功提示
-                _dialogService.ShowNotification(
-                    string.Format(L.Message_ProjectUpdated, result.Value.Name),
-                    NotificationType.Success,
-                    3000);
-            }
-            else
-            {
-                Logger.LogInformation("用户取消编辑项目");
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "编辑项目时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_SaveFailed,
-                ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// 处理项目删除请求
-    /// </summary>
-    private async void OnProjectDeleteRequested(ProjectViewModel projectVm)
-    {
-        try
-        {
-            Logger.LogInformation($"请求删除项目: {projectVm.Name}");
-
-            // 显示确认对话框
-            var confirmed = await _dialogService.ShowConfirmAsync(
-                L.DeleteConfirm_Title,
-                string.Format(L.DeleteConfirm_Message, projectVm.Name));
-
-            if (!confirmed)
-            {
-                Logger.LogInformation("用户取消删除项目");
-                return;
-            }
-
-            IsLoading = true;
-
-            // 执行删除
-            await _projectAppService.DeleteAsync(projectVm.Id);
-
-            Logger.LogInformation($"项目删除成功: {projectVm.Name}");
-
-            // 从列表中移除
-            SidebarViewModel.Projects.Remove(projectVm);
-
-            // 更新侧边栏树形节点计数
-            SidebarViewModel.UpdateCountsAfterDelete(projectVm);
-            await SidebarViewModel.LoadWorkFoldersAsync();
-            SidebarViewModel.RebuildFolderTreeOnly();
-
-            // 刷新内容区域
-            if (SidebarViewModel.SelectedTreeItem != null)
-            {
-                ContentViewModel.UpdateContentItems(SidebarViewModel.SelectedTreeItem);
-            }
-
-            // 更新统计
-            SidebarViewModel.UpdateStatistics();
-
-            // 显示成功提示
-            _dialogService.ShowNotification(
-                string.Format(L.Message_ProjectDeleted, projectVm.Name),
-                NotificationType.Success,
-                3000);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "删除项目时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_DeleteFailed,
-                ex.Message);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    #endregion
-
     #region 语言与主题方法
-
-    /// <summary>
-    /// 处理项目收藏状态变化
-    /// </summary>
-    private void OnProjectFavoriteChanged(ProjectViewModel projectVm)
-    {
-        // 刷新侧边栏树
-        SidebarViewModel.BuildSidebarTree();
-
-        // 如果当前选中的是收藏夹，刷新内容区域
-        if (SidebarViewModel.SelectedTreeItem?.ItemType == TreeItemType.FavoriteProject)
-        {
-            ContentViewModel.UpdateContentItems(SidebarViewModel.SelectedTreeItem);
-        }
-
-        // 更新统计
-        SidebarViewModel.UpdateStatistics();
-    }
-
-    /// <summary>
-    /// 处理项目启动（启动次数更新）
-    /// </summary>
-    private void OnProjectLaunched(ProjectViewModel projectVm)
-    {
-        // 如果当前选中的是最近使用，刷新内容区域
-        if (SidebarViewModel.SelectedTreeItem?.ItemType == TreeItemType.RecentProject)
-        {
-            ContentViewModel.UpdateContentItems(SidebarViewModel.SelectedTreeItem);
-        }
-
-        // 更新统计
-        SidebarViewModel.UpdateStatistics();
-    }
 
     /// <summary>
     /// 切换语言
