@@ -1,6 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Services;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 
 namespace ProjectHub.Application.DependencyInjection;
 
@@ -39,10 +40,10 @@ public static class ApplicationServiceExtensions
         services.AddSingleton<ViewModels.MainViewModel>();
 
         // 对话框 ViewModels - Transient（每次创建新实例）
-        services.AddTransient<ViewModels.CreateFolderDialogViewModel>();
-        services.AddTransient<ViewModels.ProjectDialogViewModel>();
-        services.AddTransient<ViewModels.WorkSpaceDialogViewModel>();
-        services.AddTransient<ViewModels.SelectFolderDialogViewModel>();
+        services.AddTransient<CreateFolderDialogViewModel>();
+        services.AddTransient<ProjectDialogViewModel>();
+        services.AddTransient<WorkSpaceDialogViewModel>();
+        services.AddTransient<SelectFolderDialogViewModel>();
 
         return services;
     }

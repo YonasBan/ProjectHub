@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Win32;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.ViewModels;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ProjectHub.Presentation.Wpf.Controls;
 using ProjectHub.Presentation.Wpf.Dialogs;
 using ReactiveUI;

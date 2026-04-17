@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Linq;
 
-namespace ProjectHub.Application.ViewModels;
+namespace ProjectHub.Application.ViewModels.DialogViewModel;
 
 /// <summary>
 /// 要移动的项目/工作空间信息

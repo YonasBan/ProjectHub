@@ -1,4 +1,4 @@
-using ProjectHub.Application.ViewModels;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using System.Windows;
 using System.Windows.Controls;
 

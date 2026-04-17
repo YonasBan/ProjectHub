@@ -8,7 +8,7 @@ using DynamicData;
 using DynamicData.Binding;
 using System.Reactive.Concurrency;
 
-namespace ProjectHub.Application.ViewModels;
+namespace ProjectHub.Application.ViewModels.DialogViewModel;
 
 /// <summary>
 /// 工作空间对话框 ViewModel

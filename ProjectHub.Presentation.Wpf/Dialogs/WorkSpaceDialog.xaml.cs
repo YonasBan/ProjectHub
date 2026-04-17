@@ -1,4 +1,4 @@
-using ProjectHub.Application.ViewModels;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ReactiveUI;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;

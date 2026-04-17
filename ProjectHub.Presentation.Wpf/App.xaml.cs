@@ -7,6 +7,7 @@ using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ProjectHub.Infrastructure.DependencyInjection;
 using ProjectHub.Infrastructure.Persistence;
 using ProjectHub.Presentation.Wpf.Dialogs;

@@ -1,5 +1,5 @@
 ﻿using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.ViewModels;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ReactiveUI;
 using System.Diagnostics;
 using System.Reactive.Disposables.Fluent;

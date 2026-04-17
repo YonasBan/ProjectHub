@@ -6,7 +6,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 
-namespace ProjectHub.Application.ViewModels;
+namespace ProjectHub.Application.ViewModels.DialogViewModel;
 
 /// <summary>
 /// 创建文件夹对话框 ViewModel

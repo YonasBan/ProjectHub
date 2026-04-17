@@ -7,7 +7,7 @@ using System.Reactive;
 using System.Reactive.Disposables.Fluent;
 using System.Reactive.Linq;
 
-namespace ProjectHub.Application.ViewModels;
+namespace ProjectHub.Application.ViewModels.DialogViewModel;
 
 /// <summary>
 /// 项目对话框 ViewModel - 支持添加和编辑项目

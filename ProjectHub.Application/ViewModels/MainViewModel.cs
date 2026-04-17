@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
 using System.Collections.ObjectModel;
