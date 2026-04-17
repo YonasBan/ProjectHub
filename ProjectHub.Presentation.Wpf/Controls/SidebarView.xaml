@@ -43,10 +43,6 @@
                             Content="+"
                             Style="{StaticResource IconButtonStyle}"
                             ToolTip="{Binding L.Sidebar_NewFolder}" />
-                        <Button
-                            Content="&#x27F3;"
-                            Style="{StaticResource IconButtonStyle}"
-                            ToolTip="{Binding L.Sidebar_Refresh}" />
                     </StackPanel>
                 </Grid>
             </Border>

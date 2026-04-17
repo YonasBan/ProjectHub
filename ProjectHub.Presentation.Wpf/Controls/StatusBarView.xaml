@@ -4,7 +4,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
-             d:DataContext="{d:DesignInstance viewmodels:MainViewModel}"
+             d:DataContext="{d:DesignInstance viewmodels:SidebarViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="32" d:DesignWidth="800">
     <Border Background="{DynamicResource BgTertiaryBrush}"

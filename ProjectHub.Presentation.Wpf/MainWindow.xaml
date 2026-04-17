@@ -47,6 +47,6 @@
             </Grid>
         </Grid>
         <!--  Status Bar (spans full width)  -->
-        <controls:StatusBarView Grid.Row="2" />
+        <controls:StatusBarView Grid.Row="2" DataContext="{Binding SidebarViewModel}" />
     </Grid>
 </rxui:ReactiveWindow>

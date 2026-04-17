@@ -33,39 +33,6 @@ public class MainViewModel : ViewModelBase
     #region 数据集合属性
 
     /// <summary>
-    /// 项目列表 (Observable)
-    /// </summary>
-    private ObservableCollection<ProjectViewModel>? _projects;
-
-    public ObservableCollection<ProjectViewModel> Projects
-    {
-        get => _projects ??= new();
-        set => this.RaiseAndSetIfChanged(ref _projects, value);
-    }
-
-    /// <summary>
-    /// 工作文件夹列表 (Observable)
-    /// </summary>
-    private ObservableCollection<WorkFolderViewModel>? _workFolders;
-
-    public ObservableCollection<WorkFolderViewModel> WorkFolders
-    {
-        get => _workFolders ??= new();
-        set => this.RaiseAndSetIfChanged(ref _workFolders, value);
-    }
-
-    /// <summary>
-    /// 工作空间列表 (Observable)
-    /// </summary>
-    private ObservableCollection<WorkSpaceViewModel>? _workSpaces;
-
-    public ObservableCollection<WorkSpaceViewModel> WorkSpaces
-    {
-        get => _workSpaces ??= new();
-        set => this.RaiseAndSetIfChanged(ref _workSpaces, value);
-    }
-
-    /// <summary>
     /// 内容项列表（统一显示项目和工作空间）
     /// </summary>
     private ObservableCollection<object>? _contentItems;
@@ -117,13 +84,6 @@ public class MainViewModel : ViewModelBase
 
 
     /// <summary>
-    /// 刷新数据命令
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
-
-
-
-    /// <summary>
     /// 添加内容命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddContentCommand { get; }
@@ -160,123 +120,7 @@ public class MainViewModel : ViewModelBase
 
     #endregion
 
-    #region 侧边栏统计属性
 
-    /// <summary>
-    /// 所有项目总数
-    /// </summary>
-    private int _totalProjectCount;
-
-    public int TotalProjectCount
-    {
-        get => _totalProjectCount;
-        set => this.RaiseAndSetIfChanged(ref _totalProjectCount, value);
-    }
-
-    /// <summary>
-    /// 收藏项目数量
-    /// </summary>
-    private int _favoriteProjectCount;
-
-    public int FavoriteProjectCount
-    {
-        get => _favoriteProjectCount;
-        set => this.RaiseAndSetIfChanged(ref _favoriteProjectCount, value);
-    }
-
-    /// <summary>
-    /// 工作文件夹总数
-    /// </summary>
-    private int _totalFolderCount;
-
-    public int TotalFolderCount
-    {
-        get => _totalFolderCount;
-        set => this.RaiseAndSetIfChanged(ref _totalFolderCount, value);
-    }
-
-    /// <summary>
-    /// 工作空间总数
-    /// </summary>
-    private int _totalWorkspaceCount;
-
-    public int TotalWorkspaceCount
-    {
-        get => _totalWorkspaceCount;
-        set => this.RaiseAndSetIfChanged(ref _totalWorkspaceCount, value);
-    }
-
-    /// <summary>
-    /// 标签分类数量
-    /// </summary>
-    private int _tagCount;
-
-    public int TagCount
-    {
-        get => _tagCount;
-        set => this.RaiseAndSetIfChanged(ref _tagCount, value);
-    }
-
-    #endregion
-
-    #region 状态栏格式化文本
-
-    /// <summary>
-    /// 项目计数显示文本
-    /// </summary>
-    private string _projectCountText = string.Empty;
-
-    public string ProjectCountText
-    {
-        get => _projectCountText;
-        set => this.RaiseAndSetIfChanged(ref _projectCountText, value);
-    }
-
-    /// <summary>
-    /// 文件夹计数显示文本
-    /// </summary>
-    private string _folderCountText = string.Empty;
-
-    public string FolderCountText
-    {
-        get => _folderCountText;
-        set => this.RaiseAndSetIfChanged(ref _folderCountText, value);
-    }
-
-    /// <summary>
-    /// 工作空间计数显示文本
-    /// </summary>
-    private string _workspaceCountText = string.Empty;
-
-    public string WorkspaceCountText
-    {
-        get => _workspaceCountText;
-        set => this.RaiseAndSetIfChanged(ref _workspaceCountText, value);
-    }
-
-    /// <summary>
-    /// 标签计数显示文本
-    /// </summary>
-    private string _tagCountText = string.Empty;
-
-    public string TagCountText
-    {
-        get => _tagCountText;
-        set => this.RaiseAndSetIfChanged(ref _tagCountText, value);
-    }
-
-    /// <summary>
-    /// 标签项目显示文本
-    /// </summary>
-    private string _taggedProjectsText = string.Empty;
-
-    public string TaggedProjectsText
-    {
-        get => _taggedProjectsText;
-        set => this.RaiseAndSetIfChanged(ref _taggedProjectsText, value);
-    }
-
-    #endregion
 
 
 
@@ -302,7 +146,6 @@ public class MainViewModel : ViewModelBase
         _serviceProvider = serviceProvider;
         SidebarViewModel = sidebarViewModel;
 
-        RefreshCommand = CreateCommand(RefreshAsync);
 
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
 
@@ -310,8 +153,6 @@ public class MainViewModel : ViewModelBase
         ToggleLanguageCommand = ReactiveCommand.CreateFromTask(ToggleLanguageAsync);
         ToggleThemeCommand = ReactiveCommand.Create(_themeService.ToggleTheme);
 
-        // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
-        RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
         ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
         // 订阅语言切换事件
@@ -320,7 +161,7 @@ public class MainViewModel : ViewModelBase
             .Subscribe(_ =>
             {
                 SidebarViewModel.BuildSidebarTree();
-                UpdateStatistics();
+                SidebarViewModel.UpdateStatistics();
             })
             .DisposeWith(Disposables);
 
@@ -421,15 +262,8 @@ public class MainViewModel : ViewModelBase
         // 加载工作空间数据
         await LoadWorkSpacesAsync();
 
-        // 更新统计
-        UpdateStatistics();
-
-        // 设置 SidebarViewModel 的数据源
-        SidebarViewModel.Projects = Projects;
-        SidebarViewModel.WorkSpaces = WorkSpaces;
-        SidebarViewModel.WorkFolders = WorkFolders;
-
-        // 构建侧边栏树形结构
+        // 更新统计并构建侧边栏树形结构
+        SidebarViewModel.UpdateStatistics();
         SidebarViewModel.BuildSidebarTree();
 
         // 默认选中"最近使用"
@@ -440,20 +274,7 @@ public class MainViewModel : ViewModelBase
     }
 
 
-    private void UpdateStatistics()
-    {
-        TotalProjectCount = Projects.Count;
-        FavoriteProjectCount = Projects.Count(p => p.IsFavorite);
-        TotalFolderCount = WorkFolders.Count;
-        TotalWorkspaceCount = WorkSpaces.Count;
 
-        // 更新格式化后的状态栏文本（支持语言切换）
-        ProjectCountText = string.Format(L.Status_ProjectCount, TotalProjectCount);
-        FolderCountText = string.Format(L.Status_FolderCount, TotalFolderCount);
-        WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
-        TagCountText = string.Format(L.Status_TagCount, TagCount);
-        TaggedProjectsText = string.Format(L.Status_TaggedProjects, FavoriteProjectCount);
-    }
 
     /// <summary>
     /// 加载所有项目
@@ -466,11 +287,11 @@ public class MainViewModel : ViewModelBase
 
             var projects = await _projectAppService.GetAllActiveAsync();
 
-            Projects.Clear();
+            SidebarViewModel.Projects.Clear();
             foreach (var project in projects)
             {
                 var projectVm = new ProjectViewModel(project, _projectAppService);
-                Projects.Add(projectVm);
+                SidebarViewModel.Projects.Add(projectVm);
             }
 
             Logger.LogInformation($"成功加载 {projects.Count} 个项目");
@@ -481,38 +302,6 @@ public class MainViewModel : ViewModelBase
         catch (Exception ex)
         {
             Logger.LogError(ex, "加载项目列表时发生错误");
-        }
-    }
-
-    /// <summary>
-    /// 刷新所有数据
-    /// </summary>
-    private async Task RefreshAsync()
-    {
-        try
-        {
-            Logger.LogInformation("开始刷新所有数据");
-
-            // 刷新工作文件夹
-            await LoadWorkFoldersAsync();
-
-            // 更新 SidebarViewModel 的数据源
-            SidebarViewModel.WorkFolders = WorkFolders;
-            SidebarViewModel.BuildSidebarTree();
-
-            // 根据当前选中的节点刷新对应数据
-            if (SidebarViewModel.SelectedTreeItem != null)
-            {
-                UpdateContentItems(SidebarViewModel.SelectedTreeItem);
-            }
-
-            UpdateStatistics();
-
-            Logger.LogInformation("数据刷新完成");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "刷新数据时发生错误");
         }
     }
 
@@ -528,10 +317,10 @@ public class MainViewModel : ViewModelBase
 
             var workFolders = await _workFolderAppService.GetAllWithProjectCountAsync();
 
-            WorkFolders.Clear();
+            SidebarViewModel.WorkFolders.Clear();
             foreach (var workFolder in workFolders)
             {
-                WorkFolders.Add(new WorkFolderViewModel(workFolder));
+                SidebarViewModel.WorkFolders.Add(new WorkFolderViewModel(workFolder));
             }
 
             Logger.LogInformation($"成功加载 {workFolders.Count} 个工作文件夹");
@@ -550,11 +339,11 @@ public class MainViewModel : ViewModelBase
 
             var workSpaces = await _workSpaceAppService.GetAllWithProjectCountAsync();
 
-            WorkSpaces.Clear();
+            SidebarViewModel.WorkSpaces.Clear();
             foreach (var workSpace in workSpaces)
             {
                 var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
-                WorkSpaces.Add(workSpaceVm);
+                SidebarViewModel.WorkSpaces.Add(workSpaceVm);
             }
 
             Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
@@ -623,7 +412,7 @@ public class MainViewModel : ViewModelBase
 
             // 直接添加新项目到集合
             var projectVm = new ProjectViewModel(result.Value, _projectAppService);
-            Projects.Add(projectVm);
+            SidebarViewModel.Projects.Add(projectVm);
             
             // 更新侧边栏计数
             SidebarViewModel.IncrementProjectCount();
@@ -638,7 +427,7 @@ public class MainViewModel : ViewModelBase
             }
 
             // 更新统计
-            UpdateStatistics();
+            SidebarViewModel.UpdateStatistics();
 
             // 显示成功提示
             _dialogService.ShowNotification(
@@ -669,7 +458,7 @@ public class MainViewModel : ViewModelBase
 
             // 直接添加新工作空间到集合
             var workSpaceVm = new WorkSpaceViewModel(result.Value, _workSpaceAppService);
-            WorkSpaces.Add(workSpaceVm);
+            SidebarViewModel.WorkSpaces.Add(workSpaceVm);
 
             // 更新侧边栏工作空间节点计数
             SidebarViewModel.IncrementWorkSpaceCount();
@@ -681,7 +470,7 @@ public class MainViewModel : ViewModelBase
             }
 
             // 更新统计
-            UpdateStatistics();
+            SidebarViewModel.UpdateStatistics();
 
             // 显示成功提示
             _dialogService.ShowNotification(
@@ -799,12 +588,11 @@ public class MainViewModel : ViewModelBase
             Logger.LogInformation($"项目删除成功: {projectVm.Name}");
 
             // 从列表中移除
-            Projects.Remove(projectVm);
+            SidebarViewModel.Projects.Remove(projectVm);
 
             // 更新侧边栏树形节点计数
             SidebarViewModel.UpdateCountsAfterDelete(projectVm);
             await LoadWorkFoldersAsync();
-            SidebarViewModel.WorkFolders = WorkFolders;
             SidebarViewModel.RebuildFolderTreeOnly();
 
             // 刷新内容区域
@@ -814,7 +602,7 @@ public class MainViewModel : ViewModelBase
             }
 
             // 更新统计
-            UpdateStatistics();
+            SidebarViewModel.UpdateStatistics();
 
             // 显示成功提示
             _dialogService.ShowNotification(
@@ -854,7 +642,7 @@ public class MainViewModel : ViewModelBase
         }
 
         // 更新统计
-        UpdateStatistics();
+        SidebarViewModel.UpdateStatistics();
     }
 
     /// <summary>
@@ -869,7 +657,7 @@ public class MainViewModel : ViewModelBase
         }
 
         // 更新统计
-        UpdateStatistics();
+        SidebarViewModel.UpdateStatistics();
     }
 
     /// <summary>
@@ -902,7 +690,7 @@ public class MainViewModel : ViewModelBase
         {
             case TreeItemType.AllProjects:
                 // 显示所有项目
-                foreach (var project in Projects)
+                foreach (var project in SidebarViewModel.Projects)
                 {
                     ContentItems.Add(project);
                 }
@@ -910,10 +698,10 @@ public class MainViewModel : ViewModelBase
 
             case TreeItemType.RecentProject:
                 // 显示最近使用的项目和工作空间（混合按最后打开时间排序，最多20个）
-                var recentItems = Projects
+                var recentItems = SidebarViewModel.Projects
                     .Where(p => p.LastOpenedAt.HasValue)
                     .Select(p => (object)p)
-                    .Concat(WorkSpaces.Where(w => w.LastOpenedAt.HasValue).Select(w => (object)w))
+                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.LastOpenedAt.HasValue).Select(w => (object)w))
                     .OrderByDescending(item => item is ProjectViewModel p ? p.LastOpenedAt : ((WorkSpaceViewModel)item).LastOpenedAt)
                     .Take(20)
                     .ToList();
@@ -925,10 +713,10 @@ public class MainViewModel : ViewModelBase
 
             case TreeItemType.FavoriteProject:
                 // 显示收藏的项目和工作空间（混合按收藏时间排序）
-                var favoriteItems = Projects
+                var favoriteItems = SidebarViewModel.Projects
                     .Where(p => p.IsFavorite)
                     .Select(p => (object)p)
-                    .Concat(WorkSpaces.Where(w => w.IsFavorite).Select(w => (object)w))
+                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.IsFavorite).Select(w => (object)w))
                     .OrderByDescending(item => item is ProjectViewModel p ? p.FavoritedAt : ((WorkSpaceViewModel)item).FavoritedAt)
                     .ToList();
                 foreach (var item in favoriteItems)
@@ -939,7 +727,7 @@ public class MainViewModel : ViewModelBase
 
             case TreeItemType.WorkSpace:
                 // 显示所有工作空间
-                foreach (var workSpace in WorkSpaces)
+                foreach (var workSpace in SidebarViewModel.WorkSpaces)
                 {
                     ContentItems.Add(workSpace);
                 }
@@ -1044,12 +832,11 @@ public class MainViewModel : ViewModelBase
             Logger.LogInformation($"工作空间删除成功: {workSpaceVm.Name}");
 
             // 从列表中移除
-            WorkSpaces.Remove(workSpaceVm);
+            SidebarViewModel.WorkSpaces.Remove(workSpaceVm);
 
             // 更新侧边栏树形节点计数
             SidebarViewModel.UpdateCountsAfterDelete(workSpaceVm);
             await LoadWorkFoldersAsync();
-            SidebarViewModel.WorkFolders = WorkFolders;
             SidebarViewModel.RebuildFolderTreeOnly();
 
             // 刷新内容区域
@@ -1059,7 +846,7 @@ public class MainViewModel : ViewModelBase
             }
 
             // 更新统计
-            UpdateStatistics();
+            SidebarViewModel.UpdateStatistics();
 
             // 显示成功提示
             _dialogService.ShowNotification(
@@ -1095,7 +882,7 @@ public class MainViewModel : ViewModelBase
         }
 
         // 更新统计
-        UpdateStatistics();
+        SidebarViewModel.UpdateStatistics();
     }
 
     #endregion
@@ -1160,7 +947,6 @@ public class MainViewModel : ViewModelBase
 
             // 刷新侧边栏树（文件夹数量变化）
             await LoadWorkFoldersAsync();
-            SidebarViewModel.WorkFolders = WorkFolders;
             SidebarViewModel.RebuildFolderTreeOnly();
 
             // 显示成功提示

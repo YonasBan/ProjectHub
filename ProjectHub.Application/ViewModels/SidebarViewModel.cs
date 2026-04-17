@@ -54,22 +54,158 @@ public class SidebarViewModel : ViewModelBase
 
     #endregion
 
-    #region 数据源引用
+    #region 数据集合属性
 
     /// <summary>
-    /// 项目列表引用（用于统计）
+    /// 项目列表 (Observable)
     /// </summary>
-    public ObservableCollection<ProjectViewModel> Projects { get; set; } = new();
+    private ObservableCollection<ProjectViewModel>? _projects;
+
+    public ObservableCollection<ProjectViewModel> Projects
+    {
+        get => _projects ??= new();
+        set => this.RaiseAndSetIfChanged(ref _projects, value);
+    }
 
     /// <summary>
-    /// 工作空间列表引用（用于统计）
+    /// 工作文件夹列表 (Observable)
     /// </summary>
-    public ObservableCollection<WorkSpaceViewModel> WorkSpaces { get; set; } = new();
+    private ObservableCollection<WorkFolderViewModel>? _workFolders;
+
+    public ObservableCollection<WorkFolderViewModel> WorkFolders
+    {
+        get => _workFolders ??= new();
+        set => this.RaiseAndSetIfChanged(ref _workFolders, value);
+    }
 
     /// <summary>
-    /// 工作文件夹列表引用（用于构建树）
+    /// 工作空间列表 (Observable)
     /// </summary>
-    public ObservableCollection<WorkFolderViewModel> WorkFolders { get; set; } = new();
+    private ObservableCollection<WorkSpaceViewModel>? _workSpaces;
+
+    public ObservableCollection<WorkSpaceViewModel> WorkSpaces
+    {
+        get => _workSpaces ??= new();
+        set => this.RaiseAndSetIfChanged(ref _workSpaces, value);
+    }
+
+    #endregion
+
+    #region 状态栏统计属性
+
+    /// <summary>
+    /// 所有项目总数
+    /// </summary>
+    private int _totalProjectCount;
+
+    public int TotalProjectCount
+    {
+        get => _totalProjectCount;
+        set => this.RaiseAndSetIfChanged(ref _totalProjectCount, value);
+    }
+
+    /// <summary>
+    /// 收藏项目数量
+    /// </summary>
+    private int _favoriteProjectCount;
+
+    public int FavoriteProjectCount
+    {
+        get => _favoriteProjectCount;
+        set => this.RaiseAndSetIfChanged(ref _favoriteProjectCount, value);
+    }
+
+    /// <summary>
+    /// 工作文件夹总数
+    /// </summary>
+    private int _totalFolderCount;
+
+    public int TotalFolderCount
+    {
+        get => _totalFolderCount;
+        set => this.RaiseAndSetIfChanged(ref _totalFolderCount, value);
+    }
+
+    /// <summary>
+    /// 工作空间总数
+    /// </summary>
+    private int _totalWorkspaceCount;
+
+    public int TotalWorkspaceCount
+    {
+        get => _totalWorkspaceCount;
+        set => this.RaiseAndSetIfChanged(ref _totalWorkspaceCount, value);
+    }
+
+    /// <summary>
+    /// 标签分类数量
+    /// </summary>
+    private int _tagCount;
+
+    public int TagCount
+    {
+        get => _tagCount;
+        set => this.RaiseAndSetIfChanged(ref _tagCount, value);
+    }
+
+    #endregion
+
+    #region 状态栏格式化文本
+
+    /// <summary>
+    /// 项目计数显示文本
+    /// </summary>
+    private string _projectCountText = string.Empty;
+
+    public string ProjectCountText
+    {
+        get => _projectCountText;
+        set => this.RaiseAndSetIfChanged(ref _projectCountText, value);
+    }
+
+    /// <summary>
+    /// 文件夹计数显示文本
+    /// </summary>
+    private string _folderCountText = string.Empty;
+
+    public string FolderCountText
+    {
+        get => _folderCountText;
+        set => this.RaiseAndSetIfChanged(ref _folderCountText, value);
+    }
+
+    /// <summary>
+    /// 工作空间计数显示文本
+    /// </summary>
+    private string _workspaceCountText = string.Empty;
+
+    public string WorkspaceCountText
+    {
+        get => _workspaceCountText;
+        set => this.RaiseAndSetIfChanged(ref _workspaceCountText, value);
+    }
+
+    /// <summary>
+    /// 标签计数显示文本
+    /// </summary>
+    private string _tagCountText = string.Empty;
+
+    public string TagCountText
+    {
+        get => _tagCountText;
+        set => this.RaiseAndSetIfChanged(ref _tagCountText, value);
+    }
+
+    /// <summary>
+    /// 标签项目显示文本
+    /// </summary>
+    private string _taggedProjectsText = string.Empty;
+
+    public string TaggedProjectsText
+    {
+        get => _taggedProjectsText;
+        set => this.RaiseAndSetIfChanged(ref _taggedProjectsText, value);
+    }
 
     #endregion
 
@@ -290,6 +426,24 @@ public class SidebarViewModel : ViewModelBase
     public TreeItemViewModel? GetTreeItem(TreeItemType itemType)
     {
         return SidebarTreeItems.FirstOrDefault(r => r.ItemType == itemType);
+    }
+
+    /// <summary>
+    /// 更新统计信息
+    /// </summary>
+    public void UpdateStatistics()
+    {
+        TotalProjectCount = Projects.Count;
+        FavoriteProjectCount = Projects.Count(p => p.IsFavorite);
+        TotalFolderCount = WorkFolders.Count;
+        TotalWorkspaceCount = WorkSpaces.Count;
+
+        // 更新格式化后的状态栏文本（支持语言切换）
+        ProjectCountText = string.Format(L.Status_ProjectCount, TotalProjectCount);
+        FolderCountText = string.Format(L.Status_FolderCount, TotalFolderCount);
+        WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
+        TagCountText = string.Format(L.Status_TagCount, TagCount);
+        TaggedProjectsText = string.Format(L.Status_TaggedProjects, FavoriteProjectCount);
     }
 
     #endregion
