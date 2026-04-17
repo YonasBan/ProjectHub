@@ -726,7 +726,21 @@ public class MainViewModel : ViewModelBase
                 }
                 else
                 {
-                    this.SidebarTreeItems.Add(new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
+                    var index = -1;
+                    for (int i = SidebarTreeItems.Count - 1; i >= 0; i--)
+                    {
+                        if (SidebarTreeItems[i].ItemType == TreeItemType.WorkFolder)
+                        {
+                            index = i;
+                            break;
+                        }
+                        else if(SidebarTreeItems[i].ItemType == TreeItemType.WorkSpace)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    this.SidebarTreeItems.Insert(index+1,new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
                 }
 
             }
