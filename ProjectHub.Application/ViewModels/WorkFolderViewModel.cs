@@ -18,6 +18,13 @@ public partial class WorkFolderViewModel : ReactiveObject
 
     public int ProjectCount => _workFolderDto.ProjectCount;
 
+    public int WorkSpaceCount => _workFolderDto.WorkSpaceCount;
+
+    /// <summary>
+    /// 总数量（项目 + 工作空间）
+    /// </summary>
+    public int TotalCount => _workFolderDto.ProjectCount + _workFolderDto.WorkSpaceCount;
+
     public bool IsExpanded => _workFolderDto.IsExpanded;
 
     public int SortOrder => _workFolderDto.SortOrder;

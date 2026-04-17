@@ -15,6 +15,7 @@ public class WorkFolderDto
     public int SortOrder { get; set; }
     public bool IsExpanded { get; set; }
     public int ProjectCount { get; set; }
+    public int WorkSpaceCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

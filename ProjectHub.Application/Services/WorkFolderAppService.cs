@@ -56,7 +56,6 @@ public class WorkFolderAppService : IWorkFolderAppService
         var workFolders = await _workFolderRepository.GetAllWithProjectCountAsync(cancellationToken);
         return workFolders.Select(MapToDto).ToList();
     }
-
     public async Task MoveProjectToWorkFolderAsync(long projectId, long? workFolderId, CancellationToken cancellationToken = default)
     {
         // TODO: 实现项目移动
@@ -174,6 +173,7 @@ public class WorkFolderAppService : IWorkFolderAppService
             ParentId = workFolder.ParentId,
             SortOrder = workFolder.SortOrder,
             ProjectCount = workFolder.ProjectCount,
+            WorkSpaceCount = workFolder.WorkSpaceCount,
             CreatedAt = workFolder.CreatedAt,
             UpdatedAt = workFolder.UpdatedAt
         };

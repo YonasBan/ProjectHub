@@ -637,7 +637,7 @@ public class MainViewModel : ViewModelBase
         // Work Folders (工作文件夹) - 支持树形结构
         var folderNodes = WorkFolders
             .OrderBy(f => f.SortOrder)
-            .ToDictionary(f => f.Id, f => new TreeItemViewModel(f.Name, f.ProjectCount, TreeItemType.WorkFolder, f.Id));
+            .ToDictionary(f => f.Id, f => new TreeItemViewModel(f.Name, f.TotalCount, TreeItemType.WorkFolder, f.Id));
         foreach (var folder in WorkFolders.OrderBy(f => f.SortOrder))
         {
             if (folder.ParentId.HasValue && folderNodes.TryGetValue(folder.ParentId.Value, out var parentNode))

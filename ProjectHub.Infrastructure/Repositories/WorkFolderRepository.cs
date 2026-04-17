@@ -62,7 +62,7 @@ public class WorkFolderRepository : IWorkFolderRepository
     {
         await using var ctx = _factory.CreateDbContext();
 
-        // 查询工作文件夹（包含关联的项目数量）
+        // 查询工作文件夹（包含关联的项目和工作空间数量）
         var workFolders = await ctx.WorkFolders
             .Where(w => !w.IsDeleted)
             .Select(w => new
@@ -70,16 +70,20 @@ public class WorkFolderRepository : IWorkFolderRepository
                 WorkFolder = w,
                 ProjectCount = ctx.ProjectWorkFolders
                     .Count(pwf => pwf.WorkFolderId == w.Id &&
-                                  !ctx.Projects.Any(p => p.Id == pwf.ProjectId && !p.IsDeleted))
+                                  ctx.Projects.Any(p => p.Id == pwf.ProjectId && !p.IsDeleted)),
+                WorkSpaceCount = ctx.WorkSpaceWorkFolders
+                    .Count(wwf => wwf.WorkFolderId == w.Id &&
+                                  ctx.WorkSpaces.Any(ws => ws.Id == wwf.WorkSpaceId && !ws.IsDeleted))
             })
             .OrderBy(x => x.WorkFolder.SortOrder)
             .ThenBy(x => x.WorkFolder.Name)
             .ToListAsync(cancellationToken);
 
-        // 设置项目数量
+        // 设置项目数量和工作空间数量
         foreach (var item in workFolders)
         {
             item.WorkFolder.UpdateProjectCount(item.ProjectCount);
+            item.WorkFolder.UpdateWorkSpaceCount(item.WorkSpaceCount);
         }
 
         return workFolders.Select(x => x.WorkFolder).ToList();

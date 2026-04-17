@@ -43,7 +43,14 @@ public class WorkFolder : BaseEntity
     /// <summary>
     /// 关联的项目数量 (计算字段，不存储)
     /// </summary>
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
     public int ProjectCount { get; private set; }
+
+    /// <summary>
+    /// 关联的工作空间数量 (计算字段，不存储)
+    /// </summary>
+    [System.ComponentModel.DataAnnotations.Schema.NotMapped]
+    public int WorkSpaceCount { get; private set; }
 
     // ========== DDD 领域行为 ==========
 
@@ -101,5 +108,13 @@ public class WorkFolder : BaseEntity
     public void UpdateProjectCount(int count)
     {
         ProjectCount = count;
+    }
+
+    /// <summary>
+    /// 更新工作空间数量统计
+    /// </summary>
+    public void UpdateWorkSpaceCount(int count)
+    {
+        WorkSpaceCount = count;
     }
 }
