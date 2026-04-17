@@ -34,15 +34,6 @@ public partial class ProjectViewModel : ReactiveObject
     
     public string? Description => _projectDto.Description;
     
-    /// <summary>
-    /// 关联的工作文件夹 ID 列表
-    /// </summary>
-    public IReadOnlyList<long> WorkFolderIds => _projectDto.WorkFolderIds;
-    
-    /// <summary>
-    /// 关联的工作空间 ID 列表
-    /// </summary>
-    public IReadOnlyList<long> WorkSpaceIds => _projectDto.WorkSpaceIds;
     
     public DateTime? LastOpenedAt => _projectDto.LastOpenedAt;
     

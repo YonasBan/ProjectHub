@@ -37,25 +37,20 @@ public partial class WorkSpaceViewModel : ReactiveObject
     public DateTime? LastOpenedAt => _workSpaceDto.LastOpenedAt;
 
     /// <summary>
-    /// 关联的文件夹ID列表
-    /// </summary>
-    public IReadOnlyList<long> WorkFolderIds => _workSpaceDto.WorkFolderIds;
-    
-    /// <summary>
     /// 本地化字符串访问器
     /// </summary>
     private static LocalizedStrings L => Locator.Current.GetService<LocalizedStrings>()!;
-    
+
     /// <summary>
     /// 项目数量显示文本（支持本地化）
     /// </summary>
     public string ProjectCountDisplay => string.Format(L.WorkSpace_ProjectCount, ProjectCount);
-    
+
     /// <summary>
     /// 上次打开时间显示文本（支持本地化）
     /// </summary>
-    public string LastOpenedDisplay => LastOpenedAt.HasValue 
-        ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value) 
+    public string LastOpenedDisplay => LastOpenedAt.HasValue
+        ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value)
         : "";
 
     /// <summary>
@@ -114,7 +109,7 @@ public partial class WorkSpaceViewModel : ReactiveObject
         DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchAllCommand = ReactiveCommand.CreateFromTask(LaunchAllAsync);
         MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
-        
+
         // 订阅语言变化，刷新本地化显示属性
         L?.CultureChanged.Subscribe(_ =>
         {
@@ -138,7 +133,7 @@ public partial class WorkSpaceViewModel : ReactiveObject
         var newFavoriteStatus = !IsFavorite;
         await _workSpaceAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
-        
+
         // 通过 MessageBus 通知收藏状态变化
         SendFavoriteChanged();
     }
@@ -160,6 +155,12 @@ public partial class WorkSpaceViewModel : ReactiveObject
         if (_workSpaceAppService == null) return;
 
         await _workSpaceAppService.LaunchAllAsync(Id);
+    }
+
+    internal void UpdateProjectCount(int selectedProjectCount)
+    {
+        _workSpaceDto.ProjectCount = selectedProjectCount;
+        this.RaisePropertyChanged(nameof(ProjectCountDisplay));
     }
 }
 

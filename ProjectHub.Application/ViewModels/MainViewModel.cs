@@ -20,14 +20,18 @@ namespace ProjectHub.Application.ViewModels;
 /// </summary>
 public class MainViewModel : ViewModelBase
 {
-    // 注入应用服务
+    #region 注入服务
+
     private readonly IProjectAppService _projectAppService;
     private readonly IServiceProvider _serviceProvider;
-
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IDialogService _dialogService;
     private readonly IThemeService _themeService;
+
+    #endregion
+
+    #region 数据集合属性
 
     /// <summary>
     /// 项目列表 (Observable)
@@ -73,6 +77,10 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _contentItems, value);
     }
 
+    #endregion
+
+    #region 选中状态属性
+
     /// <summary>
     /// 当前选中的工作文件夹
     /// </summary>
@@ -83,6 +91,7 @@ public class MainViewModel : ViewModelBase
         get => _selectedWorkFolder;
         set => this.RaiseAndSetIfChanged(ref _selectedWorkFolder, value);
     }
+
     /// <summary>
     /// 当前选中的树形节点
     /// </summary>
@@ -93,6 +102,11 @@ public class MainViewModel : ViewModelBase
         get => _selectedTreeItem;
         set => this.RaiseAndSetIfChanged(ref _selectedTreeItem, value);
     }
+
+    #endregion
+
+    #region 搜索与视图属性
+
     /// <summary>
     /// 搜索关键字
     /// </summary>
@@ -115,7 +129,9 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _currentViewMode, value);
     }
 
-    // ========== Reactive Commands ==========
+    #endregion
+
+    #region Reactive Commands
 
     /// <summary>
     /// 加载项目命令
@@ -136,7 +152,15 @@ public class MainViewModel : ViewModelBase
     /// 创建文件夹命令
     /// </summary>
     public ReactiveCommand<TreeItemViewModel, Unit> CreateFolderCommand { get; }
+
+    /// <summary>
+    /// 删除文件夹命令
+    /// </summary>
     public ReactiveCommand<TreeItemViewModel, Unit> DeleteFolderCommand { get; }
+
+    /// <summary>
+    /// 添加内容命令
+    /// </summary>
     public ReactiveCommand<Unit, Unit> AddContentCommand { get; }
 
     /// <summary>
@@ -148,6 +172,10 @@ public class MainViewModel : ViewModelBase
     /// 切换主题命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> ToggleThemeCommand { get; }
+
+    #endregion
+
+    #region 主题与状态属性
 
     /// <summary>
     /// 当前主题 (Light/Dark)
@@ -165,7 +193,9 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _isLoading, value);
     }
 
-    // ========== 侧边栏统计属性 ==========
+    #endregion
+
+    #region 侧边栏统计属性
 
     /// <summary>
     /// 所有项目总数
@@ -222,7 +252,9 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _tagCount, value);
     }
 
-    // ========== 状态栏格式化文本 (用于语言切换) ==========
+    #endregion
+
+    #region 状态栏格式化文本
 
     /// <summary>
     /// 项目计数显示文本
@@ -279,7 +311,9 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _taggedProjectsText, value);
     }
 
-    // ========== 侧边栏树形数据 ==========
+    #endregion
+
+    #region 侧边栏树形数据
 
     /// <summary>
     /// 侧边栏树形节点集合
@@ -291,6 +325,10 @@ public class MainViewModel : ViewModelBase
         get => _sidebarTreeItems ??= new();
         set => this.RaiseAndSetIfChanged(ref _sidebarTreeItems, value);
     }
+
+    #endregion
+
+    #region 构造函数与初始化
 
     public MainViewModel(
         ILogger<MainViewModel> logger,
@@ -355,6 +393,10 @@ public class MainViewModel : ViewModelBase
             .DisposeWith(Disposables);
     }
 
+    #endregion
+
+    #region MessageBus 消息处理
+
     /// <summary>
     /// 订阅 MessageBus 消息
     /// </summary>
@@ -409,6 +451,9 @@ public class MainViewModel : ViewModelBase
             .DisposeWith(Disposables);
     }
 
+    #endregion
+
+    #region 数据加载方法
 
     /// <summary>
     /// 首次加载数据（加载项目和文件夹）
@@ -579,7 +624,9 @@ public class MainViewModel : ViewModelBase
         }
     }
 
-    // ========== 辅助方法 ==========
+    #endregion
+
+    #region 辅助方法
 
     private async Task LoadWorkFoldersAsync()
     {
@@ -625,6 +672,10 @@ public class MainViewModel : ViewModelBase
             Logger.LogError(ex, "加载工作空间列表时发生错误");
         }
     }
+
+    #endregion
+
+    #region 文件夹管理方法
 
     /// <summary>
     /// 构建侧边栏树形结构
@@ -734,13 +785,13 @@ public class MainViewModel : ViewModelBase
                             index = i;
                             break;
                         }
-                        else if(SidebarTreeItems[i].ItemType == TreeItemType.WorkSpace)
+                        else if (SidebarTreeItems[i].ItemType == TreeItemType.WorkSpace)
                         {
                             index = i;
                             break;
                         }
                     }
-                    this.SidebarTreeItems.Insert(index+1,new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
+                    this.SidebarTreeItems.Insert(index + 1, new TreeItemViewModel(newFolder.Name, 0, TreeItemType.WorkFolder, newFolder.Id));
                 }
 
             }
@@ -842,6 +893,11 @@ public class MainViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+
+    #endregion
+
+    #region 项目/工作空间添加方法
+
     private async Task AddContentAsync()
     {
         try
@@ -1002,6 +1058,10 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    #endregion
+
+    #region 项目消息处理方法
+
     /// <summary>
     /// 处理项目编辑请求
     /// </summary>
@@ -1104,6 +1164,10 @@ public class MainViewModel : ViewModelBase
         }
     }
 
+    #endregion
+
+    #region 语言与主题方法
+
     /// <summary>
     /// 处理项目收藏状态变化
     /// </summary>
@@ -1154,6 +1218,10 @@ public class MainViewModel : ViewModelBase
 
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
     }
+
+    #endregion
+
+    #region 内容更新方法
 
     /// <summary>
     /// 刷新侧边栏树节点名称
@@ -1245,18 +1313,7 @@ public class MainViewModel : ViewModelBase
                 break;
 
             case TreeItemType.WorkFolder:
-                // 显示该文件夹下的项目和工作空间（混合显示）
-                var folderProjects = Projects
-                    .Where(p => p.WorkFolderIds.Contains(selectedItem.Id))
-                    .Select(p => (object)p);
-                var folderWorkSpaces = WorkSpaces
-                    .Where(w => w.WorkFolderIds.Contains(selectedItem.Id))
-                    .Select(w => (object)w);
-                var folderItems = folderProjects.Concat(folderWorkSpaces).ToList();
-                foreach (var item in folderItems)
-                {
-                    ContentItems.Add(item);
-                }
+
                 break;
 
             case TreeItemType.TagSettings:
@@ -1266,6 +1323,10 @@ public class MainViewModel : ViewModelBase
 
         Logger.LogDebug($"内容区域已更新: {selectedItem.ItemType}, 共 {ContentItems.Count} 项");
     }
+
+    #endregion
+
+    #region 工作空间消息处理方法
 
     /// <summary>
     /// 处理工作空间编辑请求
@@ -1283,11 +1344,8 @@ public class MainViewModel : ViewModelBase
 
             if (result.Confirmed && result.Value)
             {
+                workSpaceVm.UpdateProjectCount(dialogViewModel.SelectedProjectCount);
                 Logger.LogInformation($"工作空间编辑成功: {workSpaceVm.Name}");
-
-                // 刷新工作空间列表
-                await LoadWorkSpacesAsync();
-
                 // 显示成功提示
                 _dialogService.ShowNotification(
                     string.Format(L.Message_WorkSpaceUpdated, workSpaceVm.Name),
@@ -1381,6 +1439,10 @@ public class MainViewModel : ViewModelBase
         UpdateStatistics();
     }
 
+    #endregion
+
+    #region 移动到文件夹方法
+
     /// <summary>
     /// 处理项目移动到文件夹请求
     /// </summary>
@@ -1459,6 +1521,8 @@ public class MainViewModel : ViewModelBase
             IsLoading = false;
         }
     }
+
+    #endregion
 
 }
 
