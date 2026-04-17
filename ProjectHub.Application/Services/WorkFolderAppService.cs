@@ -147,6 +147,24 @@ public class WorkFolderAppService : IWorkFolderAppService
         await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
     }
 
+    /// <summary>
+    /// 获取指定文件夹的子文件夹
+    /// </summary>
+    public async Task<IReadOnlyList<WorkFolderDto>> GetChildrenAsync(long parentId, CancellationToken cancellationToken = default)
+    {
+        var children = await _workFolderRepository.GetChildrenAsync(parentId, cancellationToken);
+        return children.Select(MapToDto).ToList();
+    }
+
+    /// <summary>
+    /// 获取所有根级文件夹
+    /// </summary>
+    public async Task<IReadOnlyList<WorkFolderDto>> GetRootFoldersAsync(CancellationToken cancellationToken = default)
+    {
+        var rootFolders = await _workFolderRepository.GetRootFoldersAsync(cancellationToken);
+        return rootFolders.Select(MapToDto).ToList();
+    }
+
     private static WorkFolderDto MapToDto(Domain.Entities.WorkFolder workFolder)
     {
         return new WorkFolderDto

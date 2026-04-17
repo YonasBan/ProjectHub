@@ -20,6 +20,11 @@ public class WorkSpaceDto
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
+    /// 关联的文件夹ID列表
+    /// </summary>
+    public IReadOnlyList<long> WorkFolderIds { get; set; } = [];
+
+    /// <summary>
     /// 是否使用自定义启动顺序
     /// </summary>
     public bool UseCustomLaunchOrder { get; set; }

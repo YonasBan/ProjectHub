@@ -46,6 +46,7 @@ public static class ApplicationServiceExtensions
         services.AddTransient<ViewModels.CreateFolderDialogViewModel>();
         services.AddTransient<ViewModels.ProjectDialogViewModel>();
         services.AddTransient<ViewModels.WorkSpaceDialogViewModel>();
+        services.AddTransient<ViewModels.SelectFolderDialogViewModel>();
 
         return services;
     }

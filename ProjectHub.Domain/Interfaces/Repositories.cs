@@ -138,6 +138,16 @@ public interface IWorkFolderRepository : IRepository<WorkFolder>
     /// 移除工作空间-文件夹关联
     /// </summary>
     Task RemoveWorkSpaceAssociationAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取指定父文件夹的子文件夹
+    /// </summary>
+    Task<IReadOnlyList<WorkFolder>> GetChildrenAsync(long parentId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取所有根级文件夹（ParentId为null）
+    /// </summary>
+    Task<IReadOnlyList<WorkFolder>> GetRootFoldersAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -170,6 +180,11 @@ public interface IWorkSpaceRepository : IRepository<WorkSpace>
     /// 获取工作空间中启用的项目 ID 列表
     /// </summary>
     Task<IReadOnlyList<long>> GetEnabledProjectIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间关联的文件夹ID列表
+    /// </summary>
+    Task<IReadOnlyList<long>> GetWorkFolderIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

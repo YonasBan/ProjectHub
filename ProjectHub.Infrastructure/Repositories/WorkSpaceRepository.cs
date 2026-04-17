@@ -123,4 +123,13 @@ public class WorkSpaceRepository : IWorkSpaceRepository
             .Select(pws => pws.ProjectId)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<long>> GetWorkFolderIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaceWorkFolders
+            .Where(wwf => wwf.WorkSpaceId == workSpaceId)
+            .Select(wwf => wwf.WorkFolderId)
+            .ToListAsync(cancellationToken);
+    }
 }

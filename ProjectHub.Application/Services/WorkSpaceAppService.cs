@@ -85,13 +85,33 @@ public class WorkSpaceAppService : IWorkSpaceAppService
     public async Task<IReadOnlyList<WorkSpaceDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
         var workSpaces = await _workSpaceRepository.GetAllWithProjectCountAsync(cancellationToken);
-        return workSpaces.Select(MapToDto).ToList();
+
+        // 加载每个工作空间的文件夹关联
+        var result = new List<WorkSpaceDto>();
+        foreach (var workSpace in workSpaces)
+        {
+            var folderIds = await _workSpaceRepository.GetWorkFolderIdsByWorkSpaceIdAsync(workSpace.Id, cancellationToken);
+            var dto = MapToDto(workSpace, folderIds);
+            result.Add(dto);
+        }
+
+        return result;
     }
 
     public async Task<IReadOnlyList<WorkSpaceDto>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default)
     {
         var workSpaces = await _workSpaceRepository.GetRecentlyOpenedAsync(count, cancellationToken);
-        return workSpaces.Select(MapToDto).ToList();
+
+        // 加载每个工作空间的文件夹关联
+        var result = new List<WorkSpaceDto>();
+        foreach (var workSpace in workSpaces)
+        {
+            var folderIds = await _workSpaceRepository.GetWorkFolderIdsByWorkSpaceIdAsync(workSpace.Id, cancellationToken);
+            var dto = MapToDto(workSpace, folderIds);
+            result.Add(dto);
+        }
+
+        return result;
     }
 
     public async Task RecordOpenAsync(long id, CancellationToken cancellationToken = default)
@@ -286,7 +306,7 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         _logger.LogInformation("工作空间 '{WorkSpaceName}' 的项目列表已更新，共 {ProjectCount} 个项目", workSpace.Name, projectIds.Count);
     }
 
-    private static WorkSpaceDto MapToDto(WorkSpace workSpace)
+    private static WorkSpaceDto MapToDto(WorkSpace workSpace, IReadOnlyList<long>? folderIds = null)
     {
         return new WorkSpaceDto
         {
@@ -301,6 +321,8 @@ public class WorkSpaceAppService : IWorkSpaceAppService
             LastOpenedAt = workSpace.LastOpenedAt,
             CreatedAt = workSpace.CreatedAt,
             UpdatedAt = workSpace.UpdatedAt,
+
+            WorkFolderIds = folderIds ?? [],
 
             UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder,
             DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds,

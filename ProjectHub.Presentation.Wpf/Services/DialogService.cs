@@ -179,8 +179,19 @@ public class DialogService : IDialogService
         var tcs = new TaskCompletionSource<bool>();
 
         // 订阅 ViewModel 的关闭事件
-        viewModel.CloseRequested += (sender, confirmed) =>
+        viewModel.CloseRequested += async (sender, confirmed) =>
         {
+            // 对于 SelectFolderDialogViewModel，需要执行异步确认操作
+            if (viewModel is SelectFolderDialogViewModel folderVm && confirmed)
+            {
+                var success = await folderVm.ConfirmAsync();
+                if (!success)
+                {
+                    // 确认失败（如验证错误），不关闭对话框
+                    return;
+                }
+            }
+
             tcs.TrySetResult(confirmed);
             window.Close();
         };

@@ -117,6 +117,16 @@ public interface IWorkFolderAppService
     /// 从文件夹移除工作空间
     /// </summary>
     Task RemoveWorkSpaceFromFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取指定文件夹的子文件夹
+    /// </summary>
+    Task<IReadOnlyList<WorkFolderDto>> GetChildrenAsync(long parentId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取所有根级文件夹（不包含子文件夹）
+    /// </summary>
+    Task<IReadOnlyList<WorkFolderDto>> GetRootFoldersAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>

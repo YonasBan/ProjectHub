@@ -1245,13 +1245,17 @@ public class MainViewModel : ViewModelBase
                 break;
 
             case TreeItemType.WorkFolder:
-                // 显示该文件夹下的项目
+                // 显示该文件夹下的项目和工作空间（混合显示）
                 var folderProjects = Projects
                     .Where(p => p.WorkFolderIds.Contains(selectedItem.Id))
-                    .ToList();
-                foreach (var project in folderProjects)
+                    .Select(p => (object)p);
+                var folderWorkSpaces = WorkSpaces
+                    .Where(w => w.WorkFolderIds.Contains(selectedItem.Id))
+                    .Select(w => (object)w);
+                var folderItems = folderProjects.Concat(folderWorkSpaces).ToList();
+                foreach (var item in folderItems)
                 {
-                    ContentItems.Add(project);
+                    ContentItems.Add(item);
                 }
                 break;
 
@@ -1394,7 +1398,7 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 显示文件夹选择器并执行移动操作
+    /// 显示文件夹选择器并执行移动操作（支持懒加载）
     /// </summary>
     private async Task ShowFolderSelectorAndMoveAsync(object itemVm, bool isProject)
     {
@@ -1403,15 +1407,25 @@ public class MainViewModel : ViewModelBase
             var itemName = isProject ? ((ProjectViewModel)itemVm).Name : ((WorkSpaceViewModel)itemVm).Name;
             var itemId = isProject ? ((ProjectViewModel)itemVm).Id : ((WorkSpaceViewModel)itemVm).Id;
 
-            // 创建对话框 ViewModel
-            var dialogVm = new SelectFolderDialogViewModel
+            // 创建对话框 ViewModel（直接注入 IWorkFolderAppService）
+            var dialogVm = new SelectFolderDialogViewModel(_workFolderAppService)
             {
                 Title = string.Format(L.Dialog_MoveToFolderTitle, itemName),
-                ItemName = itemName
+                ItemName = itemName,
+                MoveItem = new MoveItemInfo
+                {
+                    Id = itemId,
+                    Name = itemName,
+                    IsProject = isProject
+                }
             };
 
-            // 加载文件夹树
-            var folderItems = BuildFolderTreeItems(_workFolders);
+            // 只加载根级文件夹（懒加载子文件夹）
+            var rootFolders = await _workFolderAppService.GetRootFoldersAsync();
+            var folderItems = rootFolders.Select(f => new FolderTreeItemViewModel(f.Id, f.Name, f.ParentId)
+            {
+                FullPath = f.Name
+            }).ToList();
             dialogVm.LoadFolders(folderItems);
 
             // 显示对话框
@@ -1421,52 +1435,6 @@ public class MainViewModel : ViewModelBase
             {
                 Logger.LogInformation("用户取消移动到文件夹");
                 return;
-            }
-
-            // 处理新建文件夹
-            var newFolderName = dialogVm.GetNewFolderName();
-            long? targetFolderId = null;
-
-            if (!string.IsNullOrEmpty(newFolderName))
-            {
-                // 创建新文件夹
-                var createDto = new CreateWorkFolderDto
-                {
-                    Name = newFolderName,
-                    SortOrder = 0,
-                    ParentId = dialogVm.SelectedFolder?.Id
-                };
-
-                var newFolder = await _workFolderAppService.CreateAsync(createDto);
-                targetFolderId = newFolder.Id;
-
-                // 刷新文件夹列表
-                await LoadWorkFoldersAsync();
-                BuildSidebarTree();
-            }
-            else
-            {
-                targetFolderId = dialogVm.GetSelectedFolderId();
-            }
-
-            if (!targetFolderId.HasValue)
-            {
-                Logger.LogWarning("未选择目标文件夹");
-                return;
-            }
-
-            IsLoading = true;
-
-            // 执行移动操作
-            if (isProject)
-            {
-                await _workFolderAppService.AddProjectToFolderAsync(itemId, targetFolderId.Value);
-                Logger.LogInformation($"项目 '{itemName}' 已添加到文件夹");
-            }
-            else
-            {
-                await _workFolderAppService.AddWorkSpaceToFolderAsync(itemId, targetFolderId.Value);
-                Logger.LogInformation($"工作空间 '{itemName}' 已添加到文件夹");
             }
 
             // 刷新侧边栏树（文件夹数量变化）
@@ -1490,47 +1458,6 @@ public class MainViewModel : ViewModelBase
         {
             IsLoading = false;
         }
-    }
-
-    /// <summary>
-    /// 构建文件夹树形结构
-    /// </summary>
-    private ObservableCollection<FolderTreeItemViewModel> BuildFolderTreeItems(IEnumerable<WorkFolderViewModel> folders)
-    {
-        var result = new ObservableCollection<FolderTreeItemViewModel>();
-        var folderList = folders.ToList();
-
-        // 获取根级文件夹
-        var rootFolders = folderList.Where(f => f.ParentId == null).OrderBy(f => f.SortOrder);
-
-        foreach (var root in rootFolders)
-        {
-            var item = CreateFolderTreeItem(root, folderList);
-            result.Add(item);
-        }
-
-        return result;
-    }
-
-    /// <summary>
-    /// 递归创建文件夹树节点
-    /// </summary>
-    private FolderTreeItemViewModel CreateFolderTreeItem(WorkFolderViewModel folder, List<WorkFolderViewModel> allFolders)
-    {
-        var item = new FolderTreeItemViewModel(folder.Id, folder.Name, folder.ParentId)
-        {
-            FullPath = folder.Name
-        };
-
-        // 获取子文件夹
-        var children = allFolders.Where(f => f.ParentId == folder.Id).OrderBy(f => f.SortOrder);
-        foreach (var child in children)
-        {
-            var childItem = CreateFolderTreeItem(child, allFolders);
-            item.Children.Add(childItem);
-        }
-
-        return item;
     }
 
 }

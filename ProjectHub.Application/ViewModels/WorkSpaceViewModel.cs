@@ -35,6 +35,11 @@ public partial class WorkSpaceViewModel : ReactiveObject
     public DateTime? FavoritedAt => _workSpaceDto.FavoritedAt;
 
     public DateTime? LastOpenedAt => _workSpaceDto.LastOpenedAt;
+
+    /// <summary>
+    /// 关联的文件夹ID列表
+    /// </summary>
+    public IReadOnlyList<long> WorkFolderIds => _workSpaceDto.WorkFolderIds;
     
     /// <summary>
     /// 本地化字符串访问器

@@ -172,4 +172,24 @@ public class WorkFolderRepository : IWorkFolderRepository
             await ctx.SaveChangesAsync(cancellationToken);
         }
     }
+
+    public async Task<IReadOnlyList<WorkFolder>> GetChildrenAsync(long parentId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkFolders
+            .Where(w => !w.IsDeleted && w.ParentId == parentId)
+            .OrderBy(w => w.SortOrder)
+            .ThenBy(w => w.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<WorkFolder>> GetRootFoldersAsync(CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkFolders
+            .Where(w => !w.IsDeleted && (w.ParentId == null || w.ParentId == 0))
+            .OrderBy(w => w.SortOrder)
+            .ThenBy(w => w.Name)
+            .ToListAsync(cancellationToken);
+    }
 }

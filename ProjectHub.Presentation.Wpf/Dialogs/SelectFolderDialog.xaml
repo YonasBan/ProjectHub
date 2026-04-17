@@ -65,11 +65,23 @@
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type viewmodel:FolderTreeItemViewModel}" ItemsSource="{Binding Children}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock
-                                Margin="4,0"
-                                VerticalAlignment="Center"
-                                FontSize="14"
-                                Text="📂" />
+                            <!--  文件夹图标或加载动画  -->
+                            <Grid Width="20" Height="16" Margin="2,0">
+                                <TextBlock
+                                    x:Name="FolderIcon"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="14"
+                                    Text="📂"
+                                    Visibility="{Binding IsLoadingChildren, Converter={StaticResource InverseBoolToVisibilityConverter}}" />
+                                <TextBlock
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    FontSize="12"
+                                    Foreground="{DynamicResource TextMutedBrush}"
+                                    Text="⏳"
+                                    Visibility="{Binding IsLoadingChildren, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            </Grid>
                             <TextBlock
                                 VerticalAlignment="Center"
                                 FontSize="13"
