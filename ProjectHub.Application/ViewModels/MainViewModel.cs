@@ -595,10 +595,10 @@ public class MainViewModel : ViewModelBase
 
         SidebarTreeItems.Clear();
 
-        // Recent (最近使用) - 包含项目和工作空间
+        // Recent (最近使用) - 包含项目和工作空间（最多显示20个）
         var recentProjectCount = Projects.Count(p => p.LastOpenedAt.HasValue);
         var recentWorkSpaceCount = WorkSpaces.Count(w => w.LastOpenedAt.HasValue);
-        var recentCount = recentProjectCount + recentWorkSpaceCount;
+        var recentCount = Math.Min(recentProjectCount + recentWorkSpaceCount, 20);
         var recent = new TreeItemViewModel(L.Sidebar_Recent, recentCount, TreeItemType.RecentProject)
         { IsSelected = true };
         SidebarTreeItems.Add(recent);
@@ -1083,7 +1083,9 @@ public class MainViewModel : ViewModelBase
                     item.Count--;
                     break;
                 case TreeItemType.RecentProject:
-                    if (hasLastOpened)
+                    // 只有当前计数大于0且该项目在最近使用列表中时才减1
+                    // 注意：侧边栏显示的是最多20个，所以计数最小为0
+                    if (hasLastOpened && item.Count > 0)
                         item.Count--;
                     break;
                 case TreeItemType.FavoriteProject:
