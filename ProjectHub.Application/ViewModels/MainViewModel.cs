@@ -1234,7 +1234,23 @@ public class MainViewModel : ViewModelBase
                 break;
 
             case TreeItemType.WorkFolder:
+                // 从数据库加载该文件夹下的项目和工作空间
+                var folderProjects = await _projectAppService.GetByWorkFolderIdAsync(selectedItem.Id);
+                var folderWorkSpaces = await _workSpaceAppService.GetByWorkFolderIdAsync(selectedItem.Id);
 
+                // 添加项目
+                foreach (var project in folderProjects)
+                {
+                    var projectVm = new ProjectViewModel(project, _projectAppService);
+                    ContentItems.Add(projectVm);
+                }
+
+                // 添加工作空间
+                foreach (var workSpace in folderWorkSpaces)
+                {
+                    var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
+                    ContentItems.Add(workSpaceVm);
+                }
                 break;
 
             case TreeItemType.TagSettings:

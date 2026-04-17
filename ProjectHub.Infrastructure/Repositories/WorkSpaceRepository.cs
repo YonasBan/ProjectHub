@@ -132,4 +132,19 @@ public class WorkSpaceRepository : IWorkSpaceRepository
             .Select(wwf => wwf.WorkFolderId)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<WorkSpace>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+
+        // 通过关联表查询属于该工作文件夹的工作空间
+        var workSpaceIds = await ctx.WorkSpaceWorkFolders
+            .Where(wwf => wwf.WorkFolderId == workFolderId)
+            .Select(wwf => wwf.WorkSpaceId)
+            .ToListAsync(cancellationToken);
+
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted && workSpaceIds.Contains(w.Id))
+            .ToListAsync(cancellationToken);
+    }
 }

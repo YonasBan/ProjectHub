@@ -34,7 +34,7 @@ public partial class ProjectViewModel : ReactiveObject
     
     public string? Description => _projectDto.Description;
     
-    
+     
     public DateTime? LastOpenedAt => _projectDto.LastOpenedAt;
     
     public string LastOpenedDisplay => _projectDto.LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";

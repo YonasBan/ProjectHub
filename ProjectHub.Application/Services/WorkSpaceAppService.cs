@@ -306,6 +306,22 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         _logger.LogInformation("工作空间 '{WorkSpaceName}' 的项目列表已更新，共 {ProjectCount} 个项目", workSpace.Name, projectIds.Count);
     }
 
+    public async Task<IReadOnlyList<WorkSpaceDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default)
+    {
+        var workSpaces = await _workSpaceRepository.GetByWorkFolderIdAsync(workFolderId, cancellationToken);
+
+        // 加载每个工作空间的文件夹关联
+        var result = new List<WorkSpaceDto>();
+        foreach (var workSpace in workSpaces)
+        {
+            var folderIds = await _workSpaceRepository.GetWorkFolderIdsByWorkSpaceIdAsync(workSpace.Id, cancellationToken);
+            var dto = MapToDto(workSpace, folderIds);
+            result.Add(dto);
+        }
+
+        return result;
+    }
+
     private static WorkSpaceDto MapToDto(WorkSpace workSpace, IReadOnlyList<long>? folderIds = null)
     {
         return new WorkSpaceDto

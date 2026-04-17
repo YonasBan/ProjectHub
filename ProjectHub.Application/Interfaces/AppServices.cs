@@ -66,6 +66,11 @@ public interface IProjectAppService
     /// 扫描并更新项目的磁盘空间信息
     /// </summary>
     Task RefreshDiskSpaceInfoAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据工作文件夹 ID 获取项目列表
+    /// </summary>
+    Task<IReadOnlyList<ProjectDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -198,6 +203,11 @@ public interface IWorkSpaceAppService
     /// 设置工作空间的项目列表（全量替换）
     /// </summary>
     Task SetWorkSpaceProjectsAsync(long workSpaceId, IReadOnlyList<long> projectIds, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据工作文件夹 ID 获取工作空间列表
+    /// </summary>
+    Task<IReadOnlyList<WorkSpaceDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

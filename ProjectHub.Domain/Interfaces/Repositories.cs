@@ -185,6 +185,11 @@ public interface IWorkSpaceRepository : IRepository<WorkSpace>
     /// 获取工作空间关联的文件夹ID列表
     /// </summary>
     Task<IReadOnlyList<long>> GetWorkFolderIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据工作文件夹 ID 查询工作空间
+    /// </summary>
+    Task<IReadOnlyList<WorkSpace>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

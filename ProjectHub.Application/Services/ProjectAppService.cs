@@ -133,6 +133,12 @@ public class ProjectAppService : IProjectAppService
         await Task.CompletedTask;
     }
 
+    public async Task<IReadOnlyList<ProjectDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default)
+    {
+        var projects = await _projectRepository.GetByWorkFolderIdAsync(workFolderId, cancellationToken);
+        return projects.Select(MapToDto).ToList();
+    }
+
     private static ProjectDto MapToDto(Domain.Entities.Project project)
     {
         return new ProjectDto
