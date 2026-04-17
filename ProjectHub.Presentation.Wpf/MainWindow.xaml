@@ -43,7 +43,7 @@
                 Cursor="SizeWE" />
             <!--  Main Content Area (placeholder)  -->
             <Grid Grid.Column="2" Background="{DynamicResource BgPrimaryBrush}">
-                <controls:ContentView />
+                <controls:ContentView DataContext="{Binding ContentViewModel}" />
             </Grid>
         </Grid>
         <!--  Status Bar (spans full width)  -->

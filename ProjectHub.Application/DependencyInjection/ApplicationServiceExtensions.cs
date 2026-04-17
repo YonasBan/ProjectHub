@@ -42,6 +42,9 @@ public static class ApplicationServiceExtensions
         // Sidebar ViewModel - Singleton（与 MainViewModel 生命周期一致）
         services.AddSingleton<ViewModels.SidebarViewModel>();
 
+        // Content ViewModel - Singleton（与 MainViewModel 生命周期一致）
+        services.AddSingleton<ViewModels.ContentViewModel>();
+
         // 对话框 ViewModels - Transient（每次创建新实例）
         services.AddTransient<CreateFolderDialogViewModel>();
         services.AddTransient<ProjectDialogViewModel>();

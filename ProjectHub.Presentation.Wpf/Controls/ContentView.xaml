@@ -11,7 +11,7 @@
     xmlns:svg="clr-namespace:SharpVectors.Converters;assembly=SharpVectors.Converters.Wpf"
     xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
     d:Background="AliceBlue"
-    d:DataContext="{d:DesignInstance viewmodel:MainViewModel}"
+    d:DataContext="{d:DesignInstance viewmodel:ContentViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">

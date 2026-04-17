@@ -1,4 +1,5 @@
 using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
@@ -23,6 +24,7 @@ public class SidebarViewModel : ViewModelBase
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IDialogService _dialogService;
+    private readonly IServiceProvider _serviceProvider;
 
     #endregion
 
@@ -242,20 +244,23 @@ public class SidebarViewModel : ViewModelBase
         IWorkFolderAppService workFolderAppService,
         IWorkSpaceAppService workSpaceAppService,
         IScheduler mainThreadScheduler,
-        IDialogService dialogService)
+        IDialogService dialogService,
+        IServiceProvider serviceProvider)
         : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
         _workFolderAppService = workFolderAppService;
         _workSpaceAppService = workSpaceAppService;
-        this._dialogService = dialogService;
+        _dialogService = dialogService;
+        _serviceProvider = serviceProvider;
+
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
         DeleteFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(DeleteFolderAsync);
 
         // 订阅命令异常
         CreateFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "创建文件夹时发生错误"));
         DeleteFolderCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "删除文件夹时发生错误"));
-        //_ = LoadInitialDataAsync();
+
         // 订阅语言切换事件
         L.CultureChanged
             .ObserveOn(MainThreadScheduler)
@@ -268,6 +273,9 @@ public class SidebarViewModel : ViewModelBase
         // 订阅选中项变化
         this.WhenAnyValue(x => x.SelectedTreeItem)
             .Subscribe(item => SelectedItemChanged?.Invoke(this, item));
+
+        // 订阅 MessageBus 消息
+        SubscribeToMessageBus();
     }
 
     #endregion
@@ -744,5 +752,134 @@ public class SidebarViewModel : ViewModelBase
         }
         return null;
     }
+
+    #endregion
+
+    #region MessageBus 消息处理
+
+    /// <summary>
+    /// 订阅 MessageBus 消息
+    /// </summary>
+    private void SubscribeToMessageBus()
+    {
+        // 工作空间相关消息
+        MessageBus.Current.Listen<WorkSpaceEditRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceEditRequested(msg.WorkSpace))
+            .DisposeWith(Disposables);
+
+        MessageBus.Current.Listen<WorkSpaceDeleteRequestMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceDeleteRequested(msg.WorkSpace))
+            .DisposeWith(Disposables);
+
+        MessageBus.Current.Listen<WorkSpaceFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
+            .DisposeWith(Disposables);
+    }
+
+    /// <summary>
+    /// 处理工作空间编辑请求
+    /// </summary>
+    private async void OnWorkSpaceEditRequested(WorkSpaceViewModel workSpaceVm)
+    {
+        try
+        {
+            Logger.LogInformation($"打开编辑工作空间对话框: {workSpaceVm.Name}");
+
+            var dialogViewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
+            await dialogViewModel.InitializeForEditAsync(workSpaceVm.Id);
+
+            var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, WorkSpaceDto?>(dialogViewModel);
+
+            if (result.Confirmed && result.Value != null)
+            {
+                // 更新工作空间的项目计数
+                workSpaceVm.UpdateProjectCount(result.Value.ProjectCount);
+                Logger.LogInformation($"工作空间编辑成功: {workSpaceVm.Name}");
+                // 显示成功提示
+                _dialogService.ShowNotification(
+                    string.Format(L.Message_WorkSpaceUpdated, workSpaceVm.Name),
+                    NotificationType.Success,
+                    3000);
+            }
+            else
+            {
+                Logger.LogInformation("用户取消编辑工作空间");
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "编辑工作空间时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 处理工作空间删除请求
+    /// </summary>
+    private async void OnWorkSpaceDeleteRequested(WorkSpaceViewModel workSpaceVm)
+    {
+        try
+        {
+            Logger.LogInformation($"请求删除工作空间: {workSpaceVm.Name}");
+
+            // 显示确认对话框
+            var confirmed = await _dialogService.ShowConfirmAsync(
+                L.DeleteConfirm_Title,
+                string.Format(L.DeleteConfirm_Message, workSpaceVm.Name));
+
+            if (!confirmed)
+            {
+                Logger.LogInformation("用户取消删除工作空间");
+                return;
+            }
+
+            // 执行删除
+            await _workSpaceAppService.DeleteAsync(workSpaceVm.Id);
+
+            Logger.LogInformation($"工作空间删除成功: {workSpaceVm.Name}");
+
+            // 从列表中移除
+            WorkSpaces.Remove(workSpaceVm);
+
+            // 更新侧边栏树形节点计数
+            UpdateCountsAfterDelete(workSpaceVm);
+            await LoadWorkFoldersAsync();
+            RebuildFolderTreeOnly();
+
+            // 更新统计
+            UpdateStatistics();
+
+            // 显示成功提示
+            _dialogService.ShowNotification(
+                string.Format(L.Message_WorkSpaceDeleted, workSpaceVm.Name),
+                NotificationType.Success,
+                3000);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "删除工作空间时发生错误");
+            await _dialogService.ShowMessageAsync(
+                L.Message_DeleteFailed,
+                ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// 处理工作空间收藏状态变化
+    /// </summary>
+    private void OnWorkSpaceFavoriteChanged(WorkSpaceViewModel workSpaceVm)
+    {
+        // 刷新侧边栏树
+        BuildSidebarTree();
+
+        // 更新统计
+        UpdateStatistics();
+    }
+
     #endregion
 }
