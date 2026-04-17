@@ -19,7 +19,9 @@ public class SidebarViewModel : ViewModelBase
 {
     #region 注入服务
 
+    private readonly IProjectAppService _projectAppService;
     private readonly IWorkFolderAppService _workFolderAppService;
+    private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IDialogService _dialogService;
 
     #endregion
@@ -236,12 +238,16 @@ public class SidebarViewModel : ViewModelBase
 
     public SidebarViewModel(
         ILogger<SidebarViewModel> logger,
+        IProjectAppService projectAppService,
         IWorkFolderAppService workFolderAppService,
+        IWorkSpaceAppService workSpaceAppService,
         IScheduler mainThreadScheduler,
         IDialogService dialogService)
         : base(logger, mainThreadScheduler)
     {
+        _projectAppService = projectAppService;
         _workFolderAppService = workFolderAppService;
+        _workSpaceAppService = workSpaceAppService;
         this._dialogService = dialogService;
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
         DeleteFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(DeleteFolderAsync);
@@ -444,6 +450,114 @@ public class SidebarViewModel : ViewModelBase
         WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
         TagCountText = string.Format(L.Status_TagCount, TagCount);
         TaggedProjectsText = string.Format(L.Status_TaggedProjects, FavoriteProjectCount);
+    }
+
+    #endregion
+
+    #region 数据加载方法
+
+    /// <summary>
+    /// 加载所有项目
+    /// </summary>
+    public async Task LoadProjectsAsync()
+    {
+        try
+        {
+            Logger.LogInformation("开始加载项目列表");
+
+            var projects = await _projectAppService.GetAllActiveAsync();
+
+            Projects.Clear();
+            foreach (var project in projects)
+            {
+                var projectVm = new ProjectViewModel(project, _projectAppService);
+                Projects.Add(projectVm);
+            }
+
+            Logger.LogInformation($"成功加载 {projects.Count} 个项目");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载项目列表时发生错误");
+        }
+    }
+
+    /// <summary>
+    /// 加载工作文件夹
+    /// </summary>
+    public async Task LoadWorkFoldersAsync()
+    {
+        try
+        {
+            Logger.LogInformation("加载工作文件夹列表");
+
+            var workFolders = await _workFolderAppService.GetAllWithProjectCountAsync();
+
+            WorkFolders.Clear();
+            foreach (var workFolder in workFolders)
+            {
+                WorkFolders.Add(new WorkFolderViewModel(workFolder));
+            }
+
+            Logger.LogInformation($"成功加载 {workFolders.Count} 个工作文件夹");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载工作文件夹列表时发生错误");
+        }
+    }
+
+    /// <summary>
+    /// 加载工作空间
+    /// </summary>
+    public async Task LoadWorkSpacesAsync()
+    {
+        try
+        {
+            Logger.LogInformation("加载工作空间列表");
+
+            var workSpaces = await _workSpaceAppService.GetAllWithProjectCountAsync();
+
+            WorkSpaces.Clear();
+            foreach (var workSpace in workSpaces)
+            {
+                var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
+                WorkSpaces.Add(workSpaceVm);
+            }
+
+            Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "加载工作空间列表时发生错误");
+        }
+    }
+
+    /// <summary>
+    /// 首次加载数据
+    /// </summary>
+    public async Task LoadInitialDataAsync()
+    {
+        // 加载项目数据
+        await LoadProjectsAsync();
+
+        // 加载工作文件夹
+        await LoadWorkFoldersAsync();
+
+        // 加载工作空间数据
+        await LoadWorkSpacesAsync();
+
+        // 更新统计
+        UpdateStatistics();
+
+        // 构建侧边栏树形结构
+        BuildSidebarTree();
+
+        // 默认选中"最近使用"
+        if (SidebarTreeItems.Count > 0)
+        {
+            SelectedTreeItem = SidebarTreeItems.First();
+        }
     }
 
     #endregion

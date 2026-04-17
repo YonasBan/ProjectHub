@@ -82,7 +82,6 @@ public class MainViewModel : ViewModelBase
 
     #region Reactive Commands
 
-
     /// <summary>
     /// 添加内容命令
     /// </summary>
@@ -121,9 +120,6 @@ public class MainViewModel : ViewModelBase
     #endregion
 
 
-
-
-
     #region 构造函数与初始化
 
     public MainViewModel(
@@ -148,11 +144,9 @@ public class MainViewModel : ViewModelBase
 
 
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
-
         // 初始化语言和主题切换命令
         ToggleLanguageCommand = ReactiveCommand.CreateFromTask(ToggleLanguageAsync);
         ToggleThemeCommand = ReactiveCommand.Create(_themeService.ToggleTheme);
-
         ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
         // 订阅语言切换事件
@@ -249,113 +243,14 @@ public class MainViewModel : ViewModelBase
     #region 数据加载方法
 
     /// <summary>
-    /// 首次加载数据（加载项目和文件夹）
+    /// 首次加载数据
     /// </summary>
     private async Task LoadInitialDataAsync()
     {
-        // 加载项目数据
-        await LoadProjectsAsync();
-
-        // 加载工作文件夹
-        await LoadWorkFoldersAsync();
-
-        // 加载工作空间数据
-        await LoadWorkSpacesAsync();
-
-        // 更新统计并构建侧边栏树形结构
-        SidebarViewModel.UpdateStatistics();
-        SidebarViewModel.BuildSidebarTree();
-
-        // 默认选中"最近使用"
-        if (SidebarViewModel.SidebarTreeItems.Count > 0)
-        {
-            SidebarViewModel.SelectedTreeItem = SidebarViewModel.SidebarTreeItems.First();
-        }
-    }
-
-
-
-
-    /// <summary>
-    /// 加载所有项目
-    /// </summary>
-    private async Task LoadProjectsAsync()
-    {
-        try
-        {
-            Logger.LogInformation("开始加载项目列表");
-
-            var projects = await _projectAppService.GetAllActiveAsync();
-
-            SidebarViewModel.Projects.Clear();
-            foreach (var project in projects)
-            {
-                var projectVm = new ProjectViewModel(project, _projectAppService);
-                SidebarViewModel.Projects.Add(projectVm);
-            }
-
-            Logger.LogInformation($"成功加载 {projects.Count} 个项目");
-
-            // 注意：不要在这里调用 UpdateContentItems，避免循环调用
-            // 数据加载后，UpdateContentItems 会继续执行显示内容
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载项目列表时发生错误");
-        }
+        await SidebarViewModel.LoadInitialDataAsync();
     }
 
     #endregion
-
-    #region 辅助方法
-
-    private async Task LoadWorkFoldersAsync()
-    {
-        try
-        {
-            Logger.LogInformation("加载工作文件夹列表");
-
-            var workFolders = await _workFolderAppService.GetAllWithProjectCountAsync();
-
-            SidebarViewModel.WorkFolders.Clear();
-            foreach (var workFolder in workFolders)
-            {
-                SidebarViewModel.WorkFolders.Add(new WorkFolderViewModel(workFolder));
-            }
-
-            Logger.LogInformation($"成功加载 {workFolders.Count} 个工作文件夹");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载工作文件夹列表时发生错误");
-        }
-    }
-
-    private async Task LoadWorkSpacesAsync()
-    {
-        try
-        {
-            Logger.LogInformation("加载工作空间列表");
-
-            var workSpaces = await _workSpaceAppService.GetAllWithProjectCountAsync();
-
-            SidebarViewModel.WorkSpaces.Clear();
-            foreach (var workSpace in workSpaces)
-            {
-                var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
-                SidebarViewModel.WorkSpaces.Add(workSpaceVm);
-            }
-
-            Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载工作空间列表时发生错误");
-        }
-    }
-
-    #endregion
-
 
 
     #region 项目/工作空间添加方法
@@ -592,7 +487,7 @@ public class MainViewModel : ViewModelBase
 
             // 更新侧边栏树形节点计数
             SidebarViewModel.UpdateCountsAfterDelete(projectVm);
-            await LoadWorkFoldersAsync();
+            await SidebarViewModel.LoadWorkFoldersAsync();
             SidebarViewModel.RebuildFolderTreeOnly();
 
             // 刷新内容区域
@@ -836,7 +731,7 @@ public class MainViewModel : ViewModelBase
 
             // 更新侧边栏树形节点计数
             SidebarViewModel.UpdateCountsAfterDelete(workSpaceVm);
-            await LoadWorkFoldersAsync();
+            await SidebarViewModel.LoadWorkFoldersAsync();
             SidebarViewModel.RebuildFolderTreeOnly();
 
             // 刷新内容区域
@@ -946,7 +841,7 @@ public class MainViewModel : ViewModelBase
             }
 
             // 刷新侧边栏树（文件夹数量变化）
-            await LoadWorkFoldersAsync();
+            await SidebarViewModel.LoadWorkFoldersAsync();
             SidebarViewModel.RebuildFolderTreeOnly();
 
             // 显示成功提示
