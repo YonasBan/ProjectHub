@@ -14,9 +14,7 @@ using System.Reactive.Linq;
 namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
-/// 主窗口 ViewModel
-///
-/// ⚠️ 注意：此文件仅为框架示例，实际实现需要在第二阶段完成
+/// 主窗口 ViewModel - 管理应用程序主界面状态和交互
 /// </summary>
 public class MainViewModel : ViewModelBase
 {
@@ -80,17 +78,6 @@ public class MainViewModel : ViewModelBase
     #endregion
 
     #region 选中状态属性
-
-    /// <summary>
-    /// 当前选中的工作文件夹
-    /// </summary>
-    private WorkFolderViewModel? _selectedWorkFolder;
-
-    public WorkFolderViewModel? SelectedWorkFolder
-    {
-        get => _selectedWorkFolder;
-        set => this.RaiseAndSetIfChanged(ref _selectedWorkFolder, value);
-    }
 
     /// <summary>
     /// 当前选中的树形节点
@@ -1044,7 +1031,7 @@ public class MainViewModel : ViewModelBase
             Projects.Remove(projectVm);
 
             // 更新侧边栏树形节点计数（异步）
-            await UpdateSidebarTreeCountsAfterProjectDeleteAsync(projectVm);
+            await UpdateSidebarTreeCountsAfterDeleteAsync(projectVm);
 
             // 刷新内容区域
             if (SelectedTreeItem != null)
@@ -1077,21 +1064,30 @@ public class MainViewModel : ViewModelBase
     /// <summary>
     /// 删除项目后更新侧边栏树形节点计数
     /// </summary>
-    private async Task UpdateSidebarTreeCountsAfterProjectDeleteAsync(ProjectViewModel projectVm)
+    private async Task UpdateSidebarTreeCountsAfterDeleteAsync<T>(T itemVm) where T : class
     {
+        var isProject = itemVm is ProjectViewModel;
+        var hasLastOpened = isProject
+            ? ((ProjectViewModel)(object)itemVm).LastOpenedAt.HasValue
+            : ((WorkSpaceViewModel)(object)itemVm).LastOpenedAt.HasValue;
+        var isFavorite = isProject
+            ? ((ProjectViewModel)(object)itemVm).IsFavorite
+            : ((WorkSpaceViewModel)(object)itemVm).IsFavorite;
+
         foreach (var item in SidebarTreeItems)
         {
             switch (item.ItemType)
             {
-                case TreeItemType.AllProjects:
+                case TreeItemType.AllProjects when isProject:
+                case TreeItemType.WorkSpace when !isProject:
                     item.Count--;
                     break;
                 case TreeItemType.RecentProject:
-                    if (projectVm.LastOpenedAt.HasValue)
+                    if (hasLastOpened)
                         item.Count--;
                     break;
                 case TreeItemType.FavoriteProject:
-                    if (projectVm.IsFavorite)
+                    if (isFavorite)
                         item.Count--;
                     break;
             }
@@ -1231,7 +1227,7 @@ public class MainViewModel : ViewModelBase
                     item.UpdateName(L.Sidebar_TagSettings);
                     break;
             }
-            if (SelectedTreeItem.ItemType == item.ItemType && SelectedTreeItem.ItemType != TreeItemType.WorkFolder)
+            if (SelectedTreeItem?.ItemType == item.ItemType && item.ItemType != TreeItemType.WorkFolder)
             {
                 SelectedTreeItem.Name = item.Name;
             }
@@ -1393,7 +1389,7 @@ public class MainViewModel : ViewModelBase
             WorkSpaces.Remove(workSpaceVm);
 
             // 更新侧边栏树形节点计数（异步）
-            await UpdateSidebarTreeCountsAfterWorkSpaceDeleteAsync(workSpaceVm);
+            await UpdateSidebarTreeCountsAfterDeleteAsync(workSpaceVm);
 
             // 刷新内容区域
             if (SelectedTreeItem != null)
@@ -1421,35 +1417,6 @@ public class MainViewModel : ViewModelBase
         {
             IsLoading = false;
         }
-    }
-
-    /// <summary>
-    /// 删除工作空间后更新侧边栏树形节点计数
-    /// </summary>
-    private async Task UpdateSidebarTreeCountsAfterWorkSpaceDeleteAsync(WorkSpaceViewModel workSpaceVm)
-    {
-        foreach (var item in SidebarTreeItems)
-        {
-            switch (item.ItemType)
-            {
-                case TreeItemType.WorkSpace:
-                    item.Count--;
-                    break;
-                case TreeItemType.RecentProject:
-                    if (workSpaceVm.LastOpenedAt.HasValue)
-                        item.Count--;
-                    break;
-                case TreeItemType.FavoriteProject:
-                    if (workSpaceVm.IsFavorite)
-                        item.Count--;
-                    break;
-            }
-        }
-
-        // 重新加载文件夹数据以更新文件夹计数
-        await LoadWorkFoldersAsync();
-        // 重建文件夹树形结构（保持其他节点不变）
-        RebuildFolderTreeOnly();
     }
 
     /// <summary>
@@ -1530,9 +1497,9 @@ public class MainViewModel : ViewModelBase
                 return;
             }
 
-            // 刷新侧边栏树（文件夹数量变化）
+            // 刷新侧边栏树（文件夹数量变化）- 只重建文件夹部分
             await LoadWorkFoldersAsync();
-            BuildSidebarTree();
+            RebuildFolderTreeOnly();
 
             // 显示成功提示
             _dialogService.ShowNotification(
