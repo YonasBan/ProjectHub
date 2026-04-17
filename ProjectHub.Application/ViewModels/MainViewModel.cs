@@ -161,12 +161,8 @@ public class MainViewModel : ViewModelBase
 
         // 订阅 MessageBus 消息
         SubscribeToMessageBus();
-
         // 订阅侧边栏选中项变化
         SidebarViewModel.SelectedItemChanged += OnSidebarSelectedItemChanged;
-
-        // 首次加载
-        _ = LoadInitialDataAsync();
     }
 
     /// <summary>
@@ -241,14 +237,6 @@ public class MainViewModel : ViewModelBase
     #endregion
 
     #region 数据加载方法
-
-    /// <summary>
-    /// 首次加载数据
-    /// </summary>
-    private async Task LoadInitialDataAsync()
-    {
-        await SidebarViewModel.LoadInitialDataAsync();
-    }
 
     #endregion
 
