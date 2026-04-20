@@ -769,8 +769,6 @@ public class SidebarViewModel : ViewModelBase
     {
         // 从列表中移除
         WorkSpaces.Remove(workSpaceVm);
-        _ = LoadWorkFoldersAsync();
-        RebuildFolderTreeOnly();
         // 更新统计
         UpdateStatistics();
     }
@@ -791,8 +789,6 @@ public class SidebarViewModel : ViewModelBase
     {
         // 从列表中移除
         Projects.Remove(projectVm);
-        _ = LoadWorkFoldersAsync();
-        RebuildFolderTreeOnly();
         // 更新统计
         UpdateStatistics();
     }
