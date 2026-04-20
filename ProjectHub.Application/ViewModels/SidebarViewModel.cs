@@ -916,7 +916,7 @@ public class SidebarViewModel : ViewModelBase
             Logger.LogInformation($"打开编辑项目对话框: {projectVm.Name}");
 
             var dialogViewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
-            dialogViewModel.InitializeForEdit(projectVm.GetProjectDto());
+            dialogViewModel.InitializeForEdit(projectVm.GetDto());
 
             var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(dialogViewModel);
 

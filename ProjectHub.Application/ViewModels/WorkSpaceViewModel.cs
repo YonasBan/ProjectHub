@@ -1,8 +1,6 @@
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.Localization;
 using ReactiveUI;
-using Splat;
 using System.Reactive;
 
 namespace ProjectHub.Application.ViewModels;
@@ -10,36 +8,13 @@ namespace ProjectHub.Application.ViewModels;
 /// <summary>
 /// WorkSpace ViewModel
 /// </summary>
-public partial class WorkSpaceViewModel : ReactiveObject
+public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
 {
-    private WorkSpaceDto _workSpaceDto;
     private readonly IWorkSpaceAppService? _workSpaceAppService;
 
-    public long Id => _workSpaceDto.Id;
+    public int ProjectCount => ((WorkSpaceDto)_dto).ProjectCount;
 
-    public string Name => _workSpaceDto.Name;
-
-    public string? Description => _workSpaceDto.Description;
-
-    public int ProjectCount => _workSpaceDto.ProjectCount;
-
-    public int SortOrder => _workSpaceDto.SortOrder;
-
-    private bool _isFavorite;
-    public bool IsFavorite
-    {
-        get => _isFavorite;
-        private set => this.RaiseAndSetIfChanged(ref _isFavorite, value);
-    }
-
-    public DateTime? FavoritedAt => _workSpaceDto.FavoritedAt;
-
-    public DateTime? LastOpenedAt => _workSpaceDto.LastOpenedAt;
-
-    /// <summary>
-    /// 本地化字符串访问器
-    /// </summary>
-    private static LocalizedStrings L => Locator.Current.GetService<LocalizedStrings>()!;
+    public int SortOrder => ((WorkSpaceDto)_dto).SortOrder;
 
     /// <summary>
     /// 项目数量显示文本（支持本地化）
@@ -54,53 +29,13 @@ public partial class WorkSpaceViewModel : ReactiveObject
         : "";
 
     /// <summary>
-    /// Toggle favorite status command
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> ToggleFavoriteCommand { get; }
-
-    /// <summary>
-    /// Edit workspace command - requests parent to open edit dialog
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> EditCommand { get; }
-
-    /// <summary>
-    /// Delete workspace command - requests parent to handle deletion with confirmation
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-
-    /// <summary>
     /// Launch all projects in workspace command
     /// </summary>
     public ReactiveCommand<Unit, Unit> LaunchAllCommand { get; }
 
-    /// <summary>
-    /// Move to folder command - requests parent to show folder selector
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> MoveToFolderCommand { get; }
-
-    /// <summary>
-    /// Send edit request message via MessageBus
-    /// </summary>
-    private void SendEditRequest() => MessageBus.Current.SendMessage(new WorkSpaceEditRequestMessage(this));
-
-    /// <summary>
-    /// Send delete request message via MessageBus
-    /// </summary>
-    private void SendDeleteRequest() => MessageBus.Current.SendMessage(new WorkSpaceDeleteRequestMessage(this));
-
-    /// <summary>
-    /// Send favorite changed message via MessageBus
-    /// </summary>
-    private void SendFavoriteChanged() => MessageBus.Current.SendMessage(new WorkSpaceFavoriteChangedMessage(this));
-
-    /// <summary>
-    /// Send move to folder request message via MessageBus
-    /// </summary>
-    private void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new WorkSpaceMoveToFolderRequestMessage(this));
-
     public WorkSpaceViewModel(WorkSpaceDto workSpaceDto, IWorkSpaceAppService? workSpaceAppService = null)
+        : base(workSpaceDto)
     {
-        _workSpaceDto = workSpaceDto;
         _workSpaceAppService = workSpaceAppService;
         _isFavorite = workSpaceDto.IsFavorite;
 
@@ -118,15 +53,35 @@ public partial class WorkSpaceViewModel : ReactiveObject
         });
     }
 
-    /// <summary>
-    /// Get the underlying DTO for editing
-    /// </summary>
-    public WorkSpaceDto GetWorkSpaceDto() => _workSpaceDto;
+    #region Base Class Implementations
 
-    /// <summary>
-    /// Toggle favorite status
-    /// </summary>
-    private async Task ToggleFavoriteAsync()
+    protected override long GetId() => ((WorkSpaceDto)_dto).Id;
+
+    protected override string GetName() => ((WorkSpaceDto)_dto).Name;
+
+    protected override string? GetDescription() => ((WorkSpaceDto)_dto).Description;
+
+    protected override DateTime? GetFavoritedAt() => ((WorkSpaceDto)_dto).FavoritedAt;
+
+    protected override DateTime? GetLastOpenedAt() => ((WorkSpaceDto)_dto).LastOpenedAt;
+
+    protected override void SendEditRequest() => MessageBus.Current.SendMessage(new WorkSpaceEditRequestMessage(this));
+
+    protected override void SendDeleteRequest() => MessageBus.Current.SendMessage(new WorkSpaceDeleteRequestMessage(this));
+
+    protected override void SendFavoriteChanged() => MessageBus.Current.SendMessage(new WorkSpaceFavoriteChangedMessage(this));
+
+    protected override void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new WorkSpaceMoveToFolderRequestMessage(this));
+
+    public override WorkSpaceDto GetDto() => (WorkSpaceDto)_dto;
+
+    public override void UpdateFromDto(WorkSpaceDto updatedDto)
+    {
+        _dto = updatedDto;
+        this.RaisePropertyChanged(string.Empty);
+    }
+
+    protected override async Task ToggleFavoriteAsync()
     {
         if (_workSpaceAppService == null) return;
 
@@ -134,18 +89,10 @@ public partial class WorkSpaceViewModel : ReactiveObject
         await _workSpaceAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
 
-        // 通过 MessageBus 通知收藏状态变化
         SendFavoriteChanged();
     }
 
-    /// <summary>
-    /// Update the ViewModel after workspace is edited
-    /// </summary>
-    public void UpdateFromDto(WorkSpaceDto updatedDto)
-    {
-        _workSpaceDto = updatedDto;
-        this.RaisePropertyChanged(string.Empty); // Notify all properties changed
-    }
+    #endregion
 
     /// <summary>
     /// Launch all projects in the workspace
@@ -159,7 +106,7 @@ public partial class WorkSpaceViewModel : ReactiveObject
 
     internal void UpdateProjectCount(int selectedProjectCount)
     {
-        _workSpaceDto.ProjectCount = selectedProjectCount;
+        ((WorkSpaceDto)_dto).ProjectCount = selectedProjectCount;
         this.RaisePropertyChanged(nameof(ProjectCountDisplay));
     }
 }

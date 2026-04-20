@@ -1,10 +1,8 @@
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.Localization;
 using ProjectHub.Core.Extensions;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
-using Splat;
 using System.Reactive;
 
 namespace ProjectHub.Application.ViewModels;
@@ -17,65 +15,41 @@ namespace ProjectHub.Application.ViewModels;
 /// - Contains UI-specific formatting logic
 /// - Interacts with domain layer through application services
 /// </summary>
-public partial class ProjectViewModel : ReactiveObject
+public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 {
-    private ProjectDto _projectDto;
     private readonly IProjectAppService? _projectAppService;
 
-    public long Id => _projectDto.Id;
-    
-    public string Name => _projectDto.Name;
-    
-    public ProjectType Type => _projectDto.Type;
-    
-    public string Path => _projectDto.Path;
-    
-    public string? CustomIconPath => _projectDto.CustomIconPath;
-    
-    public string? Description => _projectDto.Description;
-    
-     
-    public DateTime? LastOpenedAt => _projectDto.LastOpenedAt;
-    
-    public string LastOpenedDisplay => _projectDto.LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
-    
-    public int LaunchCount => _projectDto.LaunchCount;
-    
-    /// <summary>
-    /// 本地化字符串访问器
-    /// </summary>
-    private static LocalizedStrings L => Locator.Current.GetService<LocalizedStrings>()!;
-    
+    public ProjectType Type => ((ProjectDto)_dto).Type;
+
+    public string Path => ((ProjectDto)_dto).Path;
+
+    public string? CustomIconPath => ((ProjectDto)_dto).CustomIconPath;
+
+    public string LastOpenedDisplay => ((ProjectDto)_dto).LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
+
+    public int LaunchCount => ((ProjectDto)_dto).LaunchCount;
+
     /// <summary>
     /// 启动次数显示文本（支持本地化）
     /// </summary>
     public string LaunchCountDisplay => string.Format(L.Project_LaunchCount, LaunchCount);
-    
-    public string TotalUsageDurationDisplay => _projectDto.TotalUsageDuration.ToHumanReadableString();
-    
-    private bool _isFavorite;
-    public bool IsFavorite
-    {
-        get => _isFavorite;
-        private set => this.RaiseAndSetIfChanged(ref _isFavorite, value);
-    }
-    
-    public DateTime? FavoritedAt => _projectDto.FavoritedAt;
-    
-    public DateTime? Deadline => _projectDto.Deadline;
-    
-    public long? DiskSpaceBytes => _projectDto.DiskSpaceBytes;
-    
-    public string DiskSpaceDisplay => _projectDto.DiskSpaceBytes?.FormatFileSize() ?? "Not calculated";
-    
-    public long? CleanableSpaceBytes => _projectDto.CleanableSpaceBytes;
-    
-    public string CleanableSpaceDisplay => _projectDto.CleanableSpaceBytes?.FormatFileSize() ?? "Not calculated";
+
+    public string TotalUsageDurationDisplay => ((ProjectDto)_dto).TotalUsageDuration.ToHumanReadableString();
+
+    public DateTime? Deadline => ((ProjectDto)_dto).Deadline;
+
+    public long? DiskSpaceBytes => ((ProjectDto)_dto).DiskSpaceBytes;
+
+    public string DiskSpaceDisplay => ((ProjectDto)_dto).DiskSpaceBytes?.FormatFileSize() ?? "Not calculated";
+
+    public long? CleanableSpaceBytes => ((ProjectDto)_dto).CleanableSpaceBytes;
+
+    public string CleanableSpaceDisplay => ((ProjectDto)_dto).CleanableSpaceBytes?.FormatFileSize() ?? "Not calculated";
 
     /// <summary>
     /// Project type display name
     /// </summary>
-    public string TypeDisplayName => GetTypeDisplayName(_projectDto.Type);
+    public string TypeDisplayName => GetTypeDisplayName(((ProjectDto)_dto).Type);
 
     /// <summary>
     /// Icon path for display
@@ -84,67 +58,22 @@ public partial class ProjectViewModel : ReactiveObject
     public string IconPath => !string.IsNullOrEmpty(CustomIconPath) ? CustomIconPath : Path;
 
     /// <summary>
-    /// Toggle favorite status command
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> ToggleFavoriteCommand { get; }
-
-    /// <summary>
-    /// Edit project command - requests parent to open edit dialog
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> EditCommand { get; }
-
-    /// <summary>
-    /// Delete project command - requests parent to handle deletion with confirmation
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> DeleteCommand { get; }
-
-    /// <summary>
     /// Launch project command - starts the project with default program
     /// </summary>
     public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
 
-    /// <summary>
-    /// Move to folder command - requests parent to show folder selector
-    /// </summary>
-    public ReactiveCommand<Unit, Unit> MoveToFolderCommand { get; }
-
-    /// <summary>
-    /// Send edit request message via MessageBus
-    /// </summary>
-    private void SendEditRequest() => MessageBus.Current.SendMessage(new ProjectEditRequestMessage(this));
-
-    /// <summary>
-    /// Send delete request message via MessageBus
-    /// </summary>
-    private void SendDeleteRequest() => MessageBus.Current.SendMessage(new ProjectDeleteRequestMessage(this));
-
-    /// <summary>
-    /// Send favorite changed message via MessageBus
-    /// </summary>
-    private void SendFavoriteChanged() => MessageBus.Current.SendMessage(new ProjectFavoriteChangedMessage(this));
-
-    /// <summary>
-    /// Send launched message via MessageBus
-    /// </summary>
-    private void SendLaunched() => MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
-
-    /// <summary>
-    /// Send move to folder request message via MessageBus
-    /// </summary>
-    private void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new ProjectMoveToFolderRequestMessage(this));
-
     public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
+        : base(projectDto)
     {
-        _projectDto = projectDto;
         _projectAppService = projectAppService;
         _isFavorite = projectDto.IsFavorite;
-        
+
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
         EditCommand = ReactiveCommand.Create(SendEditRequest);
         DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
         LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
         MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
-        
+
         // 订阅语言变化，刷新本地化显示属性
         L?.CultureChanged.Subscribe(_ =>
         {
@@ -152,36 +81,51 @@ public partial class ProjectViewModel : ReactiveObject
         });
     }
 
-    /// <summary>
-    /// Get the underlying DTO for editing
-    /// </summary>
-    public ProjectDto GetProjectDto() => _projectDto;
+    #region Base Class Implementations
 
-    /// <summary>
-    /// Toggle favorite status
-    /// </summary>
-    private async Task ToggleFavoriteAsync()
+    protected override long GetId() => ((ProjectDto)_dto).Id;
+
+    protected override string GetName() => ((ProjectDto)_dto).Name;
+
+    protected override string? GetDescription() => ((ProjectDto)_dto).Description;
+
+    protected override DateTime? GetFavoritedAt() => ((ProjectDto)_dto).FavoritedAt;
+
+    protected override DateTime? GetLastOpenedAt() => ((ProjectDto)_dto).LastOpenedAt;
+
+    protected override void SendEditRequest() => MessageBus.Current.SendMessage(new ProjectEditRequestMessage(this));
+
+    protected override void SendDeleteRequest() => MessageBus.Current.SendMessage(new ProjectDeleteRequestMessage(this));
+
+    protected override void SendFavoriteChanged() => MessageBus.Current.SendMessage(new ProjectFavoriteChangedMessage(this));
+
+    protected override void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new ProjectMoveToFolderRequestMessage(this));
+
+    public override ProjectDto GetDto() => (ProjectDto)_dto;
+
+    public override void UpdateFromDto(ProjectDto updatedDto)
+    {
+        _dto = updatedDto;
+        this.RaisePropertyChanged(string.Empty);
+    }
+
+    protected override async Task ToggleFavoriteAsync()
     {
         if (_projectAppService == null) return;
-        
+
         var newFavoriteStatus = !IsFavorite;
         await _projectAppService.SetFavoriteAsync(Id, newFavoriteStatus);
         IsFavorite = newFavoriteStatus;
-        
-        // 通过 MessageBus 通知收藏状态变化
+
         SendFavoriteChanged();
     }
 
+    #endregion
+
     /// <summary>
-    /// Update the ViewModel after project is edited
+    /// Send launched message via MessageBus
     /// </summary>
-    public void UpdateFromDto(ProjectDto updatedDto)
-    {
-        // Note: This is a simplified update
-        // In a real scenario, you might want to recreate the ViewModel or use a more sophisticated update mechanism
-        _projectDto = updatedDto;
-        this.RaisePropertyChanged(string.Empty); // Notify all properties changed
-    }
+    private void SendLaunched() => MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
 
     /// <summary>
     /// Launch the project
@@ -189,19 +133,15 @@ public partial class ProjectViewModel : ReactiveObject
     private async Task LaunchAsync()
     {
         if (_projectAppService == null) return;
-        
+
         await _projectAppService.LaunchAsync(Id);
-        
-        // 更新启动次数（假设 LaunchAsync 会更新数据库中的计数）
-        // 这里需要重新获取项目信息来更新 LaunchCount
+
         var updatedProject = await _projectAppService.GetByIdAsync(Id);
         if (updatedProject != null)
         {
-            _projectDto = updatedProject;
+            _dto = updatedProject;
             this.RaisePropertyChanged(nameof(LaunchCount));
             this.RaisePropertyChanged(nameof(LastOpenedAt));
-            
-            // 通过 MessageBus 通知项目已启动
             SendLaunched();
         }
     }
