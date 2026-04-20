@@ -65,28 +65,10 @@ public class WorkFolderRepository : IWorkFolderRepository
         // 查询工作文件夹（包含关联的项目和工作空间数量）
         var workFolders = await ctx.WorkFolders
             .Where(w => !w.IsDeleted)
-            .Select(w => new
-            {
-                WorkFolder = w,
-                ProjectCount = ctx.ProjectWorkFolders
-                    .Count(pwf => pwf.WorkFolderId == w.Id &&
-                                  ctx.Projects.Any(p => p.Id == pwf.ProjectId && !p.IsDeleted)),
-                WorkSpaceCount = ctx.WorkSpaceWorkFolders
-                    .Count(wwf => wwf.WorkFolderId == w.Id &&
-                                  ctx.WorkSpaces.Any(ws => ws.Id == wwf.WorkSpaceId && !ws.IsDeleted))
-            })
-            .OrderBy(x => x.WorkFolder.SortOrder)
-            .ThenBy(x => x.WorkFolder.Name)
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.Name)
             .ToListAsync(cancellationToken);
-
-        // 设置项目数量和工作空间数量
-        foreach (var item in workFolders)
-        {
-            item.WorkFolder.UpdateProjectCount(item.ProjectCount);
-            item.WorkFolder.UpdateWorkSpaceCount(item.WorkSpaceCount);
-        }
-
-        return workFolders.Select(x => x.WorkFolder).ToList();
+        return workFolders.ToList();
     }
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
