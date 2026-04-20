@@ -396,6 +396,47 @@ public class SidebarViewModel : ViewModelBase
         FolderCountText = string.Format(L.Status_FolderCount, TotalFolderCount);
         WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
         FavouriteText = string.Format(L.Status_FavoriteCount, FavoriteCount);
+
+        // 更新 SidebarTreeItems 中的计数
+        UpdateTreeItemCounts();
+    }
+
+    /// <summary>
+    /// 更新 SidebarTreeItems 中各节点的计数
+    /// </summary>
+    private void UpdateTreeItemCounts()
+    {
+        if (SidebarTreeItems == null || SidebarTreeItems.Count == 0)
+            return;
+        foreach (var item in SidebarTreeItems)
+        {
+            switch (item.ItemType)
+            {
+                case TreeItemType.RecentProject:
+                    // 最近使用 - 包含项目和工作空间（最多显示20个）
+                    var recentProjectCount = Projects.Count(p => p.LastOpenedAt.HasValue);
+                    var recentWorkSpaceCount = WorkSpaces.Count(w => w.LastOpenedAt.HasValue);
+                    item.Count = Math.Min(recentProjectCount + recentWorkSpaceCount, 20);
+                    break;
+
+                case TreeItemType.FavoriteProject:
+                    // 收藏夹 - 包含项目和工作空间
+                    var favoriteProjectCount = Projects.Count(p => p.IsFavorite);
+                    var favoriteWorkSpaceCount = WorkSpaces.Count(w => w.IsFavorite);
+                    item.Count = favoriteProjectCount + favoriteWorkSpaceCount;
+                    break;
+
+                case TreeItemType.WorkSpace:
+                    // 工作空间
+                    item.Count = WorkSpaces.Count;
+                    break;
+
+                case TreeItemType.AllProjects:
+                    // 所有项目
+                    item.Count = Projects.Count;
+                    break;
+            }
+        }
     }
 
     #endregion
