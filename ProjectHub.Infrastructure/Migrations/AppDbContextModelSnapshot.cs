@@ -282,9 +282,6 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsExpanded")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -301,6 +298,9 @@ namespace ProjectHub.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("WorkSpaceCount")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

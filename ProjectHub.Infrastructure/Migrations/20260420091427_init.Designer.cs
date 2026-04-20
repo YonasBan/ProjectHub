@@ -11,7 +11,7 @@ using ProjectHub.Infrastructure.Persistence;
 namespace ProjectHub.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260416094131_init")]
+    [Migration("20260420091427_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -285,9 +285,6 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsExpanded")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -304,6 +301,9 @@ namespace ProjectHub.Infrastructure.Migrations
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("WorkSpaceCount")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

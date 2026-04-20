@@ -154,16 +154,7 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private void SubscribeToMessageBus()
     {
-        // 移动到文件夹请求消息
-        MessageBus.Current.Listen<ProjectMoveToFolderRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectMoveToFolderRequested(msg.Project))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<WorkSpaceMoveToFolderRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnWorkSpaceMoveToFolderRequested(msg.WorkSpace))
-            .DisposeWith(Disposables);
+      
     }
 
     #endregion
@@ -199,90 +190,6 @@ public class MainViewModel : ViewModelBase
     }
 
     #endregion
-
-    #region 移动到文件夹方法
-
-    /// <summary>
-    /// 处理项目移动到文件夹请求
-    /// </summary>
-    private async void OnProjectMoveToFolderRequested(ProjectViewModel projectVm)
-    {
-        await ShowFolderSelectorAndMoveAsync(projectVm, isProject: true);
-    }
-
-    /// <summary>
-    /// 处理工作空间移动到文件夹请求
-    /// </summary>
-    private async void OnWorkSpaceMoveToFolderRequested(WorkSpaceViewModel workSpaceVm)
-    {
-        await ShowFolderSelectorAndMoveAsync(workSpaceVm, isProject: false);
-    }
-
-    /// <summary>
-    /// 显示文件夹选择器并执行移动操作（支持懒加载）
-    /// </summary>
-    private async Task ShowFolderSelectorAndMoveAsync(object itemVm, bool isProject)
-    {
-        try
-        {
-            var itemName = isProject ? ((ProjectViewModel)itemVm).Name : ((WorkSpaceViewModel)itemVm).Name;
-            var itemId = isProject ? ((ProjectViewModel)itemVm).Id : ((WorkSpaceViewModel)itemVm).Id;
-
-            // 创建对话框 ViewModel（直接注入 IWorkFolderAppService）
-            var dialogVm = new SelectFolderDialogViewModel(_workFolderAppService)
-            {
-                Title = string.Format(L.Dialog_MoveToFolderTitle, itemName),
-                ItemName = itemName,
-                MoveItem = new MoveItemInfo
-                {
-                    Id = itemId,
-                    Name = itemName,
-                    IsProject = isProject
-                }
-            };
-
-            // 只加载根级文件夹（懒加载子文件夹）
-            var rootFolders = await _workFolderAppService.GetRootFoldersAsync();
-            var folderItems = rootFolders.Select(f => new FolderTreeItemViewModel(f.Id, f.Name, f.ParentId)
-            {
-                FullPath = f.Name
-            }).ToList();
-            dialogVm.LoadFolders(folderItems);
-
-            // 显示对话框
-            var result = await _dialogService.ShowDialogAsync(dialogVm);
-
-            if (!result)
-            {
-                Logger.LogInformation("用户取消移动到文件夹");
-                return;
-            }
-
-            // 刷新侧边栏树（文件夹数量变化）
-            await SidebarViewModel.LoadWorkFoldersAsync();
-            SidebarViewModel.RebuildFolderTreeOnly();
-
-            // 显示成功提示
-            _dialogService.ShowNotification(
-                string.Format(L.Message_MovedToFolder, itemName),
-                NotificationType.Success,
-                3000);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "移动到文件夹时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_MoveToFolderFailed,
-                ex.Message);
-        }
-        finally
-        {
-            IsLoading = false;
-        }
-    }
-
-    #endregion
-
 }
 
 /// <summary>
