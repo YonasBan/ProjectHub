@@ -25,6 +25,7 @@
             <TextBlock
                 Grid.Column="0"
                 Margin="24,0,0,0"
+                VerticalAlignment="Center"
                 Style="{StaticResource StatusTextStyle}"
                 Text="{Binding ProjectCountText}" />
 
@@ -32,6 +33,7 @@
             <TextBlock
                 Grid.Column="1"
                 Margin="24,0,0,0"
+                VerticalAlignment="Center"
                 Style="{StaticResource StatusTextStyle}"
                 Text="{Binding FolderCountText}" />
 
@@ -39,6 +41,7 @@
             <TextBlock
                 Grid.Column="2"
                 Margin="24,0,0,0"
+                VerticalAlignment="Center"
                 Style="{StaticResource StatusTextStyle}"
                 Text="{Binding WorkspaceCountText}" />
 
@@ -46,6 +49,7 @@
             <TextBlock
                 Grid.Column="3"
                 Margin="24,0,0,0"
+                VerticalAlignment="Center"
                 Style="{StaticResource StatusTextStyle}"
                 Text="{Binding FavouriteText}" />
 

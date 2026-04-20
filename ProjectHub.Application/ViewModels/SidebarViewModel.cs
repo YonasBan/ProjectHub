@@ -48,9 +48,9 @@ public class SidebarViewModel : ViewModelBase
     /// <summary>
     /// 当前选中的树形节点
     /// </summary>
-    private TreeItemViewModel? _selectedTreeItem;
+    private TreeItemViewModel _selectedTreeItem;
 
-    public TreeItemViewModel? SelectedTreeItem
+    public TreeItemViewModel SelectedTreeItem
     {
         get => _selectedTreeItem;
         set => this.RaiseAndSetIfChanged(ref _selectedTreeItem, value);

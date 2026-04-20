@@ -3,10 +3,13 @@ using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.ViewModels.DialogViewModel;
+using ProjectHub.Domain.Entities;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 
 namespace ProjectHub.Application.ViewModels;
 
@@ -82,6 +85,7 @@ public class ContentViewModel : ViewModelBase
 
         // 订阅侧边栏选中项变化，自动更新内容
         SidebarViewModel.SelectedItemChanged += OnSidebarSelectedItemChanged;
+        SubscribeToMessageBus();
     }
 
     #endregion
@@ -333,6 +337,83 @@ public class ContentViewModel : ViewModelBase
         else
         {
             Logger.LogInformation("用户取消创建项目");
+        }
+    }
+
+
+    /// <summary>
+    /// 订阅 MessageBus 消息
+    /// </summary>
+    private void SubscribeToMessageBus()
+    {
+        // 项目已删除消息（用于刷新列表）
+        MessageBus.Current.Listen<ProjectDeletedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectDeleted(msg.Project))
+            .DisposeWith(Disposables);
+
+        // 项目收藏状态变化
+        MessageBus.Current.Listen<ProjectFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
+            .DisposeWith(Disposables);
+
+        // 工作空间已删除消息（用于刷新列表）
+        MessageBus.Current.Listen<WorkSpaceDeletedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceDeleted(msg.WorkSpace))
+            .DisposeWith(Disposables);
+
+        // 工作空间收藏状态变化
+        MessageBus.Current.Listen<WorkSpaceFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
+            .DisposeWith(Disposables);
+    }
+
+    private void OnWorkSpaceFavoriteChanged(WorkSpaceViewModel workSpace)
+    {
+        if (SidebarViewModel.SelectedTreeItem.ItemType == TreeItemType.FavoriteProject)
+        {
+            if (workSpace.IsFavorite)
+            {
+                this.ContentItems.Add(workSpace);
+            }
+            else
+            {
+                this.ContentItems.Remove(workSpace);
+            }
+        }
+    }
+
+    private void OnWorkSpaceDeleted(WorkSpaceViewModel workSpace)
+    {
+        if (this.ContentItems.Contains(workSpace))
+        {
+            this.ContentItems.Remove(workSpace);
+        }
+    }
+
+    private void OnProjectFavoriteChanged(ProjectViewModel project)
+    {
+        if (SidebarViewModel.SelectedTreeItem.ItemType == TreeItemType.FavoriteProject)
+        {
+            if (project.IsFavorite)
+            {
+                this.ContentItems.Add(project);
+            }
+            else
+            {
+                this.ContentItems.Remove(project);
+            }
+        }
+    }
+
+    private void OnProjectDeleted(ProjectViewModel project)
+    {
+        if (this.ContentItems.Contains(project))
+        {
+            this.ContentItems.Remove(project);
         }
     }
 
