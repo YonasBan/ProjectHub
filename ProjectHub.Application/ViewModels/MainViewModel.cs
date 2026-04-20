@@ -293,3 +293,15 @@ public enum ViewMode
     List,   // 列表视图
     Card    // 卡片视图
 }
+
+// ========== 移动到文件夹消息 ==========
+
+/// <summary>
+/// 项目移动到文件夹请求消息
+/// </summary>
+public record ProjectMoveToFolderRequestMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 工作空间移动到文件夹请求消息
+/// </summary>
+public record WorkSpaceMoveToFolderRequestMessage(WorkSpaceViewModel WorkSpace);

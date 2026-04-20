@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ProjectHub.Core.Extensions;
 using ProjectHub.Domain.Entities;
 using ReactiveUI;
@@ -62,15 +64,19 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
     /// </summary>
     public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
 
-    public ProjectViewModel(ProjectDto projectDto, IProjectAppService? projectAppService = null)
-        : base(projectDto)
+    public ProjectViewModel(
+        ProjectDto projectDto,
+        IDialogService dialogService,
+        IServiceProvider serviceProvider,
+        IProjectAppService? projectAppService = null)
+        : base(projectDto, dialogService, serviceProvider)
     {
         _projectAppService = projectAppService;
         _isFavorite = projectDto.IsFavorite;
 
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
-        EditCommand = ReactiveCommand.Create(SendEditRequest);
-        DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
+        EditCommand = ReactiveCommand.CreateFromTask(EditAsync);
+        DeleteCommand = ReactiveCommand.CreateFromTask(DeleteAsync);
         LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
         MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
 
@@ -93,13 +99,60 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 
     protected override DateTime? GetLastOpenedAt() => ((ProjectDto)_dto).LastOpenedAt;
 
-    protected override void SendEditRequest() => MessageBus.Current.SendMessage(new ProjectEditRequestMessage(this));
+    protected override async Task EditAsync()
+    {
+        try
+        {
+            var dialogViewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
+            dialogViewModel.InitializeForEdit(GetDto());
 
-    protected override void SendDeleteRequest() => MessageBus.Current.SendMessage(new ProjectDeleteRequestMessage(this));
+            var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(dialogViewModel);
 
-    protected override void SendFavoriteChanged() => MessageBus.Current.SendMessage(new ProjectFavoriteChangedMessage(this));
+            if (result.Confirmed && result.Value != null)
+            {
+                _dialogService.ShowNotification(
+                    string.Format(L.Message_ProjectUpdated, result.Value.Name),
+                    NotificationType.Success,
+                    3000);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync(L.Message_SaveFailed, ex.Message);
+        }
+    }
 
-    protected override void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new ProjectMoveToFolderRequestMessage(this));
+    protected override async Task DeleteAsync()
+    {
+        try
+        {
+            var confirmed = await _dialogService.ShowConfirmAsync(
+                L.DeleteConfirm_Title,
+                string.Format(L.DeleteConfirm_Message, Name));
+
+            if (!confirmed) return;
+
+            if (_projectAppService == null) return;
+
+            await _projectAppService.DeleteAsync(Id);
+
+            _dialogService.ShowNotification(
+                string.Format(L.Message_ProjectDeleted, Name),
+                NotificationType.Success,
+                3000);
+
+            // 通知父级刷新
+            OnItemChanged(ItemChangedType.Deleted);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync(L.Message_DeleteFailed, ex.Message);
+        }
+    }
+
+    protected override void SendFavoriteChanged() => OnItemChanged(ItemChangedType.FavoriteChanged);
+
+    protected override void SendMoveToFolderRequest() => OnItemChanged(ItemChangedType.MovedToFolder);
 
     public override ProjectDto GetDto() => (ProjectDto)_dto;
 
@@ -120,12 +173,15 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         SendFavoriteChanged();
     }
 
+    protected override string GetDeleteConfirmTitle() => L.DeleteConfirm_Title;
+    protected override string GetDeleteConfirmMessage() => string.Format(L.DeleteConfirm_Message, Name);
+    protected override string GetDeleteSuccessMessage() => string.Format(L.Message_ProjectDeleted, Name);
+    protected override string GetDeleteFailedMessage() => L.Message_DeleteFailed;
+    protected override string GetSaveFailedMessage() => L.Message_SaveFailed;
+
     #endregion
 
-    /// <summary>
-    /// Send launched message via MessageBus
-    /// </summary>
-    private void SendLaunched() => MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
+
 
     /// <summary>
     /// Launch the project
@@ -142,7 +198,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
             _dto = updatedProject;
             this.RaisePropertyChanged(nameof(LaunchCount));
             this.RaisePropertyChanged(nameof(LastOpenedAt));
-            SendLaunched();
+            OnItemChanged(ItemChangedType.Launched);
         }
     }
 
@@ -164,29 +220,4 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
     }
 }
 
-// ========== MessageBus Messages ==========
 
-/// <summary>
-/// 项目编辑请求消息
-/// </summary>
-public record ProjectEditRequestMessage(ProjectViewModel Project);
-
-/// <summary>
-/// 项目删除请求消息
-/// </summary>
-public record ProjectDeleteRequestMessage(ProjectViewModel Project);
-
-/// <summary>
-/// 项目收藏状态变化消息
-/// </summary>
-public record ProjectFavoriteChangedMessage(ProjectViewModel Project);
-
-/// <summary>
-/// 项目启动消息
-/// </summary>
-public record ProjectLaunchedMessage(ProjectViewModel Project);
-
-/// <summary>
-/// 项目移动到文件夹请求消息
-/// </summary>
-public record ProjectMoveToFolderRequestMessage(ProjectViewModel Project);

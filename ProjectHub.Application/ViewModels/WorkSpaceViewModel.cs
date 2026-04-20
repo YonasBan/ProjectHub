@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.ViewModels.DialogViewModel;
 using ReactiveUI;
 using System.Reactive;
 
@@ -33,15 +35,19 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
     /// </summary>
     public ReactiveCommand<Unit, Unit> LaunchAllCommand { get; }
 
-    public WorkSpaceViewModel(WorkSpaceDto workSpaceDto, IWorkSpaceAppService? workSpaceAppService = null)
-        : base(workSpaceDto)
+    public WorkSpaceViewModel(
+        WorkSpaceDto workSpaceDto,
+        IDialogService dialogService,
+        IServiceProvider serviceProvider,
+        IWorkSpaceAppService? workSpaceAppService = null)
+        : base(workSpaceDto, dialogService, serviceProvider)
     {
         _workSpaceAppService = workSpaceAppService;
         _isFavorite = workSpaceDto.IsFavorite;
 
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
-        EditCommand = ReactiveCommand.Create(SendEditRequest);
-        DeleteCommand = ReactiveCommand.Create(SendDeleteRequest);
+        EditCommand = ReactiveCommand.CreateFromTask(EditAsync);
+        DeleteCommand = ReactiveCommand.CreateFromTask(DeleteAsync);
         LaunchAllCommand = ReactiveCommand.CreateFromTask(LaunchAllAsync);
         MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
 
@@ -65,13 +71,61 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
 
     protected override DateTime? GetLastOpenedAt() => ((WorkSpaceDto)_dto).LastOpenedAt;
 
-    protected override void SendEditRequest() => MessageBus.Current.SendMessage(new WorkSpaceEditRequestMessage(this));
+    protected override async Task EditAsync()
+    {
+        try
+        {
+            var dialogViewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
+            await dialogViewModel.InitializeForEditAsync(Id);
 
-    protected override void SendDeleteRequest() => MessageBus.Current.SendMessage(new WorkSpaceDeleteRequestMessage(this));
+            var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, WorkSpaceDto?>(dialogViewModel);
 
-    protected override void SendFavoriteChanged() => MessageBus.Current.SendMessage(new WorkSpaceFavoriteChangedMessage(this));
+            if (result.Confirmed && result.Value != null)
+            {
+                UpdateProjectCount(result.Value.ProjectCount);
+                _dialogService.ShowNotification(
+                    string.Format(L.Message_WorkSpaceUpdated, Name),
+                    NotificationType.Success,
+                    3000);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync(L.Message_SaveFailed, ex.Message);
+        }
+    }
 
-    protected override void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new WorkSpaceMoveToFolderRequestMessage(this));
+    protected override async Task DeleteAsync()
+    {
+        try
+        {
+            var confirmed = await _dialogService.ShowConfirmAsync(
+                L.DeleteConfirm_Title,
+                string.Format(L.DeleteConfirm_Message, Name));
+
+            if (!confirmed) return;
+
+            if (_workSpaceAppService == null) return;
+
+            await _workSpaceAppService.DeleteAsync(Id);
+
+            _dialogService.ShowNotification(
+                string.Format(L.Message_WorkSpaceDeleted, Name),
+                NotificationType.Success,
+                3000);
+
+            // 通知父级刷新
+            OnItemChanged(ItemChangedType.Deleted);
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync(L.Message_DeleteFailed, ex.Message);
+        }
+    }
+
+    protected override void SendFavoriteChanged() => OnItemChanged(ItemChangedType.FavoriteChanged);
+
+    protected override void SendMoveToFolderRequest() => OnItemChanged(ItemChangedType.MovedToFolder);
 
     public override WorkSpaceDto GetDto() => (WorkSpaceDto)_dto;
 
@@ -92,6 +146,12 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
         SendFavoriteChanged();
     }
 
+    protected override string GetDeleteConfirmTitle() => L.DeleteConfirm_Title;
+    protected override string GetDeleteConfirmMessage() => string.Format(L.DeleteConfirm_Message, Name);
+    protected override string GetDeleteSuccessMessage() => string.Format(L.Message_WorkSpaceDeleted, Name);
+    protected override string GetDeleteFailedMessage() => L.Message_DeleteFailed;
+    protected override string GetSaveFailedMessage() => L.Message_SaveFailed;
+
     #endregion
 
     /// <summary>
@@ -111,24 +171,4 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
     }
 }
 
-// ========== MessageBus Messages ==========
 
-/// <summary>
-/// 工作空间编辑请求消息
-/// </summary>
-public record WorkSpaceEditRequestMessage(WorkSpaceViewModel WorkSpace);
-
-/// <summary>
-/// 工作空间删除请求消息
-/// </summary>
-public record WorkSpaceDeleteRequestMessage(WorkSpaceViewModel WorkSpace);
-
-/// <summary>
-/// 工作空间收藏状态变化消息
-/// </summary>
-public record WorkSpaceFavoriteChangedMessage(WorkSpaceViewModel WorkSpace);
-
-/// <summary>
-/// 工作空间移动到文件夹请求消息
-/// </summary>
-public record WorkSpaceMoveToFolderRequestMessage(WorkSpaceViewModel WorkSpace);

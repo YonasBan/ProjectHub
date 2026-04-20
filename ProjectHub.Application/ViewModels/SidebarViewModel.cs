@@ -274,8 +274,7 @@ public class SidebarViewModel : ViewModelBase
         this.WhenAnyValue(x => x.SelectedTreeItem)
             .Subscribe(item => SelectedItemChanged?.Invoke(this, item));
 
-        // 订阅 MessageBus 消息
-        SubscribeToMessageBus();
+
     }
 
     #endregion
@@ -478,7 +477,8 @@ public class SidebarViewModel : ViewModelBase
             Projects.Clear();
             foreach (var project in projects)
             {
-                var projectVm = new ProjectViewModel(project, _projectAppService);
+                var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService);
+                projectVm.ItemChanged += OnProjectItemChanged;
                 Projects.Add(projectVm);
             }
 
@@ -529,7 +529,8 @@ public class SidebarViewModel : ViewModelBase
             WorkSpaces.Clear();
             foreach (var workSpace in workSpaces)
             {
-                var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
+                var workSpaceVm = new WorkSpaceViewModel(workSpace, _dialogService, _serviceProvider, _workSpaceAppService);
+                workSpaceVm.ItemChanged += OnWorkSpaceItemChanged;
                 WorkSpaces.Add(workSpaceVm);
             }
 
@@ -755,265 +756,85 @@ public class SidebarViewModel : ViewModelBase
 
     #endregion
 
-    #region MessageBus 消息处理
+    #region 项目/工作空间事件处理
 
     /// <summary>
-    /// 订阅 MessageBus 消息
+    /// 处理项目状态改变事件
     /// </summary>
-    private void SubscribeToMessageBus()
+    private void OnProjectItemChanged(object? sender, ItemChangedEventArgs e)
     {
-        // 项目相关消息
-        MessageBus.Current.Listen<ProjectEditRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectEditRequested(msg.Project))
-            .DisposeWith(Disposables);
+        if (sender is not ProjectViewModel projectVm) return;
 
-        MessageBus.Current.Listen<ProjectDeleteRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectDeleteRequested(msg.Project))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<ProjectFavoriteChangedMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<ProjectLaunchedMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectLaunched(msg.Project))
-            .DisposeWith(Disposables);
-
-        // 工作空间相关消息
-        MessageBus.Current.Listen<WorkSpaceEditRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnWorkSpaceEditRequested(msg.WorkSpace))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<WorkSpaceDeleteRequestMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnWorkSpaceDeleteRequested(msg.WorkSpace))
-            .DisposeWith(Disposables);
-
-        MessageBus.Current.Listen<WorkSpaceFavoriteChangedMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
-            .DisposeWith(Disposables);
-    }
-
-    /// <summary>
-    /// 处理工作空间编辑请求
-    /// </summary>
-    private async void OnWorkSpaceEditRequested(WorkSpaceViewModel workSpaceVm)
-    {
-        try
+        switch (e.ChangeType)
         {
-            Logger.LogInformation($"打开编辑工作空间对话框: {workSpaceVm.Name}");
+            case ItemChangedType.Deleted:
+                // 从列表中移除
+                Projects.Remove(projectVm);
+                // 取消事件订阅
+                projectVm.ItemChanged -= OnProjectItemChanged;
+                // 更新侧边栏树形节点计数
+                UpdateCountsAfterDelete(projectVm);
+                _ = LoadWorkFoldersAsync();
+                RebuildFolderTreeOnly();
+                // 更新统计
+                UpdateStatistics();
+                break;
 
-            var dialogViewModel = _serviceProvider.GetRequiredService<WorkSpaceDialogViewModel>();
-            await dialogViewModel.InitializeForEditAsync(workSpaceVm.Id);
+            case ItemChangedType.FavoriteChanged:
+                // 刷新侧边栏树
+                BuildSidebarTree();
+                // 更新统计
+                UpdateStatistics();
+                break;
 
-            var result = await _dialogService.ShowDialogAsync<WorkSpaceDialogViewModel, WorkSpaceDto?>(dialogViewModel);
+            case ItemChangedType.Launched:
+                // 更新统计
+                UpdateStatistics();
+                break;
 
-            if (result.Confirmed && result.Value != null)
-            {
-                // 更新工作空间的项目计数
-                workSpaceVm.UpdateProjectCount(result.Value.ProjectCount);
-                Logger.LogInformation($"工作空间编辑成功: {workSpaceVm.Name}");
-                // 显示成功提示
-                _dialogService.ShowNotification(
-                    string.Format(L.Message_WorkSpaceUpdated, workSpaceVm.Name),
-                    NotificationType.Success,
-                    3000);
-            }
-            else
-            {
-                Logger.LogInformation("用户取消编辑工作空间");
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "编辑工作空间时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_SaveFailed,
-                ex.Message);
+            case ItemChangedType.MovedToFolder:
+                // 移动到文件夹 - 刷新文件夹树
+                _ = LoadWorkFoldersAsync();
+                RebuildFolderTreeOnly();
+                break;
         }
     }
 
     /// <summary>
-    /// 处理工作空间删除请求
+    /// 处理工作空间状态改变事件
     /// </summary>
-    private async void OnWorkSpaceDeleteRequested(WorkSpaceViewModel workSpaceVm)
+    private void OnWorkSpaceItemChanged(object? sender, ItemChangedEventArgs e)
     {
-        try
+        if (sender is not WorkSpaceViewModel workSpaceVm) return;
+
+        switch (e.ChangeType)
         {
-            Logger.LogInformation($"请求删除工作空间: {workSpaceVm.Name}");
+            case ItemChangedType.Deleted:
+                // 从列表中移除
+                WorkSpaces.Remove(workSpaceVm);
+                // 取消事件订阅
+                workSpaceVm.ItemChanged -= OnWorkSpaceItemChanged;
+                // 更新侧边栏树形节点计数
+                UpdateCountsAfterDelete(workSpaceVm);
+                _ = LoadWorkFoldersAsync();
+                RebuildFolderTreeOnly();
+                // 更新统计
+                UpdateStatistics();
+                break;
 
-            // 显示确认对话框
-            var confirmed = await _dialogService.ShowConfirmAsync(
-                L.DeleteConfirm_Title,
-                string.Format(L.DeleteConfirm_Message, workSpaceVm.Name));
+            case ItemChangedType.FavoriteChanged:
+                // 刷新侧边栏树
+                BuildSidebarTree();
+                // 更新统计
+                UpdateStatistics();
+                break;
 
-            if (!confirmed)
-            {
-                Logger.LogInformation("用户取消删除工作空间");
-                return;
-            }
-
-            // 执行删除
-            await _workSpaceAppService.DeleteAsync(workSpaceVm.Id);
-
-            Logger.LogInformation($"工作空间删除成功: {workSpaceVm.Name}");
-
-            // 从列表中移除
-            WorkSpaces.Remove(workSpaceVm);
-
-            // 更新侧边栏树形节点计数
-            UpdateCountsAfterDelete(workSpaceVm);
-            await LoadWorkFoldersAsync();
-            RebuildFolderTreeOnly();
-
-            // 更新统计
-            UpdateStatistics();
-
-            // 显示成功提示
-            _dialogService.ShowNotification(
-                string.Format(L.Message_WorkSpaceDeleted, workSpaceVm.Name),
-                NotificationType.Success,
-                3000);
+            case ItemChangedType.MovedToFolder:
+                // 移动到文件夹 - 刷新文件夹树
+                _ = LoadWorkFoldersAsync();
+                RebuildFolderTreeOnly();
+                break;
         }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "删除工作空间时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_DeleteFailed,
-                ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// 处理工作空间收藏状态变化
-    /// </summary>
-    private void OnWorkSpaceFavoriteChanged(WorkSpaceViewModel workSpaceVm)
-    {
-        // 刷新侧边栏树
-        BuildSidebarTree();
-
-        // 更新统计
-        UpdateStatistics();
-    }
-
-    #endregion
-
-    #region 项目消息处理方法
-
-    /// <summary>
-    /// 处理项目编辑请求
-    /// </summary>
-    private async void OnProjectEditRequested(ProjectViewModel projectVm)
-    {
-        try
-        {
-            Logger.LogInformation($"打开编辑项目对话框: {projectVm.Name}");
-
-            var dialogViewModel = _serviceProvider.GetRequiredService<ProjectDialogViewModel>();
-            dialogViewModel.InitializeForEdit(projectVm.GetDto());
-
-            var result = await _dialogService.ShowDialogAsync<ProjectDialogViewModel, ProjectDto?>(dialogViewModel);
-
-            if (result.Confirmed && result.Value != null)
-            {
-                Logger.LogInformation($"项目编辑成功: {result.Value.Name}");
-
-                // 显示成功提示
-                _dialogService.ShowNotification(
-                    string.Format(L.Message_ProjectUpdated, result.Value.Name),
-                    NotificationType.Success,
-                    3000);
-            }
-            else
-            {
-                Logger.LogInformation("用户取消编辑项目");
-            }
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "编辑项目时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_SaveFailed,
-                ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// 处理项目删除请求
-    /// </summary>
-    private async void OnProjectDeleteRequested(ProjectViewModel projectVm)
-    {
-        try
-        {
-            Logger.LogInformation($"请求删除项目: {projectVm.Name}");
-
-            // 显示确认对话框
-            var confirmed = await _dialogService.ShowConfirmAsync(
-                L.DeleteConfirm_Title,
-                string.Format(L.DeleteConfirm_Message, projectVm.Name));
-
-            if (!confirmed)
-            {
-                Logger.LogInformation("用户取消删除项目");
-                return;
-            }
-
-            // 执行删除
-            await _projectAppService.DeleteAsync(projectVm.Id);
-
-            Logger.LogInformation($"项目删除成功: {projectVm.Name}");
-
-            // 从列表中移除
-            Projects.Remove(projectVm);
-
-            // 更新侧边栏树形节点计数
-            UpdateCountsAfterDelete(projectVm);
-            await LoadWorkFoldersAsync();
-            RebuildFolderTreeOnly();
-
-            // 更新统计
-            UpdateStatistics();
-
-            // 显示成功提示
-            _dialogService.ShowNotification(
-                string.Format(L.Message_ProjectDeleted, projectVm.Name),
-                NotificationType.Success,
-                3000);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "删除项目时发生错误");
-            await _dialogService.ShowMessageAsync(
-                L.Message_DeleteFailed,
-                ex.Message);
-        }
-    }
-
-    /// <summary>
-    /// 处理项目收藏状态变化
-    /// </summary>
-    private void OnProjectFavoriteChanged(ProjectViewModel projectVm)
-    {
-        // 刷新侧边栏树
-        BuildSidebarTree();
-
-        // 更新统计
-        UpdateStatistics();
-    }
-
-    /// <summary>
-    /// 处理项目启动（启动次数更新）
-    /// </summary>
-    private void OnProjectLaunched(ProjectViewModel projectVm)
-    {
-        // 更新统计
-        UpdateStatistics();
     }
 
     #endregion

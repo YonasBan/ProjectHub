@@ -149,14 +149,14 @@ public class ContentViewModel : ViewModelBase
                 // 添加项目
                 foreach (var project in folderProjects)
                 {
-                    var projectVm = new ProjectViewModel(project, _projectAppService);
+                    var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService);
                     ContentItems.Add(projectVm);
                 }
 
                 // 添加工作空间
                 foreach (var workSpace in folderWorkSpaces)
                 {
-                    var workSpaceVm = new WorkSpaceViewModel(workSpace, _workSpaceAppService);
+                    var workSpaceVm = new WorkSpaceViewModel(workSpace, _dialogService, _serviceProvider, _workSpaceAppService);
                     ContentItems.Add(workSpaceVm);
                 }
                 break;
@@ -232,7 +232,7 @@ public class ContentViewModel : ViewModelBase
             Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
 
             // 直接添加新项目到集合
-            var projectVm = new ProjectViewModel(result.Value, _projectAppService);
+            var projectVm = new ProjectViewModel(result.Value, _dialogService, _serviceProvider, _projectAppService);
             SidebarViewModel.Projects.Add(projectVm);
 
             // 更新侧边栏计数
@@ -277,7 +277,7 @@ public class ContentViewModel : ViewModelBase
             Logger.LogInformation("工作空间创建成功: {WorkSpaceName}", result.Value.Name);
 
             // 直接添加新工作空间到集合
-            var workSpaceVm = new WorkSpaceViewModel(result.Value, _workSpaceAppService);
+            var workSpaceVm = new WorkSpaceViewModel(result.Value, _dialogService, _serviceProvider, _workSpaceAppService);
             SidebarViewModel.WorkSpaces.Add(workSpaceVm);
 
             // 更新侧边栏工作空间节点计数

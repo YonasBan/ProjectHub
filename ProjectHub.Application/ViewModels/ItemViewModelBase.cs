@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Localization;
@@ -8,11 +9,37 @@ using System.Reactive;
 namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
+/// 项目改变类型
+/// </summary>
+public enum ItemChangedType
+{
+    FavoriteChanged,
+    Deleted,
+    Launched,
+    MovedToFolder
+}
+
+/// <summary>
+/// 项目改变事件参数
+/// </summary>
+public class ItemChangedEventArgs : EventArgs
+{
+    public ItemChangedType ChangeType { get; }
+
+    public ItemChangedEventArgs(ItemChangedType changeType)
+    {
+        ChangeType = changeType;
+    }
+}
+
+/// <summary>
 /// 项目/工作空间 ViewModel 基类
 /// </summary>
 public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : class
 {
     protected TDto _dto;
+    protected readonly IDialogService _dialogService;
+    protected readonly IServiceProvider _serviceProvider;
 
     public long Id => GetId();
 
@@ -44,25 +71,40 @@ public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : clas
     public ReactiveCommand<Unit, Unit> ToggleFavoriteCommand { get; protected set; } = null!;
 
     /// <summary>
-    /// Edit command - requests parent to open edit dialog
+    /// Edit command - opens edit dialog directly
     /// </summary>
     public ReactiveCommand<Unit, Unit> EditCommand { get; protected set; } = null!;
 
     /// <summary>
-    /// Delete command - requests parent to handle deletion with confirmation
+    /// Delete command - handles deletion with confirmation
     /// </summary>
     public ReactiveCommand<Unit, Unit> DeleteCommand { get; protected set; } = null!;
 
     /// <summary>
-    /// Move to folder command - requests parent to show folder selector
+    /// Move to folder command - shows folder selector
     /// </summary>
     public ReactiveCommand<Unit, Unit> MoveToFolderCommand { get; protected set; } = null!;
 
     #endregion
 
-    protected ItemViewModelBase(TDto dto)
+    /// <summary>
+    /// 项目状态改变事件（用于通知父级刷新）
+    /// </summary>
+    public event EventHandler<ItemChangedEventArgs>? ItemChanged;
+
+    protected ItemViewModelBase(TDto dto, IDialogService dialogService, IServiceProvider serviceProvider)
     {
         _dto = dto;
+        _dialogService = dialogService;
+        _serviceProvider = serviceProvider;
+    }
+
+    /// <summary>
+    /// 触发状态改变事件
+    /// </summary>
+    protected void OnItemChanged(ItemChangedType changeType)
+    {
+        ItemChanged?.Invoke(this, new ItemChangedEventArgs(changeType));
     }
 
     #region Abstract Methods
@@ -74,14 +116,14 @@ public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : clas
     protected abstract DateTime? GetLastOpenedAt();
 
     /// <summary>
-    /// Send edit request message via MessageBus
+    /// Open edit dialog and handle editing
     /// </summary>
-    protected abstract void SendEditRequest();
+    protected abstract Task EditAsync();
 
     /// <summary>
-    /// Send delete request message via MessageBus
+    /// Handle deletion with confirmation
     /// </summary>
-    protected abstract void SendDeleteRequest();
+    protected abstract Task DeleteAsync();
 
     /// <summary>
     /// Send favorite changed message via MessageBus
@@ -107,6 +149,31 @@ public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : clas
     /// Update the ViewModel after item is edited
     /// </summary>
     public abstract void UpdateFromDto(TDto updatedDto);
+
+    /// <summary>
+    /// Get the delete confirmation title resource key
+    /// </summary>
+    protected abstract string GetDeleteConfirmTitle();
+
+    /// <summary>
+    /// Get the delete confirmation message resource key
+    /// </summary>
+    protected abstract string GetDeleteConfirmMessage();
+
+    /// <summary>
+    /// Get the delete success message resource key
+    /// </summary>
+    protected abstract string GetDeleteSuccessMessage();
+
+    /// <summary>
+    /// Get the delete failed message resource key
+    /// </summary>
+    protected abstract string GetDeleteFailedMessage();
+
+    /// <summary>
+    /// Get the save failed message resource key
+    /// </summary>
+    protected abstract string GetSaveFailedMessage();
 
     #endregion
 }
