@@ -116,6 +116,7 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
     public MoveItemInfo? MoveItem { get; set; }
 
     private readonly IWorkFolderAppService _workFolderAppService;
+    private ObservableCollection<TreeItemViewModel>? _sidebarTreeItems;
 
     public SelectFolderDialogViewModel(IWorkFolderAppService workFolderAppService)
     {
@@ -152,17 +153,69 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
     }
 
     /// <summary>
-    /// 加载文件夹树（根级文件夹）
+    /// 加载文件夹树（从SidebarTreeItems提取）
     /// </summary>
-    public void LoadFolders(IEnumerable<FolderTreeItemViewModel> folders)
+    public void LoadFoldersFromSidebar(ObservableCollection<TreeItemViewModel> sidebarTreeItems)
     {
+        _sidebarTreeItems = sidebarTreeItems;
         _folders.Clear();
-        foreach (var folder in folders)
+
+        var folderItems = ExtractFolderTreeFromSidebar(sidebarTreeItems);
+        foreach (var folder in folderItems)
         {
-            // 设置懒加载事件
             folder.OnExpandRequested = OnFolderExpandRequested;
             _folders.Add(folder);
         }
+    }
+
+    /// <summary>
+    /// 从 SidebarTreeItems 中提取文件夹树结构
+    /// </summary>
+    private List<FolderTreeItemViewModel> ExtractFolderTreeFromSidebar(ObservableCollection<TreeItemViewModel> sidebarTreeItems)
+    {
+        var folderItems = new List<FolderTreeItemViewModel>();
+
+        foreach (var item in sidebarTreeItems)
+        {
+            if (item.ItemType == TreeItemType.WorkFolder)
+            {
+                var folderItem = ConvertTreeItemToFolderTreeItem(item, null);
+                if (folderItem != null)
+                {
+                    folderItems.Add(folderItem);
+                }
+            }
+        }
+
+        return folderItems;
+    }
+
+    /// <summary>
+    /// 将 TreeItemViewModel 转换为 FolderTreeItemViewModel
+    /// </summary>
+    private FolderTreeItemViewModel? ConvertTreeItemToFolderTreeItem(TreeItemViewModel treeItem, string? parentFullPath)
+    {
+        if (treeItem.ItemType != TreeItemType.WorkFolder)
+            return null;
+
+        var fullPath = parentFullPath == null ? treeItem.Name : $"{parentFullPath}/{treeItem.Name}";
+
+        var folderItem = new FolderTreeItemViewModel(treeItem.Id, treeItem.Name, null)
+        {
+            FullPath = fullPath
+        };
+
+        // 递归处理子文件夹
+        foreach (var child in treeItem.Children)
+        {
+            var childItem = ConvertTreeItemToFolderTreeItem(child, fullPath);
+            if (childItem != null)
+            {
+                folderItem.Children.Add(childItem);
+            }
+        }
+
+        return folderItem;
     }
 
     /// <summary>
@@ -232,6 +285,12 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
                     await _workFolderAppService.AddWorkSpaceToFolderAsync(MoveItem.Id, newFolder.Id);
                 }
 
+                // 同时更新 SidebarTreeItems（如果提供）
+                if (_sidebarTreeItems != null)
+                {
+                    AddNewFolderToSidebarTree(newFolder, SelectedFolder?.Id);
+                }
+
                 return true;
             }
             catch (Exception ex)
@@ -284,6 +343,62 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
     {
         if (IsCreatingNewFolder)
             return NewFolderName.Trim();
+        return null;
+    }
+
+    /// <summary>
+    /// 将新创建的文件夹添加到 SidebarTreeItems
+    /// </summary>
+    private void AddNewFolderToSidebarTree(WorkFolderDto newFolder, long? parentId)
+    {
+        if (_sidebarTreeItems == null) return;
+
+        var newTreeItem = new TreeItemViewModel(newFolder.Name, 1, TreeItemType.WorkFolder, newFolder.Id);
+
+        if (parentId.HasValue)
+        {
+            // 查找父节点并添加到其子节点中
+            var parentNode = FindParentNodeInSidebar(_sidebarTreeItems, parentId.Value);
+            if (parentNode != null)
+            {
+                parentNode.Children.Add(newTreeItem);
+            }
+        }
+        else
+        {
+            // 添加到根节点（在工作空间节点之后）
+            var workSpaceIndex = -1;
+            for (int i = 0; i < _sidebarTreeItems.Count; i++)
+            {
+                if (_sidebarTreeItems[i].ItemType == TreeItemType.WorkSpace)
+                {
+                    workSpaceIndex = i;
+                    break;
+                }
+            }
+            _sidebarTreeItems.Insert(workSpaceIndex + 1, newTreeItem);
+        }
+    }
+
+    /// <summary>
+    /// 在 SidebarTreeItems 中查找父节点
+    /// </summary>
+    private TreeItemViewModel? FindParentNodeInSidebar(ObservableCollection<TreeItemViewModel> nodes, long parentId)
+    {
+        foreach (var node in nodes)
+        {
+            if (node.Id == parentId && node.ItemType == TreeItemType.WorkFolder)
+            {
+                return node;
+            }
+
+            // 递归查找子节点
+            var foundInChildren = FindParentNodeInSidebar(node.Children, parentId);
+            if (foundInChildren != null)
+            {
+                return foundInChildren;
+            }
+        }
         return null;
     }
 }

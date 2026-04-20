@@ -822,7 +822,7 @@ public class SidebarViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 显示文件夹选择器并执行移动操作（支持懒加载）
+    /// 显示文件夹选择器并执行移动操作（使用已加载的SidebarTreeItems文件夹树）
     /// </summary>
     private async Task ShowFolderSelectorAndMoveAsync(object itemVm, bool isProject)
     {
@@ -844,13 +844,8 @@ public class SidebarViewModel : ViewModelBase
                 }
             };
 
-            // 只加载根级文件夹（懒加载子文件夹）
-            var rootFolders = await _workFolderAppService.GetRootFoldersAsync();
-            var folderItems = rootFolders.Select(f => new FolderTreeItemViewModel(f.Id, f.Name, f.ParentId)
-            {
-                FullPath = f.Name
-            }).ToList();
-            dialogVm.LoadFolders(folderItems);
+            // 直接从 SidebarTreeItems 加载文件夹树（传递引用，新建文件夹时会自动更新）
+            dialogVm.LoadFoldersFromSidebar(SidebarTreeItems);
 
             // 显示对话框
             var result = await _dialogService.ShowDialogAsync(dialogVm);
@@ -873,9 +868,6 @@ public class SidebarViewModel : ViewModelBase
             await _dialogService.ShowMessageAsync(
                 L.Message_MoveToFolderFailed,
                 ex.Message);
-        }
-        finally
-        {
         }
     }
 
