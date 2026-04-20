@@ -99,6 +99,60 @@ namespace ProjectHub.Resources.Strings {
         /// <summary>
         ///   查找类似 删除 的本地化字符串。
         /// </summary>
+        public static string ContextMenu_Delete {
+            get {
+                return ResourceManager.GetString("ContextMenu_Delete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 编辑 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_Edit {
+            get {
+                return ResourceManager.GetString("ContextMenu_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_Launch {
+            get {
+                return ResourceManager.GetString("ContextMenu_Launch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 全部启动 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_LaunchAll {
+            get {
+                return ResourceManager.GetString("ContextMenu_LaunchAll", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 移动到文件夹 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_MoveToFolder {
+            get {
+                return ResourceManager.GetString("ContextMenu_MoveToFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 收藏/取消收藏 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_ToggleFavorite {
+            get {
+                return ResourceManager.GetString("ContextMenu_ToggleFavorite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 删除 的本地化字符串。
+        /// </summary>
         public static string Delete {
             get {
                 return ResourceManager.GetString("Delete", resourceCulture);
@@ -133,11 +187,29 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 移动到文件夹 - {0} 的本地化字符串。
+        /// </summary>
+        public static string Dialog_MoveToFolderTitle {
+            get {
+                return ResourceManager.GetString("Dialog_MoveToFolderTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 编辑 的本地化字符串。
         /// </summary>
         public static string Edit {
             get {
                 return ResourceManager.GetString("Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 + 新建文件夹 的本地化字符串。
+        /// </summary>
+        public static string Folder_CreateNew {
+            get {
+                return ResourceManager.GetString("Folder_CreateNew", resourceCulture);
             }
         }
         
@@ -183,6 +255,33 @@ namespace ProjectHub.Resources.Strings {
         public static string Folder_NamePlaceholder {
             get {
                 return ResourceManager.GetString("Folder_NamePlaceholder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入文件夹名称 的本地化字符串。
+        /// </summary>
+        public static string Folder_NameRequired {
+            get {
+                return ResourceManager.GetString("Folder_NameRequired", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 新文件夹名称 的本地化字符串。
+        /// </summary>
+        public static string Folder_NewFolderName {
+            get {
+                return ResourceManager.GetString("Folder_NewFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请选择一个文件夹 的本地化字符串。
+        /// </summary>
+        public static string Folder_SelectRequired {
+            get {
+                return ResourceManager.GetString("Folder_SelectRequired", resourceCulture);
             }
         }
         
@@ -255,6 +354,24 @@ namespace ProjectHub.Resources.Strings {
         public static string Message_LoadFailed {
             get {
                 return ResourceManager.GetString("Message_LoadFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 &quot;{0}&quot; 已移动到文件夹 的本地化字符串。
+        /// </summary>
+        public static string Message_MovedToFolder {
+            get {
+                return ResourceManager.GetString("Message_MovedToFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 移动到文件夹失败 的本地化字符串。
+        /// </summary>
+        public static string Message_MoveToFolderFailed {
+            get {
+                return ResourceManager.GetString("Message_MoveToFolderFailed", resourceCulture);
             }
         }
         
@@ -700,6 +817,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 🏷️ {0} 个收藏 的本地化字符串。
+        /// </summary>
+        public static string Status_FavoriteCount {
+            get {
+                return ResourceManager.GetString("Status_FavoriteCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 📁 {0} 个文件夹 的本地化字符串。
         /// </summary>
         public static string Status_FolderCount {
@@ -723,15 +849,6 @@ namespace ProjectHub.Resources.Strings {
         public static string Status_Ready {
             get {
                 return ResourceManager.GetString("Status_Ready", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 🏷️ {0} 个标签分类 的本地化字符串。
-        /// </summary>
-        public static string Status_TagCount {
-            get {
-                return ResourceManager.GetString("Status_TagCount", resourceCulture);
             }
         }
         
@@ -984,123 +1101,6 @@ namespace ProjectHub.Resources.Strings {
         public static string WorkSpaceDialog_UseCustomLaunchOrder {
             get {
                 return ResourceManager.GetString("WorkSpaceDialog_UseCustomLaunchOrder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 启动 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_Launch {
-            get {
-                return ResourceManager.GetString("ContextMenu_Launch", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 全部启动 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_LaunchAll {
-            get {
-                return ResourceManager.GetString("ContextMenu_LaunchAll", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 收藏/取消收藏 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_ToggleFavorite {
-            get {
-                return ResourceManager.GetString("ContextMenu_ToggleFavorite", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 编辑 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_Edit {
-            get {
-                return ResourceManager.GetString("ContextMenu_Edit", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 删除 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_Delete {
-            get {
-                return ResourceManager.GetString("ContextMenu_Delete", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 移动到文件夹 的本地化字符串。
-        /// </summary>
-        public static string ContextMenu_MoveToFolder {
-            get {
-                return ResourceManager.GetString("ContextMenu_MoveToFolder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 + 新建文件夹 的本地化字符串。
-        /// </summary>
-        public static string Folder_CreateNew {
-            get {
-                return ResourceManager.GetString("Folder_CreateNew", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 新文件夹名称 的本地化字符串。
-        /// </summary>
-        public static string Folder_NewFolderName {
-            get {
-                return ResourceManager.GetString("Folder_NewFolderName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请输入文件夹名称 的本地化字符串。
-        /// </summary>
-        public static string Folder_NameRequired {
-            get {
-                return ResourceManager.GetString("Folder_NameRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 请选择一个文件夹 的本地化字符串。
-        /// </summary>
-        public static string Folder_SelectRequired {
-            get {
-                return ResourceManager.GetString("Folder_SelectRequired", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 移动到文件夹 - {0} 的本地化字符串。
-        /// </summary>
-        public static string Dialog_MoveToFolderTitle {
-            get {
-                return ResourceManager.GetString("Dialog_MoveToFolderTitle", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 "{0}" 已移动到文件夹 的本地化字符串。
-        /// </summary>
-        public static string Message_MovedToFolder {
-            get {
-                return ResourceManager.GetString("Message_MovedToFolder", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 移动到文件夹失败 的本地化字符串。
-        /// </summary>
-        public static string Message_MoveToFolderFailed {
-            get {
-                return ResourceManager.GetString("Message_MoveToFolderFailed", resourceCulture);
             }
         }
     }

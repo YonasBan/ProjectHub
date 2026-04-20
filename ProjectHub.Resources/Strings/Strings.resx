@@ -255,8 +255,8 @@
   <data name="Status_WorkspaceCount" xml:space="preserve">
     <value>🚀 {0} 个工作空间</value>
   </data>
-  <data name="Status_TagCount" xml:space="preserve">
-    <value>🏷️ {0} 个标签分类</value>
+  <data name="Status_FavoriteCount" xml:space="preserve">
+    <value>🏷️ {0} 个收藏</value>
   </data>
   <data name="Status_TaggedProjects" xml:space="preserve">
     <value>标签项目: {0}</value>

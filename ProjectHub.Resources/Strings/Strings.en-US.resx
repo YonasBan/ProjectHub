@@ -255,8 +255,8 @@
   <data name="Status_WorkspaceCount" xml:space="preserve">
     <value>🚀 {0} workspaces</value>
   </data>
-  <data name="Status_TagCount" xml:space="preserve">
-    <value>🏷️ {0} tag categories</value>
+  <data name="Status_FavoriteCount" xml:space="preserve">
+    <value>🏷️ {0} favorites</value>
   </data>
   <data name="Status_TaggedProjects" xml:space="preserve">
     <value>Tagged projects: {0}</value>

@@ -198,7 +198,6 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
             _dto = updatedProject;
             this.RaisePropertyChanged(nameof(LaunchCount));
             this.RaisePropertyChanged(nameof(LastOpenedAt));
-            MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
         }
     }
 
@@ -232,7 +231,3 @@ public record ProjectDeletedMessage(ProjectViewModel Project);
 /// </summary>
 public record ProjectFavoriteChangedMessage(ProjectViewModel Project);
 
-/// <summary>
-/// 项目启动消息
-/// </summary>
-public record ProjectLaunchedMessage(ProjectViewModel Project);

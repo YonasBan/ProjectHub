@@ -133,7 +133,7 @@ public class LocalizedStrings : ReactiveObject
     public string Status_ProjectCount => ProjectHub.Resources.Strings.Strings.Status_ProjectCount;
     public string Status_FolderCount => ProjectHub.Resources.Strings.Strings.Status_FolderCount;
     public string Status_WorkspaceCount => ProjectHub.Resources.Strings.Strings.Status_WorkspaceCount;
-    public string Status_TagCount => ProjectHub.Resources.Strings.Strings.Status_TagCount;
+    public string Status_FavoriteCount => ProjectHub.Resources.Strings.Strings.Status_FavoriteCount;
     public string Status_TaggedProjects => ProjectHub.Resources.Strings.Strings.Status_TaggedProjects;
     public string Folder_NamePlaceholder => ProjectHub.Resources.Strings.Strings.Folder_NamePlaceholder;
     public string Folder_InputLabel => ProjectHub.Resources.Strings.Strings.Folder_InputLabel;

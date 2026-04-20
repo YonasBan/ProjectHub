@@ -1,69 +1,54 @@
-<UserControl x:Class="ProjectHub.Presentation.Wpf.Controls.StatusBarView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
-             d:DataContext="{d:DesignInstance viewmodels:SidebarViewModel}"
-             mc:Ignorable="d"
-             d:DesignHeight="32" d:DesignWidth="800">
-    <Border Background="{DynamicResource BgTertiaryBrush}"
-            BorderBrush="{DynamicResource BorderBrush}"
-            BorderThickness="0,1,0,0">
+<UserControl
+    x:Class="ProjectHub.Presentation.Wpf.Controls.StatusBarView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
+    d:DataContext="{d:DesignInstance viewmodels:SidebarViewModel}"
+    d:DesignHeight="32"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <Border
+        Background="{DynamicResource BgTertiaryBrush}"
+        BorderBrush="{DynamicResource BorderBrush}"
+        BorderThickness="0,1,0,0">
         <Grid Height="32">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <!-- Ready Status -->
-            <StackPanel Grid.Column="0"
-                        Orientation="Horizontal"
-                        Margin="16,0,0,0">
-                <!-- Green Dot -->
-                <Border Width="8" Height="8"
-                        CornerRadius="4"
-                        Background="{DynamicResource SuccessBrush}"
-                        VerticalAlignment="Center"
-                        Margin="0,0,8,0"/>
-                <TextBlock Text="{Binding L.Status_Ready}"
-                           Style="{StaticResource StatusTextStyle}"/>
-            </StackPanel>
+            <!--  Project Count  -->
+            <TextBlock
+                Grid.Column="0"
+                Margin="24,0,0,0"
+                Style="{StaticResource StatusTextStyle}"
+                Text="{Binding ProjectCountText}" />
 
-            <!-- Project Count -->
-            <TextBlock Grid.Column="1"
-                       Text="{Binding ProjectCountText}"
-                       Style="{StaticResource StatusTextStyle}"
-                       Margin="24,0,0,0"/>
+            <!--  Folder Count  -->
+            <TextBlock
+                Grid.Column="1"
+                Margin="24,0,0,0"
+                Style="{StaticResource StatusTextStyle}"
+                Text="{Binding FolderCountText}" />
 
-            <!-- Folder Count -->
-            <TextBlock Grid.Column="2"
-                       Text="{Binding FolderCountText}"
-                       Style="{StaticResource StatusTextStyle}"
-                       Margin="24,0,0,0"/>
+            <!--  Workspace Count  -->
+            <TextBlock
+                Grid.Column="2"
+                Margin="24,0,0,0"
+                Style="{StaticResource StatusTextStyle}"
+                Text="{Binding WorkspaceCountText}" />
 
-            <!-- Workspace Count -->
-            <TextBlock Grid.Column="3"
-                       Text="{Binding WorkspaceCountText}"
-                       Style="{StaticResource StatusTextStyle}"
-                       Margin="24,0,0,0"/>
+            <!--  Tag Count  -->
+            <TextBlock
+                Grid.Column="3"
+                Margin="24,0,0,0"
+                Style="{StaticResource StatusTextStyle}"
+                Text="{Binding FavouriteText}" />
 
-            <!-- Tag Count -->
-            <TextBlock Grid.Column="4"
-                       Text="{Binding TagCountText}"
-                       Style="{StaticResource StatusTextStyle}"
-                       Margin="24,0,0,0"/>
-
-            <!-- Tagged Projects (right aligned) -->
-            <TextBlock Grid.Column="6"
-                       Text="{Binding TaggedProjectsText}"
-                       Style="{StaticResource StatusTextStyle}"
-                       Margin="0,0,16,0"/>
         </Grid>
     </Border>
 </UserControl>

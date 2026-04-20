@@ -113,7 +113,7 @@ public class SidebarViewModel : ViewModelBase
     /// </summary>
     private int _favoriteProjectCount;
 
-    public int FavoriteProjectCount
+    public int FavoriteCount
     {
         get => _favoriteProjectCount;
         set => this.RaiseAndSetIfChanged(ref _favoriteProjectCount, value);
@@ -139,17 +139,6 @@ public class SidebarViewModel : ViewModelBase
     {
         get => _totalWorkspaceCount;
         set => this.RaiseAndSetIfChanged(ref _totalWorkspaceCount, value);
-    }
-
-    /// <summary>
-    /// 标签分类数量
-    /// </summary>
-    private int _tagCount;
-
-    public int TagCount
-    {
-        get => _tagCount;
-        set => this.RaiseAndSetIfChanged(ref _tagCount, value);
     }
 
     #endregion
@@ -189,26 +178,16 @@ public class SidebarViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _workspaceCountText, value);
     }
 
-    /// <summary>
-    /// 标签计数显示文本
-    /// </summary>
-    private string _tagCountText = string.Empty;
-
-    public string TagCountText
-    {
-        get => _tagCountText;
-        set => this.RaiseAndSetIfChanged(ref _tagCountText, value);
-    }
 
     /// <summary>
     /// 标签项目显示文本
     /// </summary>
-    private string _taggedProjectsText = string.Empty;
+    private string _favouriteText = string.Empty;
 
-    public string TaggedProjectsText
+    public string FavouriteText
     {
-        get => _taggedProjectsText;
-        set => this.RaiseAndSetIfChanged(ref _taggedProjectsText, value);
+        get => _favouriteText;
+        set => this.RaiseAndSetIfChanged(ref _favouriteText, value);
     }
 
     #endregion
@@ -339,39 +318,6 @@ public class SidebarViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 更新删除后的计数
-    /// </summary>
-    public void UpdateCountsAfterDelete<T>(T itemVm) where T : class
-    {
-        var isProject = itemVm is ProjectViewModel;
-        var hasLastOpened = isProject
-            ? ((ProjectViewModel)(object)itemVm).LastOpenedAt.HasValue
-            : ((WorkSpaceViewModel)(object)itemVm).LastOpenedAt.HasValue;
-        var isFavorite = isProject
-            ? ((ProjectViewModel)(object)itemVm).IsFavorite
-            : ((WorkSpaceViewModel)(object)itemVm).IsFavorite;
-
-        foreach (var item in SidebarTreeItems)
-        {
-            switch (item.ItemType)
-            {
-                case TreeItemType.AllProjects when isProject:
-                case TreeItemType.WorkSpace when !isProject:
-                    item.Count--;
-                    break;
-                case TreeItemType.RecentProject:
-                    if (hasLastOpened && item.Count > 0)
-                        item.Count--;
-                    break;
-                case TreeItemType.FavoriteProject:
-                    if (isFavorite)
-                        item.Count--;
-                    break;
-            }
-        }
-    }
-
-    /// <summary>
     /// 重建文件夹树形结构（保持其他节点不变）
     /// </summary>
     public void RebuildFolderTreeOnly()
@@ -434,13 +380,6 @@ public class SidebarViewModel : ViewModelBase
             workSpaceTreeView.Count++;
     }
 
-    /// <summary>
-    /// 获取指定类型的树节点
-    /// </summary>
-    public TreeItemViewModel? GetTreeItem(TreeItemType itemType)
-    {
-        return SidebarTreeItems.FirstOrDefault(r => r.ItemType == itemType);
-    }
 
     /// <summary>
     /// 更新统计信息
@@ -448,7 +387,7 @@ public class SidebarViewModel : ViewModelBase
     public void UpdateStatistics()
     {
         TotalProjectCount = Projects.Count;
-        FavoriteProjectCount = Projects.Count(p => p.IsFavorite);
+        FavoriteCount = Projects.Count(p => p.IsFavorite) + WorkSpaces.Count(w => w.IsFavorite);
         TotalFolderCount = WorkFolders.Count;
         TotalWorkspaceCount = WorkSpaces.Count;
 
@@ -456,8 +395,7 @@ public class SidebarViewModel : ViewModelBase
         ProjectCountText = string.Format(L.Status_ProjectCount, TotalProjectCount);
         FolderCountText = string.Format(L.Status_FolderCount, TotalFolderCount);
         WorkspaceCountText = string.Format(L.Status_WorkspaceCount, TotalWorkspaceCount);
-        TagCountText = string.Format(L.Status_TagCount, TagCount);
-        TaggedProjectsText = string.Format(L.Status_TaggedProjects, FavoriteProjectCount);
+        FavouriteText = string.Format(L.Status_FavoriteCount, FavoriteCount);
     }
 
     #endregion
@@ -774,12 +712,6 @@ public class SidebarViewModel : ViewModelBase
             .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
             .DisposeWith(Disposables);
 
-        // 项目启动
-        MessageBus.Current.Listen<ProjectLaunchedMessage>()
-            .ObserveOn(MainThreadScheduler)
-            .Subscribe(msg => OnProjectLaunched(msg.Project))
-            .DisposeWith(Disposables);
-
         // 工作空间已删除消息（用于刷新列表）
         MessageBus.Current.Listen<WorkSpaceDeletedMessage>()
             .ObserveOn(MainThreadScheduler)
@@ -800,12 +732,8 @@ public class SidebarViewModel : ViewModelBase
     {
         // 从列表中移除
         WorkSpaces.Remove(workSpaceVm);
-
-        // 更新侧边栏树形节点计数
-        UpdateCountsAfterDelete(workSpaceVm);
         _ = LoadWorkFoldersAsync();
         RebuildFolderTreeOnly();
-
         // 更新统计
         UpdateStatistics();
     }
@@ -815,9 +743,6 @@ public class SidebarViewModel : ViewModelBase
     /// </summary>
     private void OnWorkSpaceFavoriteChanged(WorkSpaceViewModel workSpaceVm)
     {
-        // 刷新侧边栏树
-        BuildSidebarTree();
-
         // 更新统计
         UpdateStatistics();
     }
@@ -829,12 +754,8 @@ public class SidebarViewModel : ViewModelBase
     {
         // 从列表中移除
         Projects.Remove(projectVm);
-
-        // 更新侧边栏树形节点计数
-        UpdateCountsAfterDelete(projectVm);
         _ = LoadWorkFoldersAsync();
         RebuildFolderTreeOnly();
-
         // 更新统计
         UpdateStatistics();
     }
@@ -844,21 +765,8 @@ public class SidebarViewModel : ViewModelBase
     /// </summary>
     private void OnProjectFavoriteChanged(ProjectViewModel projectVm)
     {
-        // 刷新侧边栏树
-        BuildSidebarTree();
-
         // 更新统计
         UpdateStatistics();
     }
-
-    /// <summary>
-    /// 处理项目启动（启动次数更新）
-    /// </summary>
-    private void OnProjectLaunched(ProjectViewModel projectVm)
-    {
-        // 更新统计
-        UpdateStatistics();
-    }
-
     #endregion
 }
