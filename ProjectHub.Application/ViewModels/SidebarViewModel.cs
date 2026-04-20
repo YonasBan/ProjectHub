@@ -270,20 +270,11 @@ public class SidebarViewModel : ViewModelBase
             return;
 
         SidebarTreeItems.Clear();
-
-        // Recent (最近使用) - 包含项目和工作空间（最多显示20个）
-        var recentProjectCount = Projects.Count(p => p.LastOpenedAt.HasValue);
-        var recentWorkSpaceCount = WorkSpaces.Count(w => w.LastOpenedAt.HasValue);
-        var recentCount = Math.Min(recentProjectCount + recentWorkSpaceCount, 20);
-        var recent = new TreeItemViewModel(L.Sidebar_Recent, recentCount, TreeItemType.RecentProject)
+        var recent = new TreeItemViewModel(L.Sidebar_Recent, 0, TreeItemType.RecentProject)
         { IsSelected = true };
         SidebarTreeItems.Add(recent);
 
-        // Favorites (收藏夹) - 包含项目和工作空间
-        var favoriteProjectCount = Projects.Count(p => p.IsFavorite);
-        var favoriteWorkSpaceCount = WorkSpaces.Count(w => w.IsFavorite);
-        var favoriteCount = favoriteProjectCount + favoriteWorkSpaceCount;
-        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, favoriteCount, TreeItemType.FavoriteProject);
+        var favorites = new TreeItemViewModel(L.Sidebar_Favorites, 0, TreeItemType.FavoriteProject);
         SidebarTreeItems.Add(favorites);
 
         // Workspaces (工作空间)
@@ -646,13 +637,8 @@ public class SidebarViewModel : ViewModelBase
                 L.Message_SaveFailed,
                 ex.Message);
         }
-        finally
-        {
-        }
     }
-    /// <summary>
-    /// 删除文件夹
-    /// </summary>
+
     /// <summary>
     /// 删除文件夹
     /// </summary>
@@ -706,10 +692,8 @@ public class SidebarViewModel : ViewModelBase
                 L.Message_DeleteFailed,
                 ex.Message);
         }
-        finally
-        {
-        }
     }
+
     /// <summary>
     /// 在树中查找指定节点的父节点
     /// </summary>
