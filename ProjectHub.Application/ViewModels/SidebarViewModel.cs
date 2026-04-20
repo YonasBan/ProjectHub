@@ -274,7 +274,8 @@ public class SidebarViewModel : ViewModelBase
         this.WhenAnyValue(x => x.SelectedTreeItem)
             .Subscribe(item => SelectedItemChanged?.Invoke(this, item));
 
-
+        // 订阅 MessageBus 消息
+        SubscribeToMessageBus();
     }
 
     #endregion
@@ -478,7 +479,6 @@ public class SidebarViewModel : ViewModelBase
             foreach (var project in projects)
             {
                 var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService);
-                projectVm.ItemChanged += OnProjectItemChanged;
                 Projects.Add(projectVm);
             }
 
@@ -530,7 +530,6 @@ public class SidebarViewModel : ViewModelBase
             foreach (var workSpace in workSpaces)
             {
                 var workSpaceVm = new WorkSpaceViewModel(workSpace, _dialogService, _serviceProvider, _workSpaceAppService);
-                workSpaceVm.ItemChanged += OnWorkSpaceItemChanged;
                 WorkSpaces.Add(workSpaceVm);
             }
 
@@ -756,85 +755,109 @@ public class SidebarViewModel : ViewModelBase
 
     #endregion
 
-    #region 项目/工作空间事件处理
+    #region MessageBus 消息处理
 
     /// <summary>
-    /// 处理项目状态改变事件
+    /// 订阅 MessageBus 消息
     /// </summary>
-    private void OnProjectItemChanged(object? sender, ItemChangedEventArgs e)
+    private void SubscribeToMessageBus()
     {
-        if (sender is not ProjectViewModel projectVm) return;
+        // 项目已删除消息（用于刷新列表）
+        MessageBus.Current.Listen<ProjectDeletedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectDeleted(msg.Project))
+            .DisposeWith(Disposables);
 
-        switch (e.ChangeType)
-        {
-            case ItemChangedType.Deleted:
-                // 从列表中移除
-                Projects.Remove(projectVm);
-                // 取消事件订阅
-                projectVm.ItemChanged -= OnProjectItemChanged;
-                // 更新侧边栏树形节点计数
-                UpdateCountsAfterDelete(projectVm);
-                _ = LoadWorkFoldersAsync();
-                RebuildFolderTreeOnly();
-                // 更新统计
-                UpdateStatistics();
-                break;
+        // 项目收藏状态变化
+        MessageBus.Current.Listen<ProjectFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectFavoriteChanged(msg.Project))
+            .DisposeWith(Disposables);
 
-            case ItemChangedType.FavoriteChanged:
-                // 刷新侧边栏树
-                BuildSidebarTree();
-                // 更新统计
-                UpdateStatistics();
-                break;
+        // 项目启动
+        MessageBus.Current.Listen<ProjectLaunchedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnProjectLaunched(msg.Project))
+            .DisposeWith(Disposables);
 
-            case ItemChangedType.Launched:
-                // 更新统计
-                UpdateStatistics();
-                break;
+        // 工作空间已删除消息（用于刷新列表）
+        MessageBus.Current.Listen<WorkSpaceDeletedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceDeleted(msg.WorkSpace))
+            .DisposeWith(Disposables);
 
-            case ItemChangedType.MovedToFolder:
-                // 移动到文件夹 - 刷新文件夹树
-                _ = LoadWorkFoldersAsync();
-                RebuildFolderTreeOnly();
-                break;
-        }
+        // 工作空间收藏状态变化
+        MessageBus.Current.Listen<WorkSpaceFavoriteChangedMessage>()
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(msg => OnWorkSpaceFavoriteChanged(msg.WorkSpace))
+            .DisposeWith(Disposables);
     }
 
     /// <summary>
-    /// 处理工作空间状态改变事件
+    /// 处理工作空间已删除（刷新列表）
     /// </summary>
-    private void OnWorkSpaceItemChanged(object? sender, ItemChangedEventArgs e)
+    private void OnWorkSpaceDeleted(WorkSpaceViewModel workSpaceVm)
     {
-        if (sender is not WorkSpaceViewModel workSpaceVm) return;
+        // 从列表中移除
+        WorkSpaces.Remove(workSpaceVm);
 
-        switch (e.ChangeType)
-        {
-            case ItemChangedType.Deleted:
-                // 从列表中移除
-                WorkSpaces.Remove(workSpaceVm);
-                // 取消事件订阅
-                workSpaceVm.ItemChanged -= OnWorkSpaceItemChanged;
-                // 更新侧边栏树形节点计数
-                UpdateCountsAfterDelete(workSpaceVm);
-                _ = LoadWorkFoldersAsync();
-                RebuildFolderTreeOnly();
-                // 更新统计
-                UpdateStatistics();
-                break;
+        // 更新侧边栏树形节点计数
+        UpdateCountsAfterDelete(workSpaceVm);
+        _ = LoadWorkFoldersAsync();
+        RebuildFolderTreeOnly();
 
-            case ItemChangedType.FavoriteChanged:
-                // 刷新侧边栏树
-                BuildSidebarTree();
-                // 更新统计
-                UpdateStatistics();
-                break;
+        // 更新统计
+        UpdateStatistics();
+    }
 
-            case ItemChangedType.MovedToFolder:
-                // 移动到文件夹 - 刷新文件夹树
-                _ = LoadWorkFoldersAsync();
-                RebuildFolderTreeOnly();
-                break;
-        }
+    /// <summary>
+    /// 处理工作空间收藏状态变化
+    /// </summary>
+    private void OnWorkSpaceFavoriteChanged(WorkSpaceViewModel workSpaceVm)
+    {
+        // 刷新侧边栏树
+        BuildSidebarTree();
+
+        // 更新统计
+        UpdateStatistics();
+    }
+
+    /// <summary>
+    /// 处理项目已删除（刷新列表）
+    /// </summary>
+    private void OnProjectDeleted(ProjectViewModel projectVm)
+    {
+        // 从列表中移除
+        Projects.Remove(projectVm);
+
+        // 更新侧边栏树形节点计数
+        UpdateCountsAfterDelete(projectVm);
+        _ = LoadWorkFoldersAsync();
+        RebuildFolderTreeOnly();
+
+        // 更新统计
+        UpdateStatistics();
+    }
+
+    /// <summary>
+    /// 处理项目收藏状态变化
+    /// </summary>
+    private void OnProjectFavoriteChanged(ProjectViewModel projectVm)
+    {
+        // 刷新侧边栏树
+        BuildSidebarTree();
+
+        // 更新统计
+        UpdateStatistics();
+    }
+
+    /// <summary>
+    /// 处理项目启动（启动次数更新）
+    /// </summary>
+    private void OnProjectLaunched(ProjectViewModel projectVm)
+    {
+        // 更新统计
+        UpdateStatistics();
     }
 
     #endregion

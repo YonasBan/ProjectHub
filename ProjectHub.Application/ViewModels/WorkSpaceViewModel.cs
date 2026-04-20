@@ -115,7 +115,7 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
                 3000);
 
             // 通知父级刷新
-            OnItemChanged(ItemChangedType.Deleted);
+            MessageBus.Current.SendMessage(new WorkSpaceDeletedMessage(this));
         }
         catch (Exception ex)
         {
@@ -123,9 +123,9 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
         }
     }
 
-    protected override void SendFavoriteChanged() => OnItemChanged(ItemChangedType.FavoriteChanged);
+    protected override void SendFavoriteChanged() => MessageBus.Current.SendMessage(new WorkSpaceFavoriteChangedMessage(this));
 
-    protected override void SendMoveToFolderRequest() => OnItemChanged(ItemChangedType.MovedToFolder);
+    protected override void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new WorkSpaceMoveToFolderRequestMessage(this));
 
     public override WorkSpaceDto GetDto() => (WorkSpaceDto)_dto;
 
@@ -171,4 +171,14 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
     }
 }
 
+// ========== MessageBus Messages ==========
 
+/// <summary>
+/// 工作空间已删除消息（通知父级刷新列表）
+/// </summary>
+public record WorkSpaceDeletedMessage(WorkSpaceViewModel WorkSpace);
+
+/// <summary>
+/// 工作空间收藏状态变化消息
+/// </summary>
+public record WorkSpaceFavoriteChangedMessage(WorkSpaceViewModel WorkSpace);

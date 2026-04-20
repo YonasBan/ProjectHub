@@ -142,7 +142,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
                 3000);
 
             // 通知父级刷新
-            OnItemChanged(ItemChangedType.Deleted);
+            MessageBus.Current.SendMessage(new ProjectDeletedMessage(this));
         }
         catch (Exception ex)
         {
@@ -150,9 +150,9 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         }
     }
 
-    protected override void SendFavoriteChanged() => OnItemChanged(ItemChangedType.FavoriteChanged);
+    protected override void SendFavoriteChanged() => MessageBus.Current.SendMessage(new ProjectFavoriteChangedMessage(this));
 
-    protected override void SendMoveToFolderRequest() => OnItemChanged(ItemChangedType.MovedToFolder);
+    protected override void SendMoveToFolderRequest() => MessageBus.Current.SendMessage(new ProjectMoveToFolderRequestMessage(this));
 
     public override ProjectDto GetDto() => (ProjectDto)_dto;
 
@@ -198,7 +198,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
             _dto = updatedProject;
             this.RaisePropertyChanged(nameof(LaunchCount));
             this.RaisePropertyChanged(nameof(LastOpenedAt));
-            OnItemChanged(ItemChangedType.Launched);
+            MessageBus.Current.SendMessage(new ProjectLaunchedMessage(this));
         }
     }
 
@@ -220,4 +220,19 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
     }
 }
 
+// ========== MessageBus Messages ==========
 
+/// <summary>
+/// 项目已删除消息（通知父级刷新列表）
+/// </summary>
+public record ProjectDeletedMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 项目收藏状态变化消息
+/// </summary>
+public record ProjectFavoriteChangedMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 项目启动消息
+/// </summary>
+public record ProjectLaunchedMessage(ProjectViewModel Project);
