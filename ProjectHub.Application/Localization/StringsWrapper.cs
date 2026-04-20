@@ -203,4 +203,5 @@ public class LocalizedStrings : ReactiveObject
     public string Dialog_MoveToFolderTitle => ProjectHub.Resources.Strings.Strings.Dialog_MoveToFolderTitle;
     public string Message_MovedToFolder => ProjectHub.Resources.Strings.Strings.Message_MovedToFolder;
     public string Message_MoveToFolderFailed => ProjectHub.Resources.Strings.Strings.Message_MoveToFolderFailed;
+    public string Dialog_MoveItemNotSet => ProjectHub.Resources.Strings.Strings.Dialog_MoveItemNotSet;
 }

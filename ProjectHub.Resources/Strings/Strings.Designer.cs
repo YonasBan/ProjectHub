@@ -376,6 +376,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 未设置要移动的项目 的本地化字符串。
+        /// </summary>
+        public static string Dialog_MoveItemNotSet {
+            get {
+                return ResourceManager.GetString("Dialog_MoveItemNotSet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 项目 &quot;{0}&quot; 创建成功！ 的本地化字符串。
         /// </summary>
         public static string Message_ProjectCreated {

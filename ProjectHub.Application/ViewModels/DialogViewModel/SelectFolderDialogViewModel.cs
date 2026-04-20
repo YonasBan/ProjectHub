@@ -12,25 +12,11 @@ namespace ProjectHub.Application.ViewModels.DialogViewModel;
 /// </summary>
 public class MoveItemInfo
 {
-    /// <summary>
-    /// 项目/工作空间ID
-    /// </summary>
     public long Id { get; set; }
-
-    /// <summary>
-    /// 名称
-    /// </summary>
     public string Name { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 是否是项目（true=项目，false=工作空间）
-    /// </summary>
     public bool IsProject { get; set; }
 }
 
-/// <summary>
-/// 文件夹选择对话框 ViewModel
-/// </summary>
 public class SelectFolderDialogViewModel : DialogViewModelBase
 {
     private readonly ObservableCollection<FolderTreeItemViewModel> _folders;
@@ -39,80 +25,40 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
     private bool _isCreatingNewFolder;
     private string? _errorMessage;
 
-    /// <summary>
-    /// 文件夹树形结构
-    /// </summary>
     public ObservableCollection<FolderTreeItemViewModel> Folders => _folders;
 
-    /// <summary>
-    /// 当前选中的文件夹
-    /// </summary>
     public FolderTreeItemViewModel? SelectedFolder
     {
         get => _selectedFolder;
         set => this.RaiseAndSetIfChanged(ref _selectedFolder, value);
     }
 
-    /// <summary>
-    /// 是否正在创建新文件夹
-    /// </summary>
     public bool IsCreatingNewFolder
     {
         get => _isCreatingNewFolder;
         set => this.RaiseAndSetIfChanged(ref _isCreatingNewFolder, value);
     }
 
-    /// <summary>
-    /// 新文件夹名称
-    /// </summary>
     public string NewFolderName
     {
         get => _newFolderName;
         set => this.RaiseAndSetIfChanged(ref _newFolderName, value);
     }
 
-    /// <summary>
-    /// 错误信息
-    /// </summary>
     public string? ErrorMessage
     {
         get => _errorMessage;
         set => this.RaiseAndSetIfChanged(ref _errorMessage, value);
     }
 
-    /// <summary>
-    /// 是否有错误
-    /// </summary>
     public bool HasError => !string.IsNullOrEmpty(_errorMessage);
 
-    /// <summary>
-    /// 确认命令
-    /// </summary>
     public ReactiveCommand<Unit, Unit> ConfirmCommand { get; }
-
-    /// <summary>
-    /// 取消命令
-    /// </summary>
     public ReactiveCommand<Unit, Unit> CancelCommand { get; }
-
-    /// <summary>
-    /// 创建新文件夹命令
-    /// </summary>
     public ReactiveCommand<Unit, Unit> CreateNewFolderCommand { get; }
 
-    /// <summary>
-    /// 对话框标题
-    /// </summary>
     public string Title { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 项目或工作空间名称（显示在标题中）
-    /// </summary>
     public string ItemName { get; set; } = string.Empty;
-
-    /// <summary>
-    /// 要移动的项目/工作空间信息
-    /// </summary>
     public MoveItemInfo? MoveItem { get; set; }
 
     private readonly IWorkFolderAppService _workFolderAppService;
@@ -130,16 +76,8 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
             (selected, isCreating, newName) =>
                 selected != null || (isCreating && !string.IsNullOrWhiteSpace(newName)));
 
-        ConfirmCommand = ReactiveCommand.Create(() =>
-        {
-            // 确认操作移到异步方法中处理
-            Close(true);
-        }, canConfirm);
-
-        CancelCommand = ReactiveCommand.Create(() =>
-        {
-            Close(false);
-        });
+        ConfirmCommand = ReactiveCommand.Create(() => Close(true), canConfirm);
+        CancelCommand = ReactiveCommand.Create(() => Close(false));
 
         CreateNewFolderCommand = ReactiveCommand.Create(() =>
         {
@@ -152,9 +90,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
         });
     }
 
-    /// <summary>
-    /// 加载文件夹树（从SidebarTreeItems提取）
-    /// </summary>
     public void LoadFoldersFromSidebar(ObservableCollection<TreeItemViewModel> sidebarTreeItems)
     {
         _sidebarTreeItems = sidebarTreeItems;
@@ -163,14 +98,10 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
         var folderItems = ExtractFolderTreeFromSidebar(sidebarTreeItems);
         foreach (var folder in folderItems)
         {
-            folder.OnExpandRequested = OnFolderExpandRequested;
             _folders.Add(folder);
         }
     }
 
-    /// <summary>
-    /// 从 SidebarTreeItems 中提取文件夹树结构
-    /// </summary>
     private List<FolderTreeItemViewModel> ExtractFolderTreeFromSidebar(ObservableCollection<TreeItemViewModel> sidebarTreeItems)
     {
         var folderItems = new List<FolderTreeItemViewModel>();
@@ -190,9 +121,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
         return folderItems;
     }
 
-    /// <summary>
-    /// 将 TreeItemViewModel 转换为 FolderTreeItemViewModel
-    /// </summary>
     private FolderTreeItemViewModel? ConvertTreeItemToFolderTreeItem(TreeItemViewModel treeItem, string? parentFullPath)
     {
         if (treeItem.ItemType != TreeItemType.WorkFolder)
@@ -205,7 +133,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
             FullPath = fullPath
         };
 
-        // 递归处理子文件夹
         foreach (var child in treeItem.Children)
         {
             var childItem = ConvertTreeItemToFolderTreeItem(child, fullPath);
@@ -218,40 +145,11 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
         return folderItem;
     }
 
-    /// <summary>
-    /// 文件夹展开时的懒加载处理
-    /// </summary>
-    private async void OnFolderExpandRequested(FolderTreeItemViewModel folder)
-    {
-        if (folder.HasLoadedChildren)
-            return;
-
-        folder.IsLoadingChildren = true;
-        try
-        {
-            var children = await _workFolderAppService.GetChildrenAsync(folder.Id);
-            var childViewModels = children.Select(c => new FolderTreeItemViewModel(c.Id, c.Name, c.ParentId)
-            {
-                FullPath = $"{folder.FullPath}/{c.Name}",
-                OnExpandRequested = OnFolderExpandRequested
-            }).ToList();
-
-            folder.AddChildren(childViewModels);
-        }
-        finally
-        {
-            folder.IsLoadingChildren = false;
-        }
-    }
-
-    /// <summary>
-    /// 确认选择并执行操作
-    /// </summary>
     public async Task<bool> ConfirmAsync()
     {
         if (MoveItem == null)
         {
-            ErrorMessage = "未设置要移动的项目";
+            ErrorMessage = L?.Dialog_MoveItemNotSet ?? "未设置要移动的项目";
             return false;
         }
 
@@ -265,7 +163,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
 
             try
             {
-                // 创建新文件夹
                 var createDto = new CreateWorkFolderDto
                 {
                     Name = NewFolderName.Trim(),
@@ -275,7 +172,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
 
                 var newFolder = await _workFolderAppService.CreateAsync(createDto);
 
-                // 将项目/工作空间添加到新文件夹
                 if (MoveItem.IsProject)
                 {
                     await _workFolderAppService.AddProjectToFolderAsync(MoveItem.Id, newFolder.Id);
@@ -285,7 +181,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
                     await _workFolderAppService.AddWorkSpaceToFolderAsync(MoveItem.Id, newFolder.Id);
                 }
 
-                // 同时更新 SidebarTreeItems（如果提供）
                 if (_sidebarTreeItems != null)
                 {
                     AddNewFolderToSidebarTree(newFolder, SelectedFolder?.Id);
@@ -326,29 +221,10 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
         }
     }
 
-    /// <summary>
-    /// 获取选中的文件夹ID（如果是创建新文件夹则返回null）
-    /// </summary>
-    public long? GetSelectedFolderId()
-    {
-        if (IsCreatingNewFolder)
-            return null;
-        return SelectedFolder?.Id;
-    }
+    public long? GetSelectedFolderId() => IsCreatingNewFolder ? null : SelectedFolder?.Id;
 
-    /// <summary>
-    /// 获取新文件夹名称（如果正在创建新文件夹）
-    /// </summary>
-    public string? GetNewFolderName()
-    {
-        if (IsCreatingNewFolder)
-            return NewFolderName.Trim();
-        return null;
-    }
+    public string? GetNewFolderName() => IsCreatingNewFolder ? NewFolderName.Trim() : null;
 
-    /// <summary>
-    /// 将新创建的文件夹添加到 SidebarTreeItems
-    /// </summary>
     private void AddNewFolderToSidebarTree(WorkFolderDto newFolder, long? parentId)
     {
         if (_sidebarTreeItems == null) return;
@@ -357,16 +233,11 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
 
         if (parentId.HasValue)
         {
-            // 查找父节点并添加到其子节点中
             var parentNode = FindParentNodeInSidebar(_sidebarTreeItems, parentId.Value);
-            if (parentNode != null)
-            {
-                parentNode.Children.Add(newTreeItem);
-            }
+            parentNode?.Children.Add(newTreeItem);
         }
         else
         {
-            // 添加到根节点（在工作空间节点之后）
             var workSpaceIndex = -1;
             for (int i = 0; i < _sidebarTreeItems.Count; i++)
             {
@@ -380,9 +251,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
         }
     }
 
-    /// <summary>
-    /// 在 SidebarTreeItems 中查找父节点
-    /// </summary>
     private TreeItemViewModel? FindParentNodeInSidebar(ObservableCollection<TreeItemViewModel> nodes, long parentId)
     {
         foreach (var node in nodes)
@@ -392,7 +260,6 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
                 return node;
             }
 
-            // 递归查找子节点
             var foundInChildren = FindParentNodeInSidebar(node.Children, parentId);
             if (foundInChildren != null)
             {
@@ -403,78 +270,21 @@ public class SelectFolderDialogViewModel : DialogViewModelBase
     }
 }
 
-/// <summary>
-/// 文件夹树形节点 ViewModel - 支持懒加载
-/// </summary>
 public class FolderTreeItemViewModel : ReactiveObject
 {
-    private bool _isExpanded;
     private bool _isSelected;
-    private bool _isLoadingChildren;
-    private bool _hasLoadedChildren;
 
     public long Id { get; }
     public string Name { get; }
     public long? ParentId { get; }
     public ObservableCollection<FolderTreeItemViewModel> Children { get; }
 
-    /// <summary>
-    /// 是否展开
-    /// </summary>
-    public bool IsExpanded
-    {
-        get => _isExpanded;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _isExpanded, value);
-            // 展开时触发懒加载
-            if (value && !_hasLoadedChildren && !_isLoadingChildren)
-            {
-                OnExpandRequested?.Invoke(this);
-            }
-        }
-    }
-
-    /// <summary>
-    /// 是否选中
-    /// </summary>
     public bool IsSelected
     {
         get => _isSelected;
         set => this.RaiseAndSetIfChanged(ref _isSelected, value);
     }
 
-    /// <summary>
-    /// 是否正在加载子文件夹
-    /// </summary>
-    public bool IsLoadingChildren
-    {
-        get => _isLoadingChildren;
-        set => this.RaiseAndSetIfChanged(ref _isLoadingChildren, value);
-    }
-
-    /// <summary>
-    /// 是否已加载子文件夹
-    /// </summary>
-    public bool HasLoadedChildren
-    {
-        get => _hasLoadedChildren;
-        set => this.RaiseAndSetIfChanged(ref _hasLoadedChildren, value);
-    }
-
-    /// <summary>
-    /// 是否有子文件夹（用于显示展开箭头）
-    /// </summary>
-    public bool HasChildren => Children.Count > 0 || !HasLoadedChildren;
-
-    /// <summary>
-    /// 展开请求事件（用于懒加载）
-    /// </summary>
-    public Action<FolderTreeItemViewModel>? OnExpandRequested { get; set; }
-
-    /// <summary>
-    /// 完整路径显示
-    /// </summary>
     public string FullPath { get; set; } = string.Empty;
 
     public FolderTreeItemViewModel(long id, string name, long? parentId = null)
@@ -483,18 +293,5 @@ public class FolderTreeItemViewModel : ReactiveObject
         Name = name;
         ParentId = parentId;
         Children = new ObservableCollection<FolderTreeItemViewModel>();
-    }
-
-    /// <summary>
-    /// 添加子文件夹
-    /// </summary>
-    public void AddChildren(IEnumerable<FolderTreeItemViewModel> children)
-    {
-        foreach (var child in children)
-        {
-            Children.Add(child);
-        }
-        HasLoadedChildren = true;
-        this.RaisePropertyChanged(nameof(HasChildren));
     }
 }
