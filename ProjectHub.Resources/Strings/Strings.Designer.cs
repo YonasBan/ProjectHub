@@ -601,7 +601,7 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 网页链接（可选） 的本地化字符串。
+        ///   查找类似 网页链接（多个用分号分隔） 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_WebUrlLabel {
             get {

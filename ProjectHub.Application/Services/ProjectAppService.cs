@@ -30,7 +30,22 @@ public class ProjectAppService : IProjectAppService
 
     public async Task<ProjectDto> CreateAsync(CreateProjectDto input, CancellationToken cancellationToken = default)
     {
-        var project = Domain.Entities.Project.Create(input.Name, input.Type, input.Path,input.DefaultProgram,input.CustomIconPath,input.Description);
+        // 根据启动类型确定项目路径
+        var projectPath = input.LaunchType switch
+        {
+            Domain.Entities.LaunchType.OpenFile => input.Path,
+            Domain.Entities.LaunchType.OpenExe => input.DefaultProgram ?? string.Empty,
+            Domain.Entities.LaunchType.OpenWebUrl => input.WebUrl ?? string.Empty,
+            _ => input.Path
+        };
+
+        var project = Domain.Entities.Project.Create(
+            input.Name, 
+            input.Type, 
+            projectPath,
+            input.DefaultProgram,
+            input.CustomIconPath,
+            input.Description);
         
         // 设置启动类型
         project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);

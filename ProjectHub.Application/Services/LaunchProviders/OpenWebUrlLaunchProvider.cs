@@ -18,13 +18,26 @@ public class OpenWebUrlLaunchProvider : ILaunchProvider
 
     public LaunchType Type => LaunchType.OpenWebUrl;
 
-    public Task LaunchAsync(Project project, CancellationToken cancellationToken = default)
+    public async Task LaunchAsync(Project project, CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(project.WebUrl))
         {
             throw new InvalidOperationException("打开网页模式需要指定网页链接");
         }
 
-        return _processLauncher.LaunchWebUrlAsync(project.WebUrl);
+        // 支持多个链接用分号分隔
+        var urls = project.WebUrl.Split(';', StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(u => u.Trim())
+                                 .Where(u => !string.IsNullOrWhiteSpace(u))
+                                 .ToList();
+
+        if (urls.Count == 0)
+        {
+            throw new InvalidOperationException("没有有效的网页链接");
+        }
+
+        // 并行打开所有网页
+        var tasks = urls.Select(url => _processLauncher.LaunchWebUrlAsync(url));
+        await Task.WhenAll(tasks);
     }
 }

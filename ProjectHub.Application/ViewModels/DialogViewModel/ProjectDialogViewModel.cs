@@ -222,15 +222,28 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         BrowseIconCommand = ReactiveCommand.Create(BrowseIcon);
         ResetIconCommand = ReactiveCommand.Create(ResetIcon);
 
+        // 根据启动类型动态确定确认按钮是否可用
         var canConfirm = this.WhenAnyValue(
             x => x.ProjectName,
             x => x.ProjectPath,
             x => x.DefaultProgram,
-            (name, path, program) =>
-                !string.IsNullOrWhiteSpace(name) &&
-                !string.IsNullOrWhiteSpace(path) &&
-                !string.IsNullOrWhiteSpace(program));
+            x => x.WebUrl,
+            x => x.LaunchType,
+            (name, path, program, webUrl, launchType) =>
+            {
+                // 项目名称始终必填
+                if (string.IsNullOrWhiteSpace(name))
+                    return false;
 
+                // 根据启动类型验证不同字段
+                return launchType switch
+                {
+                    LaunchType.OpenFile => !string.IsNullOrWhiteSpace(path),  // 打开文件：路径必填
+                    LaunchType.OpenExe => !string.IsNullOrWhiteSpace(program), // 打开 exe：程序必填
+                    LaunchType.OpenWebUrl => !string.IsNullOrWhiteSpace(webUrl) && webUrl.Split(';', StringSplitOptions.RemoveEmptyEntries).Length > 0, // 打开网页：链接必填，支持多个
+                    _ => false
+                };
+            });
         ConfirmCommand = ReactiveCommand.Create(Confirm, canConfirm);
 
         // 设置默认图标
@@ -326,8 +339,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 break;
 
             case LaunchType.OpenWebUrl:
-                // 打开网页：网页链接必填
+                // 打开网页：网页链接必填，支持多个链接用分号分隔
                 if (string.IsNullOrWhiteSpace(WebUrl))
+                {
+                    ErrorMessage = L.ProjectDialog_Error_EmptyWebUrl;
+                    HasError = true;
+                    return;
+                }
+                // 验证至少有一个有效的链接
+                var urls = WebUrl.Split(';', StringSplitOptions.RemoveEmptyEntries);
+                if (urls.Length == 0 || urls.All(string.IsNullOrWhiteSpace))
                 {
                     ErrorMessage = L.ProjectDialog_Error_EmptyWebUrl;
                     HasError = true;
@@ -387,53 +408,6 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             _logger.LogWarning($"检测默认程序失败: {ex.Message}");
         }
     }
-
-    /// <summary>
-    /// 检测 Visual Studio 路径
-    /// </summary>
-    private string? DetectVisualStudio()
-    {
-        // 尝试常见路径
-        var vsPaths = new[]
-        {
-            @"C:\Program Files\Microsoft Visual Studio\2022\Enterprise\Common7\IDE\devenv.exe",
-            @"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\devenv.exe",
-            @"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\devenv.exe",
-            @"C:\Program Files\Microsoft Visual Studio\2019\Enterprise\Common7\IDE\devenv.exe",
-            @"C:\Program Files\Microsoft Visual Studio\2019\Professional\Common7\IDE\devenv.exe",
-            @"C:\Program Files\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.exe"
-        };
-
-        foreach (var path in vsPaths)
-        {
-            if (File.Exists(path))
-                return path;
-        }
-
-        return null;
-    }
-
-    /// <summary>
-    /// 检测 Gradle 路径
-    /// </summary>
-    private string? DetectGradle()
-    {
-        // 尝试常见路径
-        var gradlePaths = new[]
-        {
-            @"C:\Program Files\Gradle\bin\gradle.bat",
-            @"C:\Gradle\bin\gradle.bat"
-        };
-
-        foreach (var path in gradlePaths)
-        {
-            if (File.Exists(path))
-                return path;
-        }
-
-        return "gradle";
-    }
-
     /// <summary>
     /// 从注册表获取默认程序（通过接口）
     /// </summary>
@@ -523,11 +497,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 // 根据启动类型设置不同的路径字段
                 Path = LaunchType == LaunchType.OpenFile ? ProjectPath : string.Empty,
                 // 打开文件时，自定义程序和启动参数可选；打开 exe 时必填
-                DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
-                    ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram) 
+                DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
+                    ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram)
                     : null,
-                LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
-                    ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments) 
+                LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
+                    ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
                     : null,
                 WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null
             };
@@ -560,11 +534,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     // 根据启动类型设置不同的路径字段
                     Path = LaunchType == LaunchType.OpenFile ? ProjectPath : string.Empty,
                     // 打开文件时，自定义程序和启动参数可选；打开 exe 时必填
-                    DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
-                        ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram) 
+                    DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
+                        ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram)
                         : null,
-                    LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
-                        ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments) 
+                    LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
+                        ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
                         : null,
                     WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null
                 };

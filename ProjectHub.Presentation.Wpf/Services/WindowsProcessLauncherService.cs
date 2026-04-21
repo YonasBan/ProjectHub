@@ -59,11 +59,9 @@ public class WindowsProcessLauncherService : IProcessLauncherService
     {
         try
         {
-            // 确保 URL 格式正确
-            var uri = new Uri(url);
             var startInfo = new ProcessStartInfo
             {
-                FileName = uri.ToString(),
+                FileName = url,
                 UseShellExecute = true,
                 Verb = "open"
             };

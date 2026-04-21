@@ -298,7 +298,7 @@
     <value>启动参数（可选）</value>
   </data>
   <data name="ProjectDialog_WebUrlLabel" xml:space="preserve">
-    <value>网页链接（可选）</value>
+    <value>网页链接（多个用分号分隔）</value>
   </data>
   <data name="ProjectDialog_LaunchType_OpenFile" xml:space="preserve">
     <value>打开文件</value>
