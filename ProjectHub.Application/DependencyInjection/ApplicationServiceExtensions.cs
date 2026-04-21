@@ -1,5 +1,7 @@
+using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Mapping;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels.DialogViewModel;
 
@@ -16,6 +18,12 @@ public static class ApplicationServiceExtensions
     /// </summary>
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
+        // 注册 AutoMapper
+        services.AddAutoMapper(cfg =>
+        {
+            cfg.AddProfile<ApplicationMappingProfile>();
+        });
+
         // 注册项目应用服务
         services.AddTransient<IProjectAppService, ProjectAppService>();
 
@@ -24,8 +32,6 @@ public static class ApplicationServiceExtensions
 
         // 注册工作空间应用服务
         services.AddTransient<IWorkSpaceAppService, WorkSpaceAppService>();
-
-
 
         return services;
     }

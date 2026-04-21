@@ -1,3 +1,4 @@
+using AutoMapper;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Domain.Entities;
@@ -11,10 +12,12 @@ namespace ProjectHub.Application.Services;
 public class WorkFolderAppService : IWorkFolderAppService
 {
     private readonly IWorkFolderRepository _workFolderRepository;
+    private readonly IMapper _mapper;
 
-    public WorkFolderAppService(IWorkFolderRepository workFolderRepository)
+    public WorkFolderAppService(IWorkFolderRepository workFolderRepository, IMapper mapper)
     {
         _workFolderRepository = workFolderRepository;
+        _mapper = mapper;
     }
 
     public async Task<WorkFolderDto> CreateAsync(CreateWorkFolderDto input, CancellationToken cancellationToken = default)
@@ -26,12 +29,12 @@ public class WorkFolderAppService : IWorkFolderAppService
         }
 
         var workFolder = Domain.Entities.WorkFolder.Create(
-            input.Name, 
-            input.SortOrder, 
-            description: null, 
+            input.Name,
+            input.SortOrder,
+            description: null,
             parentId: input.ParentId);
         await _workFolderRepository.AddAsync(workFolder, cancellationToken);
-        return MapToDto(workFolder);
+        return _mapper.Map<WorkFolderDto>(workFolder);
     }
 
     public async Task<WorkFolderDto> UpdateAsync(UpdateWorkFolderDto input, CancellationToken cancellationToken = default)
@@ -40,7 +43,7 @@ public class WorkFolderAppService : IWorkFolderAppService
             ?? throw new KeyNotFoundException($"WorkFolder (Id={input.Id}) not found");
 
         // TODO: 实现更新逻辑
-        return MapToDto(workFolder);
+        return _mapper.Map<WorkFolderDto>(workFolder);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -54,7 +57,7 @@ public class WorkFolderAppService : IWorkFolderAppService
     public async Task<IReadOnlyList<WorkFolderDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
         var workFolders = await _workFolderRepository.GetAllWithProjectCountAsync(cancellationToken);
-        return workFolders.Select(MapToDto).ToList();
+        return _mapper.Map<List<WorkFolderDto>>(workFolders);
     }
     public async Task MoveProjectToWorkFolderAsync(long projectId, long? workFolderId, CancellationToken cancellationToken = default)
     {
@@ -152,7 +155,7 @@ public class WorkFolderAppService : IWorkFolderAppService
     public async Task<IReadOnlyList<WorkFolderDto>> GetChildrenAsync(long parentId, CancellationToken cancellationToken = default)
     {
         var children = await _workFolderRepository.GetChildrenAsync(parentId, cancellationToken);
-        return children.Select(MapToDto).ToList();
+        return _mapper.Map<List<WorkFolderDto>>(children);
     }
 
     /// <summary>
@@ -161,21 +164,6 @@ public class WorkFolderAppService : IWorkFolderAppService
     public async Task<IReadOnlyList<WorkFolderDto>> GetRootFoldersAsync(CancellationToken cancellationToken = default)
     {
         var rootFolders = await _workFolderRepository.GetRootFoldersAsync(cancellationToken);
-        return rootFolders.Select(MapToDto).ToList();
-    }
-
-    private static WorkFolderDto MapToDto(Domain.Entities.WorkFolder workFolder)
-    {
-        return new WorkFolderDto
-        {
-            Id = workFolder.Id,
-            Name = workFolder.Name,
-            ParentId = workFolder.ParentId,
-            SortOrder = workFolder.SortOrder,
-            ProjectCount = workFolder.ProjectCount,
-            WorkSpaceCount = workFolder.WorkSpaceCount,
-            CreatedAt = workFolder.CreatedAt,
-            UpdatedAt = workFolder.UpdatedAt
-        };
+        return _mapper.Map<List<WorkFolderDto>>(rootFolders);
     }
 }

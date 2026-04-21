@@ -1,3 +1,4 @@
+using AutoMapper;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Domain.Interfaces;
@@ -11,11 +12,16 @@ public class ProjectAppService : IProjectAppService
 {
     private readonly IProjectRepository _projectRepository;
     private readonly IProcessLauncherService _processLauncher;
+    private readonly IMapper _mapper;
 
-    public ProjectAppService(IProjectRepository projectRepository, IProcessLauncherService processLauncher)
+    public ProjectAppService(
+        IProjectRepository projectRepository,
+        IProcessLauncherService processLauncher,
+        IMapper mapper)
     {
         _projectRepository = projectRepository;
         _processLauncher = processLauncher;
+        _mapper = mapper;
     }
 
     public async Task<ProjectDto> CreateAsync(CreateProjectDto input, CancellationToken cancellationToken = default)
@@ -29,7 +35,7 @@ public class ProjectAppService : IProjectAppService
         }
         
         await _projectRepository.AddAsync(project, cancellationToken);
-        return MapToDto(project);
+        return _mapper.Map<ProjectDto>(project);
     }
 
     public async Task<ProjectDto> UpdateAsync(UpdateProjectDto input, CancellationToken cancellationToken = default)
@@ -38,10 +44,10 @@ public class ProjectAppService : IProjectAppService
             ?? throw new KeyNotFoundException($"Project (Id={input.Id}) not found");
 
         // 更新基本信息
-        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments,input.CustomIconPath);
-        
+        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments, input.CustomIconPath);
+
         await _projectRepository.UpdateAsync(project, cancellationToken);
-        return MapToDto(project);
+        return _mapper.Map<ProjectDto>(project);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -55,25 +61,25 @@ public class ProjectAppService : IProjectAppService
     public async Task<ProjectDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var project = await _projectRepository.GetByIdAsync(id, cancellationToken);
-        return project == null ? null : MapToDto(project);
+        return project == null ? null : _mapper.Map<ProjectDto>(project);
     }
 
     public async Task<IReadOnlyList<ProjectDto>> GetAllActiveAsync(CancellationToken cancellationToken = default)
     {
         var projects = await _projectRepository.GetAllAsync(cancellationToken);
-        return projects.Select(MapToDto).ToList();
+        return _mapper.Map<List<ProjectDto>>(projects);
     }
 
     public async Task<IReadOnlyList<ProjectDto>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default)
     {
         var projects = await _projectRepository.GetRecentlyUsedAsync(count, cancellationToken);
-        return projects.Select(MapToDto).ToList();
+        return _mapper.Map<List<ProjectDto>>(projects);
     }
 
     public async Task<IReadOnlyList<ProjectDto>> SearchAsync(string keyword, CancellationToken cancellationToken = default)
     {
         var projects = await _projectRepository.SearchAsync(keyword, cancellationToken);
-        return projects.Select(MapToDto).ToList();
+        return _mapper.Map<List<ProjectDto>>(projects);
     }
 
     public async Task LaunchAsync(long id, CancellationToken cancellationToken = default)
@@ -143,30 +149,6 @@ public class ProjectAppService : IProjectAppService
     public async Task<IReadOnlyList<ProjectDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default)
     {
         var projects = await _projectRepository.GetByWorkFolderIdAsync(workFolderId, cancellationToken);
-        return projects.Select(MapToDto).ToList();
-    }
-
-    private static ProjectDto MapToDto(Domain.Entities.Project project)
-    {
-        return new ProjectDto
-        {
-            Id = project.Id,
-            Name = project.Name,
-            Type = project.Type,
-            Path = project.Path,
-            CustomIconPath = project.CustomIconPath,
-            Description = project.Description,
-            LaunchCount = project.LaunchCount,
-            TotalUsageDurationMs = project.TotalUsageDurationMs,
-            LastOpenedAt = project.LastOpenedAt,
-            IsFavorite = project.IsFavorite,
-            DiskSpaceBytes = project.DiskSpaceBytes,
-            CleanableSpaceBytes = project.CleanableSpaceBytes,
-            DefaultProgram = project.DefaultProgram,
-            LaunchArguments = project.LaunchArguments,
-            Deadline = project.Deadline,
-            CreatedAt = project.CreatedAt,
-            UpdatedAt = project.UpdatedAt
-        };
+        return _mapper.Map<List<ProjectDto>>(projects);
     }
 }

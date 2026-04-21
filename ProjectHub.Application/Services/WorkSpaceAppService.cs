@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
@@ -16,19 +17,22 @@ public class WorkSpaceAppService : IWorkSpaceAppService
     private readonly IProjectAppService _projectAppService;
     private readonly IProjectWorkSpaceRepository _projectWorkSpaceRepository;
     private readonly ILogger<WorkSpaceAppService> _logger;
+    private readonly IMapper _mapper;
 
     public WorkSpaceAppService(
         IWorkSpaceRepository workSpaceRepository,
         IProjectRepository projectRepository,
         IProjectAppService projectAppService,
         IProjectWorkSpaceRepository projectWorkSpaceRepository,
-        ILogger<WorkSpaceAppService> logger)
+        ILogger<WorkSpaceAppService> logger,
+        IMapper mapper)
     {
         _workSpaceRepository = workSpaceRepository;
         _projectRepository = projectRepository;
         _projectAppService = projectAppService;
         _projectWorkSpaceRepository = projectWorkSpaceRepository;
         _logger = logger;
+        _mapper = mapper;
     }
 
     public async Task<WorkSpaceDto> CreateAsync(CreateWorkSpaceDto input, CancellationToken cancellationToken = default)
@@ -48,7 +52,7 @@ public class WorkSpaceAppService : IWorkSpaceAppService
 
         await _workSpaceRepository.AddAsync(workSpace, cancellationToken);
 
-        return MapToDto(workSpace);
+        return _mapper.Map<WorkSpaceDto>(workSpace);
     }
 
     public async Task<WorkSpaceDto> UpdateAsync(UpdateWorkSpaceDto input, CancellationToken cancellationToken = default)
@@ -65,7 +69,7 @@ public class WorkSpaceAppService : IWorkSpaceAppService
 
         await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
 
-        return MapToDto(workSpace);
+        return _mapper.Map<WorkSpaceDto>(workSpace);
     }
 
     public async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
@@ -79,30 +83,29 @@ public class WorkSpaceAppService : IWorkSpaceAppService
     public async Task<WorkSpaceDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
         var workSpace = await _workSpaceRepository.GetByIdAsync(id, cancellationToken);
-        return workSpace == null ? null : MapToDto(workSpace);
+        if (workSpace == null) return null;
+
+        var folderIds = await _workSpaceRepository.GetWorkFolderIdsByWorkSpaceIdAsync(id, cancellationToken);
+        return MapToDto(workSpace, folderIds);
     }
 
     public async Task<IReadOnlyList<WorkSpaceDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
         var workSpaces = await _workSpaceRepository.GetAllWithProjectCountAsync(cancellationToken);
-
-        // 加载每个工作空间的文件夹关联
-        var result = new List<WorkSpaceDto>();
-        foreach (var workSpace in workSpaces)
-        {
-            var folderIds = await _workSpaceRepository.GetWorkFolderIdsByWorkSpaceIdAsync(workSpace.Id, cancellationToken);
-            var dto = MapToDto(workSpace, folderIds);
-            result.Add(dto);
-        }
-
-        return result;
+        return await MapWorkSpacesToDtosAsync(workSpaces, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpaceDto>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default)
     {
         var workSpaces = await _workSpaceRepository.GetRecentlyOpenedAsync(count, cancellationToken);
+        return await MapWorkSpacesToDtosAsync(workSpaces, cancellationToken);
+    }
 
-        // 加载每个工作空间的文件夹关联
+    /// <summary>
+    /// 将工作空间列表映射为 DTO 列表
+    /// </summary>
+    private async Task<IReadOnlyList<WorkSpaceDto>> MapWorkSpacesToDtosAsync(IEnumerable<WorkSpace> workSpaces, CancellationToken cancellationToken)
+    {
         var result = new List<WorkSpaceDto>();
         foreach (var workSpace in workSpaces)
         {
@@ -110,7 +113,6 @@ public class WorkSpaceAppService : IWorkSpaceAppService
             var dto = MapToDto(workSpace, folderIds);
             result.Add(dto);
         }
-
         return result;
     }
 
@@ -161,7 +163,11 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         {
             WorkSpaceId = workSpace.Id,
             WorkSpaceName = workSpace.Name,
-            AllProjects = projectSettings.Select(p => new ProjectDto { Id = p.ProjectId, Name = p.ProjectName }).ToList(),
+            AllProjects = projectSettings.Select(p => new ProjectDto
+            {
+                Id = p.ProjectId,
+                Name = p.ProjectName
+            }).ToList(),
             ProjectSettings = projectSettings
         };
     }
@@ -183,13 +189,7 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         // 更新启动顺序配置
         if (input.LaunchOrders != null)
         {
-            var launchOrders = input.LaunchOrders
-                .Select(o => new WorkSpaceProjectLaunchOrder
-                {
-                    ProjectId = o.ProjectId,
-                    Order = o.Order,
-                    IntervalSeconds = o.IntervalSeconds
-                });
+            var launchOrders = _mapper.Map<List<WorkSpaceProjectLaunchOrder>>(input.LaunchOrders);
             workSpace.SetLaunchOrder(launchOrders);
             await _workSpaceRepository.UpdateAsync(workSpace, cancellationToken);
         }
@@ -309,47 +309,14 @@ public class WorkSpaceAppService : IWorkSpaceAppService
     public async Task<IReadOnlyList<WorkSpaceDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default)
     {
         var workSpaces = await _workSpaceRepository.GetByWorkFolderIdAsync(workFolderId, cancellationToken);
-
-        // 加载每个工作空间的文件夹关联
-        var result = new List<WorkSpaceDto>();
-        foreach (var workSpace in workSpaces)
-        {
-            var folderIds = await _workSpaceRepository.GetWorkFolderIdsByWorkSpaceIdAsync(workSpace.Id, cancellationToken);
-            var dto = MapToDto(workSpace, folderIds);
-            result.Add(dto);
-        }
-
-        return result;
+        return await MapWorkSpacesToDtosAsync(workSpaces, cancellationToken);
     }
 
-    private static WorkSpaceDto MapToDto(WorkSpace workSpace, IReadOnlyList<long>? folderIds = null)
+    private WorkSpaceDto MapToDto(WorkSpace workSpace, IReadOnlyList<long>? folderIds = null)
     {
-        return new WorkSpaceDto
-        {
-            Id = workSpace.Id,
-            Name = workSpace.Name,
-            Description = workSpace.Description,
-            IconPath = workSpace.IconPath,
-            SortOrder = workSpace.SortOrder,
-            ProjectCount = workSpace.ProjectCount,
-            IsFavorite = workSpace.IsFavorite,
-            FavoritedAt = workSpace.FavoritedAt,
-            LastOpenedAt = workSpace.LastOpenedAt,
-            CreatedAt = workSpace.CreatedAt,
-            UpdatedAt = workSpace.UpdatedAt,
-
-            WorkFolderIds = folderIds ?? [],
-
-            UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder,
-            DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds,
-            LaunchOrders = workSpace.GetLaunchOrder()
-                .Select(o => new WorkSpaceProjectLaunchOrderDto
-                {
-                    ProjectId = o.ProjectId,
-                    Order = o.Order,
-                    IntervalSeconds = o.IntervalSeconds
-                })
-                .ToList()
-        };
+        var dto = _mapper.Map<WorkSpaceDto>(workSpace);
+        dto.WorkFolderIds = folderIds ?? [];
+        dto.LaunchOrders = _mapper.Map<List<WorkSpaceProjectLaunchOrderDto>>(workSpace.GetLaunchOrder());
+        return dto;
     }
 }
