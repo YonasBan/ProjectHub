@@ -198,6 +198,7 @@
                     <ComboBox
                         Margin="0,0,0,16"
                         DisplayMemberPath="DisplayName"
+                        ItemContainerStyle="{DynamicResource VSCodeComboBoxItemStyle}"
                         ItemsSource="{Binding LaunchTypeItems}"
                         SelectedValue="{Binding LaunchType}"
                         SelectedValuePath="Type"
