@@ -77,8 +77,6 @@ namespace ProjectHub.Infrastructure.Migrations
                     IconPath = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
                     SortOrder = table.Column<int>(type: "INTEGER", nullable: false),
                     ParentId = table.Column<long>(type: "INTEGER", nullable: true),
-                    ProjectCount = table.Column<int>(type: "INTEGER", nullable: false),
-                    WorkSpaceCount = table.Column<int>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: true),
                     IsDeleted = table.Column<bool>(type: "INTEGER", nullable: false),

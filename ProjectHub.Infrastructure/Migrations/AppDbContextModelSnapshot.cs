@@ -302,17 +302,11 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<long?>("ParentId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("ProjectCount")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("SortOrder")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("WorkSpaceCount")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 

@@ -502,6 +502,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         IconPath = LaunchType switch
         {
             LaunchType.OpenWebUrl => "Images/explorer.png",
+            LaunchType.OpenCmd=> "Images/CMD.png",
             _ => null
         };
     }
