@@ -5,7 +5,7 @@
     xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
+    xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels.DialogViewModel;assembly=ProjectHub.Application"
     Title="{Binding DialogTitle}"
     Width="560"
     Height="Auto"
