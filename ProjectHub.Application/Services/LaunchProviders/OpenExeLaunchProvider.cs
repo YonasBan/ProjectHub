@@ -24,11 +24,7 @@ public class OpenExeLaunchProvider : ILaunchProvider
         {
             throw new InvalidOperationException("打开 EXE 模式需要指定程序路径");
         }
-
-        var arguments = string.IsNullOrWhiteSpace(project.LaunchArguments)
-            ? project.Path
-            : $"{project.LaunchArguments} \"{project.Path}\"";
             
-        return _processLauncher.LaunchWithProgramAsync(project.DefaultProgram, arguments);
+        return _processLauncher.LaunchWithProgramAsync(project.DefaultProgram, project.LaunchArguments, project.RunAsAdmin);
     }
 }

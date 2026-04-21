@@ -84,8 +84,16 @@
                     Text="{Binding DataContext.L.ProjectDialog_ArgumentsLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBox
                     MaxLength="500"
+                    Margin="0,0,0,12"
                     Style="{DynamicResource VSCodeTextBoxStyle}"
                     Text="{Binding DataContext.LaunchArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!--  以管理员身份运行  -->
+                <CheckBox
+                    Content="{Binding DataContext.L.ProjectDialog_RunAsAdmin, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    IsChecked="{Binding DataContext.RunAsAdmin, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Style="{DynamicResource VSCodeCheckBoxStyle}" />
             </StackPanel>
         </DataTemplate>
 
@@ -123,8 +131,16 @@
                     Text="{Binding DataContext.L.ProjectDialog_ArgumentsLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBox
                     MaxLength="500"
+                    Margin="0,0,0,12"
                     Style="{DynamicResource VSCodeTextBoxStyle}"
                     Text="{Binding DataContext.LaunchArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+
+                <!--  以管理员身份运行  -->
+                <CheckBox
+                    Content="{Binding DataContext.L.ProjectDialog_RunAsAdmin, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
+                    IsChecked="{Binding DataContext.RunAsAdmin, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Style="{DynamicResource VSCodeCheckBoxStyle}" />
             </StackPanel>
         </DataTemplate>
 

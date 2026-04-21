@@ -125,6 +125,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     }
 
     /// <summary>
+    /// 是否以管理员身份运行
+    /// </summary>
+    private bool _runAsAdmin;
+    public bool RunAsAdmin
+    {
+        get => _runAsAdmin;
+        set => this.RaiseAndSetIfChanged(ref _runAsAdmin, value);
+    }
+
+    /// <summary>
     /// 项目描述
     /// </summary>
     private string _description = string.Empty;
@@ -270,6 +280,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         DefaultProgram = project.DefaultProgram ?? string.Empty;
         LaunchArguments = project.LaunchArguments ?? string.Empty;
         WebUrl = project.WebUrl ?? string.Empty;
+        RunAsAdmin = project.RunAsAdmin;
 
         this.RaisePropertyChanged(nameof(DialogTitle));
         this.RaisePropertyChanged(nameof(ConfirmButtonText));
@@ -287,6 +298,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         DefaultProgram = string.Empty;
         LaunchArguments = string.Empty;
         WebUrl = string.Empty;
+        RunAsAdmin = false;
         Description = string.Empty;
         IconPath = null;
         ErrorMessage = null;
@@ -496,7 +508,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
                     ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
                     : null,
-                WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null
+                WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null,
+                RunAsAdmin = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) ? RunAsAdmin : false
             };
 
             if (_projectAppService != null)
@@ -533,7 +546,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
                         ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
                         : null,
-                    WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null
+                    WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null,
+                    RunAsAdmin = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) ? RunAsAdmin : false
                 };
 
                 var result = await _projectAppService.UpdateAsync(updateDto);

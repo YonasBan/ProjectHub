@@ -529,6 +529,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 启动参数（可选） 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_ArgumentsLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_ArgumentsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 浏览... 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_Browse {
@@ -592,29 +601,11 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 启动参数（可选） 的本地化字符串。
+        ///   查找类似 打开 exe 的本地化字符串。
         /// </summary>
-        public static string ProjectDialog_ArgumentsLabel {
+        public static string ProjectDialog_LaunchType_OpenExe {
             get {
-                return ResourceManager.GetString("ProjectDialog_ArgumentsLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 网页链接（多个用分号分隔） 的本地化字符串。
-        /// </summary>
-        public static string ProjectDialog_WebUrlLabel {
-            get {
-                return ResourceManager.GetString("ProjectDialog_WebUrlLabel", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 启动方式 的本地化字符串。
-        /// </summary>
-        public static string ProjectDialog_LaunchTypeLabel {
-            get {
-                return ResourceManager.GetString("ProjectDialog_LaunchTypeLabel", resourceCulture);
+                return ResourceManager.GetString("ProjectDialog_LaunchType_OpenExe", resourceCulture);
             }
         }
         
@@ -628,20 +619,20 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
-        ///   查找类似 打开 exe 的本地化字符串。
-        /// </summary>
-        public static string ProjectDialog_LaunchType_OpenExe {
-            get {
-                return ResourceManager.GetString("ProjectDialog_LaunchType_OpenExe", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   查找类似 打开网页 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_LaunchType_OpenWebUrl {
             get {
                 return ResourceManager.GetString("ProjectDialog_LaunchType_OpenWebUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动方式 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_LaunchTypeLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_LaunchTypeLabel", resourceCulture);
             }
         }
         
@@ -678,6 +669,15 @@ namespace ProjectHub.Resources.Strings {
         public static string ProjectDialog_ResetIcon {
             get {
                 return ResourceManager.GetString("ProjectDialog_ResetIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 以管理员身份运行 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_RunAsAdmin {
+            get {
+                return ResourceManager.GetString("ProjectDialog_RunAsAdmin", resourceCulture);
             }
         }
         
@@ -732,6 +732,15 @@ namespace ProjectHub.Resources.Strings {
         public static string ProjectDialog_Title_Edit {
             get {
                 return ResourceManager.GetString("ProjectDialog_Title_Edit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 网页链接（多个用分号分隔） 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_WebUrlLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_WebUrlLabel", resourceCulture);
             }
         }
         

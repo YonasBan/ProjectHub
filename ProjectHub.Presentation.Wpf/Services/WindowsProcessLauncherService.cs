@@ -9,7 +9,7 @@ namespace ProjectHub.Presentation.Wpf.Services;
 /// </summary>
 public class WindowsProcessLauncherService : IProcessLauncherService
 {
-    public Task<bool> LaunchWithDefaultProgramAsync(string filePath)
+    public Task<bool> LaunchWithDefaultProgramAsync(string filePath, bool runAsAdmin = false)
     {
         try
         {
@@ -17,7 +17,7 @@ public class WindowsProcessLauncherService : IProcessLauncherService
             {
                 FileName = filePath,
                 UseShellExecute = true,
-                Verb = "open"
+                Verb = runAsAdmin ? "runas" : "open"
             };
 
             Process.Start(startInfo);
@@ -29,15 +29,16 @@ public class WindowsProcessLauncherService : IProcessLauncherService
         }
     }
 
-    public Task<bool> LaunchWithProgramAsync(string program, string arguments)
+    public Task<bool> LaunchWithProgramAsync(string program, string arguments, bool runAsAdmin = false)
     {
         try
         {
             var startInfo = new ProcessStartInfo
             {
                 FileName = program,
-                Arguments = $"\"{arguments}\"",
-                UseShellExecute = false,
+                Arguments = arguments,
+                UseShellExecute = true,
+                Verb = runAsAdmin ? "runas" : "open",
                 CreateNoWindow = false
             };
 

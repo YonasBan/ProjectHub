@@ -146,13 +146,14 @@ public class LocalizedStrings : ReactiveObject
     public string ProjectDialog_NameLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_NameLabel;
     public string ProjectDialog_PathLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_PathLabel;
     public string ProjectDialog_ProgramLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_ProgramLabel;
-    public string ProjectDialog_IconLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_IconLabel;
     public string ProjectDialog_ArgumentsLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_ArgumentsLabel;
+    public string ProjectDialog_RunAsAdmin => ProjectHub.Resources.Strings.Strings.ProjectDialog_RunAsAdmin;
     public string ProjectDialog_WebUrlLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_WebUrlLabel;
-    public string ProjectDialog_LaunchTypeLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchTypeLabel;
     public string ProjectDialog_LaunchType_OpenFile => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenFile;
     public string ProjectDialog_LaunchType_OpenExe => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenExe;
     public string ProjectDialog_LaunchType_OpenWebUrl => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenWebUrl;
+    public string ProjectDialog_LaunchTypeLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchTypeLabel;
+    public string ProjectDialog_IconLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_IconLabel;
     public string ProjectDialog_Error_EmptyName => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyName;
     public string ProjectDialog_Error_EmptyPath => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyPath;
     public string ProjectDialog_Error_EmptyProgram => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyProgram;

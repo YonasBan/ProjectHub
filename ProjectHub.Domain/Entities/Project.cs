@@ -129,6 +129,12 @@ public class Project : BaseEntity
     /// </summary>
     public LaunchType LaunchType { get; private set; } = LaunchType.OpenFile;
 
+    /// <summary>
+    /// 是否以管理员身份运行
+    /// 仅对打开文件和打开 exe 模式有效
+    /// </summary>
+    public bool RunAsAdmin { get; private set; }
+
     // ========== 导航属性 ==========
 
     /// <summary>
@@ -230,6 +236,15 @@ public class Project : BaseEntity
     public void SetLaunchType(LaunchType launchType)
     {
         LaunchType = launchType;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置是否以管理员身份运行
+    /// </summary>
+    public void SetRunAsAdmin(bool runAsAdmin)
+    {
+        RunAsAdmin = runAsAdmin;
         UpdatedAt = DateTime.UtcNow;
     }
 

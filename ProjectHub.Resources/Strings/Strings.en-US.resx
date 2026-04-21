@@ -294,6 +294,27 @@
   <data name="ProjectDialog_ProgramLabel" xml:space="preserve">
     <value>Default Program</value>
   </data>
+  <data name="ProjectDialog_ArgumentsLabel" xml:space="preserve">
+    <value>Launch Arguments (Optional)</value>
+  </data>
+  <data name="ProjectDialog_RunAsAdmin" xml:space="preserve">
+    <value>Run as Administrator</value>
+  </data>
+  <data name="ProjectDialog_WebUrlLabel" xml:space="preserve">
+    <value>Web URL (Multiple URLs separated by semicolon)</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenFile" xml:space="preserve">
+    <value>Open File</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenExe" xml:space="preserve">
+    <value>Open EXE</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenWebUrl" xml:space="preserve">
+    <value>Open Web URL</value>
+  </data>
+  <data name="ProjectDialog_LaunchTypeLabel" xml:space="preserve">
+    <value>Launch Type</value>
+  </data>
   <data name="ProjectDialog_IconLabel" xml:space="preserve">
     <value>Project Icon</value>
   </data>
@@ -305,6 +326,9 @@
   </data>
   <data name="ProjectDialog_Error_EmptyProgram" xml:space="preserve">
     <value>Please select default program</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyWebUrl" xml:space="preserve">
+    <value>Please enter web URL</value>
   </data>
   <data name="ProjectDialog_Browse" xml:space="preserve">
     <value>Browse...</value>

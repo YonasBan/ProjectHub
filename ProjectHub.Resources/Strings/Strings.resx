@@ -297,6 +297,9 @@
   <data name="ProjectDialog_ArgumentsLabel" xml:space="preserve">
     <value>启动参数（可选）</value>
   </data>
+  <data name="ProjectDialog_RunAsAdmin" xml:space="preserve">
+    <value>以管理员身份运行</value>
+  </data>
   <data name="ProjectDialog_WebUrlLabel" xml:space="preserve">
     <value>网页链接（多个用分号分隔）</value>
   </data>

@@ -10,16 +10,18 @@ public interface IProcessLauncherService
     /// 使用系统默认关联程序启动文件
     /// </summary>
     /// <param name="filePath">文件路径</param>
+    /// <param name="runAsAdmin">是否以管理员身份运行</param>
     /// <returns>启动是否成功</returns>
-    Task<bool> LaunchWithDefaultProgramAsync(string filePath);
+    Task<bool> LaunchWithDefaultProgramAsync(string filePath, bool runAsAdmin = false);
 
     /// <summary>
     /// 使用指定程序启动文件
     /// </summary>
     /// <param name="program">程序路径</param>
     /// <param name="arguments">启动参数（通常是文件路径）</param>
+    /// <param name="runAsAdmin">是否以管理员身份运行</param>
     /// <returns>启动是否成功</returns>
-    Task<bool> LaunchWithProgramAsync(string program, string arguments);
+    Task<bool> LaunchWithProgramAsync(string program, string arguments, bool runAsAdmin = false);
 
     /// <summary>
     /// 检查文件是否存在

@@ -33,10 +33,10 @@ public class OpenFileLaunchProvider : ILaunchProvider
             var arguments = string.IsNullOrWhiteSpace(project.LaunchArguments)
                 ? path
                 : $"{project.LaunchArguments} \"{path}\"";
-            return _processLauncher.LaunchWithProgramAsync(project.DefaultProgram, arguments);
+            return _processLauncher.LaunchWithProgramAsync(project.DefaultProgram, arguments, project.RunAsAdmin);
         }
         
         // 否则使用系统默认程序
-        return _processLauncher.LaunchWithDefaultProgramAsync(path);
+        return _processLauncher.LaunchWithDefaultProgramAsync(path, project.RunAsAdmin);
     }
 }

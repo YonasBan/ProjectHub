@@ -40,6 +40,7 @@ public class ProjectDto
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
+    public bool RunAsAdmin { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
@@ -69,6 +70,7 @@ public class CreateProjectDto
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
+    public bool RunAsAdmin { get; set; }
 }
 
 /// <summary>
@@ -88,6 +90,7 @@ public class UpdateProjectDto
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
+    public bool RunAsAdmin { get; set; }
     public DateTime? Deadline { get; set; }
     public long? CustomerId { get; set; }
     public string? CustomIconPath { get; set; }

@@ -49,6 +49,7 @@ public class ProjectAppService : IProjectAppService
         
         // 设置启动类型
         project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);
+        project.SetRunAsAdmin(input.RunAsAdmin);
 
         // 设置可选字段
         if (!string.IsNullOrWhiteSpace(input.LaunchArguments))
