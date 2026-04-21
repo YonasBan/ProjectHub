@@ -122,6 +122,18 @@ public class Project : BaseEntity
     public string? CmdCommand { get; private set; }
 
     /// <summary>
+    /// CMD 工作目录 (可选)
+    /// 用于 OpenCmd 启动类型
+    /// </summary>
+    public string? CmdWorkingDirectory { get; private set; }
+
+    /// <summary>
+    /// CMD 执行后是否保持窗口打开
+    /// 默认 false (执行完自动关闭)，true 则保持窗口不消失
+    /// </summary>
+    public bool CmdKeepWindowOpen { get; private set; }
+
+    /// <summary>
     /// 启动类型
     /// OpenFile = 0,     // 打开文件
     /// OpenExe = 1,      // 打开 exe
@@ -236,6 +248,24 @@ public class Project : BaseEntity
     public void SetCmdCommand(string? cmdCommand)
     {
         CmdCommand = cmdCommand;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置 CMD 工作目录
+    /// </summary>
+    public void SetCmdWorkingDirectory(string? workingDirectory)
+    {
+        CmdWorkingDirectory = workingDirectory;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置 CMD 执行后是否保持窗口打开
+    /// </summary>
+    public void SetCmdKeepWindowOpen(bool keepOpen)
+    {
+        CmdKeepWindowOpen = keepOpen;
         UpdatedAt = DateTime.UtcNow;
     }
 

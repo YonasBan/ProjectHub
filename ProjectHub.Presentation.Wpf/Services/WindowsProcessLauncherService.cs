@@ -29,7 +29,7 @@ public class WindowsProcessLauncherService : IProcessLauncherService
         }
     }
 
-    public Task<bool> LaunchWithProgramAsync(string program, string arguments, bool runAsAdmin = false)
+    public Task<bool> LaunchWithProgramAsync(string program, string arguments, bool runAsAdmin = false, string? workingDirectory = null)
     {
         try
         {
@@ -41,6 +41,11 @@ public class WindowsProcessLauncherService : IProcessLauncherService
                 Verb = runAsAdmin ? "runas" : "open",
                 CreateNoWindow = false
             };
+
+            if (!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                startInfo.WorkingDirectory = workingDirectory;
+            }
 
             Process.Start(startInfo);
             return Task.FromResult(true);

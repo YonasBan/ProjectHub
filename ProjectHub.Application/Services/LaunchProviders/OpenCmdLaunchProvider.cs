@@ -25,7 +25,13 @@ public class OpenCmdLaunchProvider : ILaunchProvider
             throw new InvalidOperationException("运行 CMD 命令模式需要指定要执行的命令");
         }
 
-        // 使用 cmd.exe /c 执行命令
-        await _processLauncher.LaunchWithProgramAsync("cmd.exe", $"/c {project.CmdCommand}");
+        // 使用 cmd.exe /c 执行命令，并设置工作目录
+        // 如果勾选了保持窗口打开，则使用 /k 参数
+        var cmdArg = project.CmdKeepWindowOpen ? "/k" : "/c";
+        await _processLauncher.LaunchWithProgramAsync(
+            "cmd.exe", 
+            $"{cmdArg} {project.CmdCommand}", 
+            false,
+            !string.IsNullOrWhiteSpace(project.CmdWorkingDirectory) ? project.CmdWorkingDirectory : null);
     }
 }

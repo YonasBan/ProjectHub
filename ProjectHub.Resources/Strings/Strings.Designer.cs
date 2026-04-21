@@ -655,6 +655,24 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 工作目录 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_CmdWorkingDirectoryLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_CmdWorkingDirectoryLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 执行后保持窗口打开 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_CmdKeepWindowOpen {
+            get {
+                return ResourceManager.GetString("ProjectDialog_CmdKeepWindowOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 启动方式 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_LaunchTypeLabel {

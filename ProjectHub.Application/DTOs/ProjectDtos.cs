@@ -14,16 +14,6 @@ public class ProjectDto
     public string? CustomIconPath { get; set; }
     public string? Description { get; set; }
 
-    /// <summary>
-    /// 关联的工作文件夹 ID 列表
-    /// </summary>
-    public IReadOnlyList<long> WorkFolderIds { get; set; } = [];
-
-    /// <summary>
-    /// 关联的工作空间 ID 列表
-    /// </summary>
-    public IReadOnlyList<long> WorkSpaceIds { get; set; } = [];
-
     public DateTime? LastOpenedAt { get; set; }
     public DateTime? LastModifiedAt { get; set; }
     public int LaunchCount { get; set; }
@@ -39,6 +29,8 @@ public class ProjectDto
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
     public string? CmdCommand { get; set; }
+    public string? CmdWorkingDirectory { get; set; }
+    public bool CmdKeepWindowOpen { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public bool RunAsAdmin { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -67,6 +59,8 @@ public class CreateProjectDto
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
     public string? CmdCommand { get; set; }
+    public string? CmdWorkingDirectory { get; set; }
+    public bool CmdKeepWindowOpen { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public bool RunAsAdmin { get; set; }
 }
@@ -88,6 +82,8 @@ public class UpdateProjectDto
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
     public string? CmdCommand { get; set; }
+    public string? CmdWorkingDirectory { get; set; }
+    public bool CmdKeepWindowOpen { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public bool RunAsAdmin { get; set; }
     public DateTime? Deadline { get; set; }

@@ -20,8 +20,9 @@ public interface IProcessLauncherService
     /// <param name="program">程序路径</param>
     /// <param name="arguments">启动参数（通常是文件路径）</param>
     /// <param name="runAsAdmin">是否以管理员身份运行</param>
+    /// <param name="workingDirectory">工作目录</param>
     /// <returns>启动是否成功</returns>
-    Task<bool> LaunchWithProgramAsync(string program, string arguments, bool runAsAdmin = false);
+    Task<bool> LaunchWithProgramAsync(string program, string arguments, bool runAsAdmin = false, string? workingDirectory = null);
 
     /// <summary>
     /// 检查文件是否存在

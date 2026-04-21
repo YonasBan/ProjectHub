@@ -91,6 +91,25 @@ public class DialogService : IDialogService
         return dialog.ShowDialog() == true ? dialog.FileName : null;
     }
 
+    public string? ShowSelectFolderDialog(string title)
+    {
+        var dialog = new System.Windows.Forms.FolderBrowserDialog
+        {
+            Description = title,
+            UseDescriptionForTitle = true
+        };
+
+        // 使用 WPF 窗口句柄作为父窗口
+        var owner = GetActiveWindow();
+        if (owner != null)
+        {
+            var helper = new System.Windows.Interop.WindowInteropHelper(owner);
+            // FolderBrowserDialog 在 .NET Core/WPF 中需要通过 Win32 API 设置 Owner，这里简化处理
+        }
+
+        return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK ? dialog.SelectedPath : null;
+    }
+
     public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(TViewModel viewModel)
         where TViewModel : IDialogViewModel<TResult>
     {

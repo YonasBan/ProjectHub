@@ -18,6 +18,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     private readonly IDialogService _dialogService;
     private readonly IFileAssociationService _fileAssociationService;
     private readonly IProjectAppService? _projectAppService;
+    private bool _isIconCustomized = false;
 
     /// <summary>
     /// 对话框模式：添加或编辑
@@ -74,6 +75,26 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         get => _cmdCommand;
         set => this.RaiseAndSetIfChanged(ref _cmdCommand, value);
+    }
+
+    /// <summary>
+    /// CMD 工作目录（可选）
+    /// </summary>
+    private string _cmdWorkingDirectory = string.Empty;
+    public string CmdWorkingDirectory
+    {
+        get => _cmdWorkingDirectory;
+        set => this.RaiseAndSetIfChanged(ref _cmdWorkingDirectory, value);
+    }
+
+    /// <summary>
+    /// CMD 执行后是否保持窗口打开
+    /// </summary>
+    private bool _cmdKeepWindowOpen;
+    public bool CmdKeepWindowOpen
+    {
+        get => _cmdKeepWindowOpen;
+        set => this.RaiseAndSetIfChanged(ref _cmdKeepWindowOpen, value);
     }
 
     /// <summary>
@@ -151,6 +172,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     public ReactiveCommand<Unit, Unit> BrowseIconCommand { get; }
 
     /// <summary>
+    /// 浏览工作目录命令
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> BrowseWorkingDirectoryCommand { get; }
+
+    /// <summary>
     /// 重置图标命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> ResetIconCommand { get; }
@@ -211,6 +237,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         BrowsePathCommand = ReactiveCommand.Create(BrowsePath);
         BrowseProgramCommand = ReactiveCommand.Create(BrowseProgram);
         BrowseIconCommand = ReactiveCommand.Create(BrowseIcon);
+        BrowseWorkingDirectoryCommand = ReactiveCommand.Create(BrowseWorkingDirectory);
         ResetIconCommand = ReactiveCommand.Create(ResetIcon);
 
         // 响应式验证逻辑：当任何相关属性变化时自动重新计算错误信息和按钮状态
@@ -232,9 +259,9 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 {
                     LaunchType.OpenFile => string.IsNullOrWhiteSpace(path) ? L.ProjectDialog_Error_EmptyPath : null,
                     LaunchType.OpenExe => string.IsNullOrWhiteSpace(program) ? L.ProjectDialog_Error_EmptyProgram : null,
-                    LaunchType.OpenWebUrl => 
-                        string.IsNullOrWhiteSpace(webUrl) || webUrl.Split(';', StringSplitOptions.RemoveEmptyEntries).Length == 0 
-                            ? L.ProjectDialog_Error_EmptyWebUrl 
+                    LaunchType.OpenWebUrl =>
+                        string.IsNullOrWhiteSpace(webUrl) || webUrl.Split(';', StringSplitOptions.RemoveEmptyEntries).Length == 0
+                            ? L.ProjectDialog_Error_EmptyWebUrl
                             : null,
                     LaunchType.OpenCmd => string.IsNullOrWhiteSpace(cmdCommand) ? L.ProjectDialog_Error_EmptyCmdCommand : null,
                     _ => null
@@ -251,9 +278,9 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             .DisposeWith(Disposables);
 
         // 确认按钮可用性：没有错误且项目名称不为空
-        var canConfirm = this.WhenAnyValue(x => x.HasError, x => x.ProjectName, 
+        var canConfirm = this.WhenAnyValue(x => x.HasError, x => x.ProjectName,
             (hasError, name) => !hasError && !string.IsNullOrWhiteSpace(name));
-        
+
         ConfirmCommand = ReactiveCommand.CreateFromTask(ConfirmAsync, canConfirm);
 
         // 响应式图标更新逻辑
@@ -270,6 +297,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     /// </summary>
     private void UpdateIcon()
     {
+        if (_isIconCustomized) return;
         if (!string.IsNullOrWhiteSpace(DefaultProgram))
         {
             IconPath = DefaultProgram;
@@ -315,6 +343,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         ProjectName = project.Name;
         ProjectPath = project.Path;
         Description = project.Description ?? string.Empty;
+        _isIconCustomized = !string.IsNullOrEmpty(project.CustomIconPath); // ✅ 有自定义图标则标记
         IconPath = project.CustomIconPath;
 
         // 从项目配置中设置启动类型
@@ -323,6 +352,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         LaunchArguments = project.LaunchArguments ?? string.Empty;
         WebUrl = project.WebUrl ?? string.Empty;
         CmdCommand = project.CmdCommand ?? string.Empty;
+        CmdWorkingDirectory = project.CmdWorkingDirectory ?? string.Empty;
+        CmdKeepWindowOpen = project.CmdKeepWindowOpen;
         RunAsAdmin = project.RunAsAdmin;
 
         this.RaisePropertyChanged(nameof(DialogTitle));
@@ -342,11 +373,15 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         LaunchArguments = string.Empty;
         WebUrl = string.Empty;
         CmdCommand = string.Empty;
+        CmdWorkingDirectory = string.Empty;
+        CmdKeepWindowOpen = false;
         RunAsAdmin = false;
         Description = string.Empty;
         IconPath = null;
         ErrorMessage = null;
         HasError = false;
+        _isIconCustomized = false;  // ✅ 清除标志
+
     }
 
     private void BrowsePath()
@@ -417,18 +452,31 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     private void BrowseIcon()
     {
         var iconPath = _dialogService.ShowOpenFileDialog(
-            "选择图标|*.ico;*.png;*.jpg;*.jpeg|所有文件|*.*",
-            "选择图标文件");
+         "选择图标|*.ico;*.png;*.jpg;*.jpeg|所有文件|*.*",
+         "选择图标文件");
 
         if (!string.IsNullOrEmpty(iconPath))
         {
             IconPath = iconPath;
+            _isIconCustomized = true;  // ✅ 标记为用户自定义
             _logger.LogInformation($"用户选择了图标: {iconPath}");
+        }
+    }
+
+    private void BrowseWorkingDirectory()
+    {
+        var directory = _dialogService.ShowSelectFolderDialog("选择工作目录");
+
+        if (!string.IsNullOrEmpty(directory))
+        {
+            CmdWorkingDirectory = directory;
+            _logger.LogInformation($"用户选择了工作目录: {directory}");
         }
     }
 
     private void ResetIcon()
     {
+        _isIconCustomized = false;  // ✅ 清除自定义标志
         UpdateIcon();
         _logger.LogInformation("重置图标为默认");
     }
@@ -439,79 +487,75 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         {
             return;
         }
+        var f = BuildLaunchFields();  // ✅ 统一构建，不再重复
 
         if (Mode == DialogMode.Add)
         {
             _logger.LogInformation($"确认添加项目: {ProjectName}");
+            if (_projectAppService == null) { Close(null); return; }
 
-            // 创建 CreateProjectDto，根据启动类型设置相应字段
             var dto = new CreateProjectDto
             {
                 Name = ProjectName,
                 Description = Description,
                 CustomIconPath = IconPath,
                 LaunchType = LaunchType,
-                // 根据启动类型设置不同的路径字段
-                Path = LaunchType == LaunchType.OpenFile ? ProjectPath : string.Empty,
-                // 打开文件时，自定义程序和启动参数可选；打开 exe 时必填
-                DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
-                    ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram)
-                    : null,
-                LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
-                    ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
-                    : null,
-                WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null,
-                CmdCommand = LaunchType == LaunchType.OpenCmd ? (string.IsNullOrWhiteSpace(CmdCommand) ? null : CmdCommand) : null,
-                RunAsAdmin = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) ? RunAsAdmin : false
+                Path = f.path,
+                DefaultProgram = f.defaultProgram,
+                LaunchArguments = f.launchArguments,
+                WebUrl = f.webUrl,
+                CmdCommand = f.cmdCommand,
+                CmdWorkingDirectory = f.cmdWorkingDirectory,
+                CmdKeepWindowOpen = f.cmdKeepWindowOpen,
+                RunAsAdmin = f.runAsAdmin
             };
-
-            if (_projectAppService != null)
-            {
-                var result = await _projectAppService.CreateAsync(dto);
-                Close(result);
-            }
-            else
-            {
-                // 如果没有服务，返回 null（用于测试场景）
-                Close(null);
-            }
+            Close(await _projectAppService.CreateAsync(dto));
         }
         else
         {
-            _logger.LogInformation($"确认编辑项目: {ProjectName}, ID: {EditProjectId}");
+            if (_projectAppService == null || !EditProjectId.HasValue) { Close(null); return; }
 
-            if (_projectAppService != null && EditProjectId.HasValue)
+            var dto = new UpdateProjectDto
             {
-                // 创建 UpdateProjectDto，根据启动类型设置相应字段
-                var updateDto = new UpdateProjectDto
-                {
-                    Id = EditProjectId.Value,
-                    Name = ProjectName,
-                    Description = Description,
-                    CustomIconPath = IconPath,
-                    LaunchType = LaunchType,
-                    // 根据启动类型设置不同的路径字段
-                    Path = LaunchType == LaunchType.OpenFile ? ProjectPath : string.Empty,
-                    // 打开文件时，自定义程序和启动参数可选；打开 exe 时必填
-                    DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
-                        ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram)
-                        : null,
-                    LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
-                        ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
-                        : null,
-                    WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null,
-                    CmdCommand = LaunchType == LaunchType.OpenCmd ? (string.IsNullOrWhiteSpace(CmdCommand) ? null : CmdCommand) : null,
-                    RunAsAdmin = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) ? RunAsAdmin : false
-                };
-
-                var result = await _projectAppService.UpdateAsync(updateDto);
-                Close(result);
-            }
-            else
-            {
-                Close(null);
-            }
+                Id = EditProjectId.Value,
+                Name = ProjectName,
+                Description = Description,
+                CustomIconPath = IconPath,
+                LaunchType = LaunchType,
+                Path = f.path,
+                DefaultProgram = f.defaultProgram,
+                LaunchArguments = f.launchArguments,
+                WebUrl = f.webUrl,
+                CmdCommand = f.cmdCommand,
+                CmdWorkingDirectory = f.cmdWorkingDirectory,
+                CmdKeepWindowOpen = f.cmdKeepWindowOpen,
+                RunAsAdmin = f.runAsAdmin
+            };
+            Close(await _projectAppService.UpdateAsync(dto));
         }
+    }
+    // ✅ Bug3 & Bug4修复：提取公共方法，统一处理 Path，消除重复
+    private (string path, string? defaultProgram, string? launchArguments,
+             string? webUrl, string? cmdCommand, string? cmdWorkingDirectory,
+             bool cmdKeepWindowOpen, bool runAsAdmin) BuildLaunchFields()
+    {
+        var isFileOrExe = LaunchType is LaunchType.OpenFile or LaunchType.OpenExe;
+        var isCmd = LaunchType == LaunchType.OpenCmd;
+        var isWeb = LaunchType == LaunchType.OpenWebUrl;
+
+        return (
+            // ✅ Bug3修复：OpenExe 也保留 ProjectPath（作为传给程序的目标路径）
+            path: (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
+                  ? ProjectPath
+                  : string.Empty,
+            defaultProgram: isFileOrExe && !string.IsNullOrWhiteSpace(DefaultProgram) ? DefaultProgram : null,
+            launchArguments: isFileOrExe && !string.IsNullOrWhiteSpace(LaunchArguments) ? LaunchArguments : null,
+            webUrl: isWeb && !string.IsNullOrWhiteSpace(WebUrl) ? WebUrl : null,
+            cmdCommand: isCmd && !string.IsNullOrWhiteSpace(CmdCommand) ? CmdCommand : null,
+            cmdWorkingDirectory: isCmd && !string.IsNullOrWhiteSpace(CmdWorkingDirectory) ? CmdWorkingDirectory : null,
+            cmdKeepWindowOpen: isCmd && CmdKeepWindowOpen,
+            runAsAdmin: isFileOrExe && RunAsAdmin
+        );
     }
 }
 

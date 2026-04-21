@@ -26,6 +26,12 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<string>("CmdCommand")
                         .HasColumnType("TEXT");
 
+                    b.Property<bool>("CmdKeepWindowOpen")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CmdWorkingDirectory")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ColorTag")
                         .HasColumnType("TEXT");
 

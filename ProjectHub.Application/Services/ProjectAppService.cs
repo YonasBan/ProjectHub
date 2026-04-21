@@ -67,6 +67,13 @@ public class ProjectAppService : IProjectAppService
             project.SetCmdCommand(input.CmdCommand);
         }
 
+        if (!string.IsNullOrWhiteSpace(input.CmdWorkingDirectory))
+        {
+            project.SetCmdWorkingDirectory(input.CmdWorkingDirectory);
+        }
+
+        project.SetCmdKeepWindowOpen(input.CmdKeepWindowOpen);
+
         await _projectRepository.AddAsync(project, cancellationToken);
         return _mapper.Map<ProjectDto>(project);
     }
@@ -79,6 +86,7 @@ public class ProjectAppService : IProjectAppService
         // 更新基本信息
         project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments, input.CustomIconPath, input.WebUrl, input.Path);
         project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);
+        project.SetCmdKeepWindowOpen(input.CmdKeepWindowOpen);
 
         await _projectRepository.UpdateAsync(project, cancellationToken);
         return _mapper.Map<ProjectDto>(project);

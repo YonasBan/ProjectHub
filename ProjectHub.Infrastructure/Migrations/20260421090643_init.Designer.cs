@@ -11,7 +11,7 @@ using ProjectHub.Infrastructure.Persistence;
 namespace ProjectHub.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260421082110_init")]
+    [Migration("20260421090643_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -27,6 +27,12 @@ namespace ProjectHub.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("CmdCommand")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("CmdKeepWindowOpen")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CmdWorkingDirectory")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ColorTag")

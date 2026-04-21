@@ -321,6 +321,12 @@
   <data name="ProjectDialog_Error_EmptyCmdCommand" xml:space="preserve">
     <value>请输入要执行的 CMD 命令</value>
   </data>
+  <data name="ProjectDialog_CmdWorkingDirectoryLabel" xml:space="preserve">
+    <value>工作目录</value>
+  </data>
+  <data name="ProjectDialog_CmdKeepWindowOpen" xml:space="preserve">
+    <value>执行后保持窗口打开</value>
+  </data>
   <data name="ProjectDialog_LaunchTypeLabel" xml:space="preserve">
     <value>启动方式</value>
   </data>

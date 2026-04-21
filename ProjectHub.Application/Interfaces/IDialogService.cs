@@ -43,6 +43,9 @@ namespace ProjectHub.Application.Interfaces
         // 打开文件对话框
         string? ShowOpenFileDialog(string filter, string title);
 
+        // 选择文件夹对话框
+        string? ShowSelectFolderDialog(string title);
+
         // 自定义 ViewModel 弹窗（传入ViewModel实例）
         Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(
             TViewModel viewModel)

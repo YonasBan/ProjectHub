@@ -34,6 +34,8 @@ namespace ProjectHub.Infrastructure.Migrations
                     LaunchArguments = table.Column<string>(type: "TEXT", nullable: true),
                     WebUrl = table.Column<string>(type: "TEXT", nullable: true),
                     CmdCommand = table.Column<string>(type: "TEXT", nullable: true),
+                    CmdWorkingDirectory = table.Column<string>(type: "TEXT", nullable: true),
+                    CmdKeepWindowOpen = table.Column<bool>(type: "INTEGER", nullable: false),
                     LaunchType = table.Column<int>(type: "INTEGER", nullable: false),
                     RunAsAdmin = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
