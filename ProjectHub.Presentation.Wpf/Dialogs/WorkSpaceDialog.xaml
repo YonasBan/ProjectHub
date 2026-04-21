@@ -194,17 +194,21 @@
                                                         <Button
                                                             Width="28"
                                                             Height="28"
+                                                            Padding="0"
                                                             Command="{Binding DataContext.MoveUpCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                             CommandParameter="{Binding}"
                                                             Content="↑"
+                                                            FontSize="12"
                                                             Style="{DynamicResource SecondaryButtonStyle}" />
                                                         <Button
                                                             Width="28"
                                                             Height="28"
                                                             Margin="4,0,0,0"
+                                                            Padding="0"
                                                             Command="{Binding DataContext.MoveDownCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                                             CommandParameter="{Binding}"
                                                             Content="↓"
+                                                            FontSize="12"
                                                             Style="{DynamicResource SecondaryButtonStyle}" />
                                                     </StackPanel>
                                                 </Grid>
