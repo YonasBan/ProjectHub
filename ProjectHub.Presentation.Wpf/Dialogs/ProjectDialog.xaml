@@ -12,7 +12,6 @@
     Width="560"
     Height="Auto"
     MinHeight="520"
-    MaxHeight="700"
     d:DataContext="{d:DesignInstance viewmodels:ProjectDialogViewModel}"
     Background="{DynamicResource BgPrimaryBrush}"
     ResizeMode="NoResize"
@@ -83,8 +82,8 @@
                     Foreground="{DynamicResource TextSecondaryBrush}"
                     Text="{Binding DataContext.L.ProjectDialog_ArgumentsLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBox
-                    MaxLength="500"
                     Margin="0,0,0,12"
+                    MaxLength="500"
                     Style="{DynamicResource VSCodeTextBoxStyle}"
                     Text="{Binding DataContext.LaunchArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -130,8 +129,8 @@
                     Foreground="{DynamicResource TextSecondaryBrush}"
                     Text="{Binding DataContext.L.ProjectDialog_ArgumentsLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
                 <TextBox
-                    MaxLength="500"
                     Margin="0,0,0,12"
+                    MaxLength="500"
                     Style="{DynamicResource VSCodeTextBoxStyle}"
                     Text="{Binding DataContext.LaunchArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
 
@@ -174,11 +173,10 @@
     <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <!--  表单内容  -->
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="0">
 
             <!--  步骤1：启动方式选择（放在最上面）  -->
             <Border
@@ -312,7 +310,7 @@
 
         <!--  按钮区域  -->
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="1"
             Margin="0,20,0,0"
             HorizontalAlignment="Right"
             Orientation="Horizontal">
