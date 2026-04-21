@@ -39,70 +39,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     /// </summary>
     public string ConfirmButtonText => Mode == DialogMode.Add ? L.Confirm : L.Save;
 
-    private string _projectName = string.Empty;
-    public string ProjectName
-    {
-        get => _projectName;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _projectName, value);
-            ValidateInput();
-        }
-    }
-
-    private string _projectPath = string.Empty;
-    public string ProjectPath
-    {
-        get => _projectPath;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _projectPath, value);
-            ValidateInput();
-            UpdateIconFromPath();
-        }
-    }
-
-    /// <summary>
-    /// 启动类型（用于 ComboBox 绑定）
-    /// </summary>
-    private LaunchType _launchType = LaunchType.OpenFile;
-    public LaunchType LaunchType
-    {
-        get => _launchType;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _launchType, value);
-            ValidateInput();
-            // 切换启动类型时更新默认图标
-            if (string.IsNullOrWhiteSpace(ProjectPath) && string.IsNullOrWhiteSpace(DefaultProgram))
-            {
-                SetDefaultIcon();
-            }
-        }
-    }
-
-    /// <summary>
-    /// 启动类型列表（用于 ComboBox ItemsSource）
-    /// </summary>
-    public IReadOnlyList<LaunchTypeItem> LaunchTypeItems => new List<LaunchTypeItem>
-    {
-        new LaunchTypeItem(LaunchType.OpenFile, L.ProjectDialog_LaunchType_OpenFile),
-        new LaunchTypeItem(LaunchType.OpenExe, L.ProjectDialog_LaunchType_OpenExe),
-        new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl),
-        new LaunchTypeItem(LaunchType.OpenCmd, L.ProjectDialog_LaunchType_OpenCmd)
-    };
-
-
     private string _defaultProgram = string.Empty;
     public string DefaultProgram
     {
         get => _defaultProgram;
-        set
-        {
-            this.RaiseAndSetIfChanged(ref _defaultProgram, value);
-            ValidateInput();
-            UpdateIconFromProgram();
-        }
+        set => this.RaiseAndSetIfChanged(ref _defaultProgram, value);
     }
 
     /// <summary>
@@ -214,6 +155,47 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     /// </summary>
     public ReactiveCommand<Unit, Unit> ResetIconCommand { get; }
 
+    /// <summary>
+    /// 项目名称
+    /// </summary>
+    private string _projectName = string.Empty;
+    public string ProjectName
+    {
+        get => _projectName;
+        set => this.RaiseAndSetIfChanged(ref _projectName, value);
+    }
+
+    /// <summary>
+    /// 项目路径
+    /// </summary>
+    private string _projectPath = string.Empty;
+    public string ProjectPath
+    {
+        get => _projectPath;
+        set => this.RaiseAndSetIfChanged(ref _projectPath, value);
+    }
+
+    /// <summary>
+    /// 启动类型（用于 ComboBox 绑定）
+    /// </summary>
+    private LaunchType _launchType = LaunchType.OpenFile;
+    public LaunchType LaunchType
+    {
+        get => _launchType;
+        set => this.RaiseAndSetIfChanged(ref _launchType, value);
+    }
+
+    /// <summary>
+    /// 启动类型列表（用于 ComboBox ItemsSource）
+    /// </summary>
+    public IReadOnlyList<LaunchTypeItem> LaunchTypeItems => new List<LaunchTypeItem>
+    {
+        new LaunchTypeItem(LaunchType.OpenFile, L.ProjectDialog_LaunchType_OpenFile),
+        new LaunchTypeItem(LaunchType.OpenExe, L.ProjectDialog_LaunchType_OpenExe),
+        new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl),
+        new LaunchTypeItem(LaunchType.OpenCmd, L.ProjectDialog_LaunchType_OpenCmd)
+    };
+
     public ProjectDialogViewModel(
         ILogger<ProjectDialogViewModel> logger,
         IDialogService dialogService,
@@ -231,8 +213,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         BrowseIconCommand = ReactiveCommand.Create(BrowseIcon);
         ResetIconCommand = ReactiveCommand.Create(ResetIcon);
 
-        // 根据启动类型动态确定确认按钮是否可用
-        var canConfirm = this.WhenAnyValue(
+        // 响应式验证逻辑：当任何相关属性变化时自动重新计算错误信息和按钮状态
+        var validationObservable = this.WhenAnyValue(
             x => x.ProjectName,
             x => x.ProjectPath,
             x => x.DefaultProgram,
@@ -241,24 +223,71 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             x => x.LaunchType,
             (name, path, program, webUrl, cmdCommand, launchType) =>
             {
-                // 项目名称始终必填
+                // 项目名称必填
                 if (string.IsNullOrWhiteSpace(name))
-                    return false;
+                    return L.ProjectDialog_Error_EmptyName;
 
-                // 根据启动类型验证不同字段
+                // 根据启动类型验证不同的字段
                 return launchType switch
                 {
-                    LaunchType.OpenFile => !string.IsNullOrWhiteSpace(path),  // 打开文件：路径必填
-                    LaunchType.OpenExe => !string.IsNullOrWhiteSpace(program), // 打开 exe：程序必填
-                    LaunchType.OpenWebUrl => !string.IsNullOrWhiteSpace(webUrl) && webUrl.Split(';', StringSplitOptions.RemoveEmptyEntries).Length > 0, // 打开网页：链接必填，支持多个
-                    LaunchType.OpenCmd => !string.IsNullOrWhiteSpace(cmdCommand), // 运行 CMD：命令必填
-                    _ => false
+                    LaunchType.OpenFile => string.IsNullOrWhiteSpace(path) ? L.ProjectDialog_Error_EmptyPath : null,
+                    LaunchType.OpenExe => string.IsNullOrWhiteSpace(program) ? L.ProjectDialog_Error_EmptyProgram : null,
+                    LaunchType.OpenWebUrl => 
+                        string.IsNullOrWhiteSpace(webUrl) || webUrl.Split(';', StringSplitOptions.RemoveEmptyEntries).Length == 0 
+                            ? L.ProjectDialog_Error_EmptyWebUrl 
+                            : null,
+                    LaunchType.OpenCmd => string.IsNullOrWhiteSpace(cmdCommand) ? L.ProjectDialog_Error_EmptyCmdCommand : null,
+                    _ => null
                 };
             });
-        ConfirmCommand = ReactiveCommand.Create(Confirm, canConfirm);
 
-        // 设置默认图标
-        SetDefaultIcon();
+        // 订阅验证结果，更新错误信息
+        validationObservable
+            .Subscribe(errorMessage =>
+            {
+                ErrorMessage = errorMessage;
+                HasError = !string.IsNullOrEmpty(errorMessage);
+            })
+            .DisposeWith(Disposables);
+
+        // 确认按钮可用性：没有错误且项目名称不为空
+        var canConfirm = this.WhenAnyValue(x => x.HasError, x => x.ProjectName, 
+            (hasError, name) => !hasError && !string.IsNullOrWhiteSpace(name));
+        
+        ConfirmCommand = ReactiveCommand.CreateFromTask(ConfirmAsync, canConfirm);
+
+        // 响应式图标更新逻辑
+        this.WhenAnyValue(x => x.ProjectPath, x => x.DefaultProgram, x => x.LaunchType)
+            .Subscribe(_ => UpdateIcon())
+            .DisposeWith(Disposables);
+
+        // 设置初始图标
+        UpdateIcon();
+    }
+
+    /// <summary>
+    /// 更新图标逻辑
+    /// </summary>
+    private void UpdateIcon()
+    {
+        if (!string.IsNullOrWhiteSpace(DefaultProgram))
+        {
+            IconPath = DefaultProgram;
+        }
+        else if (!string.IsNullOrWhiteSpace(ProjectPath))
+        {
+            IconPath = ProjectPath;
+        }
+        else
+        {
+            // 根据启动类型设置默认图标
+            IconPath = LaunchType switch
+            {
+                LaunchType.OpenWebUrl => "Images/explorer.png",
+                LaunchType.OpenCmd => "Images/CMD.png",
+                _ => null
+            };
+        }
     }
 
     /// <summary>
@@ -320,72 +349,6 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         HasError = false;
     }
 
-    private void ValidateInput()
-    {
-        // 项目名称必填
-        if (string.IsNullOrWhiteSpace(ProjectName))
-        {
-            ErrorMessage = L.ProjectDialog_Error_EmptyName;
-            HasError = true;
-            return;
-        }
-
-        // 根据启动类型验证不同的字段
-        switch (LaunchType)
-        {
-            case LaunchType.OpenFile:
-                // 打开文件：项目路径必填，自定义程序和启动参数可选
-                if (string.IsNullOrWhiteSpace(ProjectPath))
-                {
-                    ErrorMessage = L.ProjectDialog_Error_EmptyPath;
-                    HasError = true;
-                    return;
-                }
-                break;
-
-            case LaunchType.OpenExe:
-                // 打开 exe：程序路径必填
-                if (string.IsNullOrWhiteSpace(DefaultProgram))
-                {
-                    ErrorMessage = L.ProjectDialog_Error_EmptyProgram;
-                    HasError = true;
-                    return;
-                }
-                break;
-
-            case LaunchType.OpenWebUrl:
-                // 打开网页：网页链接必填，支持多个链接用分号分隔
-                if (string.IsNullOrWhiteSpace(WebUrl))
-                {
-                    ErrorMessage = L.ProjectDialog_Error_EmptyWebUrl;
-                    HasError = true;
-                    return;
-                }
-                // 验证至少有一个有效的链接
-                var urls = WebUrl.Split(';', StringSplitOptions.RemoveEmptyEntries);
-                if (urls.Length == 0 || urls.All(string.IsNullOrWhiteSpace))
-                {
-                    ErrorMessage = L.ProjectDialog_Error_EmptyWebUrl;
-                    HasError = true;
-                    return;
-                }
-                break;
-
-            case LaunchType.OpenCmd:
-                // 运行 CMD：命令必填
-                if (string.IsNullOrWhiteSpace(CmdCommand))
-                {
-                    ErrorMessage = L.ProjectDialog_Error_EmptyCmdCommand;
-                    HasError = true;
-                    return;
-                }
-                break;
-        }
-
-        ErrorMessage = null;
-        HasError = false;
-    }
-
     private void BrowsePath()
     {
         var path = _dialogService.ShowOpenFileDialog(
@@ -404,9 +367,6 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
 
             // 自动检测默认打开方式
             DetectDefaultProgram(path);
-
-            // 更新图标
-            UpdateIconFromPath();
 
             _logger.LogInformation($"用户选择了路径: {path}");
         }
@@ -467,47 +427,13 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         }
     }
 
-    private void UpdateIconFromPath()
-    {
-        if (string.IsNullOrWhiteSpace(ProjectPath))
-        {
-            SetDefaultIcon();
-            return;
-        }
-
-        // 返回文件路径，由 View 层提取图标
-        IconPath = ProjectPath;
-    }
-
-    private void UpdateIconFromProgram()
-    {
-        if (string.IsNullOrWhiteSpace(DefaultProgram))
-        {
-            return;
-        }
-
-        // 优先使用程序图标
-        IconPath = DefaultProgram;
-    }
-
     private void ResetIcon()
     {
-        UpdateIconFromPath();
+        UpdateIcon();
         _logger.LogInformation("重置图标为默认");
     }
 
-    private void SetDefaultIcon()
-    {
-        // 根据启动类型设置默认图标
-        IconPath = LaunchType switch
-        {
-            LaunchType.OpenWebUrl => "Images/explorer.png",
-            LaunchType.OpenCmd=> "Images/CMD.png",
-            _ => null
-        };
-    }
-
-    private async void Confirm()
+    private async Task ConfirmAsync()
     {
         if (HasError || string.IsNullOrWhiteSpace(ProjectName))
         {
