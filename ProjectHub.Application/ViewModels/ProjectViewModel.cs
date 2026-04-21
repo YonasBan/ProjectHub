@@ -129,6 +129,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 
             if (result.Confirmed && result.Value != null)
             {
+                UpdateFromDto(result.Value);
                 _dialogService.ShowNotification(
                     string.Format(L.Message_ProjectUpdated, result.Value.Name),
                     NotificationType.Success,

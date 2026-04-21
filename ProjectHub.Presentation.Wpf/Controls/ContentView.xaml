@@ -184,11 +184,11 @@
                                 Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis" />
-                            <TextBlock
+                            <!--<TextBlock
                                 Margin="0,4,0,0"
                                 FontSize="11"
                                 Foreground="{DynamicResource TextMutedBrush}"
-                                Text="{Binding TypeDisplayName}" />
+                                Text="{Binding TypeDisplayName}" />-->
                         </StackPanel>
                     </Grid>
 

@@ -47,32 +47,8 @@ public class ProjectAppService : IProjectAppService
             input.CustomIconPath,
             input.Description);
         
-        // 设置启动类型
-        project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);
-        project.SetRunAsAdmin(input.RunAsAdmin);
-
-        // 设置可选字段
-        if (!string.IsNullOrWhiteSpace(input.LaunchArguments))
-        {
-            project.SetLaunchArguments(input.LaunchArguments);
-        }
-
-        if (!string.IsNullOrWhiteSpace(input.WebUrl))
-        {
-            project.SetWebUrl(input.WebUrl);
-        }
-
-        if (!string.IsNullOrWhiteSpace(input.CmdCommand))
-        {
-            project.SetCmdCommand(input.CmdCommand);
-        }
-
-        if (!string.IsNullOrWhiteSpace(input.CmdWorkingDirectory))
-        {
-            project.SetCmdWorkingDirectory(input.CmdWorkingDirectory);
-        }
-
-        project.SetCmdKeepWindowOpen(input.CmdKeepWindowOpen);
+        // 使用 AutoMapper 映射其余字段
+        _mapper.Map(input, project);
 
         await _projectRepository.AddAsync(project, cancellationToken);
         return _mapper.Map<ProjectDto>(project);
@@ -83,10 +59,8 @@ public class ProjectAppService : IProjectAppService
         var project = await _projectRepository.GetByIdAsync(input.Id, cancellationToken)
             ?? throw new KeyNotFoundException($"Project (Id={input.Id}) not found");
 
-        // 更新基本信息
-        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments, input.CustomIconPath, input.WebUrl, input.Path);
-        project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);
-        project.SetCmdKeepWindowOpen(input.CmdKeepWindowOpen);
+        // 使用 AutoMapper 映射更新字段
+        _mapper.Map(input, project);
 
         await _projectRepository.UpdateAsync(project, cancellationToken);
         return _mapper.Map<ProjectDto>(project);
