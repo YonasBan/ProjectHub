@@ -465,4 +465,10 @@
   <data name="Message_MoveToFolderFailed" xml:space="preserve">
     <value>Failed to move to folder</value>
   </data>
+  <data name="Dialog_MoveItemNotSet" xml:space="preserve">
+    <value>No item to be moved has been set.</value>
+  </data>
+  <data name="ContextMenu_OpenFilePosition" xml:space="preserve">
+    <value>Open the file folder</value>
+  </data>
 </root>

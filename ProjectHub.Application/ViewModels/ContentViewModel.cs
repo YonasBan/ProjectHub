@@ -25,6 +25,7 @@ public class ContentViewModel : ViewModelBase
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IServiceProvider _serviceProvider;
     private readonly IDialogService _dialogService;
+    private readonly IFileExplorerService _fileExplorerService;
 
     #endregion
 
@@ -71,7 +72,8 @@ public class ContentViewModel : ViewModelBase
         IServiceProvider serviceProvider,
         IDialogService dialogService,
         IScheduler mainThreadScheduler,
-        SidebarViewModel sidebarViewModel)
+        SidebarViewModel sidebarViewModel,
+        IFileExplorerService fileExplorerService)
         : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
@@ -79,6 +81,7 @@ public class ContentViewModel : ViewModelBase
         _workFolderAppService = workFolderAppService;
         _serviceProvider = serviceProvider;
         _dialogService = dialogService;
+        _fileExplorerService = fileExplorerService;
         SidebarViewModel = sidebarViewModel;
 
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
@@ -153,7 +156,7 @@ public class ContentViewModel : ViewModelBase
                 // 添加项目
                 foreach (var project in folderProjects)
                 {
-                    var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService);
+                    var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService, _fileExplorerService);
                     ContentItems.Add(projectVm);
                 }
 
@@ -236,7 +239,7 @@ public class ContentViewModel : ViewModelBase
             Logger.LogInformation("项目创建成功: {ProjectName}", result.Value.Name);
 
             // 直接添加新项目到集合
-            var projectVm = new ProjectViewModel(result.Value, _dialogService, _serviceProvider, _projectAppService);
+            var projectVm = new ProjectViewModel(result.Value, _dialogService, _serviceProvider, _projectAppService, _fileExplorerService);
             SidebarViewModel.Projects.Add(projectVm);
 
             // 更新侧边栏计数

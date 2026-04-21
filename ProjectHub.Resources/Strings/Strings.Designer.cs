@@ -142,6 +142,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 打开文件位置 的本地化字符串。
+        /// </summary>
+        public static string ContextMenu_OpenFilePosition {
+            get {
+                return ResourceManager.GetString("ContextMenu_OpenFilePosition", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 收藏/取消收藏 的本地化字符串。
         /// </summary>
         public static string ContextMenu_ToggleFavorite {
@@ -183,6 +192,15 @@ namespace ProjectHub.Resources.Strings {
         public static string DeleteConfirm_Title {
             get {
                 return ResourceManager.GetString("DeleteConfirm_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 未设置要移动的项目 的本地化字符串。
+        /// </summary>
+        public static string Dialog_MoveItemNotSet {
+            get {
+                return ResourceManager.GetString("Dialog_MoveItemNotSet", resourceCulture);
             }
         }
         
@@ -372,15 +390,6 @@ namespace ProjectHub.Resources.Strings {
         public static string Message_MoveToFolderFailed {
             get {
                 return ResourceManager.GetString("Message_MoveToFolderFailed", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 未设置要移动的项目 的本地化字符串。
-        /// </summary>
-        public static string Dialog_MoveItemNotSet {
-            get {
-                return ResourceManager.GetString("Dialog_MoveItemNotSet", resourceCulture);
             }
         }
         

@@ -25,6 +25,7 @@ public class SidebarViewModel : ViewModelBase
     private readonly IWorkSpaceAppService _workSpaceAppService;
     private readonly IDialogService _dialogService;
     private readonly IServiceProvider _serviceProvider;
+    private readonly IFileExplorerService _fileExplorerService;
 
     #endregion
 
@@ -224,7 +225,8 @@ public class SidebarViewModel : ViewModelBase
         IWorkSpaceAppService workSpaceAppService,
         IScheduler mainThreadScheduler,
         IDialogService dialogService,
-        IServiceProvider serviceProvider)
+        IServiceProvider serviceProvider,
+        IFileExplorerService fileExplorerService)
         : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
@@ -232,6 +234,7 @@ public class SidebarViewModel : ViewModelBase
         _workSpaceAppService = workSpaceAppService;
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
+        _fileExplorerService = fileExplorerService;
 
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
         DeleteFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(DeleteFolderAsync);
@@ -448,7 +451,7 @@ public class SidebarViewModel : ViewModelBase
             Projects.Clear();
             foreach (var project in projects)
             {
-                var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService);
+                var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService, _fileExplorerService);
                 Projects.Add(projectVm);
             }
 

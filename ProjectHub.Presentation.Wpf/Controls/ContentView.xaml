@@ -79,6 +79,18 @@
                                     Source="/Icons/edit.svg" />
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding OpenFileFolderCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_OpenFilePosition}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/openFile.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
                             Height="26"
@@ -568,10 +580,11 @@
                     Margin="16,0,0,0"
                     Command="{Binding AddContentCommand}"
                     Content="+"
+                    Cursor="Hand"
                     FontSize="18"
                     Style="{StaticResource IconButtonStyle}"
                     ToolTip="{Binding L.Tooltip_AddItem}"
-                    Visibility="{Binding SidebarViewModel.SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" Cursor="Hand" />
+                    Visibility="{Binding SidebarViewModel.SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
             </Grid>
         </Border>
 

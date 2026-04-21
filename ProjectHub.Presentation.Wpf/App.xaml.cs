@@ -106,6 +106,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IThemeService, WpfThemeService>();
         services.AddSingleton<IFileAssociationService, WindowsFileAssociationService>();
         services.AddSingleton<IProcessLauncherService, WindowsProcessLauncherService>();
+        services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
         // 或者
         var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
         // ========== Register WPF Scheduler (must be before other registrations) ==========

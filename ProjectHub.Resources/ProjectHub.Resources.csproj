@@ -27,6 +27,7 @@
     <Resource Include="Icons\settings.svg" />
     <Resource Include="Icons\start.svg" />
     <Resource Include="Icons\edit.svg" />
+    <Resource Include="Icons\openFile.svg" />
     <Resource Include="Icons\unlike.svg" />
     <Resource Include="Icons\like.svg" />
     <Resource Include="Icons\folder.svg" />

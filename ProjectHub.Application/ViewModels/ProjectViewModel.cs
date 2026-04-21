@@ -20,6 +20,7 @@ namespace ProjectHub.Application.ViewModels;
 public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 {
     private readonly IProjectAppService? _projectAppService;
+    private readonly IFileExplorerService? _fileExplorerService;
 
     public ProjectType Type => ((ProjectDto)_dto).Type;
 
@@ -63,15 +64,18 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
     /// Launch project command - starts the project with default program
     /// </summary>
     public ReactiveCommand<Unit, Unit> LaunchCommand { get; }
+    public ReactiveCommand<Unit, Unit> OpenFileFolderCommand { get; }
 
     public ProjectViewModel(
         ProjectDto projectDto,
         IDialogService dialogService,
         IServiceProvider serviceProvider,
-        IProjectAppService? projectAppService = null)
+        IProjectAppService? projectAppService = null,
+        IFileExplorerService? fileExplorerService = null)
         : base(projectDto, dialogService, serviceProvider)
     {
         _projectAppService = projectAppService;
+        _fileExplorerService = fileExplorerService;
         _isFavorite = projectDto.IsFavorite;
 
         ToggleFavoriteCommand = ReactiveCommand.CreateFromTask(ToggleFavoriteAsync);
@@ -79,12 +83,34 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         DeleteCommand = ReactiveCommand.CreateFromTask(DeleteAsync);
         LaunchCommand = ReactiveCommand.CreateFromTask(LaunchAsync);
         MoveToFolderCommand = ReactiveCommand.Create(SendMoveToFolderRequest);
-
+        OpenFileFolderCommand = ReactiveCommand.CreateFromTask(OpenFileFolderAsync);
         // 订阅语言变化，刷新本地化显示属性
         L?.CultureChanged.Subscribe(_ =>
         {
             this.RaisePropertyChanged(nameof(LaunchCountDisplay));
         });
+    }
+
+    private async Task OpenFileFolderAsync()
+    {
+        if (_fileExplorerService == null) return;
+
+        var path = Path;
+        if (string.IsNullOrEmpty(path))
+        {
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                "项目路径为空");
+            return;
+        }
+
+        var success = await _fileExplorerService.OpenFolderAndSelectItemAsync(path);
+        if (!success)
+        {
+            await _dialogService.ShowMessageAsync(
+                L.Message_SaveFailed,
+                "无法打开文件位置");
+        }
     }
 
     #region Base Class Implementations

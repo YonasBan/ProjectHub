@@ -468,4 +468,7 @@
   <data name="Dialog_MoveItemNotSet" xml:space="preserve">
     <value>未设置要移动的项目</value>
   </data>
+  <data name="ContextMenu_OpenFilePosition" xml:space="preserve">
+    <value>打开文件位置</value>
+  </data>
 </root>
