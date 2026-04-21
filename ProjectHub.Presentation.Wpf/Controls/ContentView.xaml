@@ -259,30 +259,6 @@
                                         Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
                                 </Button.Content>
                             </Button>
-                            <Button
-                                Width="32"
-                                Height="32"
-                                Margin="4,0,0,0"
-                                Command="{Binding EditCommand}"
-                                Style="{StaticResource IconButtonStyle}"
-                                ToolTip="{Binding DataContext.L.Tooltip_Edit, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                <svg:SvgViewbox
-                                    Width="16"
-                                    Height="16"
-                                    Source="/Icons/edit.svg" />
-                            </Button>
-                            <Button
-                                Width="32"
-                                Height="32"
-                                Margin="4,0,0,0"
-                                Command="{Binding DeleteCommand}"
-                                Style="{StaticResource IconButtonStyle}"
-                                ToolTip="{Binding DataContext.L.Tooltip_Delete, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                <svg:SvgViewbox
-                                    Width="16"
-                                    Height="16"
-                                    Source="/Icons/delete.svg" />
-                            </Button>
                         </StackPanel>
                     </Grid>
                 </Grid>
@@ -503,30 +479,7 @@
                                         Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
                                 </Button.Content>
                             </Button>
-                            <Button
-                                Width="32"
-                                Height="32"
-                                Margin="4,0,0,0"
-                                Command="{Binding EditCommand}"
-                                Style="{StaticResource IconButtonStyle}"
-                                ToolTip="{Binding DataContext.L.Tooltip_Edit, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                <svg:SvgViewbox
-                                    Width="16"
-                                    Height="16"
-                                    Source="/Icons/edit.svg" />
-                            </Button>
-                            <Button
-                                Width="32"
-                                Height="32"
-                                Margin="4,0,0,0"
-                                Command="{Binding DeleteCommand}"
-                                Style="{StaticResource IconButtonStyle}"
-                                ToolTip="{Binding DataContext.L.Tooltip_Delete, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
-                                <svg:SvgViewbox
-                                    Width="16"
-                                    Height="16"
-                                    Source="/Icons/delete.svg" />
-                            </Button>
+
                         </StackPanel>
                     </Grid>
                 </Grid>
