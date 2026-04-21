@@ -73,9 +73,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         {
             this.RaiseAndSetIfChanged(ref _launchType, value);
             ValidateInput();
-            this.RaisePropertyChanged(nameof(IsOpenFileSelected));
-            this.RaisePropertyChanged(nameof(IsOpenExeSelected));
-            this.RaisePropertyChanged(nameof(IsOpenWebUrlSelected));
+            // 切换启动类型时更新默认图标
+            if (string.IsNullOrWhiteSpace(ProjectPath) && string.IsNullOrWhiteSpace(DefaultProgram))
+            {
+                SetDefaultIcon();
+            }
         }
     }
 
@@ -89,20 +91,6 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl)
     };
 
-    /// <summary>
-    /// 是否选中打开文件方式
-    /// </summary>
-    public bool IsOpenFileSelected => LaunchType == LaunchType.OpenFile;
-
-    /// <summary>
-    /// 是否选中打开 exe 方式
-    /// </summary>
-    public bool IsOpenExeSelected => LaunchType == LaunchType.OpenExe;
-
-    /// <summary>
-    /// 是否选中打开网页方式
-    /// </summary>
-    public bool IsOpenWebUrlSelected => LaunchType == LaunchType.OpenWebUrl;
 
     private string _defaultProgram = string.Empty;
     public string DefaultProgram
@@ -473,7 +461,12 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
 
     private void SetDefaultIcon()
     {
-        IconPath = null;
+        // 根据启动类型设置默认图标
+        IconPath = LaunchType switch
+        {
+            LaunchType.OpenWebUrl => "Images/explorer.png",
+            _ => null
+        };
     }
 
     private async void Confirm()

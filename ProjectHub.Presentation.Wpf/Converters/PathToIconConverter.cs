@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Interop;
@@ -33,10 +34,22 @@ public class PathToIconConverter : IValueConverter
             }
             else if (ext == ".png" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" || ext == ".bmp")
             {
-                // 图片文件直接加载
+                // 图片文件直接加载（支持本地物理路径和相对路径）
                 var bitmap = new BitmapImage();
                 bitmap.BeginInit();
-                bitmap.UriSource = new Uri(filePath, UriKind.Absolute);
+                
+                // 判断是绝对路径还是相对路径
+                if (Path.IsPathRooted(filePath) && File.Exists(filePath))
+                {
+                    // 绝对路径
+                    bitmap.UriSource = new Uri(filePath, UriKind.Absolute);
+                }
+                else
+                {
+                    // 相对路径（如 Images/explorer.png）
+                    bitmap.UriSource = new Uri(filePath, UriKind.Relative);
+                }
+                
                 bitmap.CacheOption = BitmapCacheOption.OnLoad;
                 bitmap.EndInit();
                 bitmap.Freeze();
