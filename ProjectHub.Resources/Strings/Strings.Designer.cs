@@ -628,6 +628,33 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 运行 CMD 命令 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_LaunchType_OpenCmd {
+            get {
+                return ResourceManager.GetString("ProjectDialog_LaunchType_OpenCmd", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 CMD 命令 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_CmdCommandLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_CmdCommandLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 请输入要执行的 CMD 命令 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Error_EmptyCmdCommand {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Error_EmptyCmdCommand", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 启动方式 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_LaunchTypeLabel {

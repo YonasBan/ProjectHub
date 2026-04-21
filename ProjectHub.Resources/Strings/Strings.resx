@@ -312,6 +312,15 @@
   <data name="ProjectDialog_LaunchType_OpenWebUrl" xml:space="preserve">
     <value>打开网页</value>
   </data>
+  <data name="ProjectDialog_LaunchType_OpenCmd" xml:space="preserve">
+    <value>运行 CMD 命令</value>
+  </data>
+  <data name="ProjectDialog_CmdCommandLabel" xml:space="preserve">
+    <value>CMD 命令</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyCmdCommand" xml:space="preserve">
+    <value>请输入要执行的 CMD 命令</value>
+  </data>
   <data name="ProjectDialog_LaunchTypeLabel" xml:space="preserve">
     <value>启动方式</value>
   </data>

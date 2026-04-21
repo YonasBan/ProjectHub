@@ -158,12 +158,32 @@
             </StackPanel>
         </DataTemplate>
 
+        <!--  运行 CMD 命令模板  -->
+        <DataTemplate x:Key="OpenCmdTemplate" DataType="{x:Type domain:LaunchType}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_CmdCommandLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <TextBox
+                    Height="80"
+                    VerticalContentAlignment="Top"
+                    AcceptsReturn="True"
+                    MaxLength="1000"
+                    Style="{DynamicResource VSCodeTextBoxStyle}"
+                    Text="{Binding DataContext.CmdCommand, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+        </DataTemplate>
+
         <!--  启动类型模板选择器  -->
         <selectors:LaunchTypeTemplateSelector
             x:Key="LaunchTypeTemplateSelector"
             OpenExeTemplate="{StaticResource OpenExeTemplate}"
             OpenFileTemplate="{StaticResource OpenFileTemplate}"
-            OpenWebUrlTemplate="{StaticResource OpenWebUrlTemplate}" />
+            OpenWebUrlTemplate="{StaticResource OpenWebUrlTemplate}"
+            OpenCmdTemplate="{StaticResource OpenCmdTemplate}" />
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="Return" Command="{Binding ConfirmCommand}" />

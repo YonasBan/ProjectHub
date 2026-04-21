@@ -23,6 +23,9 @@ namespace ProjectHub.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CmdCommand")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("ColorTag")
                         .HasColumnType("TEXT");
 
@@ -87,9 +90,6 @@ namespace ProjectHub.Infrastructure.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<long>("TotalUsageDurationMs")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("Type")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("UpdatedAt")

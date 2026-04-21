@@ -86,10 +86,6 @@ public class WorkFolderAppService : IWorkFolderAppService
         // 创建关联
         var association = ProjectWorkFolder.Create(projectId, workFolderId, maxSortOrder + 1);
         await _workFolderRepository.AddProjectAssociationAsync(association, cancellationToken);
-
-        // 更新项目计数
-        workFolder.UpdateProjectCount(workFolder.ProjectCount + 1);
-        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
     }
 
     /// <summary>
@@ -101,10 +97,6 @@ public class WorkFolderAppService : IWorkFolderAppService
             ?? throw new KeyNotFoundException($"WorkFolder (Id={workFolderId}) not found");
 
         await _workFolderRepository.RemoveProjectAssociationAsync(projectId, workFolderId, cancellationToken);
-
-        // 更新项目计数
-        workFolder.UpdateProjectCount(Math.Max(0, workFolder.ProjectCount - 1));
-        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
     }
 
     /// <summary>
@@ -128,10 +120,6 @@ public class WorkFolderAppService : IWorkFolderAppService
         // 创建关联
         var association = WorkSpaceWorkFolder.Create(workSpaceId, workFolderId, maxSortOrder + 1);
         await _workFolderRepository.AddWorkSpaceAssociationAsync(association, cancellationToken);
-
-        // 更新项目计数
-        workFolder.UpdateProjectCount(workFolder.ProjectCount + 1);
-        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
     }
 
     /// <summary>
@@ -143,10 +131,6 @@ public class WorkFolderAppService : IWorkFolderAppService
             ?? throw new KeyNotFoundException($"WorkFolder (Id={workFolderId}) not found");
 
         await _workFolderRepository.RemoveWorkSpaceAssociationAsync(workSpaceId, workFolderId, cancellationToken);
-
-        // 更新项目计数
-        workFolder.UpdateProjectCount(Math.Max(0, workFolder.ProjectCount - 1));
-        await _workFolderRepository.UpdateAsync(workFolder, cancellationToken);
     }
 
     /// <summary>

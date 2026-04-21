@@ -22,8 +22,6 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
     private readonly IProjectAppService? _projectAppService;
     private readonly IFileExplorerService? _fileExplorerService;
 
-    public ProjectType Type => ((ProjectDto)_dto).Type;
-
     public string Path => ((ProjectDto)_dto).Path;
 
     public string? CustomIconPath => ((ProjectDto)_dto).CustomIconPath;
@@ -48,11 +46,6 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
     public long? CleanableSpaceBytes => ((ProjectDto)_dto).CleanableSpaceBytes;
 
     public string CleanableSpaceDisplay => ((ProjectDto)_dto).CleanableSpaceBytes?.FormatFileSize() ?? "Not calculated";
-
-    /// <summary>
-    /// Project type display name
-    /// </summary>
-    public string TypeDisplayName => GetTypeDisplayName(((ProjectDto)_dto).Type);
 
     /// <summary>
     /// Icon path for display
@@ -225,23 +218,6 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
             this.RaisePropertyChanged(nameof(LaunchCount));
             this.RaisePropertyChanged(nameof(LastOpenedAt));
         }
-    }
-
-    /// <summary>
-    /// Get display name for project type
-    /// </summary>
-    private static string GetTypeDisplayName(ProjectType type)
-    {
-        return type switch
-        {
-            ProjectType.VisualStudio => "Visual Studio",
-            ProjectType.Android => "Android",
-            ProjectType.Cpp => "C++",
-            ProjectType.Tool => "Tool",
-            ProjectType.Document => "Document",
-            ProjectType.Folder => "Folder",
-            _ => "Unknown"
-        };
     }
 }
 

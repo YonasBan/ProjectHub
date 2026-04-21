@@ -53,9 +53,4 @@
   <ItemGroup>
     <Resource Include="..\ProjectHub.Resources\Icons\**\*" Link="Icons\%(RecursiveDir)%(FileName)%(Extension)" />
   </ItemGroup>
-  <ItemGroup>
-    <None Update="projecthub.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 </Project>

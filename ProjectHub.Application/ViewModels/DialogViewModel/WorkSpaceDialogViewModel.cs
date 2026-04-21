@@ -291,7 +291,6 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
                 ProjectId = p.Id,
                 ProjectName = p.Name,
                 ProjectPath = p.Path,
-                ProjectType = p.Type.ToString(),
                 IconPath = !string.IsNullOrEmpty(p.CustomIconPath) ? p.CustomIconPath : p.Path,
                 IsSelected = selectedIdSet.Contains(p.Id),
                 SortOrder = idToOrderMap.TryGetValue(p.Id, out var order) ? order : int.MaxValue
@@ -457,7 +456,6 @@ public class SelectableProjectViewModel : ReactiveObject
     public long ProjectId { get; set; }
     public string ProjectName { get; set; } = string.Empty;
     public string ProjectPath { get; set; } = string.Empty;
-    public string ProjectType { get; set; } = string.Empty;
     public string? IconPath { get; set; }
 
     public bool IsSelected

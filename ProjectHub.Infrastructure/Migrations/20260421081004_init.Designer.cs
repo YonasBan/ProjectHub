@@ -11,8 +11,8 @@ using ProjectHub.Infrastructure.Persistence;
 namespace ProjectHub.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260421033611_AddLaunchTypeToProject")]
-    partial class AddLaunchTypeToProject
+    [Migration("20260421081004_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,6 +25,9 @@ namespace ProjectHub.Infrastructure.Migrations
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("CmdCommand")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ColorTag")
                         .HasColumnType("TEXT");
@@ -86,10 +89,10 @@ namespace ProjectHub.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("TEXT");
 
-                    b.Property<long>("TotalUsageDurationMs")
+                    b.Property<bool>("RunAsAdmin")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Type")
+                    b.Property<long>("TotalUsageDurationMs")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("UpdatedAt")

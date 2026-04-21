@@ -152,6 +152,9 @@ public class LocalizedStrings : ReactiveObject
     public string ProjectDialog_LaunchType_OpenFile => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenFile;
     public string ProjectDialog_LaunchType_OpenExe => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenExe;
     public string ProjectDialog_LaunchType_OpenWebUrl => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenWebUrl;
+    public string ProjectDialog_LaunchType_OpenCmd => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenCmd;
+    public string ProjectDialog_CmdCommandLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_CmdCommandLabel;
+    public string ProjectDialog_Error_EmptyCmdCommand => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyCmdCommand;
     public string ProjectDialog_LaunchTypeLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchTypeLabel;
     public string ProjectDialog_IconLabel => ProjectHub.Resources.Strings.Strings.ProjectDialog_IconLabel;
     public string ProjectDialog_Error_EmptyName => ProjectHub.Resources.Strings.Strings.ProjectDialog_Error_EmptyName;

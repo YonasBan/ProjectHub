@@ -10,7 +10,6 @@ public class ProjectDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public ProjectType Type { get; set; }
     public string Path { get; set; } = string.Empty;
     public string? CustomIconPath { get; set; }
     public string? Description { get; set; }
@@ -39,6 +38,7 @@ public class ProjectDto
     public string? DefaultProgram { get; set; }
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
+    public string? CmdCommand { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public bool RunAsAdmin { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -59,9 +59,6 @@ public class CreateProjectDto
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public ProjectType Type { get; set; }
-
-    [Required]
     public string Path { get; set; } = string.Empty;
 
     public string? Description { get; set; }
@@ -69,6 +66,7 @@ public class CreateProjectDto
     public string? DefaultProgram { get; set; }
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
+    public string? CmdCommand { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public bool RunAsAdmin { get; set; }
 }
@@ -89,6 +87,7 @@ public class UpdateProjectDto
     public string? DefaultProgram { get; set; }
     public string? LaunchArguments { get; set; }
     public string? WebUrl { get; set; }
+    public string? CmdCommand { get; set; }
     public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public bool RunAsAdmin { get; set; }
     public DateTime? Deadline { get; set; }

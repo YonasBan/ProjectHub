@@ -18,12 +18,6 @@ public class Project : BaseEntity
     public string Name { get; private set; } = string.Empty;
 
     /// <summary>
-    /// 项目类型 (枚举值)
-    /// VisualStudio, Android, Cpp, Tool, Document, Folder
-    /// </summary>
-    public ProjectType Type { get; private set; }
-
-    /// <summary>
     /// 项目路径 (入口文件或根目录)
     /// 例如：.sln 文件路径、build.gradle 路径、.exe 路径、文件夹路径
     /// </summary>
@@ -122,10 +116,17 @@ public class Project : BaseEntity
     public string? WebUrl { get; private set; }
 
     /// <summary>
+    /// CMD 命令 (可选)
+    /// 用于 OpenCmd 启动类型
+    /// </summary>
+    public string? CmdCommand { get; private set; }
+
+    /// <summary>
     /// 启动类型
     /// OpenFile = 0,     // 打开文件
     /// OpenExe = 1,      // 打开 exe
-    /// OpenWebUrl = 2    // 打开网页
+    /// OpenWebUrl = 2,   // 打开网页
+    /// OpenCmd = 3       // 运行 CMD 命令
     /// </summary>
     public LaunchType LaunchType { get; private set; } = LaunchType.OpenFile;
 
@@ -155,7 +156,7 @@ public class Project : BaseEntity
     /// 工厂方法：创建新项目
     /// 封装创建逻辑，确保初始状态合法
     /// </summary>
-    public static Project Create(string name, ProjectType type, string path, string? defaultProgram, string? customIconPath, string description)
+    public static Project Create(string name, string path, string? defaultProgram, string? customIconPath, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
@@ -166,7 +167,6 @@ public class Project : BaseEntity
         var project = new Project
         {
             Name = name,
-            Type = type,
             Path = path,
             CreatedAt = DateTime.UtcNow,
             IsFavorite = false,
@@ -227,6 +227,15 @@ public class Project : BaseEntity
     public void SetWebUrl(string? webUrl)
     {
         WebUrl = webUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置 CMD 命令
+    /// </summary>
+    public void SetCmdCommand(string? cmdCommand)
+    {
+        CmdCommand = cmdCommand;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -302,46 +311,6 @@ public class Project : BaseEntity
 }
 
 /// <summary>
-/// 项目类型枚举
-/// </summary>
-public enum ProjectType
-{
-    /// <summary>
-    /// Visual Studio 项目 (.sln)
-    /// </summary>
-    VisualStudio = 1,
-
-    /// <summary>
-    /// Android 项目 (build.gradle)
-    /// </summary>
-    Android = 2,
-
-    /// <summary>
-    /// C++ 项目 (CMakeLists.txt / Makefile / .vcxproj)
-    /// </summary>
-    Cpp = 3,
-
-    /// <summary>
-    /// 通用工具 (.exe 或其他可执行文件)
-    /// </summary>
-    Tool = 4,
-
-    /// <summary>
-    /// 通用文档 (.xlsx/.docx/.pdf 等)
-    /// </summary>
-    Document = 5,
-
-    /// <summary>
-    /// 文件夹
-    /// </summary>
-    Folder = 6,
-    /// <summary>
-    /// WebSite
-    /// </summary>
-    WebSite = 7,
-}
-
-/// <summary>
 /// 项目启动类型枚举
 /// </summary>
 public enum LaunchType
@@ -359,5 +328,10 @@ public enum LaunchType
     /// <summary>
     /// 打开网页（使用浏览器）
     /// </summary>
-    OpenWebUrl = 2
+    OpenWebUrl = 2,
+
+    /// <summary>
+    /// 运行 CMD 命令
+    /// </summary>
+    OpenCmd = 3
 }

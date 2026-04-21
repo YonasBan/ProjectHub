@@ -70,11 +70,6 @@ public interface IProjectRepository : IRepository<Project>
     /// 检查路径是否已存在
     /// </summary>
     Task<bool> ExistsByPathAsync(string path, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 根据类型筛选项目
-    /// </summary>
-    Task<IReadOnlyList<Project>> GetByTypeAsync(ProjectType type, CancellationToken cancellationToken = default);
 }
 
 /// <summary>

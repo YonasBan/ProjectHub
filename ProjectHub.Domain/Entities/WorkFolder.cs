@@ -35,16 +35,6 @@ public class WorkFolder : BaseEntity
     /// </summary>
     public long? ParentId { get; private set; }
 
-    /// <summary>
-    /// 关联的项目数量 (计算字段，不存储)
-    /// </summary>
-    public int ProjectCount { get; private set; }
-
-    /// <summary>
-    /// 关联的工作空间数量 (计算字段，不存储)
-    /// </summary>
-    public int WorkSpaceCount { get; private set; }
-
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -84,22 +74,5 @@ public class WorkFolder : BaseEntity
         Name = name;
         Description = description;
         UpdatedAt = DateTime.UtcNow;
-    }
-
-
-    /// <summary>
-    /// 更新项目数量统计
-    /// </summary>
-    public void UpdateProjectCount(int count)
-    {
-        ProjectCount = count;
-    }
-
-    /// <summary>
-    /// 更新工作空间数量统计
-    /// </summary>
-    public void UpdateWorkSpaceCount(int count)
-    {
-        WorkSpaceCount = count;
     }
 }

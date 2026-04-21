@@ -162,13 +162,4 @@ public class ProjectRepository : IProjectRepository
             .Where(p => !p.IsDeleted)
             .AnyAsync(p => p.Path == path, cancellationToken);
     }
-
-    public async Task<IReadOnlyList<Project>> GetByTypeAsync(ProjectType type, CancellationToken cancellationToken = default)
-    {
-        await using var ctx = _factory.CreateDbContext();
-        return await ctx.Projects
-            .Where(p => !p.IsDeleted && p.Type == type)
-            .OrderBy(p => p.Name)
-            .ToListAsync(cancellationToken);
-    }
 }

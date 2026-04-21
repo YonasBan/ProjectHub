@@ -88,7 +88,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         new LaunchTypeItem(LaunchType.OpenFile, L.ProjectDialog_LaunchType_OpenFile),
         new LaunchTypeItem(LaunchType.OpenExe, L.ProjectDialog_LaunchType_OpenExe),
-        new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl)
+        new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl),
+        new LaunchTypeItem(LaunchType.OpenCmd, L.ProjectDialog_LaunchType_OpenCmd)
     };
 
 
@@ -122,6 +123,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         get => _webUrl;
         set => this.RaiseAndSetIfChanged(ref _webUrl, value);
+    }
+
+    /// <summary>
+    /// CMD 命令（可选）
+    /// </summary>
+    private string _cmdCommand = string.Empty;
+    public string CmdCommand
+    {
+        get => _cmdCommand;
+        set => this.RaiseAndSetIfChanged(ref _cmdCommand, value);
     }
 
     /// <summary>
@@ -226,8 +237,9 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             x => x.ProjectPath,
             x => x.DefaultProgram,
             x => x.WebUrl,
+            x => x.CmdCommand,
             x => x.LaunchType,
-            (name, path, program, webUrl, launchType) =>
+            (name, path, program, webUrl, cmdCommand, launchType) =>
             {
                 // 项目名称始终必填
                 if (string.IsNullOrWhiteSpace(name))
@@ -239,6 +251,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     LaunchType.OpenFile => !string.IsNullOrWhiteSpace(path),  // 打开文件：路径必填
                     LaunchType.OpenExe => !string.IsNullOrWhiteSpace(program), // 打开 exe：程序必填
                     LaunchType.OpenWebUrl => !string.IsNullOrWhiteSpace(webUrl) && webUrl.Split(';', StringSplitOptions.RemoveEmptyEntries).Length > 0, // 打开网页：链接必填，支持多个
+                    LaunchType.OpenCmd => !string.IsNullOrWhiteSpace(cmdCommand), // 运行 CMD：命令必填
                     _ => false
                 };
             });
@@ -280,6 +293,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         DefaultProgram = project.DefaultProgram ?? string.Empty;
         LaunchArguments = project.LaunchArguments ?? string.Empty;
         WebUrl = project.WebUrl ?? string.Empty;
+        CmdCommand = project.CmdCommand ?? string.Empty;
         RunAsAdmin = project.RunAsAdmin;
 
         this.RaisePropertyChanged(nameof(DialogTitle));
@@ -298,6 +312,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         DefaultProgram = string.Empty;
         LaunchArguments = string.Empty;
         WebUrl = string.Empty;
+        CmdCommand = string.Empty;
         RunAsAdmin = false;
         Description = string.Empty;
         IconPath = null;
@@ -351,6 +366,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 if (urls.Length == 0 || urls.All(string.IsNullOrWhiteSpace))
                 {
                     ErrorMessage = L.ProjectDialog_Error_EmptyWebUrl;
+                    HasError = true;
+                    return;
+                }
+                break;
+
+            case LaunchType.OpenCmd:
+                // 运行 CMD：命令必填
+                if (string.IsNullOrWhiteSpace(CmdCommand))
+                {
+                    ErrorMessage = L.ProjectDialog_Error_EmptyCmdCommand;
                     HasError = true;
                     return;
                 }
@@ -509,6 +534,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
                     : null,
                 WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null,
+                CmdCommand = LaunchType == LaunchType.OpenCmd ? (string.IsNullOrWhiteSpace(CmdCommand) ? null : CmdCommand) : null,
                 RunAsAdmin = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) ? RunAsAdmin : false
             };
 
@@ -547,6 +573,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                         ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments)
                         : null,
                     WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null,
+                    CmdCommand = LaunchType == LaunchType.OpenCmd ? (string.IsNullOrWhiteSpace(CmdCommand) ? null : CmdCommand) : null,
                     RunAsAdmin = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) ? RunAsAdmin : false
                 };
 

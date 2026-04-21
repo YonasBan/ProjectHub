@@ -32,6 +32,7 @@ public static class ApplicationServiceExtensions
         services.AddTransient<ILaunchProvider, OpenFileLaunchProvider>();
         services.AddTransient<ILaunchProvider, OpenExeLaunchProvider>();
         services.AddTransient<ILaunchProvider, OpenWebUrlLaunchProvider>();
+        services.AddTransient<ILaunchProvider, OpenCmdLaunchProvider>();
         services.AddTransient<LaunchProviderFactory>();
 
         // 注册工作文件夹应用服务

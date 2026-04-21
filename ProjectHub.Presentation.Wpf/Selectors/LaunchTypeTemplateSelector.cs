@@ -25,6 +25,11 @@ public class LaunchTypeTemplateSelector : DataTemplateSelector
     /// </summary>
     public DataTemplate? OpenWebUrlTemplate { get; set; }
 
+    /// <summary>
+    /// 运行 CMD 命令模板
+    /// </summary>
+    public DataTemplate? OpenCmdTemplate { get; set; }
+
     public override DataTemplate? SelectTemplate(object item, DependencyObject container)
     {
         if (item is LaunchType launchType)
@@ -34,6 +39,7 @@ public class LaunchTypeTemplateSelector : DataTemplateSelector
                 LaunchType.OpenFile => OpenFileTemplate,
                 LaunchType.OpenExe => OpenExeTemplate,
                 LaunchType.OpenWebUrl => OpenWebUrlTemplate,
+                LaunchType.OpenCmd => OpenCmdTemplate,
                 _ => OpenFileTemplate
             };
         }

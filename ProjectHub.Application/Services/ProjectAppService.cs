@@ -36,12 +36,12 @@ public class ProjectAppService : IProjectAppService
             Domain.Entities.LaunchType.OpenFile => input.Path,
             Domain.Entities.LaunchType.OpenExe => input.DefaultProgram ?? string.Empty,
             Domain.Entities.LaunchType.OpenWebUrl => input.WebUrl ?? string.Empty,
+            Domain.Entities.LaunchType.OpenCmd => input.CmdCommand ?? string.Empty,
             _ => input.Path
         };
 
         var project = Domain.Entities.Project.Create(
             input.Name, 
-            input.Type, 
             projectPath,
             input.DefaultProgram,
             input.CustomIconPath,
@@ -60,6 +60,11 @@ public class ProjectAppService : IProjectAppService
         if (!string.IsNullOrWhiteSpace(input.WebUrl))
         {
             project.SetWebUrl(input.WebUrl);
+        }
+
+        if (!string.IsNullOrWhiteSpace(input.CmdCommand))
+        {
+            project.SetCmdCommand(input.CmdCommand);
         }
 
         await _projectRepository.AddAsync(project, cancellationToken);
