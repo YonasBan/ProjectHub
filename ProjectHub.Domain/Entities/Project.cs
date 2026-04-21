@@ -109,6 +109,12 @@ public class Project : BaseEntity
     /// </summary>
     public string? DefaultProgram { get; private set; }
 
+    /// <summary>
+    /// 启动参数 (可选)
+    /// 启动程序时传递的参数
+    /// </summary>
+    public string? LaunchArguments { get; private set; }
+
     // ========== 导航属性 ==========
 
     /// <summary>
@@ -129,11 +135,11 @@ public class Project : BaseEntity
     /// 工厂方法：创建新项目
     /// 封装创建逻辑，确保初始状态合法
     /// </summary>
-    public static Project Create(string name, ProjectType type, string path)
+    public static Project Create(string name, ProjectType type, string path, string? defaultProgram, string? customIconPath, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
-        
+
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("项目路径不能为空", nameof(path));
 
@@ -145,7 +151,10 @@ public class Project : BaseEntity
             CreatedAt = DateTime.UtcNow,
             IsFavorite = false,
             LaunchCount = 0,
-            TotalUsageDurationMs = 0
+            TotalUsageDurationMs = 0,
+            DefaultProgram = defaultProgram,
+            CustomIconPath = customIconPath,
+            Description = description
         };
         return project;
     }
@@ -154,7 +163,7 @@ public class Project : BaseEntity
     /// 更新项目基本信息
     /// 封装不变性规则
     /// </summary>
-    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null, string? defaultProgram = null)
+    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null, string? defaultProgram = null, string? launchArguments = null, string? customIconPath = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
@@ -163,7 +172,9 @@ public class Project : BaseEntity
         Description = description;
         ColorTag = colorTag;
         DefaultProgram = defaultProgram;
+        LaunchArguments = launchArguments;
         UpdatedAt = DateTime.UtcNow;
+        CustomIconPath = customIconPath;
     }
 
     /// <summary>
@@ -172,6 +183,15 @@ public class Project : BaseEntity
     public void SetDefaultProgram(string? defaultProgram)
     {
         DefaultProgram = defaultProgram;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置启动参数
+    /// </summary>
+    public void SetLaunchArguments(string? launchArguments)
+    {
+        LaunchArguments = launchArguments;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -193,7 +213,7 @@ public class Project : BaseEntity
     public void RecordUsageDuration(long durationMs)
     {
         if (durationMs <= 0) return;
-        
+
         TotalUsageDurationMs += durationMs;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -212,7 +232,7 @@ public class Project : BaseEntity
     public void SetFavorite(bool isFavorite)
     {
         if (IsFavorite == isFavorite) return;
-        
+
         IsFavorite = isFavorite;
         FavoritedAt = isFavorite ? DateTime.UtcNow : null;
         UpdatedAt = DateTime.UtcNow;
@@ -237,27 +257,27 @@ public enum ProjectType
     /// Visual Studio 项目 (.sln)
     /// </summary>
     VisualStudio = 1,
-    
+
     /// <summary>
     /// Android 项目 (build.gradle)
     /// </summary>
     Android = 2,
-    
+
     /// <summary>
     /// C++ 项目 (CMakeLists.txt / Makefile / .vcxproj)
     /// </summary>
     Cpp = 3,
-    
+
     /// <summary>
     /// 通用工具 (.exe 或其他可执行文件)
     /// </summary>
     Tool = 4,
-    
+
     /// <summary>
     /// 通用文档 (.xlsx/.docx/.pdf 等)
     /// </summary>
     Document = 5,
-    
+
     /// <summary>
     /// 文件夹
     /// </summary>

@@ -294,6 +294,9 @@
   <data name="ProjectDialog_ProgramLabel" xml:space="preserve">
     <value>默认程序</value>
   </data>
+  <data name="ProjectDialog_ArgumentsLabel" xml:space="preserve">
+    <value>启动参数（可选）</value>
+  </data>
   <data name="ProjectDialog_IconLabel" xml:space="preserve">
     <value>项目图标</value>
   </data>

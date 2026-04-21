@@ -20,7 +20,14 @@ public class ProjectAppService : IProjectAppService
 
     public async Task<ProjectDto> CreateAsync(CreateProjectDto input, CancellationToken cancellationToken = default)
     {
-        var project = Domain.Entities.Project.Create(input.Name, input.Type, input.Path);
+        var project = Domain.Entities.Project.Create(input.Name, input.Type, input.Path,input.DefaultProgram,input.CustomIconPath,input.Description);
+        
+        // 设置可选字段
+        if (!string.IsNullOrWhiteSpace(input.LaunchArguments))
+        {
+            project.SetLaunchArguments(input.LaunchArguments);
+        }
+        
         await _projectRepository.AddAsync(project, cancellationToken);
         return MapToDto(project);
     }
@@ -31,7 +38,7 @@ public class ProjectAppService : IProjectAppService
             ?? throw new KeyNotFoundException($"Project (Id={input.Id}) not found");
 
         // 更新基本信息
-        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram);
+        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments,input.CustomIconPath);
         
         await _projectRepository.UpdateAsync(project, cancellationToken);
         return MapToDto(project);
@@ -156,6 +163,7 @@ public class ProjectAppService : IProjectAppService
             DiskSpaceBytes = project.DiskSpaceBytes,
             CleanableSpaceBytes = project.CleanableSpaceBytes,
             DefaultProgram = project.DefaultProgram,
+            LaunchArguments = project.LaunchArguments,
             Deadline = project.Deadline,
             CreatedAt = project.CreatedAt,
             UpdatedAt = project.UpdatedAt

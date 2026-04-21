@@ -583,6 +583,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 启动参数（可选） 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_ArgumentsLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_ArgumentsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 项目名称 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_NameLabel {

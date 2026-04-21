@@ -75,6 +75,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     }
 
     /// <summary>
+    /// 启动参数（可选）
+    /// </summary>
+    private string _launchArguments = string.Empty;
+    public string LaunchArguments
+    {
+        get => _launchArguments;
+        set => this.RaiseAndSetIfChanged(ref _launchArguments, value);
+    }
+
+    /// <summary>
     /// 项目描述
     /// </summary>
     private string _description = string.Empty;
@@ -202,8 +212,9 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         Description = project.Description ?? string.Empty;
         IconPath = project.CustomIconPath;
 
-        // 从项目配置中获取默认程序
+        // 从项目配置中获取默认程序和启动参数
         DefaultProgram = project.DefaultProgram ?? string.Empty;
+        LaunchArguments = project.LaunchArguments ?? string.Empty;
 
         this.RaisePropertyChanged(nameof(DialogTitle));
         this.RaisePropertyChanged(nameof(ConfirmButtonText));
@@ -218,6 +229,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         ProjectName = string.Empty;
         ProjectPath = string.Empty;
         DefaultProgram = string.Empty;
+        LaunchArguments = string.Empty;
         Description = string.Empty;
         IconPath = null;
         ErrorMessage = null;
@@ -428,8 +440,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                 Path = ProjectPath,
                 Description = Description,
                 CustomIconPath = IconPath,
-                WorkFolderIds = [],
-                WorkSpaceIds = []
+                LaunchArguments = string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments,
+                DefaultProgram = DefaultProgram
             };
 
             if (_projectAppService != null)
@@ -454,9 +466,10 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                     Id = EditProjectId.Value,
                     Name = ProjectName,
                     Description = Description,
-                    DefaultProgram = DefaultProgram,
-                    WorkFolderIds = [],
-                    WorkSpaceIds = []
+                    CustomIconPath = IconPath,
+                    LaunchArguments = string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments,
+                    DefaultProgram = DefaultProgram
+
                 };
 
                 var result = await _projectAppService.UpdateAsync(updateDto);

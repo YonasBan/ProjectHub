@@ -125,6 +125,18 @@
                             Style="{DynamicResource SecondaryButtonStyle}" />
                     </Grid>
 
+                    <!--  启动参数（可选）  -->
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        FontSize="12"
+                        Foreground="{DynamicResource TextSecondaryBrush}"
+                        Text="{Binding L.ProjectDialog_ArgumentsLabel}" />
+                    <TextBox
+                        Margin="0,0,0,12"
+                        MaxLength="500"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding LaunchArguments, UpdateSourceTrigger=PropertyChanged}" />
+
                     <!--  项目图标（可修改）  -->
                     <TextBlock
                         Margin="0,0,0,8"
@@ -179,7 +191,7 @@
                         Foreground="{DynamicResource AccentBlueBrush}"
                         Text="{Binding L.ProjectDialog_Step3_Description}" />
                     <TextBox
-                        Height="60"
+                        Height="40"
                         VerticalContentAlignment="Top"
                         AcceptsReturn="True"
                         MaxLength="500"

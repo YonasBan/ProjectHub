@@ -37,6 +37,7 @@ public class ProjectDto
     public long? DiskSpaceBytes { get; set; }
     public long? CleanableSpaceBytes { get; set; }
     public string? DefaultProgram { get; set; }
+    public string? LaunchArguments { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
@@ -63,8 +64,7 @@ public class CreateProjectDto
     public string? Description { get; set; }
     public string? CustomIconPath { get; set; }
     public string? DefaultProgram { get; set; }
-    public IEnumerable<long> WorkFolderIds { get; set; } = [];
-    public IEnumerable<long> WorkSpaceIds { get; set; } = [];
+    public string? LaunchArguments { get; set; }
 }
 
 /// <summary>
@@ -80,8 +80,8 @@ public class UpdateProjectDto
 
     public string? Description { get; set; }
     public string? DefaultProgram { get; set; }
-    public IEnumerable<long> WorkFolderIds { get; set; } = [];
-    public IEnumerable<long> WorkSpaceIds { get; set; } = [];
+    public string? LaunchArguments { get; set; }
     public DateTime? Deadline { get; set; }
     public long? CustomerId { get; set; }
+    public string? CustomIconPath { get; set; }
 }
