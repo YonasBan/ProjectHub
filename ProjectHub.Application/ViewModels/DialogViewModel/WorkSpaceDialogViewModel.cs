@@ -261,12 +261,13 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
         DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds;
         UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder;
 
-        // 获取工作空间中的项目 ID 列表
+        // 获取工作空间中的项目设置（包含启动顺序）
         var settings = await _workSpaceAppService.GetProjectSettingsAsync(workSpaceId, cancellationToken);
-        var selectedIds = settings.ProjectSettings
+        var selectedProjectSettings = settings.ProjectSettings
             .Where(p => p.IsEnabled)
-            .Select(p => p.ProjectId)
+            .OrderBy(p => p.SortOrder)
             .ToList();
+        var selectedIds = selectedProjectSettings.Select(p => p.ProjectId).ToList();
         
         await LoadProjectsAsync(cancellationToken, selectedIds);
     }
@@ -279,8 +280,13 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
         var projects = await _projectAppService.GetAllActiveAsync(cancellationToken);
         var selectedIdSet = selectedIds?.ToHashSet() ?? new HashSet<long>();
 
+        // 创建 ID 到顺序的映射，用于保持启动顺序
+        var idToOrderMap = selectedIds?
+            .Select((id, index) => new { id, index })
+            .ToDictionary(x => x.id, x => x.index) ?? new Dictionary<long, int>();
+
         var viewModels = projects
-            .Select((p, index) => new SelectableProjectViewModel
+            .Select(p => new SelectableProjectViewModel
             {
                 ProjectId = p.Id,
                 ProjectName = p.Name,
@@ -288,7 +294,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
                 ProjectType = p.Type.ToString(),
                 IconPath = !string.IsNullOrEmpty(p.CustomIconPath) ? p.CustomIconPath : p.Path,
                 IsSelected = selectedIdSet.Contains(p.Id),
-                SortOrder = index
+                SortOrder = idToOrderMap.TryGetValue(p.Id, out var order) ? order : int.MaxValue
+            })
+            .OrderBy(vm => vm.IsSelected ? 0 : 1) // 选中的排在前面
+            .ThenBy(vm => vm.SortOrder) // 按照启动顺序排序
+            .Select((vm, index) =>
+            {
+                vm.SortOrder = index;
+                return vm;
             })
             .ToList();
 
