@@ -62,6 +62,48 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         }
     }
 
+    /// <summary>
+    /// 启动类型（用于 ComboBox 绑定）
+    /// </summary>
+    private LaunchType _launchType = LaunchType.OpenFile;
+    public LaunchType LaunchType
+    {
+        get => _launchType;
+        set
+        {
+            this.RaiseAndSetIfChanged(ref _launchType, value);
+            ValidateInput();
+            this.RaisePropertyChanged(nameof(IsOpenFileSelected));
+            this.RaisePropertyChanged(nameof(IsOpenExeSelected));
+            this.RaisePropertyChanged(nameof(IsOpenWebUrlSelected));
+        }
+    }
+
+    /// <summary>
+    /// 启动类型列表（用于 ComboBox ItemsSource）
+    /// </summary>
+    public IReadOnlyList<LaunchTypeItem> LaunchTypeItems => new List<LaunchTypeItem>
+    {
+        new LaunchTypeItem(LaunchType.OpenFile, L.ProjectDialog_LaunchType_OpenFile),
+        new LaunchTypeItem(LaunchType.OpenExe, L.ProjectDialog_LaunchType_OpenExe),
+        new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl)
+    };
+
+    /// <summary>
+    /// 是否选中打开文件方式
+    /// </summary>
+    public bool IsOpenFileSelected => LaunchType == LaunchType.OpenFile;
+
+    /// <summary>
+    /// 是否选中打开 exe 方式
+    /// </summary>
+    public bool IsOpenExeSelected => LaunchType == LaunchType.OpenExe;
+
+    /// <summary>
+    /// 是否选中打开网页方式
+    /// </summary>
+    public bool IsOpenWebUrlSelected => LaunchType == LaunchType.OpenWebUrl;
+
     private string _defaultProgram = string.Empty;
     public string DefaultProgram
     {
@@ -82,6 +124,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         get => _launchArguments;
         set => this.RaiseAndSetIfChanged(ref _launchArguments, value);
+    }
+
+    /// <summary>
+    /// 网页链接（可选）
+    /// </summary>
+    private string _webUrl = string.Empty;
+    public string WebUrl
+    {
+        get => _webUrl;
+        set => this.RaiseAndSetIfChanged(ref _webUrl, value);
     }
 
     /// <summary>
@@ -212,9 +264,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         Description = project.Description ?? string.Empty;
         IconPath = project.CustomIconPath;
 
-        // 从项目配置中获取默认程序和启动参数
+        // 从项目配置中设置启动类型
+        LaunchType = project.LaunchType;
         DefaultProgram = project.DefaultProgram ?? string.Empty;
         LaunchArguments = project.LaunchArguments ?? string.Empty;
+        WebUrl = project.WebUrl ?? string.Empty;
 
         this.RaisePropertyChanged(nameof(DialogTitle));
         this.RaisePropertyChanged(nameof(ConfirmButtonText));
@@ -228,8 +282,10 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         ProjectName = string.Empty;
         ProjectPath = string.Empty;
+        LaunchType = LaunchType.OpenFile;
         DefaultProgram = string.Empty;
         LaunchArguments = string.Empty;
+        WebUrl = string.Empty;
         Description = string.Empty;
         IconPath = null;
         ErrorMessage = null;
@@ -238,26 +294,50 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
 
     private void ValidateInput()
     {
+        // 项目名称必填
         if (string.IsNullOrWhiteSpace(ProjectName))
         {
             ErrorMessage = L.ProjectDialog_Error_EmptyName;
             HasError = true;
+            return;
         }
-        else if (string.IsNullOrWhiteSpace(ProjectPath))
+
+        // 根据启动类型验证不同的字段
+        switch (LaunchType)
         {
-            ErrorMessage = L.ProjectDialog_Error_EmptyPath;
-            HasError = true;
+            case LaunchType.OpenFile:
+                // 打开文件：项目路径必填，自定义程序和启动参数可选
+                if (string.IsNullOrWhiteSpace(ProjectPath))
+                {
+                    ErrorMessage = L.ProjectDialog_Error_EmptyPath;
+                    HasError = true;
+                    return;
+                }
+                break;
+
+            case LaunchType.OpenExe:
+                // 打开 exe：程序路径必填
+                if (string.IsNullOrWhiteSpace(DefaultProgram))
+                {
+                    ErrorMessage = L.ProjectDialog_Error_EmptyProgram;
+                    HasError = true;
+                    return;
+                }
+                break;
+
+            case LaunchType.OpenWebUrl:
+                // 打开网页：网页链接必填
+                if (string.IsNullOrWhiteSpace(WebUrl))
+                {
+                    ErrorMessage = L.ProjectDialog_Error_EmptyWebUrl;
+                    HasError = true;
+                    return;
+                }
+                break;
         }
-        else if (string.IsNullOrWhiteSpace(DefaultProgram))
-        {
-            ErrorMessage = L.ProjectDialog_Error_EmptyProgram;
-            HasError = true;
-        }
-        else
-        {
-            ErrorMessage = null;
-            HasError = false;
-        }
+
+        ErrorMessage = null;
+        HasError = false;
     }
 
     private void BrowsePath()
@@ -433,15 +513,23 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         {
             _logger.LogInformation($"确认添加项目: {ProjectName}");
 
-            // 创建 CreateProjectDto
+            // 创建 CreateProjectDto，根据启动类型设置相应字段
             var dto = new CreateProjectDto
             {
                 Name = ProjectName,
-                Path = ProjectPath,
                 Description = Description,
                 CustomIconPath = IconPath,
-                LaunchArguments = string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments,
-                DefaultProgram = DefaultProgram
+                LaunchType = LaunchType,
+                // 根据启动类型设置不同的路径字段
+                Path = LaunchType == LaunchType.OpenFile ? ProjectPath : string.Empty,
+                // 打开文件时，自定义程序和启动参数可选；打开 exe 时必填
+                DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
+                    ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram) 
+                    : null,
+                LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
+                    ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments) 
+                    : null,
+                WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null
             };
 
             if (_projectAppService != null)
@@ -461,15 +549,24 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
 
             if (_projectAppService != null && EditProjectId.HasValue)
             {
+                // 创建 UpdateProjectDto，根据启动类型设置相应字段
                 var updateDto = new UpdateProjectDto
                 {
                     Id = EditProjectId.Value,
                     Name = ProjectName,
                     Description = Description,
                     CustomIconPath = IconPath,
-                    LaunchArguments = string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments,
-                    DefaultProgram = DefaultProgram
-
+                    LaunchType = LaunchType,
+                    // 根据启动类型设置不同的路径字段
+                    Path = LaunchType == LaunchType.OpenFile ? ProjectPath : string.Empty,
+                    // 打开文件时，自定义程序和启动参数可选；打开 exe 时必填
+                    DefaultProgram = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
+                        ? (string.IsNullOrWhiteSpace(DefaultProgram) ? null : DefaultProgram) 
+                        : null,
+                    LaunchArguments = (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe) 
+                        ? (string.IsNullOrWhiteSpace(LaunchArguments) ? null : LaunchArguments) 
+                        : null,
+                    WebUrl = LaunchType == LaunchType.OpenWebUrl ? (string.IsNullOrWhiteSpace(WebUrl) ? null : WebUrl) : null
                 };
 
                 var result = await _projectAppService.UpdateAsync(updateDto);
@@ -490,4 +587,19 @@ public enum DialogMode
 {
     Add,
     Edit
+}
+
+/// <summary>
+/// 启动类型显示项（用于 ComboBox）
+/// </summary>
+public class LaunchTypeItem
+{
+    public LaunchType Type { get; }
+    public string DisplayName { get; }
+
+    public LaunchTypeItem(LaunchType type, string displayName)
+    {
+        Type = type;
+        DisplayName = displayName;
+    }
 }

@@ -4,7 +4,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:domain="clr-namespace:ProjectHub.Domain.Entities;assembly=ProjectHub.Domain"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:selectors="clr-namespace:ProjectHub.Presentation.Wpf.Selectors"
     xmlns:viewmodels="clr-namespace:ProjectHub.Application.ViewModels.DialogViewModel;assembly=ProjectHub.Application"
     Title="{Binding DialogTitle}"
     Width="560"
@@ -20,6 +22,133 @@
     mc:Ignorable="d">
     <Window.Resources>
         <converters:PathToIconConverter x:Key="PathToIconConverter" />
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <!--  打开文件模板  -->
+        <DataTemplate x:Key="OpenFileTemplate" DataType="{x:Type domain:LaunchType}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_PathLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        Grid.Column="0"
+                        IsReadOnly="{Binding DataContext.IsEditMode, RelativeSource={RelativeSource AncestorType=Window}}"
+                        MaxLength="500"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding DataContext.ProjectPath, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        Padding="12,8"
+                        Command="{Binding DataContext.BrowsePathCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Content="{Binding DataContext.L.ProjectDialog_Browse, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Style="{DynamicResource SecondaryButtonStyle}"
+                        Visibility="{Binding DataContext.IsAddMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                </Grid>
+
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_ProgramLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        Grid.Column="0"
+                        MaxLength="500"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding DataContext.DefaultProgram, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        Padding="12,8"
+                        Command="{Binding DataContext.BrowseProgramCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Content="{Binding DataContext.L.ProjectDialog_Browse, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Style="{DynamicResource SecondaryButtonStyle}" />
+                </Grid>
+
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_ArgumentsLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <TextBox
+                    MaxLength="500"
+                    Style="{DynamicResource VSCodeTextBoxStyle}"
+                    Text="{Binding DataContext.LaunchArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!--  打开 EXE 模板  -->
+        <DataTemplate x:Key="OpenExeTemplate" DataType="{x:Type domain:LaunchType}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_ProgramLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        Grid.Column="0"
+                        MaxLength="500"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding DataContext.DefaultProgram, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        Padding="12,8"
+                        Command="{Binding DataContext.BrowseProgramCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Content="{Binding DataContext.L.ProjectDialog_Browse, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Style="{DynamicResource SecondaryButtonStyle}" />
+                </Grid>
+
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_ArgumentsLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <TextBox
+                    MaxLength="500"
+                    Style="{DynamicResource VSCodeTextBoxStyle}"
+                    Text="{Binding DataContext.LaunchArguments, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!--  打开网页模板  -->
+        <DataTemplate x:Key="OpenWebUrlTemplate" DataType="{x:Type domain:LaunchType}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_WebUrlLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <TextBox
+                    MaxLength="500"
+                    Style="{DynamicResource VSCodeTextBoxStyle}"
+                    Text="{Binding DataContext.WebUrl, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <!--  启动类型模板选择器  -->
+        <selectors:LaunchTypeTemplateSelector
+            x:Key="LaunchTypeTemplateSelector"
+            OpenExeTemplate="{StaticResource OpenExeTemplate}"
+            OpenFileTemplate="{StaticResource OpenFileTemplate}"
+            OpenWebUrlTemplate="{StaticResource OpenWebUrlTemplate}" />
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="Return" Command="{Binding ConfirmCommand}" />
@@ -35,7 +164,7 @@
         <!--  表单内容  -->
         <StackPanel Grid.Row="1">
 
-            <!--  步骤1：选择文件路径  -->
+            <!--  步骤1：启动方式选择（放在最上面）  -->
             <Border
                 Margin="0,0,0,16"
                 Padding="16"
@@ -49,31 +178,21 @@
                         FontSize="13"
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource AccentBlueBrush}"
-                        Text="{Binding L.ProjectDialog_Step1_SelectFile}" />
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                            Grid.Column="0"
-                            IsReadOnly="{Binding IsEditMode}"
-                            MaxLength="500"
-                            Style="{DynamicResource VSCodeTextBoxStyle}"
-                            Text="{Binding ProjectPath, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button
-                            Grid.Column="1"
-                            Margin="8,0,0,0"
-                            Padding="12,8"
-                            Command="{Binding BrowsePathCommand}"
-                            Content="{Binding L.ProjectDialog_Browse}"
-                            Style="{DynamicResource SecondaryButtonStyle}"
-                            Visibility="{Binding IsAddMode, Converter={StaticResource BoolToVisibilityConverter}}" />
-                    </Grid>
+                        Text="{Binding L.ProjectDialog_LaunchTypeLabel}" />
+                    <ComboBox
+                        Margin="0,0,0,16"
+                        DisplayMemberPath="DisplayName"
+                        ItemsSource="{Binding LaunchTypeItems}"
+                        SelectedValue="{Binding LaunchType}"
+                        SelectedValuePath="Type"
+                        Style="{DynamicResource VSCodeComboBoxStyle}" />
+
+                    <!--  使用 ContentControl + TemplateSelector 根据启动类型显示不同模板  -->
+                    <ContentControl Content="{Binding LaunchType}" ContentTemplateSelector="{StaticResource LaunchTypeTemplateSelector}" />
                 </StackPanel>
             </Border>
 
-            <!--  步骤2：项目信息（选择文件后自动填充，可修改）  -->
+            <!--  步骤2：项目信息  -->
             <Border
                 Margin="0,0,0,16"
                 Padding="16"
@@ -95,47 +214,10 @@
                         Foreground="{DynamicResource TextSecondaryBrush}"
                         Text="{Binding L.ProjectDialog_NameLabel}" />
                     <TextBox
-                        Margin="0,0,0,12"
+                        Margin="0,0,0,16"
                         MaxLength="100"
                         Style="{DynamicResource VSCodeTextBoxStyle}"
                         Text="{Binding ProjectName, UpdateSourceTrigger=PropertyChanged}" />
-
-                    <!--  默认程序（可修改）  -->
-                    <TextBlock
-                        Margin="0,0,0,6"
-                        FontSize="12"
-                        Foreground="{DynamicResource TextSecondaryBrush}"
-                        Text="{Binding L.ProjectDialog_ProgramLabel}" />
-                    <Grid Margin="0,0,0,12">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBox
-                            Grid.Column="0"
-                            MaxLength="500"
-                            Style="{DynamicResource VSCodeTextBoxStyle}"
-                            Text="{Binding DefaultProgram, UpdateSourceTrigger=PropertyChanged}" />
-                        <Button
-                            Grid.Column="1"
-                            Margin="8,0,0,0"
-                            Padding="12,8"
-                            Command="{Binding BrowseProgramCommand}"
-                            Content="{Binding L.ProjectDialog_Browse}"
-                            Style="{DynamicResource SecondaryButtonStyle}" />
-                    </Grid>
-
-                    <!--  启动参数（可选）  -->
-                    <TextBlock
-                        Margin="0,0,0,6"
-                        FontSize="12"
-                        Foreground="{DynamicResource TextSecondaryBrush}"
-                        Text="{Binding L.ProjectDialog_ArgumentsLabel}" />
-                    <TextBox
-                        Margin="0,0,0,12"
-                        MaxLength="500"
-                        Style="{DynamicResource VSCodeTextBoxStyle}"
-                        Text="{Binding LaunchArguments, UpdateSourceTrigger=PropertyChanged}" />
 
                     <!--  项目图标（可修改）  -->
                     <TextBlock

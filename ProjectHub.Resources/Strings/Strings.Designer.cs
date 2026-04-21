@@ -574,6 +574,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 请输入网页链接 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_Error_EmptyWebUrl {
+            get {
+                return ResourceManager.GetString("ProjectDialog_Error_EmptyWebUrl", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 项目图标 的本地化字符串。
         /// </summary>
         public static string ProjectDialog_IconLabel {
@@ -588,6 +597,51 @@ namespace ProjectHub.Resources.Strings {
         public static string ProjectDialog_ArgumentsLabel {
             get {
                 return ResourceManager.GetString("ProjectDialog_ArgumentsLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 网页链接（可选） 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_WebUrlLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_WebUrlLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 启动方式 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_LaunchTypeLabel {
+            get {
+                return ResourceManager.GetString("ProjectDialog_LaunchTypeLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开文件 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_LaunchType_OpenFile {
+            get {
+                return ResourceManager.GetString("ProjectDialog_LaunchType_OpenFile", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开 exe 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_LaunchType_OpenExe {
+            get {
+                return ResourceManager.GetString("ProjectDialog_LaunchType_OpenExe", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 打开网页 的本地化字符串。
+        /// </summary>
+        public static string ProjectDialog_LaunchType_OpenWebUrl {
+            get {
+                return ResourceManager.GetString("ProjectDialog_LaunchType_OpenWebUrl", resourceCulture);
             }
         }
         

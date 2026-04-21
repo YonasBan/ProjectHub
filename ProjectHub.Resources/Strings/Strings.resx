@@ -297,6 +297,21 @@
   <data name="ProjectDialog_ArgumentsLabel" xml:space="preserve">
     <value>启动参数（可选）</value>
   </data>
+  <data name="ProjectDialog_WebUrlLabel" xml:space="preserve">
+    <value>网页链接（可选）</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenFile" xml:space="preserve">
+    <value>打开文件</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenExe" xml:space="preserve">
+    <value>打开 exe</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenWebUrl" xml:space="preserve">
+    <value>打开网页</value>
+  </data>
+  <data name="ProjectDialog_LaunchTypeLabel" xml:space="preserve">
+    <value>启动方式</value>
+  </data>
   <data name="ProjectDialog_IconLabel" xml:space="preserve">
     <value>项目图标</value>
   </data>
@@ -308,6 +323,9 @@
   </data>
   <data name="ProjectDialog_Error_EmptyProgram" xml:space="preserve">
     <value>请选择默认程序</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyWebUrl" xml:space="preserve">
+    <value>请输入网页链接</value>
   </data>
   <data name="ProjectDialog_Browse" xml:space="preserve">
     <value>浏览...</value>

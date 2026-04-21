@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ProjectHub.Application.Interfaces;
 using ProjectHub.Application.Mapping;
 using ProjectHub.Application.Services;
+using ProjectHub.Application.Services.LaunchProviders;
 using ProjectHub.Application.ViewModels.DialogViewModel;
 
 namespace ProjectHub.Application.DependencyInjection;
@@ -26,6 +27,12 @@ public static class ApplicationServiceExtensions
 
         // 注册项目应用服务
         services.AddTransient<IProjectAppService, ProjectAppService>();
+
+        // 注册启动提供者（工厂模式）
+        services.AddTransient<ILaunchProvider, OpenFileLaunchProvider>();
+        services.AddTransient<ILaunchProvider, OpenExeLaunchProvider>();
+        services.AddTransient<ILaunchProvider, OpenWebUrlLaunchProvider>();
+        services.AddTransient<LaunchProviderFactory>();
 
         // 注册工作文件夹应用服务
         services.AddTransient<IWorkFolderAppService, WorkFolderAppService>();

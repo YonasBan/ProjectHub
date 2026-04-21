@@ -38,6 +38,8 @@ public class ProjectDto
     public long? CleanableSpaceBytes { get; set; }
     public string? DefaultProgram { get; set; }
     public string? LaunchArguments { get; set; }
+    public string? WebUrl { get; set; }
+    public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
@@ -65,6 +67,8 @@ public class CreateProjectDto
     public string? CustomIconPath { get; set; }
     public string? DefaultProgram { get; set; }
     public string? LaunchArguments { get; set; }
+    public string? WebUrl { get; set; }
+    public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
 }
 
 /// <summary>
@@ -79,8 +83,11 @@ public class UpdateProjectDto
     public string Name { get; set; } = string.Empty;
 
     public string? Description { get; set; }
+    public string Path { get; set; } = string.Empty;
     public string? DefaultProgram { get; set; }
     public string? LaunchArguments { get; set; }
+    public string? WebUrl { get; set; }
+    public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
     public DateTime? Deadline { get; set; }
     public long? CustomerId { get; set; }
     public string? CustomIconPath { get; set; }

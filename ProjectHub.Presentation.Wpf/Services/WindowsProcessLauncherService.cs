@@ -54,4 +54,26 @@ public class WindowsProcessLauncherService : IProcessLauncherService
     {
         return File.Exists(path) || Directory.Exists(path);
     }
+
+    public Task<bool> LaunchWebUrlAsync(string url)
+    {
+        try
+        {
+            // 确保 URL 格式正确
+            var uri = new Uri(url);
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = uri.ToString(),
+                UseShellExecute = true,
+                Verb = "open"
+            };
+
+            Process.Start(startInfo);
+            return Task.FromResult(true);
+        }
+        catch
+        {
+            return Task.FromResult(false);
+        }
+    }
 }

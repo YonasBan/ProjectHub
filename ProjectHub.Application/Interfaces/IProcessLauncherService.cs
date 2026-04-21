@@ -25,4 +25,11 @@ public interface IProcessLauncherService
     /// 检查文件是否存在
     /// </summary>
     bool FileExists(string path);
+
+    /// <summary>
+    /// 使用默认浏览器打开网页链接
+    /// </summary>
+    /// <param name="url">网页 URL</param>
+    /// <returns>启动是否成功</returns>
+    Task<bool> LaunchWebUrlAsync(string url);
 }

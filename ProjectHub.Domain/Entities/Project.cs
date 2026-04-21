@@ -115,6 +115,20 @@ public class Project : BaseEntity
     /// </summary>
     public string? LaunchArguments { get; private set; }
 
+    /// <summary>
+    /// 网页链接 (可选)
+    /// 用于 WebSite 类型项目或作为项目的相关链接
+    /// </summary>
+    public string? WebUrl { get; private set; }
+
+    /// <summary>
+    /// 启动类型
+    /// OpenFile = 0,     // 打开文件
+    /// OpenExe = 1,      // 打开 exe
+    /// OpenWebUrl = 2    // 打开网页
+    /// </summary>
+    public LaunchType LaunchType { get; private set; } = LaunchType.OpenFile;
+
     // ========== 导航属性 ==========
 
     /// <summary>
@@ -163,7 +177,7 @@ public class Project : BaseEntity
     /// 更新项目基本信息
     /// 封装不变性规则
     /// </summary>
-    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null, string? defaultProgram = null, string? launchArguments = null, string? customIconPath = null)
+    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null, string? defaultProgram = null, string? launchArguments = null, string? customIconPath = null, string? webUrl = null, string? path = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
@@ -173,8 +187,14 @@ public class Project : BaseEntity
         ColorTag = colorTag;
         DefaultProgram = defaultProgram;
         LaunchArguments = launchArguments;
+        WebUrl = webUrl;
         UpdatedAt = DateTime.UtcNow;
         CustomIconPath = customIconPath;
+        
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            Path = path;
+        }
     }
 
     /// <summary>
@@ -192,6 +212,24 @@ public class Project : BaseEntity
     public void SetLaunchArguments(string? launchArguments)
     {
         LaunchArguments = launchArguments;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置网页链接
+    /// </summary>
+    public void SetWebUrl(string? webUrl)
+    {
+        WebUrl = webUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置启动类型
+    /// </summary>
+    public void SetLaunchType(LaunchType launchType)
+    {
+        LaunchType = launchType;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -286,4 +324,25 @@ public enum ProjectType
     /// WebSite
     /// </summary>
     WebSite = 7,
+}
+
+/// <summary>
+/// 项目启动类型枚举
+/// </summary>
+public enum LaunchType
+{
+    /// <summary>
+    /// 打开文件（使用系统默认程序）
+    /// </summary>
+    OpenFile = 0,
+
+    /// <summary>
+    /// 打开 exe（使用自定义程序）
+    /// </summary>
+    OpenExe = 1,
+
+    /// <summary>
+    /// 打开网页（使用浏览器）
+    /// </summary>
+    OpenWebUrl = 2
 }

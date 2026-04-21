@@ -1,6 +1,7 @@
 using AutoMapper;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Services.LaunchProviders;
 using ProjectHub.Domain.Interfaces;
 
 namespace ProjectHub.Application.Services;
@@ -13,27 +14,38 @@ public class ProjectAppService : IProjectAppService
     private readonly IProjectRepository _projectRepository;
     private readonly IProcessLauncherService _processLauncher;
     private readonly IMapper _mapper;
+    private readonly LaunchProviderFactory _launchProviderFactory;
 
     public ProjectAppService(
         IProjectRepository projectRepository,
         IProcessLauncherService processLauncher,
-        IMapper mapper)
+        IMapper mapper,
+        LaunchProviderFactory launchProviderFactory)
     {
         _projectRepository = projectRepository;
         _processLauncher = processLauncher;
         _mapper = mapper;
+        _launchProviderFactory = launchProviderFactory;
     }
 
     public async Task<ProjectDto> CreateAsync(CreateProjectDto input, CancellationToken cancellationToken = default)
     {
         var project = Domain.Entities.Project.Create(input.Name, input.Type, input.Path,input.DefaultProgram,input.CustomIconPath,input.Description);
         
+        // 设置启动类型
+        project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);
+
         // 设置可选字段
         if (!string.IsNullOrWhiteSpace(input.LaunchArguments))
         {
             project.SetLaunchArguments(input.LaunchArguments);
         }
-        
+
+        if (!string.IsNullOrWhiteSpace(input.WebUrl))
+        {
+            project.SetWebUrl(input.WebUrl);
+        }
+
         await _projectRepository.AddAsync(project, cancellationToken);
         return _mapper.Map<ProjectDto>(project);
     }
@@ -44,7 +56,8 @@ public class ProjectAppService : IProjectAppService
             ?? throw new KeyNotFoundException($"Project (Id={input.Id}) not found");
 
         // 更新基本信息
-        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments, input.CustomIconPath);
+        project.UpdateBasicInfo(input.Name, input.Description, null, input.DefaultProgram, input.LaunchArguments, input.CustomIconPath, input.WebUrl, input.Path);
+        project.SetLaunchType((Domain.Entities.LaunchType)input.LaunchType);
 
         await _projectRepository.UpdateAsync(project, cancellationToken);
         return _mapper.Map<ProjectDto>(project);
@@ -97,26 +110,15 @@ public class ProjectAppService : IProjectAppService
 
     /// <summary>
     /// 启动项目的实际逻辑
+    /// 使用工厂模式获取对应的启动提供者
     /// </summary>
     private async Task LaunchProjectAsync(Domain.Entities.Project project)
     {
-        var projectPath = project.Path;
+        // 使用工厂获取对应的启动提供者
+        var provider = _launchProviderFactory.GetProvider(project.LaunchType);
         
-        // 检查路径是否存在
-        if (!_processLauncher.FileExists(projectPath))
-        {
-            throw new FileNotFoundException($"Project path not found: {projectPath}");
-        }
-
-        // 如果有 DefaultProgram，使用它启动
-        if (!string.IsNullOrEmpty(project.DefaultProgram))
-        {
-            await _processLauncher.LaunchWithProgramAsync(project.DefaultProgram, projectPath);
-            return;
-        }
-
-        // 使用系统默认方式启动
-        await _processLauncher.LaunchWithDefaultProgramAsync(projectPath);
+        // 执行启动
+        await provider.LaunchAsync(project);
     }
 
     public async Task LaunchMultipleAsync(IEnumerable<long> projectIds, int intervalSeconds = 0, CancellationToken cancellationToken = default)
