@@ -504,6 +504,12 @@
   <data name="Message_MoveToFolderFailed" xml:space="preserve">
     <value>移动到文件夹失败</value>
   </data>
+  <data name="Message_RemovedFromFolder" xml:space="preserve">
+    <value>已从文件夹中移除 "{0}"</value>
+  </data>
+  <data name="Tooltip_RemoveFromFolder" xml:space="preserve">
+    <value>从当前文件夹移除</value>
+  </data>
   <data name="Dialog_MoveItemNotSet" xml:space="preserve">
     <value>未设置要移动的项目</value>
   </data>

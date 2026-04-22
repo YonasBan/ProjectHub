@@ -394,6 +394,24 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 已从文件夹中移除 "{0}" 的本地化字符串。
+        /// </summary>
+        public static string Message_RemovedFromFolder {
+            get {
+                return ResourceManager.GetString("Message_RemovedFromFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 从当前文件夹移除 的本地化字符串。
+        /// </summary>
+        public static string Tooltip_RemoveFromFolder {
+            get {
+                return ResourceManager.GetString("Tooltip_RemoveFromFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 项目 &quot;{0}&quot; 创建成功！ 的本地化字符串。
         /// </summary>
         public static string Message_ProjectCreated {

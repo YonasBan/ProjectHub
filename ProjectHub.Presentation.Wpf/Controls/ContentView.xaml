@@ -254,6 +254,33 @@
                             </Button>
                         </StackPanel>
                     </Grid>
+
+                    <!--  右上角删除按钮（仅在工作文件夹视图中显示）  -->
+                    <Button
+                        Grid.RowSpan="4"
+                        Margin="8"
+                        Padding="4"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding DataContext.RemoveFromFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}"
+                        Content="X"
+                        Cursor="Hand"
+                        ToolTip="{Binding DataContext.L.Tooltip_RemoveFromFolder, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DataContext.IsWorkFolderSelected, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+
+                    </Button>
                 </Grid>
             </Border>
         </DataTemplate>
@@ -475,6 +502,32 @@
 
                         </StackPanel>
                     </Grid>
+
+                    <!--  右上角删除按钮（仅在工作文件夹视图中显示）  -->
+                    <Button
+                        Grid.RowSpan="4"
+                        Margin="8"
+                        Padding="4"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding DataContext.RemoveFromFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}"
+                        Cursor="Hand" Content="X"
+                        ToolTip="{Binding DataContext.L.Tooltip_RemoveFromFolder, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DataContext.IsWorkFolderSelected, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        
+                    </Button>
                 </Grid>
             </Border>
         </DataTemplate>

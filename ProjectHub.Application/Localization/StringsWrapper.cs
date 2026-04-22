@@ -216,6 +216,8 @@ public class LocalizedStrings : ReactiveObject
     public string Dialog_MoveToFolderTitle => ProjectHub.Resources.Strings.Strings.Dialog_MoveToFolderTitle;
     public string Message_MovedToFolder => ProjectHub.Resources.Strings.Strings.Message_MovedToFolder;
     public string Message_MoveToFolderFailed => ProjectHub.Resources.Strings.Strings.Message_MoveToFolderFailed;
+    public string Message_RemovedFromFolder => ProjectHub.Resources.Strings.Strings.Message_RemovedFromFolder;
+    public string Tooltip_RemoveFromFolder => ProjectHub.Resources.Strings.Strings.Tooltip_RemoveFromFolder;
     public string Dialog_MoveItemNotSet => ProjectHub.Resources.Strings.Strings.Dialog_MoveItemNotSet;
     public string ContextMenu_OpenFilePosition => ProjectHub.Resources.Strings.Strings.ContextMenu_OpenFilePosition;
 }

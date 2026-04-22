@@ -44,6 +44,30 @@ public class ContentViewModel : ViewModelBase
 
     #endregion
 
+    #region 状态属性
+
+    /// <summary>
+    /// 当前是否选中了工作文件夹节点
+    /// </summary>
+    private bool _isWorkFolderSelected;
+    public bool IsWorkFolderSelected
+    {
+        get => _isWorkFolderSelected;
+        private set => this.RaiseAndSetIfChanged(ref _isWorkFolderSelected, value);
+    }
+
+    /// <summary>
+    /// 当前选中的工作文件夹ID（用于移除操作）
+    /// </summary>
+    private long? _currentWorkFolderId;
+    public long? CurrentWorkFolderId
+    {
+        get => _currentWorkFolderId;
+        private set => this.RaiseAndSetIfChanged(ref _currentWorkFolderId, value);
+    }
+
+    #endregion
+
     #region 引用属性
 
     /// <summary>
@@ -59,6 +83,11 @@ public class ContentViewModel : ViewModelBase
     /// 添加内容命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> AddContentCommand { get; }
+
+    /// <summary>
+    /// 从当前文件夹移除项目或工作空间命令
+    /// </summary>
+    public ReactiveCommand<object, Unit> RemoveFromFolderCommand { get; }
 
     #endregion
 
@@ -85,6 +114,7 @@ public class ContentViewModel : ViewModelBase
         SidebarViewModel = sidebarViewModel;
 
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
+        RemoveFromFolderCommand = ReactiveCommand.CreateFromTask<object>(RemoveFromFolderAsync);
 
         // 订阅侧边栏选中项变化，自动更新内容
         SidebarViewModel.SelectedItemChanged += OnSidebarSelectedItemChanged;
@@ -101,6 +131,7 @@ public class ContentViewModel : ViewModelBase
     public async void UpdateContentItems(TreeItemViewModel selectedItem)
     {
         ContentItems.Clear();
+        IsWorkFolderSelected = false;
         switch (selectedItem.ItemType)
         {
             case TreeItemType.AllProjects:
@@ -149,6 +180,10 @@ public class ContentViewModel : ViewModelBase
                 break;
 
             case TreeItemType.WorkFolder:
+                // 设置当前文件夹状态
+                IsWorkFolderSelected = true;
+                CurrentWorkFolderId = selectedItem.Id;
+
                 // 从数据库加载该文件夹下的项目和工作空间ID
                 var folderProjectIds = (await _projectAppService.GetByWorkFolderIdAsync(selectedItem.Id))
                     .Select(p => p.Id)
@@ -169,8 +204,10 @@ public class ContentViewModel : ViewModelBase
                 }
                 break;
 
-            case TreeItemType.TagSettings:
-                // 标签设置页面，可以显示所有标签或空
+            default:
+                // 其他情况重置文件夹状态
+                IsWorkFolderSelected = false;
+                CurrentWorkFolderId = null;
                 break;
         }
 
@@ -341,6 +378,42 @@ public class ContentViewModel : ViewModelBase
         else
         {
             Logger.LogInformation("用户取消创建项目");
+        }
+    }
+
+    /// <summary>
+    /// 从当前文件夹移除项目或工作空间
+    /// </summary>
+    private async Task RemoveFromFolderAsync(object item)
+    {
+        if (!CurrentWorkFolderId.HasValue) return;
+
+        try
+        {
+            switch (item)
+            {
+                case ProjectViewModel project:
+                    await _workFolderAppService.RemoveProjectFromFolderAsync(project.Id, CurrentWorkFolderId.Value);
+                    ContentItems.Remove(item);
+                    _dialogService.ShowNotification(
+                        string.Format(L.Message_RemovedFromFolder, project.Name),
+                        NotificationType.Success,
+                        3000);
+                    break;
+
+                case WorkSpaceViewModel workSpace:
+                    await _workFolderAppService.RemoveWorkSpaceFromFolderAsync(workSpace.Id, CurrentWorkFolderId.Value);
+                    ContentItems.Remove(item);
+                    _dialogService.ShowNotification(
+                        string.Format(L.Message_RemovedFromFolder, workSpace.Name),
+                        NotificationType.Success,
+                        3000);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            await _dialogService.ShowMessageAsync(L.Message_SaveFailed, ex.Message);
         }
     }
 
