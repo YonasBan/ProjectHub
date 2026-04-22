@@ -91,13 +91,15 @@
 
                                 <!--  Count Badge  -->
                                 <Border
+                                    x:Name="tbkCount"
                                     Grid.Column="2"
                                     Margin="8,0,0,0"
                                     Style="{StaticResource TreeCountBadgeStyle}">
                                     <TextBlock
                                         FontSize="11"
                                         Foreground="{DynamicResource TextMutedBrush}"
-                                        Text="{Binding Count}" />
+                                        Text="{Binding Count}"
+                                        Visibility="Visible" />
                                 </Border>
 
                                 <!--  Action Buttons Panel (Add/Delete)  -->
@@ -141,6 +143,9 @@
                                 <Setter TargetName="ActionPanel" Property="Opacity" Value="1" />
                                 <Setter TargetName="ActionPanel" Property="IsHitTestVisible" Value="True" />
                             </MultiDataTrigger>
+                            <DataTrigger Binding="{Binding ItemType}" Value="WorkFolder">
+                                <Setter TargetName="tbkCount" Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
                         </HierarchicalDataTemplate.Triggers>
                     </HierarchicalDataTemplate>
                 </TreeView.Resources>

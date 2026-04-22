@@ -154,7 +154,7 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     private void SubscribeToMessageBus()
     {
-      
+
     }
 
     #endregion

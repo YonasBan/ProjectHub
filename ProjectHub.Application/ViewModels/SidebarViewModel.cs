@@ -304,9 +304,9 @@ public class SidebarViewModel : ViewModelBase
         var allProjects = new TreeItemViewModel(L.Sidebar_AllProjects, Projects.Count, TreeItemType.AllProjects);
         SidebarTreeItems.Add(allProjects);
 
-        // Tag Settings (标签设置)
-        var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, 0, TreeItemType.TagSettings);
-        SidebarTreeItems.Add(tagSettings);
+        //// Tag Settings (标签设置)
+        //var tagSettings = new TreeItemViewModel(L.Sidebar_TagSettings, 0, TreeItemType.TagSettings);
+        //SidebarTreeItems.Add(tagSettings);
 
         Logger.LogDebug("侧边栏树形结构已重建");
     }
@@ -528,12 +528,10 @@ public class SidebarViewModel : ViewModelBase
         // 加载工作空间数据
         await LoadWorkSpacesAsync();
 
-        // 更新统计
-        UpdateStatistics();
-
         // 构建侧边栏树形结构
         BuildSidebarTree();
-
+        // 更新统计
+        UpdateStatistics();
         // 默认选中"最近使用"
         if (SidebarTreeItems.Count > 0)
         {
