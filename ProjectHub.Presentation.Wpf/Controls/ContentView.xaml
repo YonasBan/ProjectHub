@@ -128,7 +128,7 @@
                         <Style.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
-                                <Setter Property="BorderBrush" Value="{DynamicResource AccentBlueBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
                                 <Setter Property="BorderThickness" Value="2" />
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
@@ -155,7 +155,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
@@ -184,11 +183,13 @@
                                 Foreground="{DynamicResource TextPrimaryBrush}"
                                 Text="{Binding Name}"
                                 TextTrimming="CharacterEllipsis" />
-                            <!--<TextBlock
-                                Margin="0,4,0,0"
+                            <TextBlock
+                                Margin="0,2,0,0"
                                 FontSize="11"
                                 Foreground="{DynamicResource TextMutedBrush}"
-                                Text="{Binding TypeDisplayName}" />-->
+                                Text="{Binding Path}"
+                                TextTrimming="CharacterEllipsis"
+                                ToolTip="{Binding Path}" />
                         </StackPanel>
                     </Grid>
 
@@ -197,9 +198,9 @@
                         Margin="16,0,16,8"
                         FontSize="11"
                         Foreground="{DynamicResource TextMutedBrush}"
-                        Text="{Binding Path}"
+                        Text="{Binding Description}"
                         TextTrimming="CharacterEllipsis"
-                        ToolTip="{Binding Path}" />
+                        Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToVis}}" />
 
                     <Border
                         Grid.Row="2"
@@ -207,22 +208,10 @@
                         BorderBrush="{DynamicResource BorderBrush}"
                         BorderThickness="0,0,0,1" />
 
-                    <TextBlock
-                        Grid.Row="3"
-                        Margin="16,0,16,8"
-                        FontSize="11"
-                        Foreground="{DynamicResource TextMutedBrush}"
-                        Text="{Binding Description}"
-                        TextTrimming="CharacterEllipsis"
-                        Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToVis}}" />
-
-                    <Grid
-                        Grid.Row="4"
-                        Margin="16,8,16,12"
-                        Cursor="">
+                    <Grid Grid.Row="3" Margin="16,0,16,8">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <TextBlock
                             Grid.Column="0"
