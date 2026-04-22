@@ -69,7 +69,6 @@ public class WindowsProcessLauncherService : IProcessLauncherService
             {
                 FileName = url,
                 UseShellExecute = true,
-                Verb = "open"
             };
 
             Process.Start(startInfo);

@@ -26,7 +26,10 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 
     public string? CustomIconPath => ((ProjectDto)_dto).CustomIconPath;
 
-    public string LastOpenedDisplay => ((ProjectDto)_dto).LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
+    //public string LastOpenedDisplay => ((ProjectDto)_dto).LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
+    public string LastOpenedDisplay => LastOpenedAt.HasValue
+      ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value.ToLocalTime())
+      : "";
 
     public int LaunchCount => ((ProjectDto)_dto).LaunchCount;
 
@@ -212,13 +215,9 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 
         await _projectAppService.LaunchAsync(Id);
 
-        var updatedProject = await _projectAppService.GetByIdAsync(Id);
-        if (updatedProject != null)
-        {
-            _dto = updatedProject;
-            this.RaisePropertyChanged(nameof(LaunchCount));
-            this.RaisePropertyChanged(nameof(LastOpenedAt));
-        }
+        _dto.LastOpenedAt=DateTime.UtcNow;
+        this.RaisePropertyChanged(nameof(LaunchCount));
+        this.RaisePropertyChanged(nameof(LastOpenedAt));
     }
 }
 

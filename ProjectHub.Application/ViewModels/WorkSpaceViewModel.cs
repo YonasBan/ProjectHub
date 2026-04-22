@@ -27,7 +27,7 @@ public partial class WorkSpaceViewModel : ItemViewModelBase<WorkSpaceDto>
     /// 上次打开时间显示文本（支持本地化）
     /// </summary>
     public string LastOpenedDisplay => LastOpenedAt.HasValue
-        ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value)
+        ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value.ToLocalTime())
         : "";
 
     /// <summary>
