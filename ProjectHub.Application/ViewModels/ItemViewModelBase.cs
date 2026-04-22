@@ -20,19 +20,6 @@ public enum ItemChangedType
 }
 
 /// <summary>
-/// 项目改变事件参数
-/// </summary>
-public class ItemChangedEventArgs : EventArgs
-{
-    public ItemChangedType ChangeType { get; }
-
-    public ItemChangedEventArgs(ItemChangedType changeType)
-    {
-        ChangeType = changeType;
-    }
-}
-
-/// <summary>
 /// 项目/工作空间 ViewModel 基类
 /// </summary>
 public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : class
@@ -87,24 +74,13 @@ public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : clas
 
     #endregion
 
-    /// <summary>
-    /// 项目状态改变事件（用于通知父级刷新）
-    /// </summary>
-    public event EventHandler<ItemChangedEventArgs>? ItemChanged;
+   
 
     protected ItemViewModelBase(TDto dto, IDialogService dialogService, IServiceProvider serviceProvider)
     {
         _dto = dto;
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
-    }
-
-    /// <summary>
-    /// 触发状态改变事件
-    /// </summary>
-    protected void OnItemChanged(ItemChangedType changeType)
-    {
-        ItemChanged?.Invoke(this, new ItemChangedEventArgs(changeType));
     }
 
     #region Abstract Methods
