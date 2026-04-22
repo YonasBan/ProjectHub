@@ -149,22 +149,23 @@ public class ContentViewModel : ViewModelBase
                 break;
 
             case TreeItemType.WorkFolder:
-                // 从数据库加载该文件夹下的项目和工作空间
-                var folderProjects = await _projectAppService.GetByWorkFolderIdAsync(selectedItem.Id);
-                var folderWorkSpaces = await _workSpaceAppService.GetByWorkFolderIdAsync(selectedItem.Id);
+                // 从数据库加载该文件夹下的项目和工作空间ID
+                var folderProjectIds = (await _projectAppService.GetByWorkFolderIdAsync(selectedItem.Id))
+                    .Select(p => p.Id)
+                    .ToHashSet();
+                var folderWorkSpaceIds = (await _workSpaceAppService.GetByWorkFolderIdAsync(selectedItem.Id))
+                    .Select(w => w.Id)
+                    .ToHashSet();
 
-                // 添加项目
-                foreach (var project in folderProjects)
+                // 从现有 SidebarViewModel 集合中筛选并添加（避免重复创建 ViewModel）
+                foreach (var project in SidebarViewModel.Projects.Where(p => folderProjectIds.Contains(p.Id)))
                 {
-                    var projectVm = new ProjectViewModel(project, _dialogService, _serviceProvider, _projectAppService, _fileExplorerService);
-                    ContentItems.Add(projectVm);
+                    ContentItems.Add(project);
                 }
 
-                // 添加工作空间
-                foreach (var workSpace in folderWorkSpaces)
+                foreach (var workSpace in SidebarViewModel.WorkSpaces.Where(w => folderWorkSpaceIds.Contains(w.Id)))
                 {
-                    var workSpaceVm = new WorkSpaceViewModel(workSpace, _dialogService, _serviceProvider, _workSpaceAppService);
-                    ContentItems.Add(workSpaceVm);
+                    ContentItems.Add(workSpace);
                 }
                 break;
 
