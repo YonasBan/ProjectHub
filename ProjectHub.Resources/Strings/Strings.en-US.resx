@@ -570,4 +570,7 @@
   <data name="Log_ConfirmAddProject" xml:space="preserve">
     <value>Confirm add project: {0}</value>
   </data>
+  <data name="Content_SearchResults" xml:space="preserve">
+    <value>Search Results</value>
+  </data>
 </root>

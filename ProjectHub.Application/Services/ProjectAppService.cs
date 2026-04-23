@@ -92,12 +92,6 @@ public class ProjectAppService : IProjectAppService
         return _mapper.Map<List<ProjectDto>>(projects);
     }
 
-    public async Task<IReadOnlyList<ProjectDto>> SearchAsync(string keyword, CancellationToken cancellationToken = default)
-    {
-        var projects = await _projectRepository.SearchAsync(keyword, cancellationToken);
-        return _mapper.Map<List<ProjectDto>>(projects);
-    }
-
     public async Task LaunchAsync(long id, CancellationToken cancellationToken = default)
     {
         var project = await _projectRepository.GetByIdAsync(id, cancellationToken)

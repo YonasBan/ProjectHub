@@ -19,6 +19,7 @@
         <converters:PathToIconConverter x:Key="PathToIconConverter" />
         <converters:ContentTemplateSelector x:Key="ContentTemplateSelector" />
         <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVis" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
 
         <!--  BindingProxy 用于解决 ContextMenu 绑定问题  -->
         <converters:BindingProxy x:Key="LocalizedStringsProxy" Data="{Binding L}" />
@@ -552,23 +553,32 @@
                     Grid.Column="0"
                     VerticalAlignment="Center"
                     Orientation="Horizontal">
-                    <!--  Icon  -->
+                    <!--  Icon (搜索模式下隐藏)  -->
                     <svg:SvgViewbox
                         Width="22"
                         Height="22"
                         Margin="0,0,12,0"
                         VerticalAlignment="Center"
                         Source="{Binding SidebarViewModel.SelectedTreeItem.IconPath}"
-                        Stretch="Uniform" />
-                    <!--  Name  -->
+                        Stretch="Uniform"
+                        Visibility="{Binding IsSearching, Converter={StaticResource InverseBoolToVis}}" />
+                    <!--  Name (搜索模式下隐藏)  -->
                     <TextBlock
                         FontSize="22"
                         FontWeight="SemiBold"
                         Foreground="{DynamicResource TextPrimaryBrush}"
-                        Text="{Binding SidebarViewModel.SelectedTreeItem.Name}" />
+                        Text="{Binding SidebarViewModel.SelectedTreeItem.Name}"
+                        Visibility="{Binding IsSearching, Converter={StaticResource InverseBoolToVis}}" />
+                    <!--  搜索标题 (仅搜索模式下显示)  -->
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Text="{Binding L.Content_SearchResults}"
+                        Visibility="{Binding IsSearching, Converter={StaticResource BoolToVis}}" />
                 </StackPanel>
 
-                <!--  Add Button (显示在工作空间、工作文件夹、所有项目类型)  -->
+                <!--  Add Button (非搜索模式下显示)  -->
                 <Button
                     Grid.Column="1"
                     Width="28"
@@ -578,9 +588,18 @@
                     Content="+"
                     Cursor="Hand"
                     FontSize="18"
-                    Style="{StaticResource IconButtonStyle}"
-                    ToolTip="{Binding L.Tooltip_AddItem}"
-                    Visibility="{Binding SidebarViewModel.SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
+                    ToolTip="{Binding L.Tooltip_AddItem}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="Button">
+                            <Setter Property="Visibility" Value="{Binding SidebarViewModel.SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSearching}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
             </Grid>
         </Border>
 

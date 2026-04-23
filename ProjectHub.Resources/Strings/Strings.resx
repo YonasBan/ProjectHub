@@ -570,4 +570,7 @@
   <data name="Log_ConfirmAddProject" xml:space="preserve">
     <value>确认添加项目: {0}</value>
   </data>
+  <data name="Content_SearchResults" xml:space="preserve">
+    <value>搜索结果</value>
+  </data>
 </root>

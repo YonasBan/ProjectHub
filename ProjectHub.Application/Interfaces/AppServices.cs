@@ -43,11 +43,6 @@ public interface IProjectAppService
     Task<IReadOnlyList<ProjectDto>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 搜索项目
-    /// </summary>
-    Task<IReadOnlyList<ProjectDto>> SearchAsync(string keyword, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 启动项目
     /// </summary>
     Task LaunchAsync(long id, CancellationToken cancellationToken = default);

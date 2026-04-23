@@ -1418,5 +1418,14 @@ namespace ProjectHub.Resources.Strings {
                 return ResourceManager.GetString("WorkSpaceDialog_UseCustomLaunchOrder", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 搜索结果 的本地化字符串。
+        /// </summary>
+        public static string Content_SearchResults {
+            get {
+                return ResourceManager.GetString("Content_SearchResults", resourceCulture);
+            }
+        }
     }
 }

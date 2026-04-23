@@ -47,6 +47,11 @@ public class ContentViewModel : ViewModelBase
     #region 状态属性
 
     /// <summary>
+    /// 当前选中的树节点（用于搜索后恢复）
+    /// </summary>
+    private TreeItemViewModel? _currentSelectedItem;
+
+    /// <summary>
     /// 当前是否选中了工作文件夹节点
     /// </summary>
     private bool _isWorkFolderSelected;
@@ -64,6 +69,26 @@ public class ContentViewModel : ViewModelBase
     {
         get => _currentWorkFolderId;
         private set => this.RaiseAndSetIfChanged(ref _currentWorkFolderId, value);
+    }
+
+    /// <summary>
+    /// 当前是否处于搜索模式
+    /// </summary>
+    private bool _isSearching;
+    public bool IsSearching
+    {
+        get => _isSearching;
+        private set => this.RaiseAndSetIfChanged(ref _isSearching, value);
+    }
+
+    /// <summary>
+    /// 搜索关键字
+    /// </summary>
+    private string _searchKeyword = string.Empty;
+    public string SearchKeyword
+    {
+        get => _searchKeyword;
+        set => this.RaiseAndSetIfChanged(ref _searchKeyword, value);
     }
 
     #endregion
@@ -130,8 +155,11 @@ public class ContentViewModel : ViewModelBase
     /// </summary>
     public async void UpdateContentItems(TreeItemViewModel selectedItem)
     {
+        _currentSelectedItem = selectedItem;
         ContentItems.Clear();
         IsWorkFolderSelected = false;
+        IsSearching = false;
+        SearchKeyword = string.Empty;
         switch (selectedItem.ItemType)
         {
             case TreeItemType.AllProjects:
@@ -212,6 +240,69 @@ public class ContentViewModel : ViewModelBase
         }
 
         Logger.LogDebug($"内容区域已更新: {selectedItem.ItemType}, 共 {ContentItems.Count} 项");
+    }
+
+    /// <summary>
+    /// 执行搜索，从项目和工作空间中过滤匹配项
+    /// </summary>
+    public void Search(string keyword)
+    {
+        if (string.IsNullOrWhiteSpace(keyword))
+        {
+            // 清空搜索，恢复原来的导航状态
+            IsSearching = false;
+            SearchKeyword = string.Empty;
+            if (_currentSelectedItem != null)
+            {
+                UpdateContentItems(_currentSelectedItem);
+            }
+            return;
+        }
+
+        IsSearching = true;
+        SearchKeyword = keyword;
+        ContentItems.Clear();
+        IsWorkFolderSelected = false;
+        CurrentWorkFolderId = null;
+
+        var lowerKeyword = keyword.ToLowerInvariant();
+
+        // 从项目中过滤
+        var matchedProjects = SidebarViewModel.Projects
+            .Where(p => MatchesSearch(p, lowerKeyword))
+            .Select(p => (object)p);
+
+        // 从工作空间中过滤
+        var matchedWorkSpaces = SidebarViewModel.WorkSpaces
+            .Where(w => MatchesSearch(w, lowerKeyword))
+            .Select(w => (object)w);
+
+        // 合并结果
+        var results = matchedProjects.Concat(matchedWorkSpaces).ToList();
+        foreach (var item in results)
+        {
+            ContentItems.Add(item);
+        }
+
+        Logger.LogDebug($"搜索完成: 关键字 '{keyword}', 共 {ContentItems.Count} 项匹配");
+    }
+
+    /// <summary>
+    /// 判断 ViewModel 是否匹配搜索关键字
+    /// </summary>
+    private static bool MatchesSearch(object item, string lowerKeyword)
+    {
+        return item switch
+        {
+            ProjectViewModel p =>
+                p.Name.Contains(lowerKeyword, StringComparison.OrdinalIgnoreCase) ||
+                p.Path.Contains(lowerKeyword, StringComparison.OrdinalIgnoreCase) ||
+                (!string.IsNullOrEmpty(p.Description) && p.Description.Contains(lowerKeyword, StringComparison.OrdinalIgnoreCase)),
+            WorkSpaceViewModel w =>
+                w.Name.Contains(lowerKeyword, StringComparison.OrdinalIgnoreCase) ||
+                (!string.IsNullOrEmpty(w.Description) && w.Description.Contains(lowerKeyword, StringComparison.OrdinalIgnoreCase)),
+            _ => false
+        };
     }
 
     #endregion

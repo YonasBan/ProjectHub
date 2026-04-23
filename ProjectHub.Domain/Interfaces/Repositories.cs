@@ -51,11 +51,6 @@ public interface IProjectRepository : IRepository<Project>
     Task<IReadOnlyList<Project>> GetByWorkSpaceIdAsync(long? workSpaceId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 搜索项目 (按名称/路径/描述)
-    /// </summary>
-    Task<IReadOnlyList<Project>> SearchAsync(string keyword, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 获取最近使用的项目
     /// </summary>
     /// <param name="count">返回数量</param>

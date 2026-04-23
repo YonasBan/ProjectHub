@@ -125,17 +125,6 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Project>> SearchAsync(string keyword, CancellationToken cancellationToken = default)
-    {
-        await using var ctx = _factory.CreateDbContext();
-        return await ctx.Projects
-            .Where(p => !p.IsDeleted)
-            .Where(p => p.Name.Contains(keyword) || 
-                       p.Path.Contains(keyword) || 
-                       (p.Description != null && p.Description.Contains(keyword)))
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<IReadOnlyList<Project>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();

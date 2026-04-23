@@ -238,4 +238,5 @@ public class LocalizedStrings : ReactiveObject
     public string Log_UserSelectedIcon => ProjectHub.Resources.Strings.Strings.Log_UserSelectedIcon;
     public string Log_UserSelectedWorkingDirectory => ProjectHub.Resources.Strings.Strings.Log_UserSelectedWorkingDirectory;
     public string Log_ConfirmAddProject => ProjectHub.Resources.Strings.Strings.Log_ConfirmAddProject;
+    public string Content_SearchResults => ProjectHub.Resources.Strings.Strings.Content_SearchResults;
 }

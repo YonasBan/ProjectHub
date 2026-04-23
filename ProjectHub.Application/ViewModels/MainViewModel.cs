@@ -138,6 +138,13 @@ public class MainViewModel : ViewModelBase
             })
             .DisposeWith(Disposables);
 
+        // 订阅搜索关键字变化，防抖 300ms 后触发搜索
+        this.WhenAnyValue(x => x.SearchKeyword)
+            .Throttle(TimeSpan.FromMilliseconds(300))
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(keyword => ContentViewModel.Search(keyword))
+            .DisposeWith(Disposables);
+
         // 订阅 MessageBus 消息
         SubscribeToMessageBus();
 
