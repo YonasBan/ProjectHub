@@ -149,7 +149,9 @@ public class MainViewModel : ViewModelBase
         SetThemeCommand = ReactiveCommand.Create<string>(theme =>
         {
             _themeService.SetTheme(theme);
-            _appSettingsService.Save(new AppSettings { Language = L.CurrentCulture.Name, Theme = theme });
+            var settings = _appSettingsService.Load();
+            settings.Theme = theme;
+            _appSettingsService.Save(settings);
         });
         SetLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
@@ -217,8 +219,10 @@ public class MainViewModel : ViewModelBase
         var newCulture = new System.Globalization.CultureInfo(cultureName);
         await L.SetCultureAsync(newCulture);
 
-        // 保存配置
-        _appSettingsService.Save(new AppSettings { Language = cultureName, Theme = _themeService.CurrentTheme });
+        // 保存配置（保留其他设置）
+        var settings = _appSettingsService.Load();
+        settings.Language = cultureName;
+        _appSettingsService.Save(settings);
 
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
     }

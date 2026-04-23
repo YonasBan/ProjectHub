@@ -22,22 +22,31 @@ public class JsonAppSettingsService : IAppSettingsService
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
+    private AppSettings? _cachedSettings;
+
     public AppSettings Load()
     {
+        if (_cachedSettings != null)
+        {
+            return _cachedSettings;
+        }
+
         if (!File.Exists(ConfigPath))
         {
-            return CreateDefaultSettings();
+            _cachedSettings = CreateDefaultSettings();
+            return _cachedSettings;
         }
 
         try
         {
             var json = File.ReadAllText(ConfigPath);
-            var settings = JsonSerializer.Deserialize<AppSettings>(json, JsonOptions);
-            return settings ?? CreateDefaultSettings();
+            _cachedSettings = JsonSerializer.Deserialize<AppSettings>(json, JsonOptions) ?? CreateDefaultSettings();
+            return _cachedSettings;
         }
         catch
         {
-            return CreateDefaultSettings();
+            _cachedSettings = CreateDefaultSettings();
+            return _cachedSettings;
         }
     }
 
@@ -50,6 +59,7 @@ public class JsonAppSettingsService : IAppSettingsService
 
         var json = JsonSerializer.Serialize(settings, JsonOptions);
         File.WriteAllText(ConfigPath, json);
+        _cachedSettings = settings;
     }
 
     /// <summary>

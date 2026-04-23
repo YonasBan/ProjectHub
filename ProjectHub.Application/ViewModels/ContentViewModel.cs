@@ -26,6 +26,7 @@ public class ContentViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IDialogService _dialogService;
     private readonly IFileExplorerService _fileExplorerService;
+    private readonly IAppSettingsService _appSettingsService;
 
     #endregion
 
@@ -127,7 +128,8 @@ public class ContentViewModel : ViewModelBase
         IDialogService dialogService,
         IScheduler mainThreadScheduler,
         SidebarViewModel sidebarViewModel,
-        IFileExplorerService fileExplorerService)
+        IFileExplorerService fileExplorerService,
+        IAppSettingsService appSettingsService)
         : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
@@ -137,6 +139,7 @@ public class ContentViewModel : ViewModelBase
         _dialogService = dialogService;
         _fileExplorerService = fileExplorerService;
         SidebarViewModel = sidebarViewModel;
+        _appSettingsService = appSettingsService;
 
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
         RemoveFromFolderCommand = ReactiveCommand.CreateFromTask<object>(RemoveFromFolderAsync);
@@ -171,13 +174,13 @@ public class ContentViewModel : ViewModelBase
                 break;
 
             case TreeItemType.RecentProject:
-                // 显示最近使用的项目和工作空间（混合按最后打开时间排序，最多20个）
+                // 显示最近使用的项目和工作空间（按配置的天数过滤，混合按最后打开时间排序）
+                var cutoffDate = DateTime.Now.AddDays(-_appSettingsService.Load().RecentUsageDays);
                 var recentItems = SidebarViewModel.Projects
-                    .Where(p => p.LastOpenedAt.HasValue)
+                    .Where(p => p.LastOpenedAt.HasValue && p.LastOpenedAt.Value >= cutoffDate)
                     .Select(p => (object)p)
-                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.LastOpenedAt.HasValue).Select(w => (object)w))
+                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.LastOpenedAt.HasValue && w.LastOpenedAt.Value >= cutoffDate).Select(w => (object)w))
                     .OrderByDescending(item => item is ProjectViewModel p ? p.LastOpenedAt : ((WorkSpaceViewModel)item).LastOpenedAt)
-                    .Take(20)
                     .ToList();
                 foreach (var item in recentItems)
                 {

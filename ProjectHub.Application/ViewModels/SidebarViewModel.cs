@@ -26,6 +26,7 @@ public class SidebarViewModel : ViewModelBase
     private readonly IDialogService _dialogService;
     private readonly IServiceProvider _serviceProvider;
     private readonly IFileExplorerService _fileExplorerService;
+    private readonly IAppSettingsService _appSettingsService;
 
     #endregion
 
@@ -226,7 +227,8 @@ public class SidebarViewModel : ViewModelBase
         IScheduler mainThreadScheduler,
         IDialogService dialogService,
         IServiceProvider serviceProvider,
-        IFileExplorerService fileExplorerService)
+        IFileExplorerService fileExplorerService,
+        IAppSettingsService appSettingsService)
         : base(logger, mainThreadScheduler)
     {
         _projectAppService = projectAppService;
@@ -235,6 +237,7 @@ public class SidebarViewModel : ViewModelBase
         _dialogService = dialogService;
         _serviceProvider = serviceProvider;
         _fileExplorerService = fileExplorerService;
+        _appSettingsService = appSettingsService;
 
         CreateFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(CreateFolderAsync);
         DeleteFolderCommand = ReactiveCommand.CreateFromTask<TreeItemViewModel>(DeleteFolderAsync);
@@ -407,10 +410,11 @@ public class SidebarViewModel : ViewModelBase
             switch (item.ItemType)
             {
                 case TreeItemType.RecentProject:
-                    // 最近使用 - 包含项目和工作空间（最多显示20个）
-                    var recentProjectCount = Projects.Count(p => p.LastOpenedAt.HasValue);
-                    var recentWorkSpaceCount = WorkSpaces.Count(w => w.LastOpenedAt.HasValue);
-                    item.Count = Math.Min(recentProjectCount + recentWorkSpaceCount, 20);
+                    // 最近使用 - 包含项目和工作空间（按配置的天数过滤）
+                    var cutoffDate = DateTime.Now.AddDays(-_appSettingsService.Load().RecentUsageDays);
+                    var recentProjectCount = Projects.Count(p => p.LastOpenedAt.HasValue && p.LastOpenedAt.Value >= cutoffDate);
+                    var recentWorkSpaceCount = WorkSpaces.Count(w => w.LastOpenedAt.HasValue && w.LastOpenedAt.Value >= cutoffDate);
+                    item.Count = recentProjectCount + recentWorkSpaceCount;
                     break;
 
                 case TreeItemType.FavoriteProject:

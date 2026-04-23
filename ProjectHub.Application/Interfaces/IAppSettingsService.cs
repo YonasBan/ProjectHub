@@ -35,4 +35,9 @@ public class AppSettings
     /// 当前主题 (Light / Dark)
     /// </summary>
     public string Theme { get; set; } = "Dark";
+
+    /// <summary>
+    /// 最近使用显示天数（默认30天）
+    /// </summary>
+    public int RecentUsageDays { get; set; } = 30;
 }
