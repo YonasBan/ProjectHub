@@ -11,117 +11,125 @@ namespace ProjectHub.Infrastructure.Repositories;
 /// </summary>
 public class ProjectRepository : IProjectRepository
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IDbContextFactory<AppDbContext> _factory;
 
-    public ProjectRepository(AppDbContext dbContext)
+    public ProjectRepository(IDbContextFactory<AppDbContext> factory)
     {
-        _dbContext = dbContext;
+        _factory = factory;
     }
 
     public async Task<Project?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Projects.FindAsync(new object[] { id }, cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted)
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Projects.ToListAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<Project> AddAsync(Project entity, CancellationToken cancellationToken = default)
     {
-        await _dbContext.Projects.AddAsync(entity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.Projects.AddAsync(entity, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task UpdateAsync(Project entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.Projects.Update(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        ctx.Projects.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(Project entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.Projects.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        entity.SoftDelete();
+        ctx.Projects.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetByWorkFolderIdAsync(long? workFolderId, CancellationToken cancellationToken = default)
     {
+        await using var ctx = _factory.CreateDbContext();
+        
         if (workFolderId == null)
         {
             // 查询未归属工作文件夹的项目
-            var allProjectIds = await _dbContext.Projects
+            var allProjectIds = await ctx.Projects
+                .Where(p => !p.IsDeleted)
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
             
-            var projectInFolderIds = await _dbContext.ProjectWorkFolders
+            var projectInFolderIds = await ctx.ProjectWorkFolders
                 .Select(pwf => pwf.ProjectId)
                 .ToListAsync(cancellationToken);
             
             var notInFolderIds = allProjectIds.Except(projectInFolderIds).ToList();
             
-            return await _dbContext.Projects
-                .Where(p => notInFolderIds.Contains(p.Id))
+            return await ctx.Projects
+                .Where(p => !p.IsDeleted && notInFolderIds.Contains(p.Id))
                 .ToListAsync(cancellationToken);
         }
 
         // 通过关联表查询属于该工作文件夹的项目
-        var projectIds = await _dbContext.ProjectWorkFolders
+        var projectIds = await ctx.ProjectWorkFolders
             .Where(pwf => pwf.WorkFolderId == workFolderId)
             .Select(pwf => pwf.ProjectId)
             .ToListAsync(cancellationToken);
 
-        return await _dbContext.Projects
-            .Where(p => projectIds.Contains(p.Id))
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted && projectIds.Contains(p.Id))
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetByWorkSpaceIdAsync(long? workSpaceId, CancellationToken cancellationToken = default)
     {
+        await using var ctx = _factory.CreateDbContext();
+        
         if (workSpaceId == null)
         {
             // 查询未归属工作空间的项目
-            var allProjectIds = await _dbContext.Projects
+            var allProjectIds = await ctx.Projects
+                .Where(p => !p.IsDeleted)
                 .Select(p => p.Id)
                 .ToListAsync(cancellationToken);
             
-            var projectInSpaceIds = await _dbContext.ProjectWorkSpaces
+            var projectInSpaceIds = await ctx.ProjectWorkSpaces
                 .Select(pws => pws.ProjectId)
                 .ToListAsync(cancellationToken);
             
             var notInSpaceIds = allProjectIds.Except(projectInSpaceIds).ToList();
             
-            return await _dbContext.Projects
-                .Where(p => notInSpaceIds.Contains(p.Id))
+            return await ctx.Projects
+                .Where(p => !p.IsDeleted && notInSpaceIds.Contains(p.Id))
                 .ToListAsync(cancellationToken);
         }
 
         // 通过关联表查询属于该工作空间的项目
-        var projectIds = await _dbContext.ProjectWorkSpaces
+        var projectIds = await ctx.ProjectWorkSpaces
             .Where(pws => pws.WorkSpaceId == workSpaceId)
             .Select(pws => pws.ProjectId)
             .ToListAsync(cancellationToken);
 
-        return await _dbContext.Projects
-            .Where(p => projectIds.Contains(p.Id))
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Project>> SearchAsync(string keyword, CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Projects
-            .Where(p => p.Name.Contains(keyword) || 
-                       p.Path.Contains(keyword) || 
-                       (p.Description != null && p.Description.Contains(keyword)))
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted && projectIds.Contains(p.Id))
             .ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<Project>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Projects
-            .Where(p => p.LastOpenedAt != null)
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted && p.LastOpenedAt != null)
             .OrderByDescending(p => p.LastOpenedAt)
             .Take(count)
             .ToListAsync(cancellationToken);
@@ -129,23 +137,18 @@ public class ProjectRepository : IProjectRepository
 
     public async Task<IReadOnlyList<Project>> GetFavoriteProjectsAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Projects
-            .Where(p => p.IsFavorite)
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted && p.IsFavorite)
             .OrderByDescending(p => p.CreatedAt)
             .ToListAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsByPathAsync(string path, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.Projects
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.Projects
+            .Where(p => !p.IsDeleted)
             .AnyAsync(p => p.Path == path, cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Project>> GetByTypeAsync(ProjectType type, CancellationToken cancellationToken = default)
-    {
-        return await _dbContext.Projects
-            .Where(p => p.Type == type)
-            .OrderBy(p => p.Name)
-            .ToListAsync(cancellationToken);
     }
 }

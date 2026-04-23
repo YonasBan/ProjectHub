@@ -43,11 +43,6 @@ public interface IProjectAppService
     Task<IReadOnlyList<ProjectDto>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 搜索项目
-    /// </summary>
-    Task<IReadOnlyList<ProjectDto>> SearchAsync(string keyword, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 启动项目
     /// </summary>
     Task LaunchAsync(long id, CancellationToken cancellationToken = default);
@@ -66,6 +61,11 @@ public interface IProjectAppService
     /// 扫描并更新项目的磁盘空间信息
     /// </summary>
     Task RefreshDiskSpaceInfoAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据工作文件夹 ID 获取项目列表
+    /// </summary>
+    Task<IReadOnlyList<ProjectDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -97,6 +97,36 @@ public interface IWorkFolderAppService
     /// 将项目移动到工作文件夹
     /// </summary>
     Task MoveProjectToWorkFolderAsync(long projectId, long? workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加项目到文件夹
+    /// </summary>
+    Task AddProjectToFolderAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从文件夹移除项目
+    /// </summary>
+    Task RemoveProjectFromFolderAsync(long projectId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 添加工作空间到文件夹
+    /// </summary>
+    Task AddWorkSpaceToFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 从文件夹移除工作空间
+    /// </summary>
+    Task RemoveWorkSpaceFromFolderAsync(long workSpaceId, long workFolderId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取指定文件夹的子文件夹
+    /// </summary>
+    Task<IReadOnlyList<WorkFolderDto>> GetChildrenAsync(long parentId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取所有根级文件夹（不包含子文件夹）
+    /// </summary>
+    Task<IReadOnlyList<WorkFolderDto>> GetRootFoldersAsync(CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -118,6 +148,11 @@ public interface IWorkSpaceAppService
     /// 删除工作空间
     /// </summary>
     Task DeleteAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 获取工作空间详情
+    /// </summary>
+    Task<WorkSpaceDto?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取所有工作空间 (含项目数量)
@@ -148,96 +183,26 @@ public interface IWorkSpaceAppService
     /// 更新工作空间的项目启动设置
     /// </summary>
     Task<WorkSpaceProjectSettingsDto> UpdateProjectSettingsAsync(UpdateWorkSpaceProjectSettingsDto input, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 设置工作空间收藏状态
+    /// </summary>
+    Task SetFavoriteAsync(long id, bool isFavorite, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 启动工作空间中的所有项目
+    /// </summary>
+    Task LaunchAllAsync(long id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 设置工作空间的项目列表（全量替换）
+    /// </summary>
+    Task SetWorkSpaceProjectsAsync(long workSpaceId, IReadOnlyList<long> projectIds, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// 根据工作文件夹 ID 获取工作空间列表
+    /// </summary>
+    Task<IReadOnlyList<WorkSpaceDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default);
 }
 
-/// <summary>
-/// 垃圾清理应用服务接口
-/// </summary>
-public interface ICleanupAppService
-{
-    /// <summary>
-    /// 扫描单个项目的垃圾文件
-    /// </summary>
-    Task<CleanupScanResultDto> ScanProjectAsync(long projectId, CancellationToken cancellationToken = default);
 
-    /// <summary>
-    /// 扫描多个项目的垃圾文件
-    /// </summary>
-    Task<CleanupScanResultDto> ScanProjectsAsync(IEnumerable<long> projectIds, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 执行清理
-    /// </summary>
-    Task<long> ExecuteCleanupAsync(IEnumerable<string> pathsToDelete, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取清理预设方案
-    /// </summary>
-    IEnumerable<CleanupProfileDto> GetCleanupProfiles();
-}
-
-/// <summary>
-/// 标签管理应用服务接口
-/// </summary>
-public interface ITagAppService
-{
-    /// <summary>
-    /// 创建标签
-    /// </summary>
-    Task<TagDto> CreateAsync(CreateTagDto input, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 更新标签
-    /// </summary>
-    Task<TagDto> UpdateAsync(UpdateTagDto input, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 删除标签
-    /// </summary>
-    Task DeleteAsync(long id, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取所有标签
-    /// </summary>
-    Task<IReadOnlyList<TagDto>> GetAllAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 为项目添加标签
-    /// </summary>
-    Task AddTagToProjectAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 从项目移除标签
-    /// </summary>
-    Task RemoveTagFromProjectAsync(long projectId, long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取项目的标签列表
-    /// </summary>
-    Task<IReadOnlyList<TagDto>> GetTagsByProjectIdAsync(long projectId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 为工作空间添加标签
-    /// </summary>
-    Task AddTagToWorkSpaceAsync(long workSpaceId, long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 从工作空间移除标签
-    /// </summary>
-    Task RemoveTagFromWorkSpaceAsync(long workSpaceId, long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取工作空间的标签列表
-    /// </summary>
-    Task<IReadOnlyList<TagDto>> GetTagsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 根据标签 ID 获取项目
-    /// </summary>
-    Task<IReadOnlyList<ProjectDto>> GetProjectsByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 根据标签 ID 获取工作空间
-    /// </summary>
-    Task<IReadOnlyList<WorkSpaceDto>> GetWorkSpacesByTagIdAsync(long tagId, CancellationToken cancellationToken = default);
-}

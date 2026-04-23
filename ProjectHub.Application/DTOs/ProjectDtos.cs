@@ -10,20 +10,9 @@ public class ProjectDto
 {
     public long Id { get; set; }
     public string Name { get; set; } = string.Empty;
-    public ProjectType Type { get; set; }
     public string Path { get; set; } = string.Empty;
     public string? CustomIconPath { get; set; }
     public string? Description { get; set; }
-
-    /// <summary>
-    /// 关联的工作文件夹 ID 列表
-    /// </summary>
-    public IReadOnlyList<long> WorkFolderIds { get; set; } = [];
-
-    /// <summary>
-    /// 关联的工作空间 ID 列表
-    /// </summary>
-    public IReadOnlyList<long> WorkSpaceIds { get; set; } = [];
 
     public DateTime? LastOpenedAt { get; set; }
     public DateTime? LastModifiedAt { get; set; }
@@ -36,6 +25,14 @@ public class ProjectDto
     public long? CustomerId { get; set; }
     public long? DiskSpaceBytes { get; set; }
     public long? CleanableSpaceBytes { get; set; }
+    public string? DefaultProgram { get; set; }
+    public string? LaunchArguments { get; set; }
+    public string? WebUrl { get; set; }
+    public string? CmdCommand { get; set; }
+    public string? CmdWorkingDirectory { get; set; }
+    public bool CmdKeepWindowOpen { get; set; }
+    public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
+    public bool RunAsAdmin { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 
@@ -54,15 +51,18 @@ public class CreateProjectDto
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public ProjectType Type { get; set; }
-
-    [Required]
     public string Path { get; set; } = string.Empty;
 
     public string? Description { get; set; }
     public string? CustomIconPath { get; set; }
-    public IEnumerable<long> WorkFolderIds { get; set; } = [];
-    public IEnumerable<long> WorkSpaceIds { get; set; } = [];
+    public string? DefaultProgram { get; set; }
+    public string? LaunchArguments { get; set; }
+    public string? WebUrl { get; set; }
+    public string? CmdCommand { get; set; }
+    public string? CmdWorkingDirectory { get; set; }
+    public bool CmdKeepWindowOpen { get; set; }
+    public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
+    public bool RunAsAdmin { get; set; }
 }
 
 /// <summary>
@@ -77,8 +77,16 @@ public class UpdateProjectDto
     public string Name { get; set; } = string.Empty;
 
     public string? Description { get; set; }
-    public IEnumerable<long> WorkFolderIds { get; set; } = [];
-    public IEnumerable<long> WorkSpaceIds { get; set; } = [];
+    public string Path { get; set; } = string.Empty;
+    public string? DefaultProgram { get; set; }
+    public string? LaunchArguments { get; set; }
+    public string? WebUrl { get; set; }
+    public string? CmdCommand { get; set; }
+    public string? CmdWorkingDirectory { get; set; }
+    public bool CmdKeepWindowOpen { get; set; }
+    public LaunchType LaunchType { get; set; } = LaunchType.OpenFile;
+    public bool RunAsAdmin { get; set; }
     public DateTime? Deadline { get; set; }
     public long? CustomerId { get; set; }
+    public string? CustomIconPath { get; set; }
 }

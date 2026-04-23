@@ -18,12 +18,6 @@ public class Project : BaseEntity
     public string Name { get; private set; } = string.Empty;
 
     /// <summary>
-    /// 项目类型 (枚举值)
-    /// VisualStudio, Android, Cpp, Tool, Document, Folder
-    /// </summary>
-    public ProjectType Type { get; private set; }
-
-    /// <summary>
     /// 项目路径 (入口文件或根目录)
     /// 例如：.sln 文件路径、build.gradle 路径、.exe 路径、文件夹路径
     /// </summary>
@@ -103,6 +97,64 @@ public class Project : BaseEntity
     /// </summary>
     public long? CleanableSpaceBytes { get; private set; }
 
+    /// <summary>
+    /// 默认启动程序路径 (可选)
+    /// 为空则使用系统默认关联程序
+    /// </summary>
+    public string? DefaultProgram { get; private set; }
+
+    /// <summary>
+    /// 启动参数 (可选)
+    /// 启动程序时传递的参数
+    /// </summary>
+    public string? LaunchArguments { get; private set; }
+
+    /// <summary>
+    /// 网页链接 (可选)
+    /// 用于 WebSite 类型项目或作为项目的相关链接
+    /// </summary>
+    public string? WebUrl { get; private set; }
+
+    /// <summary>
+    /// CMD 命令 (可选)
+    /// 用于 OpenCmd 启动类型
+    /// </summary>
+    public string? CmdCommand { get; private set; }
+
+    /// <summary>
+    /// CMD 工作目录 (可选)
+    /// 用于 OpenCmd 启动类型
+    /// </summary>
+    public string? CmdWorkingDirectory { get; private set; }
+
+    /// <summary>
+    /// CMD 执行后是否保持窗口打开
+    /// 默认 false (执行完自动关闭)，true 则保持窗口不消失
+    /// </summary>
+    public bool CmdKeepWindowOpen { get; private set; }
+
+    /// <summary>
+    /// 启动类型
+    /// OpenFile = 0,     // 打开文件
+    /// OpenExe = 1,      // 打开 exe
+    /// OpenWebUrl = 2,   // 打开网页
+    /// OpenCmd = 3       // 运行 CMD 命令
+    /// </summary>
+    public LaunchType LaunchType { get; private set; } = LaunchType.OpenFile;
+
+    /// <summary>
+    /// 是否以管理员身份运行
+    /// 仅对打开文件和打开 exe 模式有效
+    /// </summary>
+    public bool RunAsAdmin { get; private set; }
+
+    // ========== 导航属性 ==========
+
+    /// <summary>
+    /// 关联的标签
+    /// </summary>
+    public ICollection<ProjectTag> ProjectTags { get; private set; } = new List<ProjectTag>();
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -116,23 +168,25 @@ public class Project : BaseEntity
     /// 工厂方法：创建新项目
     /// 封装创建逻辑，确保初始状态合法
     /// </summary>
-    public static Project Create(string name, ProjectType type, string path)
+    public static Project Create(string name, string path, string? defaultProgram, string? customIconPath, string description)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
-        
+
         if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentException("项目路径不能为空", nameof(path));
 
         var project = new Project
         {
             Name = name,
-            Type = type,
             Path = path,
             CreatedAt = DateTime.UtcNow,
             IsFavorite = false,
             LaunchCount = 0,
-            TotalUsageDurationMs = 0
+            TotalUsageDurationMs = 0,
+            DefaultProgram = defaultProgram,
+            CustomIconPath = customIconPath,
+            Description = description
         };
         return project;
     }
@@ -141,7 +195,7 @@ public class Project : BaseEntity
     /// 更新项目基本信息
     /// 封装不变性规则
     /// </summary>
-    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null)
+    public void UpdateBasicInfo(string name, string? description = null, string? colorTag = null, string? defaultProgram = null, string? launchArguments = null, string? customIconPath = null, string? webUrl = null, string? path = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("项目名称不能为空", nameof(name));
@@ -149,6 +203,87 @@ public class Project : BaseEntity
         Name = name;
         Description = description;
         ColorTag = colorTag;
+        DefaultProgram = defaultProgram;
+        LaunchArguments = launchArguments;
+        WebUrl = webUrl;
+        UpdatedAt = DateTime.UtcNow;
+        CustomIconPath = customIconPath;
+        
+        if (!string.IsNullOrWhiteSpace(path))
+        {
+            Path = path;
+        }
+    }
+
+    /// <summary>
+    /// 设置默认启动程序
+    /// </summary>
+    public void SetDefaultProgram(string? defaultProgram)
+    {
+        DefaultProgram = defaultProgram;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置启动参数
+    /// </summary>
+    public void SetLaunchArguments(string? launchArguments)
+    {
+        LaunchArguments = launchArguments;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置网页链接
+    /// </summary>
+    public void SetWebUrl(string? webUrl)
+    {
+        WebUrl = webUrl;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置 CMD 命令
+    /// </summary>
+    public void SetCmdCommand(string? cmdCommand)
+    {
+        CmdCommand = cmdCommand;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置 CMD 工作目录
+    /// </summary>
+    public void SetCmdWorkingDirectory(string? workingDirectory)
+    {
+        CmdWorkingDirectory = workingDirectory;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置 CMD 执行后是否保持窗口打开
+    /// </summary>
+    public void SetCmdKeepWindowOpen(bool keepOpen)
+    {
+        CmdKeepWindowOpen = keepOpen;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置启动类型
+    /// </summary>
+    public void SetLaunchType(LaunchType launchType)
+    {
+        LaunchType = launchType;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 设置是否以管理员身份运行
+    /// </summary>
+    public void SetRunAsAdmin(bool runAsAdmin)
+    {
+        RunAsAdmin = runAsAdmin;
         UpdatedAt = DateTime.UtcNow;
     }
 
@@ -170,7 +305,7 @@ public class Project : BaseEntity
     public void RecordUsageDuration(long durationMs)
     {
         if (durationMs <= 0) return;
-        
+
         TotalUsageDurationMs += durationMs;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -189,7 +324,7 @@ public class Project : BaseEntity
     public void SetFavorite(bool isFavorite)
     {
         if (IsFavorite == isFavorite) return;
-        
+
         IsFavorite = isFavorite;
         FavoritedAt = isFavorite ? DateTime.UtcNow : null;
         UpdatedAt = DateTime.UtcNow;
@@ -206,41 +341,27 @@ public class Project : BaseEntity
 }
 
 /// <summary>
-/// 项目类型枚举
+/// 项目启动类型枚举
 /// </summary>
-public enum ProjectType
+public enum LaunchType
 {
     /// <summary>
-    /// Visual Studio 项目 (.sln)
+    /// 打开文件（使用系统默认程序）
     /// </summary>
-    VisualStudio = 1,
-    
+    OpenFile = 0,
+
     /// <summary>
-    /// Android 项目 (build.gradle)
+    /// 打开 exe（使用自定义程序）
     /// </summary>
-    Android = 2,
-    
+    OpenExe = 1,
+
     /// <summary>
-    /// C++ 项目 (CMakeLists.txt / Makefile / .vcxproj)
+    /// 打开网页（使用浏览器）
     /// </summary>
-    Cpp = 3,
-    
+    OpenWebUrl = 2,
+
     /// <summary>
-    /// 通用工具 (.exe 或其他可执行文件)
+    /// 运行 CMD 命令
     /// </summary>
-    Tool = 4,
-    
-    /// <summary>
-    /// 通用文档 (.xlsx/.docx/.pdf 等)
-    /// </summary>
-    Document = 5,
-    
-    /// <summary>
-    /// 文件夹
-    /// </summary>
-    Folder = 6,
-    /// <summary>
-    /// WebSite
-    /// </summary>
-    WebSite = 7,
+    OpenCmd = 3
 }

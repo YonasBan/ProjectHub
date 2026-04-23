@@ -20,9 +20,9 @@ public class WorkSpaceDto
     public DateTime? UpdatedAt { get; set; }
 
     /// <summary>
-    /// 已启用启动的项目 ID 列表
+    /// 关联的文件夹ID列表
     /// </summary>
-    public IReadOnlyList<long> EnabledProjectIds { get; set; } = [];
+    public IReadOnlyList<long> WorkFolderIds { get; set; } = [];
 
     /// <summary>
     /// 是否使用自定义启动顺序
@@ -90,14 +90,25 @@ public class WorkSpaceProjectSettingsDto
     public IReadOnlyList<ProjectDto> AllProjects { get; set; } = [];
 
     /// <summary>
-    /// 已启用启动的项目 ID 列表
+    /// 项目设置列表（包含启用状态）
     /// </summary>
-    public IReadOnlyList<long> EnabledProjectIds { get; set; } = [];
+    public IReadOnlyList<WorkSpaceProjectSettingItemDto> ProjectSettings { get; set; } = [];
 
     /// <summary>
     /// 关联的标签列表 (可选，用于详情显示)
     /// </summary>
     public IReadOnlyList<TagDto> Tags { get; set; } = [];
+}
+
+/// <summary>
+/// 工作空间项目设置项 DTO
+/// </summary>
+public class WorkSpaceProjectSettingItemDto
+{
+    public long ProjectId { get; set; }
+    public string ProjectName { get; set; } = string.Empty;
+    public bool IsEnabled { get; set; }
+    public int SortOrder { get; set; }
 }
 
 /// <summary>
@@ -107,11 +118,6 @@ public class UpdateWorkSpaceProjectSettingsDto
 {
     [Required]
     public long WorkSpaceId { get; set; }
-
-    /// <summary>
-    /// 已启用启动的项目 ID 列表
-    /// </summary>
-    public IEnumerable<long> EnabledProjectIds { get; set; } = [];
 
     /// <summary>
     /// 是否使用自定义启动顺序

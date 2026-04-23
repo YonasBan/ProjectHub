@@ -28,6 +28,18 @@ public class Tag : BaseEntity
     /// </summary>
     public int SortOrder { get; private set; }
 
+    // ========== 导航属性 ==========
+
+    /// <summary>
+    /// 关联的项目标签
+    /// </summary>
+    public ICollection<ProjectTag> ProjectTags { get; private set; } = new List<ProjectTag>();
+
+    /// <summary>
+    /// 关联的工作空间标签
+    /// </summary>
+    public ICollection<WorkSpaceTag> WorkSpaceTags { get; private set; } = new List<WorkSpaceTag>();
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>

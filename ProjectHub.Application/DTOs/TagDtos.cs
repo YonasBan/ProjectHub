@@ -67,26 +67,4 @@ public class UpdateTagDto
     public int? SortOrder { get; set; }
 }
 
-/// <summary>
-/// 为项目添加标签输入 DTO
-/// </summary>
-public class AddProjectTagDto
-{
-    [Required]
-    public long ProjectId { get; set; }
 
-    [Required]
-    public long TagId { get; set; }
-}
-
-/// <summary>
-/// 为工作空间添加标签输入 DTO
-/// </summary>
-public class AddWorkSpaceTagDto
-{
-    [Required]
-    public long WorkSpaceId { get; set; }
-
-    [Required]
-    public long TagId { get; set; }
-}

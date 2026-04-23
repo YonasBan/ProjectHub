@@ -59,6 +59,11 @@ public class AppDbContext : DbContext
     /// </summary>
     public DbSet<ProjectWorkSpace> ProjectWorkSpaces => Set<ProjectWorkSpace>();
 
+    /// <summary>
+    /// 工作空间 - 工作文件夹关联 DbSet
+    /// </summary>
+    public DbSet<WorkSpaceWorkFolder> WorkSpaceWorkFolders => Set<WorkSpaceWorkFolder>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -76,11 +81,8 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(1000);
             
-            entity.HasIndex(e => e.Path)
-                .IsUnique();
-            
-            entity.Property(e => e.Type)
-                .IsRequired();
+            // 索引优化：Path 用于查询但不唯一（同一项目路径可属于不同工作空间）
+            entity.HasIndex(e => e.Path);
             
             entity.Property(e => e.Description)
                 .HasMaxLength(1000);
@@ -110,7 +112,8 @@ public class AppDbContext : DbContext
                 .IsRequired()
                 .HasMaxLength(100);
             
-            entity.HasIndex(e => e.Name)
+            // 复合唯一索引：同级目录（相同 ParentId）下名称不能重复
+            entity.HasIndex(e => new { e.Name, e.ParentId })
                 .IsUnique();
             
             entity.Property(e => e.Description)
@@ -145,9 +148,6 @@ public class AppDbContext : DbContext
 
             entity.Property(e => e.IconPath)
                 .HasMaxLength(500);
-
-            entity.Property(e => e.EnabledProjectIdsJson)
-                .HasMaxLength(2000);
 
             entity.Property(e => e.LaunchOrderJson)
                 .HasMaxLength(4000);
@@ -245,13 +245,13 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            entity.HasOne<Project>()
-                .WithMany()
+            entity.HasOne(p => p.Project)
+                .WithMany(p => p.ProjectTags)
                 .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<Tag>()
-                .WithMany()
+            entity.HasOne(p => p.Tag)
+                .WithMany(t => t.ProjectTags)
                 .HasForeignKey(e => e.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -267,13 +267,13 @@ public class AppDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
 
-            entity.HasOne<WorkSpace>()
-                .WithMany()
+            entity.HasOne(w => w.WorkSpace)
+                .WithMany(w => w.WorkSpaceTags)
                 .HasForeignKey(e => e.WorkSpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            entity.HasOne<Tag>()
-                .WithMany()
+            entity.HasOne(w => w.Tag)
+                .WithMany(t => t.WorkSpaceTags)
                 .HasForeignKey(e => e.TagId)
                 .OnDelete(DeleteBehavior.Cascade);
 

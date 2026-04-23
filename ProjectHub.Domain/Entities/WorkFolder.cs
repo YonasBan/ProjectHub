@@ -35,16 +35,6 @@ public class WorkFolder : BaseEntity
     /// </summary>
     public long? ParentId { get; private set; }
 
-    /// <summary>
-    /// 是否展开状态 (UI 状态，可选存储)
-    /// </summary>
-    public bool IsExpanded { get; private set; }
-
-    /// <summary>
-    /// 关联的项目数量 (计算字段，不存储)
-    /// </summary>
-    public int ProjectCount { get; private set; }
-
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -69,7 +59,6 @@ public class WorkFolder : BaseEntity
             SortOrder = sortOrder,
             ParentId = parentId,
             CreatedAt = DateTime.UtcNow,
-            IsExpanded = true
         };
         return workFolder;
     }
@@ -85,21 +74,5 @@ public class WorkFolder : BaseEntity
         Name = name;
         Description = description;
         UpdatedAt = DateTime.UtcNow;
-    }
-
-    /// <summary>
-    /// 设置展开/折叠状态
-    /// </summary>
-    public void SetExpanded(bool isExpanded)
-    {
-        IsExpanded = isExpanded;
-    }
-
-    /// <summary>
-    /// 更新项目数量统计
-    /// </summary>
-    public void UpdateProjectCount(int count)
-    {
-        ProjectCount = count;
     }
 }

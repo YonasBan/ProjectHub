@@ -14,7 +14,6 @@ public class WorkFolderDto
     public string? IconPath { get; set; }
     public int SortOrder { get; set; }
     public bool IsExpanded { get; set; }
-    public int ProjectCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

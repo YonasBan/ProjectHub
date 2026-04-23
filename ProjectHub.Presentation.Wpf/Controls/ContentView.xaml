@@ -1,0 +1,620 @@
+﻿<UserControl
+    x:Class="ProjectHub.Presentation.Wpf.Controls.ContentView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:behaviors="clr-namespace:ProjectHub.Presentation.Wpf.Behaviors"
+    xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:local="clr-namespace:ProjectHub.Presentation.Wpf.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:svg="clr-namespace:SharpVectors.Converters;assembly=SharpVectors.Converters.Wpf"
+    xmlns:viewmodel="clr-namespace:ProjectHub.Application.ViewModels;assembly=ProjectHub.Application"
+    d:Background="AliceBlue"
+    d:DataContext="{d:DesignInstance viewmodel:ContentViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:PathToIconConverter x:Key="PathToIconConverter" />
+        <converters:ContentTemplateSelector x:Key="ContentTemplateSelector" />
+        <converters:NullOrEmptyToVisibilityConverter x:Key="NullOrEmptyToVis" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis" />
+
+        <!--  BindingProxy 用于解决 ContextMenu 绑定问题  -->
+        <converters:BindingProxy x:Key="LocalizedStringsProxy" Data="{Binding L}" />
+
+        <!--  项目卡片模板  -->
+        <DataTemplate x:Key="ProjectCardTemplate">
+            <Border
+                Width="320"
+                Height="160"
+                Margin="0,0,16,16"
+                CornerRadius="8"
+                Cursor="Hand"
+                RenderTransformOrigin="0.5, 0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
+                <i:Interaction.Behaviors>
+                    <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchCommand}" />
+                </i:Interaction.Behaviors>
+                <Border.ContextMenu>
+                    <ContextMenu
+                        Background="{DynamicResource BgSecondaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        Style="{StaticResource DarkContextMenuStyle}">
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding LaunchCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Launch}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/start.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding ToggleFavoriteCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_ToggleFavorite}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/like.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding EditCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Edit}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/edit.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding OpenFileFolderCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_OpenFilePosition}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/openFile.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding MoveToFolderCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_MoveToFolder}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/folder.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding DeleteCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Delete}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/delete.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </Border.ContextMenu>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleY">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="16,16,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border
+                            Grid.Column="0"
+                            Width="48"
+                            Height="48"
+                            Margin="0,0,12,0"
+                            Background="{DynamicResource BgTertiaryBrush}"
+                            CornerRadius="8">
+                            <Image
+                                Width="32"
+                                Height="32"
+                                Source="{Binding IconPath, Converter={StaticResource PathToIconConverter}}"
+                                Stretch="Uniform" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                Text="{Binding Name}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Margin="0,2,0,0"
+                                FontSize="11"
+                                Foreground="{DynamicResource TextMutedBrush}"
+                                Text="{Binding Path}"
+                                TextTrimming="CharacterEllipsis"
+                                ToolTip="{Binding Path}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="16,0,16,8"
+                        FontSize="11"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{Binding Description}"
+                        TextTrimming="CharacterEllipsis"
+                        Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToVis}}" />
+
+                    <Border
+                        Grid.Row="2"
+                        Margin="16,0,16,8"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="0,0,0,1" />
+
+                    <Grid Grid.Row="3" Margin="16,0,16,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource TextMutedBrush}"
+                            Text="{Binding LastOpenedDisplay}"
+                            Visibility="{Binding LastOpenedAt, Converter={StaticResource NullOrEmptyToVis}}" />
+                        <StackPanel
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding LaunchCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Launch, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="/Icons/start.svg" />
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding ToggleFavoriteCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Favorite, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
+                                </Button.Content>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!--  右上角删除按钮（仅在工作文件夹视图中显示）  -->
+                    <Button
+                        Grid.RowSpan="4"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="8"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding DataContext.RemoveFromFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}"
+                        Content="✕"
+                        Cursor="Hand"
+                        ToolTip="{Binding DataContext.L.Tooltip_RemoveFromFolder, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource CloseButtonStyle}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DataContext.IsWorkFolderSelected, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+
+        <!--  工作空间卡片模板  -->
+        <DataTemplate x:Key="WorkSpaceCardTemplate">
+            <Border
+                Width="320"
+                Height="160"
+                Margin="0,0,16,16"
+                CornerRadius="8"
+                Cursor="Hand"
+                RenderTransformOrigin="0.5, 0.5">
+                <Border.RenderTransform>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
+                <i:Interaction.Behaviors>
+                    <behaviors:DoubleClickCommandBehavior Command="{Binding LaunchAllCommand}" />
+                </i:Interaction.Behaviors>
+                <Border.ContextMenu>
+                    <ContextMenu
+                        Background="{DynamicResource BgSecondaryBrush}"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        Style="{StaticResource DarkContextMenuStyle}">
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding LaunchAllCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_LaunchAll}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/start.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding ToggleFavoriteCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_ToggleFavorite}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/like.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding EditCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Edit}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/edit.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding MoveToFolderCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_MoveToFolder}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/folder.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator Style="{StaticResource DarkSeparatorStyle}" />
+                        <MenuItem
+                            Height="26"
+                            Command="{Binding DeleteCommand}"
+                            Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Delete}"
+                            Style="{StaticResource DarkContextMenuItemStyle}">
+                            <MenuItem.Icon>
+                                <svg:SvgViewbox
+                                    Width="16"
+                                    Height="16"
+                                    Source="/Icons/delete.svg" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </Border.ContextMenu>
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource BgSecondaryBrush}" />
+                        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+                        <Setter Property="BorderThickness" Value="1" />
+                        <Setter Property="Opacity" Value="1" />
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BgTertiaryBrush}" />
+                                <Setter Property="BorderBrush" Value="{DynamicResource SuccessBrush}" />
+                                <Setter Property="BorderThickness" Value="2" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleX">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="RenderTransform.ScaleY">
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.05" Value="0.97" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.12" Value="1.03" />
+                                                <EasingDoubleKeyFrame KeyTime="0:0:0.18" Value="1.0" />
+                                            </DoubleAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0" Margin="16,16,16,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border
+                            Grid.Column="0"
+                            Width="48"
+                            Height="48"
+                            Margin="0,0,12,0"
+                            Background="{DynamicResource BgTertiaryBrush}"
+                            CornerRadius="8">
+                            <svg:SvgViewbox
+                                Width="32"
+                                Height="32"
+                                Source="/Icons/workspace.svg" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock
+                                FontSize="16"
+                                FontWeight="SemiBold"
+                                Foreground="{DynamicResource TextPrimaryBrush}"
+                                Text="{Binding Name}"
+                                TextTrimming="CharacterEllipsis" />
+                            <TextBlock
+                                Margin="0,4,0,0"
+                                FontSize="11"
+                                Foreground="{DynamicResource TextMutedBrush}"
+                                Text="{Binding ProjectCountDisplay}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Margin="16,0,16,8"
+                        FontSize="11"
+                        Foreground="{DynamicResource TextMutedBrush}"
+                        Text="{Binding Description}"
+                        TextTrimming="CharacterEllipsis"
+                        Visibility="{Binding Description, Converter={StaticResource NullOrEmptyToVis}}" />
+
+                    <Border
+                        Grid.Row="2"
+                        Margin="16,0,16,8"
+                        BorderBrush="{DynamicResource BorderBrush}"
+                        BorderThickness="0,0,0,1" />
+
+                    <Grid Grid.Row="3" Margin="16,0,16,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock
+                            Grid.Column="0"
+                            VerticalAlignment="Center"
+                            FontSize="11"
+                            Foreground="{DynamicResource TextMutedBrush}"
+                            Text="{Binding LastOpenedDisplay}"
+                            Visibility="{Binding LastOpenedAt, Converter={StaticResource NullOrEmptyToVis}}" />
+                        <StackPanel
+                            Grid.Column="1"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding LaunchAllCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.WorkSpace_LaunchAll, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="/Icons/start.svg" />
+                                </Button.Content>
+                            </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding ToggleFavoriteCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.Tooltip_Favorite, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
+                                </Button.Content>
+                            </Button>
+
+                        </StackPanel>
+                    </Grid>
+
+                    <!--  右上角删除按钮（仅在工作文件夹视图中显示）  -->
+                    <Button
+                        Grid.RowSpan="4"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Top"
+                        Margin="8"
+                        Background="Transparent"
+                        BorderThickness="0"
+                        Command="{Binding DataContext.RemoveFromFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                        CommandParameter="{Binding}"
+                        Content="✕"
+                        Cursor="Hand"
+                        ToolTip="{Binding DataContext.L.Tooltip_RemoveFromFolder, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource CloseButtonStyle}" TargetType="Button">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding DataContext.IsWorkFolderSelected, RelativeSource={RelativeSource AncestorType=ItemsControl}}" Value="True">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!--  标题区域  -->
+        <Border
+            Grid.Row="0"
+            Margin="24,0,24,0"
+            BorderBrush="{DynamicResource AccentBlueBrush}"
+            BorderThickness="0,0,0,1">
+            <Grid Margin="0,16,0,8">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--  标题内容  -->
+                <StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+                    <!--  Icon (搜索模式下隐藏)  -->
+                    <svg:SvgViewbox
+                        Width="22"
+                        Height="22"
+                        Margin="0,0,12,0"
+                        VerticalAlignment="Center"
+                        Source="{Binding SidebarViewModel.SelectedTreeItem.IconPath}"
+                        Stretch="Uniform"
+                        Visibility="{Binding IsSearching, Converter={StaticResource InverseBoolToVis}}" />
+                    <!--  Name (搜索模式下隐藏)  -->
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Text="{Binding SidebarViewModel.SelectedTreeItem.Name}"
+                        Visibility="{Binding IsSearching, Converter={StaticResource InverseBoolToVis}}" />
+                    <!--  搜索标题 (仅搜索模式下显示)  -->
+                    <TextBlock
+                        FontSize="22"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextPrimaryBrush}"
+                        Text="{Binding L.Content_SearchResults}"
+                        Visibility="{Binding IsSearching, Converter={StaticResource BoolToVis}}" />
+                </StackPanel>
+
+                <!--  Add Button (非搜索模式下显示)  -->
+                <Button
+                    Grid.Column="1"
+                    Width="28"
+                    Height="28"
+                    Margin="16,0,0,0"
+                    Command="{Binding AddContentCommand}"
+                    Content="+"
+                    Cursor="Hand"
+                    FontSize="18"
+                    ToolTip="{Binding L.Tooltip_AddItem}">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource IconButtonStyle}" TargetType="Button">
+                            <Setter Property="Visibility" Value="{Binding SidebarViewModel.SelectedTreeItem.CanAddItem, Converter={StaticResource BoolToVis}}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsSearching}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!--  内容区域  -->
+        <ScrollViewer Grid.Row="1" Margin="24,16,24,24">
+            <ItemsControl ItemsSource="{Binding ContentItems}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplateSelector>
+                    <converters:ContentTemplateSelector ProjectTemplate="{StaticResource ProjectCardTemplate}" WorkSpaceTemplate="{StaticResource WorkSpaceCardTemplate}" />
+                </ItemsControl.ItemTemplateSelector>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

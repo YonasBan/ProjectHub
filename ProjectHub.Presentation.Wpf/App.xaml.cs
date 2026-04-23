@@ -1,33 +1,40 @@
-using System.Collections.Generic;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Markup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.DependencyInjection;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.Localization;
 using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
-using ProjectHub.Core.DependencyInjection;
+using ProjectHub.Application.ViewModels.DialogViewModel;
+using ProjectHub.Infrastructure.DependencyInjection;
+using ProjectHub.Infrastructure.Persistence;
+using ProjectHub.Presentation.Wpf.Dialogs;
 using ProjectHub.Presentation.Wpf.Services;
+using ReactiveUI;
+using ReactiveUI.Builder;
+using Splat;
+using Splat.Microsoft.Extensions.DependencyInjection;
+using System.Reactive.Concurrency;
+using System.Reflection;
+using System.Windows;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
+
 namespace ProjectHub.Presentation.Wpf;
 
 /// <summary>
 /// Application entry point and composition root.
-/// 
+///
 /// Responsibilities:
 /// - Host builder configuration (DI, Logging, Configuration)
 /// - Service registration for all application layers
 /// - Application lifecycle management (Startup, Exit)
-/// 
+///
 /// DDD Architecture:
 /// This class serves as the Composition Root where all dependencies are assembled.
 /// Following the Dependency Inversion Principle, concrete implementations are resolved here.
-/// 
+///
 /// Cross-Platform Design:
 /// This class is platform-agnostic. Platform-specific implementations (WPF, Avalonia)
 /// are handled by IPlatformService interface implementations.
@@ -44,13 +51,10 @@ public partial class App : System.Windows.Application
 
     public App()
     {
-        // Build the host with all configurations
         _host = CreateHostBuilder();
-
-        // Resolve logger and platform service after host is built
+        // ✅ 建完 Host 之后桥接
+        _host.Services.UseMicrosoftDependencyResolver();
         _logger = Services.GetRequiredService<ILogger<App>>();
-        
-        // Register global exception handler
         this.DispatcherUnhandledException += App_DispatcherUnhandledException;
     }
 
@@ -60,13 +64,75 @@ public partial class App : System.Windows.Application
     /// </summary>
     private IHost CreateHostBuilder()
     {
-        return Host.CreateDefaultBuilder()
+        var host = Host.CreateDefaultBuilder()
             .ConfigureAppConfiguration(ConfigureApplicationConfiguration)
             .ConfigureLogging(ConfigureLogging)
             .ConfigureServices(ConfigureServices)
             .Build();
+        return host;
+    }
+    /// <summary>
+    /// Registers all Views with dependency injection support.
+    /// </summary>
+    private static void RegisterViews(IServiceCollection services)
+    {
+        // MainWindow with injected ViewModel - Singleton to match MainViewModel's lifetime
+        services.AddSingleton<MainWindow>(provider =>
+        {
+            var viewModel = provider.GetRequiredService<MainViewModel>();
+            return new MainWindow(viewModel);
+        });
+    }
+    /// <summary>
+    /// Registers all application services with the DI container.
+    /// Organized by architectural layers for clarity and maintainability.
+    /// </summary>
+    private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
+    {
+        // ✅ 在 ConfigureServices 最顶部做这三步
+        services.UseMicrosoftDependencyResolver();
+        var resolver = Locator.CurrentMutable;
+        resolver.InitializeSplat();
+
+        // ✅ 然后用 RxAppBuilder 注册平台服务
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithWpf()
+            //.WithViewsFromAssembly(typeof(App).Assembly)
+            .BuildApp();
+        var configuration = context.Configuration;
+
+        // ========== Register Platform-Specific Services (WPF) ==========
+        services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IThemeService, WpfThemeService>();
+        services.AddSingleton<IFileAssociationService, WindowsFileAssociationService>();
+        services.AddSingleton<IProcessLauncherService, WindowsProcessLauncherService>();
+        services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
+        // 或者
+        var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
+        // ========== Register WPF Scheduler (must be before other registrations) ==========
+        services.AddSingleton<IScheduler>(scheduler);
+        // ========== Register Localization Service ==========
+        RegisterLocalizationServices(services);
+
+        // ========== Register Views ==========
+        RegisterViews(services);
+        RegisterDialogs(services);
+        // ========== Register UI Services (ViewModels) ==========
+        services.AddUIServices();
+
+        // ========== Register Application Services ==========
+        services.AddApplicationServices();
+
+        // ========== Register Infrastructure Services ==========
+        services.AddInfrastructureServices(configuration);
     }
 
+    private void RegisterDialogs(IServiceCollection services)
+    {
+        AppLocator.CurrentMutable.Register(() => new InputDialog(), typeof(IViewFor<CreateFolderDialogViewModel>));
+        AppLocator.CurrentMutable.Register(() => new ProjectDialog(), typeof(IViewFor<ProjectDialogViewModel>));
+        AppLocator.CurrentMutable.Register(() => new WorkSpaceDialog(), typeof(IViewFor<WorkSpaceDialogViewModel>));
+    }
     /// <summary>
     /// Configures application settings from multiple sources.
     /// Supports JSON files, environment variables, command-line arguments, and in-memory configurations.
@@ -144,58 +210,12 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
-    /// Registers all application services with the DI container.
-    /// Organized by architectural layers for clarity and maintainability.
-    /// </summary>
-    private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
-    {
-        var configuration = context.Configuration;
-
-        // ========== Register Localization Service ==========
-        RegisterLocalizationServices(services);
-
-        // ========== Register Views ==========
-        RegisterViews(services);
-
-        // ========== Register UI Services (ViewModels) ==========
-        services.AddUIServices();
-        
-        // ========== Register Application Services ==========
-        services.AddAppServices();
-
-        // ========== Register Infrastructure Services ==========
-        services.AddInfrastructureServices(configuration);
-        
-        // ========== Register Platform-Specific Services (WPF) ==========
-        services.AddSingleton<IDialogService, DialogService>();
-    }
-
-    /// <summary>
     /// Registers localization services.
     /// </summary>
     private static void RegisterLocalizationServices(IServiceCollection services)
     {
-        // 注册本地化服务，使用 ProjectHub.Resources.Strings 资源文件
-        services.AddSingleton<ILocalizationService>(provider =>
-        {
-            var assembly = Assembly.Load("ProjectHub.Resources");
-            return new ResxLocalizationService(
-                "ProjectHub.Resources.Strings.Strings",
-                assembly);
-        });
-    }
-
-    /// <summary>
-    /// Registers all Views with dependency injection support.
-    /// </summary>
-    private static void RegisterViews(IServiceCollection services)
-    {
-        // MainWindow with injected ViewModel - Scoped to match MainViewModel's lifetime
-        services.AddScoped<MainWindow>(provider =>
-        {
-            var viewModel = provider.GetRequiredService<MainViewModel>();
-            return new MainWindow(viewModel);
-        });
+        // 注册本地化字符串包装类 - 直接访问资源文件
+        services.AddSingleton<LocalizedStrings>();
     }
 
     /// <summary>
@@ -216,9 +236,8 @@ public partial class App : System.Windows.Application
             _logger.LogInformation("Environment: {Environment}",
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
 
-            // Create a scope to resolve scoped services
-            using var scope = Services.CreateScope();
-            var mainWindow = scope.ServiceProvider.GetRequiredService<MainWindow>();
+            // 直接使用 Services 而不是创建新的 Scope，避免 Scoped 服务被提前 dispose
+            var mainWindow = Services.GetRequiredService<MainWindow>();
             mainWindow?.Show();
 
             _logger.LogInformation("Application started successfully");
@@ -243,7 +262,7 @@ public partial class App : System.Windows.Application
         System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
     {
         _logger.LogCritical(e.Exception, "Unhandled exception occurred");
-        
+
         try
         {
             var dialogService = Services.GetService<IDialogService>();
@@ -256,7 +275,7 @@ public partial class App : System.Windows.Application
         {
             // Ignore dialog errors
         }
-        
+
         // Mark exception as handled to prevent crash
         e.Handled = true;
     }

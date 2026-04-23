@@ -1,5 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
     <xsd:element name="root" msdata:IsDataSet="true">
@@ -31,7 +90,7 @@
               <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
               <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
               <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+              <xsd:attribute ref="xml:space" />
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
@@ -58,8 +117,6 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  
-  <!-- 通用 -->
   <data name="Confirm" xml:space="preserve">
     <value>确认</value>
   </data>
@@ -72,14 +129,15 @@
   <data name="Save" xml:space="preserve">
     <value>保存</value>
   </data>
+  <data name="Add" xml:space="preserve">
+    <value>添加</value>
+  </data>
   <data name="Edit" xml:space="preserve">
     <value>编辑</value>
   </data>
   <data name="Close" xml:space="preserve">
     <value>关闭</value>
   </data>
-  
-  <!-- 项目管理 -->
   <data name="Project_Create" xml:space="preserve">
     <value>创建项目</value>
   </data>
@@ -95,8 +153,6 @@
   <data name="Project_OpenFolder" xml:space="preserve">
     <value>打开文件夹</value>
   </data>
-  
-  <!-- 对话框 -->
   <data name="DeleteConfirm_Title" xml:space="preserve">
     <value>确认删除</value>
   </data>
@@ -106,8 +162,6 @@
   <data name="DeleteConfirm_Success" xml:space="preserve">
     <value>删除成功</value>
   </data>
-  
-  <!-- 消息提示 -->
   <data name="Message_SaveSuccess" xml:space="preserve">
     <value>保存成功</value>
   </data>
@@ -117,8 +171,6 @@
   <data name="Message_LoadFailed" xml:space="preserve">
     <value>加载失败</value>
   </data>
-  
-  <!-- 分组和标签 -->
   <data name="Group_Create" xml:space="preserve">
     <value>创建分组</value>
   </data>
@@ -127,5 +179,398 @@
   </data>
   <data name="Tag_Remove" xml:space="preserve">
     <value>移除标签</value>
+  </data>
+  <data name="Sidebar_WorkFolders" xml:space="preserve">
+    <value>📁 工作文件夹</value>
+  </data>
+  <data name="Sidebar_NewFolder" xml:space="preserve">
+    <value>新建文件夹</value>
+  </data>
+  <data name="Sidebar_Refresh" xml:space="preserve">
+    <value>刷新</value>
+  </data>
+  <data name="Sidebar_NewSubFolder" xml:space="preserve">
+    <value>新建子文件夹</value>
+  </data>
+  <data name="Sidebar_DeleteFolder" xml:space="preserve">
+    <value>删除文件夹</value>
+  </data>
+  <data name="Sidebar_Recent" xml:space="preserve">
+    <value>最近使用</value>
+  </data>
+  <data name="Sidebar_Favorites" xml:space="preserve">
+    <value>收藏夹</value>
+  </data>
+  <data name="Sidebar_Workspaces" xml:space="preserve">
+    <value>工作空间</value>
+  </data>
+  <data name="Sidebar_DevProjects" xml:space="preserve">
+    <value>开发项目</value>
+  </data>
+  <data name="Sidebar_WebApp" xml:space="preserve">
+    <value>Web 应用</value>
+  </data>
+  <data name="Sidebar_MobileApp" xml:space="preserve">
+    <value>移动应用</value>
+  </data>
+  <data name="Sidebar_DesktopApp" xml:space="preserve">
+    <value>桌面应用</value>
+  </data>
+  <data name="Sidebar_Learning" xml:space="preserve">
+    <value>学习资源</value>
+  </data>
+  <data name="Sidebar_Tutorials" xml:space="preserve">
+    <value>编程教程</value>
+  </data>
+  <data name="Sidebar_EBooks" xml:space="preserve">
+    <value>电子书</value>
+  </data>
+  <data name="Sidebar_AllProjects" xml:space="preserve">
+    <value>所有项目</value>
+  </data>
+  <data name="Sidebar_TagSettings" xml:space="preserve">
+    <value>标签设置</value>
+  </data>
+  <data name="Header_Search" xml:space="preserve">
+    <value>搜索项目...</value>
+  </data>
+  <data name="Header_Language" xml:space="preserve">
+    <value>切换语言</value>
+  </data>
+  <data name="Header_Theme" xml:space="preserve">
+    <value>切换主题</value>
+  </data>
+  <data name="Header_Settings" xml:space="preserve">
+    <value>设置</value>
+  </data>
+  <data name="Status_Ready" xml:space="preserve">
+    <value>就绪</value>
+  </data>
+  <data name="Status_ProjectCount" xml:space="preserve">
+    <value>📦 共 {0} 个项目</value>
+  </data>
+  <data name="Status_FolderCount" xml:space="preserve">
+    <value>📁 {0} 个文件夹</value>
+  </data>
+  <data name="Status_WorkspaceCount" xml:space="preserve">
+    <value>🚀 {0} 个工作空间</value>
+  </data>
+  <data name="Status_FavoriteCount" xml:space="preserve">
+    <value>🏷️ {0} 个收藏</value>
+  </data>
+  <data name="Status_TaggedProjects" xml:space="preserve">
+    <value>标签项目: {0}</value>
+  </data>
+  <data name="Folder_NamePlaceholder" xml:space="preserve">
+    <value>请输入文件夹名称</value>
+  </data>
+  <data name="Folder_InputLabel" xml:space="preserve">
+    <value>文件夹名称</value>
+  </data>
+  <data name="Folder_Error_EmptyName" xml:space="preserve">
+    <value>文件夹名称不能为空</value>
+  </data>
+  <data name="Folder_Error_NameTooLong" xml:space="preserve">
+    <value>文件夹名称不能超过 100 个字符</value>
+  </data>
+  <data name="Folder_Error_InvalidChars" xml:space="preserve">
+    <value>文件夹名称不能包含特殊字符 (\ / : * ? " &lt; &gt; |)</value>
+  </data>
+  <data name="ProjectDialog_Title" xml:space="preserve">
+    <value>添加项目</value>
+  </data>
+  <data name="ProjectDialog_Title_Add" xml:space="preserve">
+    <value>添加项目</value>
+  </data>
+  <data name="ProjectDialog_Title_Edit" xml:space="preserve">
+    <value>编辑项目</value>
+  </data>
+  <data name="ProjectDialog_NameLabel" xml:space="preserve">
+    <value>项目名称</value>
+  </data>
+  <data name="ProjectDialog_PathLabel" xml:space="preserve">
+    <value>打开路径</value>
+  </data>
+  <data name="ProjectDialog_ProgramLabel" xml:space="preserve">
+    <value>默认程序</value>
+  </data>
+  <data name="ProjectDialog_ArgumentsLabel" xml:space="preserve">
+    <value>启动参数（可选）</value>
+  </data>
+  <data name="ProjectDialog_RunAsAdmin" xml:space="preserve">
+    <value>以管理员身份运行</value>
+  </data>
+  <data name="ProjectDialog_WebUrlLabel" xml:space="preserve">
+    <value>网页链接（多个用分号分隔）</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenFile" xml:space="preserve">
+    <value>打开文件</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenExe" xml:space="preserve">
+    <value>打开 exe</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenWebUrl" xml:space="preserve">
+    <value>打开网页</value>
+  </data>
+  <data name="ProjectDialog_LaunchType_OpenCmd" xml:space="preserve">
+    <value>运行 CMD 命令</value>
+  </data>
+  <data name="ProjectDialog_CmdCommandLabel" xml:space="preserve">
+    <value>CMD 命令</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyCmdCommand" xml:space="preserve">
+    <value>请输入要执行的 CMD 命令</value>
+  </data>
+  <data name="ProjectDialog_CmdWorkingDirectoryLabel" xml:space="preserve">
+    <value>工作目录</value>
+  </data>
+  <data name="ProjectDialog_CmdKeepWindowOpen" xml:space="preserve">
+    <value>执行后保持窗口打开</value>
+  </data>
+  <data name="ProjectDialog_LaunchTypeLabel" xml:space="preserve">
+    <value>启动方式</value>
+  </data>
+  <data name="ProjectDialog_IconLabel" xml:space="preserve">
+    <value>项目图标</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyName" xml:space="preserve">
+    <value>请输入项目名称</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyPath" xml:space="preserve">
+    <value>请选择打开路径</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyProgram" xml:space="preserve">
+    <value>请选择默认程序</value>
+  </data>
+  <data name="ProjectDialog_Error_EmptyWebUrl" xml:space="preserve">
+    <value>请输入网页链接</value>
+  </data>
+  <data name="ProjectDialog_Browse" xml:space="preserve">
+    <value>浏览...</value>
+  </data>
+  <data name="ProjectDialog_DescriptionLabel" xml:space="preserve">
+    <value>项目描述</value>
+  </data>
+  <data name="ProjectDialog_Step1_SelectFile" xml:space="preserve">
+    <value>步骤 1：选择项目文件</value>
+  </data>
+  <data name="ProjectDialog_Step2_ProjectInfo" xml:space="preserve">
+    <value>步骤 2：项目信息（可修改）</value>
+  </data>
+  <data name="ProjectDialog_Step3_Description" xml:space="preserve">
+    <value>步骤 3：项目描述</value>
+  </data>
+  <data name="ProjectDialog_ResetIcon" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="Message_Success" xml:space="preserve">
+    <value>成功</value>
+  </data>
+  <data name="Message_ProjectCreated" xml:space="preserve">
+    <value>项目 "{0}" 创建成功！</value>
+  </data>
+  <data name="Message_ProjectUpdated" xml:space="preserve">
+    <value>项目 "{0}" 更新成功！</value>
+  </data>
+  <data name="Message_ProjectDeleted" xml:space="preserve">
+    <value>项目 "{0}" 已删除</value>
+  </data>
+  <data name="Message_DeleteFailed" xml:space="preserve">
+    <value>删除失败</value>
+  </data>
+  <data name="WorkSpaceDialog_Title_Add" xml:space="preserve">
+    <value>添加工作空间</value>
+  </data>
+  <data name="WorkSpaceDialog_Title_Edit" xml:space="preserve">
+    <value>编辑工作空间</value>
+  </data>
+  <data name="WorkSpaceDialog_Step1_BasicInfo" xml:space="preserve">
+    <value>步骤 1：基本信息</value>
+  </data>
+  <data name="WorkSpaceDialog_NameLabel" xml:space="preserve">
+    <value>工作空间名称</value>
+  </data>
+  <data name="WorkSpaceDialog_DescriptionLabel" xml:space="preserve">
+    <value>描述（可选）</value>
+  </data>
+  <data name="WorkSpaceDialog_Step2_SelectProjects" xml:space="preserve">
+    <value>步骤 2：选择项目</value>
+  </data>
+  <data name="WorkSpaceDialog_SelectAll" xml:space="preserve">
+    <value>全选</value>
+  </data>
+  <data name="WorkSpaceDialog_DeselectAll" xml:space="preserve">
+    <value>取消全选</value>
+  </data>
+  <data name="WorkSpaceDialog_Step3_LaunchConfig" xml:space="preserve">
+    <value>步骤 3：启动配置</value>
+  </data>
+  <data name="WorkSpaceDialog_UseCustomLaunchOrder" xml:space="preserve">
+    <value>使用自定义启动顺序</value>
+  </data>
+  <data name="WorkSpaceDialog_LaunchIntervalLabel" xml:space="preserve">
+    <value>默认启动间隔：</value>
+  </data>
+  <data name="WorkSpaceDialog_LaunchIntervalHint" xml:space="preserve">
+    <value>提示：设置项目启动之间的等待时间（秒），0 表示连续启动不等待</value>
+  </data>
+  <data name="WorkSpace_Create" xml:space="preserve">
+    <value>创建工作空间</value>
+  </data>
+  <data name="WorkSpace_Edit" xml:space="preserve">
+    <value>编辑工作空间</value>
+  </data>
+  <data name="WorkSpace_Delete" xml:space="preserve">
+    <value>删除工作空间</value>
+  </data>
+  <data name="WorkSpace_LaunchAll" xml:space="preserve">
+    <value>启动所有项目</value>
+  </data>
+  <data name="Message_WorkSpaceCreated" xml:space="preserve">
+    <value>工作空间 "{0}" 创建成功！</value>
+  </data>
+  <data name="Message_WorkSpaceUpdated" xml:space="preserve">
+    <value>工作空间 "{0}" 更新成功！</value>
+  </data>
+  <data name="Message_WorkSpaceDeleted" xml:space="preserve">
+    <value>工作空间 "{0}" 已删除</value>
+  </data>
+  <data name="Message_FolderDeleted" xml:space="preserve">
+    <value>文件夹 "{0}" 已删除</value>
+  </data>
+  <data name="WorkSapce_Search" xml:space="preserve">
+    <value>搜索</value>
+  </data>
+  <data name="Project_LaunchCount" xml:space="preserve">
+    <value>启动 {0} 次</value>
+  </data>
+  <data name="WorkSpace_ProjectCount" xml:space="preserve">
+    <value>{0} 个项目</value>
+  </data>
+  <data name="WorkSpace_LastOpened" xml:space="preserve">
+    <value>上次打开 {0:yyyy-MM-dd HH:mm}</value>
+  </data>
+  <data name="Tooltip_Launch" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="Tooltip_Favorite" xml:space="preserve">
+    <value>收藏</value>
+  </data>
+  <data name="Tooltip_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="Tooltip_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="Tooltip_AddItem" xml:space="preserve">
+    <value>添加新项</value>
+  </data>
+  <data name="ContextMenu_Launch" xml:space="preserve">
+    <value>启动</value>
+  </data>
+  <data name="ContextMenu_LaunchAll" xml:space="preserve">
+    <value>全部启动</value>
+  </data>
+  <data name="ContextMenu_ToggleFavorite" xml:space="preserve">
+    <value>收藏/取消收藏</value>
+  </data>
+  <data name="ContextMenu_Edit" xml:space="preserve">
+    <value>编辑</value>
+  </data>
+  <data name="ContextMenu_Delete" xml:space="preserve">
+    <value>删除</value>
+  </data>
+  <data name="ContextMenu_MoveToFolder" xml:space="preserve">
+    <value>移动到文件夹</value>
+  </data>
+  <data name="Folder_CreateNew" xml:space="preserve">
+    <value>+ 新建文件夹</value>
+  </data>
+  <data name="Folder_NewFolderName" xml:space="preserve">
+    <value>新文件夹名称</value>
+  </data>
+  <data name="Folder_NameRequired" xml:space="preserve">
+    <value>请输入文件夹名称</value>
+  </data>
+  <data name="Folder_SelectRequired" xml:space="preserve">
+    <value>请选择一个文件夹</value>
+  </data>
+  <data name="Dialog_MoveToFolderTitle" xml:space="preserve">
+    <value>移动到文件夹 - {0}</value>
+  </data>
+  <data name="Message_MovedToFolder" xml:space="preserve">
+    <value>"{0}" 已移动到文件夹</value>
+  </data>
+  <data name="Message_MoveToFolderFailed" xml:space="preserve">
+    <value>移动到文件夹失败</value>
+  </data>
+  <data name="Message_RemovedFromFolder" xml:space="preserve">
+    <value>已从文件夹中移除 "{0}"</value>
+  </data>
+  <data name="Tooltip_RemoveFromFolder" xml:space="preserve">
+    <value>从当前文件夹移除</value>
+  </data>
+  <data name="Dialog_MoveItemNotSet" xml:space="preserve">
+    <value>未设置要移动的项目</value>
+  </data>
+  <data name="ContextMenu_OpenFilePosition" xml:space="preserve">
+    <value>打开文件位置</value>
+  </data>
+  <data name="Error_CannotOpenFileLocation" xml:space="preserve">
+    <value>无法打开文件位置</value>
+  </data>
+  <data name="Error_ProjectPathEmpty" xml:space="preserve">
+    <value>项目路径为空</value>
+  </data>
+  <data name="Dialog_SelectProjectPath_Title" xml:space="preserve">
+    <value>选择项目路径</value>
+  </data>
+  <data name="Dialog_SelectProjectPath_Filter" xml:space="preserve">
+    <value>选择项目入口文件|*.*</value>
+  </data>
+  <data name="Dialog_SelectProgram_Title" xml:space="preserve">
+    <value>选择默认程序</value>
+  </data>
+  <data name="Dialog_SelectProgram_Filter" xml:space="preserve">
+    <value>选择程序|*.exe;*.bat;*.cmd;*.ps1|所有文件|*.*</value>
+  </data>
+  <data name="Dialog_SelectIcon_Title" xml:space="preserve">
+    <value>选择图标文件</value>
+  </data>
+  <data name="Dialog_SelectIcon_Filter" xml:space="preserve">
+    <value>选择图标|*.ico;*.png;*.jpg;*.jpeg|所有文件|*.*</value>
+  </data>
+  <data name="Dialog_SelectWorkingDirectory_Title" xml:space="preserve">
+    <value>选择工作目录</value>
+  </data>
+  <data name="Dialog_AllFilesFilter" xml:space="preserve">
+    <value>所有文件|*.*</value>
+  </data>
+  <data name="Log_ResetIconDefault" xml:space="preserve">
+    <value>重置图标为默认</value>
+  </data>
+  <data name="Log_InitializedEditMode" xml:space="preserve">
+    <value>初始化编辑模式，项目ID: {0}</value>
+  </data>
+  <data name="Log_UserSelectedPath" xml:space="preserve">
+    <value>用户选择了路径: {0}</value>
+  </data>
+  <data name="Log_DetectDefaultProgramFailed" xml:space="preserve">
+    <value>检测默认程序失败: {0}</value>
+  </data>
+  <data name="Log_UserSelectedProgram" xml:space="preserve">
+    <value>用户选择了程序: {0}</value>
+  </data>
+  <data name="Log_UserSelectedIcon" xml:space="preserve">
+    <value>用户选择了图标: {0}</value>
+  </data>
+  <data name="Log_UserSelectedWorkingDirectory" xml:space="preserve">
+    <value>用户选择了工作目录: {0}</value>
+  </data>
+  <data name="Log_ConfirmAddProject" xml:space="preserve">
+    <value>确认添加项目: {0}</value>
+  </data>
+  <data name="Content_SearchResults" xml:space="preserve">
+    <value>搜索结果</value>
   </data>
 </root>

@@ -10,79 +10,141 @@ namespace ProjectHub.Infrastructure.Repositories;
 /// </summary>
 public class WorkSpaceRepository : IWorkSpaceRepository
 {
-    private readonly AppDbContext _dbContext;
+    private readonly IDbContextFactory<AppDbContext> _factory;
 
-    public WorkSpaceRepository(AppDbContext dbContext)
+    public WorkSpaceRepository(IDbContextFactory<AppDbContext> factory)
     {
-        _dbContext = dbContext;
+        _factory = factory;
     }
 
     public async Task<WorkSpace?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaces.FindAsync(new object[] { id }, cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetAllAsync(CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaces.ToListAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<WorkSpace> AddAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
-        await _dbContext.WorkSpaces.AddAsync(entity, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        await ctx.WorkSpaces.AddAsync(entity, cancellationToken);
+        await ctx.SaveChangesAsync(cancellationToken);
         return entity;
     }
 
     public async Task UpdateAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.WorkSpaces.Update(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        ctx.WorkSpaces.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task DeleteAsync(WorkSpace entity, CancellationToken cancellationToken = default)
     {
-        _dbContext.WorkSpaces.Remove(entity);
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        await using var ctx = _factory.CreateDbContext();
+        entity.SoftDelete();
+        ctx.WorkSpaces.Update(entity);
+        await ctx.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default)
     {
-        // 查询工作空间（包含关联的项目数量）
-        var workSpaces = await _dbContext.WorkSpaces
-            .Select(w => new
-            {
-                WorkSpace = w,
-                ProjectCount = _dbContext.ProjectWorkSpaces
-                    .Count(pws => pws.WorkSpaceId == w.Id && 
-                                  !_dbContext.Projects.Any(p => p.Id == pws.ProjectId))
-            })
-            .OrderBy(x => x.WorkSpace.SortOrder)
-            .ThenBy(x => x.WorkSpace.Name)
+        await using var ctx = _factory.CreateDbContext();
+
+        // 获取所有未删除的项目 ID（用于过滤）
+        var activeProjectIds = await ctx.Projects
+            .Where(p => !p.IsDeleted)
+            .Select(p => p.Id)
             .ToListAsync(cancellationToken);
 
-        // 设置项目数量
-        foreach (var item in workSpaces)
+        // 查询工作空间（包含关联的项目数量）
+        var workSpaces = await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
+            .ToListAsync(cancellationToken);
+
+        // 查询每个工作空间的项目数量
+        foreach (var workSpace in workSpaces)
         {
-            item.WorkSpace.UpdateProjectCount(item.ProjectCount);
+            var projectCount = await ctx.ProjectWorkSpaces
+                .CountAsync(pws => pws.WorkSpaceId == workSpace.Id &&
+                                   activeProjectIds.Contains(pws.ProjectId),
+                           cancellationToken);
+            workSpace.UpdateProjectCount(projectCount);
         }
 
-        return workSpaces.Select(x => x.WorkSpace).ToList();
+        return workSpaces
+            .OrderBy(w => w.SortOrder)
+            .ThenBy(w => w.Name)
+            .ToList();
     }
 
     public async Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default)
     {
-        return await _dbContext.WorkSpaces
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted)
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
 
     public async Task<IReadOnlyList<WorkSpace>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default)
     {
+        await using var ctx = _factory.CreateDbContext();
         // 按最近打开时间降序排序，获取指定数量的工作空间
-        return await _dbContext.WorkSpaces
-            .Where(w => w.LastOpenedAt.HasValue)
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted && w.LastOpenedAt.HasValue)
             .OrderByDescending(w => w.LastOpenedAt)
             .Take(count)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<long>> GetProjectIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.ProjectWorkSpaces
+            .Where(pws => pws.WorkSpaceId == workSpaceId)
+            .Select(pws => pws.ProjectId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<long>> GetEnabledProjectIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.ProjectWorkSpaces
+            .Where(pws => pws.WorkSpaceId == workSpaceId && pws.IsEnabled)
+            .Select(pws => pws.ProjectId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<long>> GetWorkFolderIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+        return await ctx.WorkSpaceWorkFolders
+            .Where(wwf => wwf.WorkSpaceId == workSpaceId)
+            .Select(wwf => wwf.WorkFolderId)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<WorkSpace>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default)
+    {
+        await using var ctx = _factory.CreateDbContext();
+
+        // 通过关联表查询属于该工作文件夹的工作空间
+        var workSpaceIds = await ctx.WorkSpaceWorkFolders
+            .Where(wwf => wwf.WorkFolderId == workFolderId)
+            .Select(wwf => wwf.WorkSpaceId)
+            .ToListAsync(cancellationToken);
+
+        return await ctx.WorkSpaces
+            .Where(w => !w.IsDeleted && workSpaceIds.Contains(w.Id))
             .ToListAsync(cancellationToken);
     }
 }

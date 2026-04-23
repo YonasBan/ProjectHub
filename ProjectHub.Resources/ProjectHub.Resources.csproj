@@ -6,9 +6,58 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Icons\folder.svg" />
+    <None Remove="Icons\lateuse.svg" />
+    <None Remove="Icons\project.svg" />
+    <None Remove="Icons\search.svg" />
+    <None Remove="Icons\tags.svg" />
+    <None Remove="Icons\workspace.svg" />
+  </ItemGroup>
+
   <!-- Microsoft.Extensions for Localization -->
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ReactiveUI" Version="23.1.8" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\delete.svg" />
+    <Resource Include="Icons\settings.svg" />
+    <Resource Include="Icons\start.svg" />
+    <Resource Include="Icons\edit.svg" />
+    <Resource Include="Icons\openFile.svg" />
+    <Resource Include="Icons\unlike.svg" />
+    <Resource Include="Icons\like.svg" />
+    <Resource Include="Icons\folder.svg" />
+    <Resource Include="Icons\lateuse.svg" />
+    <Resource Include="Icons\project.svg" />
+    <Resource Include="Icons\search.svg" />
+    <Resource Include="Icons\favorites.svg" />
+    <Resource Include="Icons\tags.svg" />
+    <Resource Include="Icons\workspace.svg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Strings\Strings.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Strings.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Strings\Strings.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Images\CMD.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Images\explorer.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

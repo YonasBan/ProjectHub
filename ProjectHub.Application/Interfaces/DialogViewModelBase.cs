@@ -1,30 +1,90 @@
-﻿using ReactiveUI;
+﻿using ProjectHub.Application.Localization;
+using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Reactive;
-using System.Text;
+using System.Reactive.Disposables;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
+using Splat;
 
-namespace ProjectHub.Application.Interfaces
+namespace ProjectHub.Application.Interfaces;
+
+/// <summary>
+/// 简单对话框 ViewModel 基类（无返回值）
+/// </summary>
+public abstract class DialogViewModelBase : ReactiveObject
 {
-    // 所有弹窗 ViewModel 的基类
-    public abstract class DialogViewModelBase<TResult> : ReactiveObject
+    /// <summary>
+    /// 关闭请求事件
+    /// </summary>
+    public event EventHandler<bool>? CloseRequested;
+
+    /// <summary>
+    /// 本地化字符串
+    /// </summary>
+    public LocalizedStrings L { get; }
+
+    /// <summary>
+    /// 关闭对话框
+    /// </summary>
+    protected void Close(bool confirmed = true)
     {
-        private readonly TaskCompletionSource<DialogResult<TResult>> _tcs = new();
+        CloseRequested?.Invoke(this, confirmed);
+    }
 
-        public Task<DialogResult<TResult>> Result => _tcs.Task;
+    protected DialogViewModelBase()
+    {
+        L = Locator.Current.GetService<LocalizedStrings>()!;
+    }
+}
 
-        protected void Close(TResult result) =>
-            _tcs.TrySetResult(new DialogResult<TResult>(true, result));
+/// <summary>
+/// 所有弹窗 ViewModel 的基类（带返回值）
+/// </summary>
+public abstract class DialogViewModelBase<TResult> : ReactiveObject, IDisposable, IDialogViewModel<TResult>
+{
+    private readonly TaskCompletionSource<DialogResult<TResult>> _tcs = new();
+    public Task<DialogResult<TResult>> WaitForResultAsync() => _tcs.Task;
 
-        protected void Cancel() =>
-            _tcs.TrySetResult(new DialogResult<TResult>(false));
+    /// <summary>
+    /// 本地化字符串
+    /// </summary>
+    public LocalizedStrings L { get; }
 
-        // ReactiveCommand 方便绑定
-        public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+    protected void Close(TResult result) =>
+        _tcs.TrySetResult(new DialogResult<TResult>(true, result));
 
-        protected DialogViewModelBase()
-        {
-            CancelCommand = ReactiveCommand.Create(Cancel);
-        }
+    public void Cancel() =>
+        _tcs.TrySetResult(new DialogResult<TResult>(false));
+
+    /// <summary>
+    /// ReactiveUI 的 Dispose 容器
+    /// 用于自动管理订阅的生命周期
+    /// </summary>
+    public CompositeDisposable Disposables { get; } = new();
+
+    /// <summary>
+    /// ReactiveCommand 方便绑定
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> CancelCommand { get; }
+
+
+    protected DialogViewModelBase()
+    {
+        L = Locator.Current.GetService<LocalizedStrings>()!;
+        CancelCommand = ReactiveCommand.Create(Cancel);
+    }
+
+    /// <summary>
+    /// 清理资源
+    /// </summary>
+    public void Dispose()
+    {
+        Disposables.Dispose();
+    }
+
+    public void CloseWindow()
+    {
+        _tcs.TrySetResult(new DialogResult<TResult>(false));
     }
 }

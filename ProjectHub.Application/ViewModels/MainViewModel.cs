@@ -1,68 +1,54 @@
-using System.Collections.ObjectModel;
-using System.Reactive;
+using DynamicData;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ReactiveUI;
 using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
+using ProjectHub.Application.ViewModels.DialogViewModel;
+using ProjectHub.Domain.Entities;
+using ReactiveUI;
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Disposables.Fluent;
+using System.Reactive.Linq;
 
 namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
-/// 主窗口 ViewModel
-/// 
-/// ⚠️ 注意：此文件仅为框架示例，实际实现需要在第二阶段完成
+/// 主窗口 ViewModel - 管理应用程序主界面状态和交互
 /// </summary>
 public class MainViewModel : ViewModelBase
 {
-    // TODO: 注入应用服务
-    private readonly IProjectAppService _projectAppService;
+    #region 注入服务
+
+    private readonly IThemeService _themeService;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly IDialogService _dialogService;
     private readonly IWorkFolderAppService _workFolderAppService;
-    private readonly IWorkSpaceAppService _workSpaceAppService;
+
+    #endregion
+
+    #region 子 ViewModels
 
     /// <summary>
-    /// 项目列表 (Observable)
+    /// 侧边栏 ViewModel
     /// </summary>
-    private ObservableCollection<ProjectViewModel>? _projects;
-    public ObservableCollection<ProjectViewModel> Projects
-    {
-        get => _projects ??= new();
-        set => this.RaiseAndSetIfChanged(ref _projects, value);
-    }
+    public SidebarViewModel SidebarViewModel { get; }
 
     /// <summary>
-    /// 工作文件夹列表 (Observable)
+    /// 内容区域 ViewModel
     /// </summary>
-    private ObservableCollection<WorkFolderViewModel>? _workFolders;
-    public ObservableCollection<WorkFolderViewModel> WorkFolders
-    {
-        get => _workFolders ??= new();
-        set => this.RaiseAndSetIfChanged(ref _workFolders, value);
-    }
+    public ContentViewModel ContentViewModel { get; }
 
-    /// <summary>
-    /// 工作空间列表 (Observable)
-    /// </summary>
-    private ObservableCollection<WorkSpaceViewModel>? _workSpaces;
-    public ObservableCollection<WorkSpaceViewModel> WorkSpaces
-    {
-        get => _workSpaces ??= new();
-        set => this.RaiseAndSetIfChanged(ref _workSpaces, value);
-    }
+    #endregion
 
-    /// <summary>
-    /// 当前选中的工作文件夹
-    /// </summary>
-    private WorkFolderViewModel? _selectedWorkFolder;
-    public WorkFolderViewModel? SelectedWorkFolder
-    {
-        get => _selectedWorkFolder;
-        set => this.RaiseAndSetIfChanged(ref _selectedWorkFolder, value);
-    }
+    #region 搜索与视图属性
 
     /// <summary>
     /// 搜索关键字
     /// </summary>
     private string _searchKeyword = string.Empty;
+
     public string SearchKeyword
     {
         get => _searchKeyword;
@@ -73,176 +59,144 @@ public class MainViewModel : ViewModelBase
     /// 当前视图模式 (列表/卡片)
     /// </summary>
     private ViewMode _currentViewMode = ViewMode.List;
+
     public ViewMode CurrentViewMode
     {
         get => _currentViewMode;
         set => this.RaiseAndSetIfChanged(ref _currentViewMode, value);
     }
 
-    // ========== Reactive Commands ==========
+    #endregion
+
+    #region Reactive Commands
 
     /// <summary>
-    /// 加载项目命令
+    /// 切换语言命令
     /// </summary>
-    public ReactiveCommand<Unit, Unit> LoadProjectsCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleLanguageCommand { get; }
 
     /// <summary>
-    /// 搜索项目命令
+    /// 切换主题命令
     /// </summary>
-    public ReactiveCommand<Unit, Unit> SearchProjectsCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleThemeCommand { get; }
+
+    #endregion
+
+    #region 主题与状态属性
 
     /// <summary>
-    /// 刷新数据命令
+    /// 当前主题 (Light/Dark)
     /// </summary>
-    public ReactiveCommand<Unit, Unit> RefreshCommand { get; }
+    public string CurrentTheme => _themeService.CurrentTheme;
+
+    /// <summary>
+    /// 正在加载标识
+    /// </summary>
+    private bool _isLoading;
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+    }
+
+    #endregion
+
+
+    #region 构造函数与初始化
 
     public MainViewModel(
         ILogger<MainViewModel> logger,
-        IProjectAppService projectAppService,
+        IThemeService themeService,
+        IScheduler mainThreadScheduler,
+        IServiceProvider serviceProvider,
+        IDialogService dialogService,
         IWorkFolderAppService workFolderAppService,
-        IWorkSpaceAppService workSpaceAppService)
-        : base(logger)
+        SidebarViewModel sidebarViewModel,
+        ContentViewModel contentViewModel)
+        : base(logger, mainThreadScheduler)
     {
-        _projectAppService = projectAppService;
+        _themeService = themeService;
+        _serviceProvider = serviceProvider;
+        _dialogService = dialogService;
         _workFolderAppService = workFolderAppService;
-        _workSpaceAppService = workSpaceAppService;
+        SidebarViewModel = sidebarViewModel;
+        ContentViewModel = contentViewModel;
 
-        // 初始化命令 (使用方法的分组语法)
-        LoadProjectsCommand = CreateCommand(LoadProjectsAsync);
-        SearchProjectsCommand = CreateCommand(SearchProjectsAsync);
-        RefreshCommand = CreateCommand(RefreshAsync);
+        // 初始化语言和主题切换命令
+        ToggleLanguageCommand = ReactiveCommand.CreateFromTask(ToggleLanguageAsync);
+        ToggleThemeCommand = ReactiveCommand.Create(_themeService.ToggleTheme);
+        ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
-        // 订阅命令异常，防止未处理的异常导致 ReactiveUI 报错
-        LoadProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "加载项目命令发生错误"));
-        SearchProjectsCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "搜索项目命令发生错误"));
-        RefreshCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "刷新命令发生错误"));
+        // 订阅语言切换事件
+        L.CultureChanged
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(_ =>
+            {
+                SidebarViewModel.BuildSidebarTree();
+                SidebarViewModel.UpdateStatistics();
+            })
+            .DisposeWith(Disposables);
 
-        // 加载数据
-        LoadProjectsCommand.Execute(Unit.Default).Subscribe();
+        // 订阅搜索关键字变化，防抖 300ms 后触发搜索
+        this.WhenAnyValue(x => x.SearchKeyword)
+            .Throttle(TimeSpan.FromMilliseconds(300))
+            .ObserveOn(MainThreadScheduler)
+            .Subscribe(keyword => ContentViewModel.Search(keyword))
+            .DisposeWith(Disposables);
+
+        // 订阅 MessageBus 消息
+        SubscribeToMessageBus();
+
+        // 首次加载
+        _ = LoadInitialDataAsync();
     }
+
+    #endregion
+
+    #region MessageBus 消息处理
 
     /// <summary>
-    /// 加载所有项目
+    /// 订阅 MessageBus 消息
     /// </summary>
-    private async Task LoadProjectsAsync()
+    private void SubscribeToMessageBus()
     {
-        try
-        {
-            Logger.LogInformation("开始加载项目列表");
-            
-            var projects = await _projectAppService.GetAllActiveAsync();
-            
-            Projects.Clear();
-            foreach (var project in projects)
-            {
-                Projects.Add(new ProjectViewModel(project));
-            }
-            
-            Logger.LogInformation($"成功加载 {projects.Count} 个项目");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载项目列表时发生错误");
-        }
+
     }
+
+    #endregion
+
+    #region 数据加载方法
 
     /// <summary>
-    /// 搜索项目
+    /// 首次加载数据
     /// </summary>
-    private async Task SearchProjectsAsync()
+    private async Task LoadInitialDataAsync()
     {
-        try
-        {
-            if (string.IsNullOrWhiteSpace(SearchKeyword))
-            {
-                await LoadProjectsAsync();
-                return;
-            }
-
-            Logger.LogInformation($"搜索关键字：{SearchKeyword}");
-            
-            var projects = await _projectAppService.SearchAsync(SearchKeyword);
-            
-            Projects.Clear();
-            foreach (var project in projects)
-            {
-                Projects.Add(new ProjectViewModel(project));
-            }
-            
-            Logger.LogInformation($"找到 {projects.Count} 个匹配的项目");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "搜索项目时发生错误");
-        }
+        await SidebarViewModel.LoadInitialDataAsync();
     }
+
+    #endregion
+
+    #region 语言与主题方法
 
     /// <summary>
-    /// 刷新所有数据
+    /// 切换语言
     /// </summary>
-    private async Task RefreshAsync()
+    private async Task ToggleLanguageAsync()
     {
-        try
-        {
-            Logger.LogInformation("开始刷新所有数据");
-            
-            await LoadProjectsAsync();
-            await LoadWorkFoldersAsync();
-            await LoadWorkSpacesAsync();
-            
-            Logger.LogInformation("数据刷新完成");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "刷新数据时发生错误");
-        }
+        var currentCulture = L.CurrentCulture;
+        var newCulture = currentCulture.Name == "zh-CN"
+            ? new System.Globalization.CultureInfo("en-US")
+            : new System.Globalization.CultureInfo("zh-CN");
+
+        await L.SetCultureAsync(newCulture);
+
+        // SidebarViewModel 会自动处理语言切换
+        Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
     }
 
-    // ========== 辅助方法 ==========
-
-    private async Task LoadWorkFoldersAsync()
-    {
-        try
-        {
-            Logger.LogInformation("加载工作文件夹列表");
-            
-            var workFolders = await _workFolderAppService.GetAllWithProjectCountAsync();
-            
-            WorkFolders.Clear();
-            foreach (var workFolder in workFolders)
-            {
-                WorkFolders.Add(new WorkFolderViewModel(workFolder));
-            }
-            
-            Logger.LogInformation($"成功加载 {workFolders.Count} 个工作文件夹");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载工作文件夹列表时发生错误");
-        }
-    }
-
-    private async Task LoadWorkSpacesAsync()
-    {
-        try
-        {
-            Logger.LogInformation("加载工作空间列表");
-            
-            var workSpaces = await _workSpaceAppService.GetAllWithProjectCountAsync();
-            
-            WorkSpaces.Clear();
-            foreach (var workSpace in workSpaces)
-            {
-                WorkSpaces.Add(new WorkSpaceViewModel(workSpace));
-            }
-            
-            Logger.LogInformation($"成功加载 {workSpaces.Count} 个工作空间");
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "加载工作空间列表时发生错误");
-        }
-    }
+    #endregion
 }
 
 /// <summary>
@@ -253,3 +207,15 @@ public enum ViewMode
     List,   // 列表视图
     Card    // 卡片视图
 }
+
+// ========== 移动到文件夹消息 ==========
+
+/// <summary>
+/// 项目移动到文件夹请求消息
+/// </summary>
+public record ProjectMoveToFolderRequestMessage(ProjectViewModel Project);
+
+/// <summary>
+/// 工作空间移动到文件夹请求消息
+/// </summary>
+public record WorkSpaceMoveToFolderRequestMessage(WorkSpaceViewModel WorkSpace);
