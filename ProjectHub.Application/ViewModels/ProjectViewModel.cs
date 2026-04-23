@@ -96,7 +96,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         {
             await _dialogService.ShowMessageAsync(
                 L.Message_SaveFailed,
-                "项目路径为空");
+                L.Error_ProjectPathEmpty);
             return;
         }
 
@@ -105,7 +105,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         {
             await _dialogService.ShowMessageAsync(
                 L.Message_SaveFailed,
-                "无法打开文件位置");
+                L.Error_CannotOpenFileLocation);
         }
     }
 

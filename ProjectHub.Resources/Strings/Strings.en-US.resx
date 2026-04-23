@@ -516,4 +516,58 @@
   <data name="ContextMenu_OpenFilePosition" xml:space="preserve">
     <value>Open the file folder</value>
   </data>
+  <data name="Error_CannotOpenFileLocation" xml:space="preserve">
+    <value>Cannot open file location</value>
+  </data>
+  <data name="Error_ProjectPathEmpty" xml:space="preserve">
+    <value>Project path is empty</value>
+  </data>
+  <data name="Dialog_SelectProjectPath_Title" xml:space="preserve">
+    <value>Select Project Path</value>
+  </data>
+  <data name="Dialog_SelectProjectPath_Filter" xml:space="preserve">
+    <value>Select project entry file|*.*</value>
+  </data>
+  <data name="Dialog_SelectProgram_Title" xml:space="preserve">
+    <value>Select Default Program</value>
+  </data>
+  <data name="Dialog_SelectProgram_Filter" xml:space="preserve">
+    <value>Select program|*.exe;*.bat;*.cmd;*.ps1|All files|*.*</value>
+  </data>
+  <data name="Dialog_SelectIcon_Title" xml:space="preserve">
+    <value>Select Icon File</value>
+  </data>
+  <data name="Dialog_SelectIcon_Filter" xml:space="preserve">
+    <value>Select icon|*.ico;*.png;*.jpg;*.jpeg|All files|*.*</value>
+  </data>
+  <data name="Dialog_SelectWorkingDirectory_Title" xml:space="preserve">
+    <value>Select Working Directory</value>
+  </data>
+  <data name="Dialog_AllFilesFilter" xml:space="preserve">
+    <value>All files|*.*</value>
+  </data>
+  <data name="Log_ResetIconDefault" xml:space="preserve">
+    <value>Reset icon to default</value>
+  </data>
+  <data name="Log_InitializedEditMode" xml:space="preserve">
+    <value>Initialized edit mode, project ID: {0}</value>
+  </data>
+  <data name="Log_UserSelectedPath" xml:space="preserve">
+    <value>User selected path: {0}</value>
+  </data>
+  <data name="Log_DetectDefaultProgramFailed" xml:space="preserve">
+    <value>Failed to detect default program: {0}</value>
+  </data>
+  <data name="Log_UserSelectedProgram" xml:space="preserve">
+    <value>User selected program: {0}</value>
+  </data>
+  <data name="Log_UserSelectedIcon" xml:space="preserve">
+    <value>User selected icon: {0}</value>
+  </data>
+  <data name="Log_UserSelectedWorkingDirectory" xml:space="preserve">
+    <value>User selected working directory: {0}</value>
+  </data>
+  <data name="Log_ConfirmAddProject" xml:space="preserve">
+    <value>Confirm add project: {0}</value>
+  </data>
 </root>

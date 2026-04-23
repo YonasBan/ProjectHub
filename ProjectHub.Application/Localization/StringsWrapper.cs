@@ -220,4 +220,22 @@ public class LocalizedStrings : ReactiveObject
     public string Tooltip_RemoveFromFolder => ProjectHub.Resources.Strings.Strings.Tooltip_RemoveFromFolder;
     public string Dialog_MoveItemNotSet => ProjectHub.Resources.Strings.Strings.Dialog_MoveItemNotSet;
     public string ContextMenu_OpenFilePosition => ProjectHub.Resources.Strings.Strings.ContextMenu_OpenFilePosition;
+    public string Error_CannotOpenFileLocation => ProjectHub.Resources.Strings.Strings.Error_CannotOpenFileLocation;
+    public string Error_ProjectPathEmpty => ProjectHub.Resources.Strings.Strings.Error_ProjectPathEmpty;
+    public string Dialog_SelectProjectPath_Title => ProjectHub.Resources.Strings.Strings.Dialog_SelectProjectPath_Title;
+    public string Dialog_SelectProjectPath_Filter => ProjectHub.Resources.Strings.Strings.Dialog_SelectProjectPath_Filter;
+    public string Dialog_SelectProgram_Title => ProjectHub.Resources.Strings.Strings.Dialog_SelectProgram_Title;
+    public string Dialog_SelectProgram_Filter => ProjectHub.Resources.Strings.Strings.Dialog_SelectProgram_Filter;
+    public string Dialog_SelectIcon_Title => ProjectHub.Resources.Strings.Strings.Dialog_SelectIcon_Title;
+    public string Dialog_SelectIcon_Filter => ProjectHub.Resources.Strings.Strings.Dialog_SelectIcon_Filter;
+    public string Dialog_SelectWorkingDirectory_Title => ProjectHub.Resources.Strings.Strings.Dialog_SelectWorkingDirectory_Title;
+    public string Dialog_AllFilesFilter => ProjectHub.Resources.Strings.Strings.Dialog_AllFilesFilter;
+    public string Log_ResetIconDefault => ProjectHub.Resources.Strings.Strings.Log_ResetIconDefault;
+    public string Log_InitializedEditMode => ProjectHub.Resources.Strings.Strings.Log_InitializedEditMode;
+    public string Log_UserSelectedPath => ProjectHub.Resources.Strings.Strings.Log_UserSelectedPath;
+    public string Log_DetectDefaultProgramFailed => ProjectHub.Resources.Strings.Strings.Log_DetectDefaultProgramFailed;
+    public string Log_UserSelectedProgram => ProjectHub.Resources.Strings.Strings.Log_UserSelectedProgram;
+    public string Log_UserSelectedIcon => ProjectHub.Resources.Strings.Strings.Log_UserSelectedIcon;
+    public string Log_UserSelectedWorkingDirectory => ProjectHub.Resources.Strings.Strings.Log_UserSelectedWorkingDirectory;
+    public string Log_ConfirmAddProject => ProjectHub.Resources.Strings.Strings.Log_ConfirmAddProject;
 }

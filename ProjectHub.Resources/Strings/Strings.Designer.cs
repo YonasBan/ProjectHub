@@ -151,6 +151,168 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 Cannot open file location 的本地化字符串。
+        /// </summary>
+        public static string Error_CannotOpenFileLocation {
+            get {
+                return ResourceManager.GetString("Error_CannotOpenFileLocation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Project path is empty 的本地化字符串。
+        /// </summary>
+        public static string Error_ProjectPathEmpty {
+            get {
+                return ResourceManager.GetString("Error_ProjectPathEmpty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select Project Path 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectProjectPath_Title {
+            get {
+                return ResourceManager.GetString("Dialog_SelectProjectPath_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select project entry file|*.* 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectProjectPath_Filter {
+            get {
+                return ResourceManager.GetString("Dialog_SelectProjectPath_Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select Default Program 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectProgram_Title {
+            get {
+                return ResourceManager.GetString("Dialog_SelectProgram_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select program|*.exe;*.bat;*.cmd;*.ps1|All files|*.* 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectProgram_Filter {
+            get {
+                return ResourceManager.GetString("Dialog_SelectProgram_Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select Icon File 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectIcon_Title {
+            get {
+                return ResourceManager.GetString("Dialog_SelectIcon_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select icon|*.ico;*.png;*.jpg;*.jpeg|All files|*.* 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectIcon_Filter {
+            get {
+                return ResourceManager.GetString("Dialog_SelectIcon_Filter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Select Working Directory 的本地化字符串。
+        /// </summary>
+        public static string Dialog_SelectWorkingDirectory_Title {
+            get {
+                return ResourceManager.GetString("Dialog_SelectWorkingDirectory_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 All files|*.* 的本地化字符串。
+        /// </summary>
+        public static string Dialog_AllFilesFilter {
+            get {
+                return ResourceManager.GetString("Dialog_AllFilesFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Reset icon to default 的本地化字符串。
+        /// </summary>
+        public static string Log_ResetIconDefault {
+            get {
+                return ResourceManager.GetString("Log_ResetIconDefault", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Initialized edit mode, project ID: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_InitializedEditMode {
+            get {
+                return ResourceManager.GetString("Log_InitializedEditMode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 User selected path: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_UserSelectedPath {
+            get {
+                return ResourceManager.GetString("Log_UserSelectedPath", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Failed to detect default program: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_DetectDefaultProgramFailed {
+            get {
+                return ResourceManager.GetString("Log_DetectDefaultProgramFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 User selected program: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_UserSelectedProgram {
+            get {
+                return ResourceManager.GetString("Log_UserSelectedProgram", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 User selected icon: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_UserSelectedIcon {
+            get {
+                return ResourceManager.GetString("Log_UserSelectedIcon", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 User selected working directory: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_UserSelectedWorkingDirectory {
+            get {
+                return ResourceManager.GetString("Log_UserSelectedWorkingDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Confirm add project: {0} 的本地化字符串。
+        /// </summary>
+        public static string Log_ConfirmAddProject {
+            get {
+                return ResourceManager.GetString("Log_ConfirmAddProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 收藏/取消收藏 的本地化字符串。
         /// </summary>
         public static string ContextMenu_ToggleFavorite {

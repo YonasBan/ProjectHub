@@ -361,7 +361,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         this.RaisePropertyChanged(nameof(IsEditMode));
         this.RaisePropertyChanged(nameof(IsAddMode));
 
-        _logger.LogInformation($"初始化编辑模式，项目ID: {project.Id}");
+        _logger.LogInformation(string.Format(L.Log_InitializedEditMode, project.Id));
     }
 
     private void ClearFields()
@@ -387,8 +387,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     private void BrowsePath()
     {
         var path = _dialogService.ShowOpenFileDialog(
-            "选择项目入口文件|*.*",
-            "选择项目路径");
+            L.Dialog_SelectProjectPath_Filter,
+            L.Dialog_SelectProjectPath_Title);
 
         if (!string.IsNullOrEmpty(path))
         {
@@ -403,7 +403,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             // 自动检测默认打开方式
             DetectDefaultProgram(path);
 
-            _logger.LogInformation($"用户选择了路径: {path}");
+            _logger.LogInformation(string.Format(L.Log_UserSelectedPath, path));
         }
     }
 
@@ -425,7 +425,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         }
         catch (Exception ex)
         {
-            _logger.LogWarning($"检测默认程序失败: {ex.Message}");
+            _logger.LogWarning(string.Format(L.Log_DetectDefaultProgramFailed, ex.Message));
         }
     }
     /// <summary>
@@ -439,38 +439,38 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     private void BrowseProgram()
     {
         var program = _dialogService.ShowOpenFileDialog(
-            "选择程序|*.exe;*.bat;*.cmd;*.ps1|所有文件|*.*",
-            "选择默认程序");
+            L.Dialog_SelectProgram_Filter,
+            L.Dialog_SelectProgram_Title);
 
         if (!string.IsNullOrEmpty(program))
         {
             DefaultProgram = program;
-            _logger.LogInformation($"用户选择了程序: {program}");
+            _logger.LogInformation(string.Format(L.Log_UserSelectedProgram, program));
         }
     }
 
     private void BrowseIcon()
     {
         var iconPath = _dialogService.ShowOpenFileDialog(
-         "选择图标|*.ico;*.png;*.jpg;*.jpeg|所有文件|*.*",
-         "选择图标文件");
+         L.Dialog_SelectIcon_Filter,
+         L.Dialog_SelectIcon_Title);
 
         if (!string.IsNullOrEmpty(iconPath))
         {
             IconPath = iconPath;
             _isIconCustomized = true;  // ✅ 标记为用户自定义
-            _logger.LogInformation($"用户选择了图标: {iconPath}");
+            _logger.LogInformation(string.Format(L.Log_UserSelectedIcon, iconPath));
         }
     }
 
     private void BrowseWorkingDirectory()
     {
-        var directory = _dialogService.ShowSelectFolderDialog("选择工作目录");
+        var directory = _dialogService.ShowSelectFolderDialog(L.Dialog_SelectWorkingDirectory_Title);
 
         if (!string.IsNullOrEmpty(directory))
         {
             CmdWorkingDirectory = directory;
-            _logger.LogInformation($"用户选择了工作目录: {directory}");
+            _logger.LogInformation(string.Format(L.Log_UserSelectedWorkingDirectory, directory));
         }
     }
 
@@ -478,7 +478,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     {
         _isIconCustomized = false;  // ✅ 清除自定义标志
         UpdateIcon();
-        _logger.LogInformation("重置图标为默认");
+        _logger.LogInformation(L.Log_ResetIconDefault);
     }
 
     private async Task ConfirmAsync()
@@ -491,7 +491,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
 
         if (Mode == DialogMode.Add)
         {
-            _logger.LogInformation($"确认添加项目: {ProjectName}");
+            _logger.LogInformation(string.Format(L.Log_ConfirmAddProject, ProjectName));
             if (_projectAppService == null) { Close(null); return; }
 
             var dto = new CreateProjectDto

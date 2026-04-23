@@ -516,4 +516,58 @@
   <data name="ContextMenu_OpenFilePosition" xml:space="preserve">
     <value>打开文件位置</value>
   </data>
+  <data name="Error_CannotOpenFileLocation" xml:space="preserve">
+    <value>无法打开文件位置</value>
+  </data>
+  <data name="Error_ProjectPathEmpty" xml:space="preserve">
+    <value>项目路径为空</value>
+  </data>
+  <data name="Dialog_SelectProjectPath_Title" xml:space="preserve">
+    <value>选择项目路径</value>
+  </data>
+  <data name="Dialog_SelectProjectPath_Filter" xml:space="preserve">
+    <value>选择项目入口文件|*.*</value>
+  </data>
+  <data name="Dialog_SelectProgram_Title" xml:space="preserve">
+    <value>选择默认程序</value>
+  </data>
+  <data name="Dialog_SelectProgram_Filter" xml:space="preserve">
+    <value>选择程序|*.exe;*.bat;*.cmd;*.ps1|所有文件|*.*</value>
+  </data>
+  <data name="Dialog_SelectIcon_Title" xml:space="preserve">
+    <value>选择图标文件</value>
+  </data>
+  <data name="Dialog_SelectIcon_Filter" xml:space="preserve">
+    <value>选择图标|*.ico;*.png;*.jpg;*.jpeg|所有文件|*.*</value>
+  </data>
+  <data name="Dialog_SelectWorkingDirectory_Title" xml:space="preserve">
+    <value>选择工作目录</value>
+  </data>
+  <data name="Dialog_AllFilesFilter" xml:space="preserve">
+    <value>所有文件|*.*</value>
+  </data>
+  <data name="Log_ResetIconDefault" xml:space="preserve">
+    <value>重置图标为默认</value>
+  </data>
+  <data name="Log_InitializedEditMode" xml:space="preserve">
+    <value>初始化编辑模式，项目ID: {0}</value>
+  </data>
+  <data name="Log_UserSelectedPath" xml:space="preserve">
+    <value>用户选择了路径: {0}</value>
+  </data>
+  <data name="Log_DetectDefaultProgramFailed" xml:space="preserve">
+    <value>检测默认程序失败: {0}</value>
+  </data>
+  <data name="Log_UserSelectedProgram" xml:space="preserve">
+    <value>用户选择了程序: {0}</value>
+  </data>
+  <data name="Log_UserSelectedIcon" xml:space="preserve">
+    <value>用户选择了图标: {0}</value>
+  </data>
+  <data name="Log_UserSelectedWorkingDirectory" xml:space="preserve">
+    <value>用户选择了工作目录: {0}</value>
+  </data>
+  <data name="Log_ConfirmAddProject" xml:space="preserve">
+    <value>确认添加项目: {0}</value>
+  </data>
 </root>
