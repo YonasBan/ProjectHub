@@ -261,21 +261,22 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
         DefaultLaunchIntervalSeconds = workSpace.DefaultLaunchIntervalSeconds;
         UseCustomLaunchOrder = workSpace.UseCustomLaunchOrder;
 
-        // 获取工作空间中的项目设置（包含启动顺序）
+        // 获取工作空间中的项目设置（包含启动顺序和间隔）
         var settings = await _workSpaceAppService.GetProjectSettingsAsync(workSpaceId, cancellationToken);
         var selectedProjectSettings = settings.ProjectSettings
             .Where(p => p.IsEnabled)
             .OrderBy(p => p.SortOrder)
             .ToList();
         var selectedIds = selectedProjectSettings.Select(p => p.ProjectId).ToList();
-        
-        await LoadProjectsAsync(cancellationToken, selectedIds);
+        var intervalMap = selectedProjectSettings.ToDictionary(p => p.ProjectId, p => p.IntervalSeconds);
+
+        await LoadProjectsAsync(cancellationToken, selectedIds, intervalMap);
     }
 
     /// <summary>
     /// 加载项目列表
     /// </summary>
-    private async Task LoadProjectsAsync(CancellationToken cancellationToken, IReadOnlyList<long>? selectedIds = null)
+    private async Task LoadProjectsAsync(CancellationToken cancellationToken, IReadOnlyList<long>? selectedIds = null, IReadOnlyDictionary<long, int?>? intervalMap = null)
     {
         var projects = await _projectAppService.GetAllActiveAsync(cancellationToken);
         var selectedIdSet = selectedIds?.ToHashSet() ?? new HashSet<long>();
@@ -293,7 +294,8 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
                 ProjectPath = p.Path,
                 IconPath = !string.IsNullOrEmpty(p.CustomIconPath) ? p.CustomIconPath : p.Path,
                 IsSelected = selectedIdSet.Contains(p.Id),
-                SortOrder = idToOrderMap.TryGetValue(p.Id, out var order) ? order : int.MaxValue
+                SortOrder = idToOrderMap.TryGetValue(p.Id, out var order) ? order : int.MaxValue,
+                IntervalSeconds = intervalMap?.GetValueOrDefault(p.Id)
             })
             .OrderBy(vm => vm.IsSelected ? 0 : 1) // 选中的排在前面
             .ThenBy(vm => vm.SortOrder) // 按照启动顺序排序
@@ -337,13 +339,14 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
                 await _workSpaceAppService.UpdateProjectSettingsAsync(settingsDto);
 
                 // 更新工作空间的项目关联
-                var selectedProjectIds = _sourceList.Items
+                var selectedProjects = _sourceList.Items
                     .Where(p => p.IsSelected)
                     .OrderBy(p => p.SortOrder)
-                    .Select(p => p.ProjectId)
                     .ToList();
-                
-                await _workSpaceAppService.SetWorkSpaceProjectsAsync(_workSpaceId.Value, selectedProjectIds);
+                var selectedProjectIds = selectedProjects.Select(p => p.ProjectId).ToList();
+                var intervalSecondsMap = selectedProjects.ToDictionary(p => p.ProjectId, p => p.IntervalSeconds);
+
+                await _workSpaceAppService.SetWorkSpaceProjectsAsync(_workSpaceId.Value, selectedProjectIds, intervalSecondsMap);
 
                 // 获取更新后的工作空间
                 var updatedWorkSpace = await _workSpaceAppService.GetByIdAsync(_workSpaceId.Value);
@@ -361,15 +364,16 @@ public class WorkSpaceDialogViewModel : DialogViewModelBase<WorkSpaceDto?>
                 var workSpace = await _workSpaceAppService.CreateAsync(createDto);
 
                 // 关联选中的项目到工作空间
-                var selectedProjectIds = _sourceList.Items
+                var selectedProjects = _sourceList.Items
                     .Where(p => p.IsSelected)
                     .OrderBy(p => p.SortOrder)
-                    .Select(p => p.ProjectId)
                     .ToList();
-                
+                var selectedProjectIds = selectedProjects.Select(p => p.ProjectId).ToList();
+                var intervalSecondsMap = selectedProjects.ToDictionary(p => p.ProjectId, p => p.IntervalSeconds);
+
                 if (selectedProjectIds.Count > 0)
                 {
-                    await _workSpaceAppService.SetWorkSpaceProjectsAsync(workSpace.Id, selectedProjectIds);
+                    await _workSpaceAppService.SetWorkSpaceProjectsAsync(workSpace.Id, selectedProjectIds, intervalSecondsMap);
                 }
 
                 // 更新启动配置
@@ -452,6 +456,7 @@ public class SelectableProjectViewModel : ReactiveObject
 {
     private bool _isSelected;
     private int _sortOrder;
+    private int? _intervalSeconds;
 
     public long ProjectId { get; set; }
     public string ProjectName { get; set; } = string.Empty;
@@ -468,5 +473,14 @@ public class SelectableProjectViewModel : ReactiveObject
     {
         get => _sortOrder;
         set => this.RaiseAndSetIfChanged(ref _sortOrder, value);
+    }
+
+    /// <summary>
+    /// 启动间隔时间（秒），null 表示使用工作空间默认间隔
+    /// </summary>
+    public int? IntervalSeconds
+    {
+        get => _intervalSeconds;
+        set => this.RaiseAndSetIfChanged(ref _intervalSeconds, value);
     }
 }

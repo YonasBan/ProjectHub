@@ -109,6 +109,11 @@ public class WorkSpaceProjectSettingItemDto
     public string ProjectName { get; set; } = string.Empty;
     public bool IsEnabled { get; set; }
     public int SortOrder { get; set; }
+
+    /// <summary>
+    /// 启动间隔时间（秒），null 表示使用工作空间默认间隔
+    /// </summary>
+    public int? IntervalSeconds { get; set; }
 }
 
 /// <summary>

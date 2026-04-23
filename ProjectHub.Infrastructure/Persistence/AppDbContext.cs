@@ -181,17 +181,17 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<ProjectWorkSpace>(entity =>
         {
             entity.HasKey(e => e.Id);
-            
+
             entity.HasOne<Project>()
                 .WithMany()
                 .HasForeignKey(e => e.ProjectId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             entity.HasOne<WorkSpace>()
                 .WithMany()
                 .HasForeignKey(e => e.WorkSpaceId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             entity.HasIndex(e => new { e.ProjectId, e.WorkSpaceId })
                 .IsUnique();
         });

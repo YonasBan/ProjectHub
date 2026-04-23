@@ -148,7 +148,8 @@ public class WorkSpaceAppService : IWorkSpaceAppService
                     ProjectId = project.Id,
                     ProjectName = project.Name,
                     IsEnabled = pws.IsEnabled,
-                    SortOrder = pws.SortOrder
+                    SortOrder = pws.SortOrder,
+                    IntervalSeconds = pws.IntervalSeconds
                 });
             }
         }
@@ -219,21 +220,20 @@ public class WorkSpaceAppService : IWorkSpaceAppService
             return;
         }
 
-        // 获取启用的项目 ID 列表
-        var enabledProjectIds = await _workSpaceRepository.GetEnabledProjectIdsByWorkSpaceIdAsync(id, cancellationToken);
+        // 获取工作空间中的项目关联（包含间隔配置）
+        var projectWorkSpaces = await _projectWorkSpaceRepository.GetByWorkSpaceIdAsync(id, cancellationToken);
 
         // 确定要启动的项目列表
-        List<long> projectsToLaunch;
-        if (enabledProjectIds.Count > 0)
+        List<ProjectWorkSpace> projectsToLaunch;
+        var enabledProjects = projectWorkSpaces.Where(pws => pws.IsEnabled).ToList();
+        if (enabledProjects.Count > 0)
         {
-            // 只启动用户启用的项目
-            projectsToLaunch = enabledProjectIds.ToList();
+            projectsToLaunch = enabledProjects;
             _logger.LogInformation("工作空间 '{WorkSpaceName}' 将启动 {Count} 个已启用项目", workSpace.Name, projectsToLaunch.Count);
         }
         else
         {
-            // 启动所有项目
-            projectsToLaunch = projectIds.ToList();
+            projectsToLaunch = projectWorkSpaces.ToList();
             _logger.LogInformation("工作空间 '{WorkSpaceName}' 将启动所有 {Count} 个项目", workSpace.Name, projectsToLaunch.Count);
         }
 
@@ -248,26 +248,34 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         {
             var launchOrders = workSpace.GetLaunchOrder().ToDictionary(o => o.ProjectId, o => o.Order);
             projectsToLaunch = projectsToLaunch
-                .OrderBy(pid => launchOrders.GetValueOrDefault(pid, int.MaxValue))
+                .OrderBy(pws => launchOrders.GetValueOrDefault(pws.ProjectId, int.MaxValue))
+                .ToList();
+        }
+        else
+        {
+            // 默认按 SortOrder 排序
+            projectsToLaunch = projectsToLaunch
+                .OrderBy(pws => pws.SortOrder)
                 .ToList();
         }
 
         // 依次启动项目
-        foreach (var projectId in projectsToLaunch)
+        foreach (var pws in projectsToLaunch)
         {
             try
             {
-                await _projectAppService.LaunchAsync(projectId, cancellationToken);
+                await _projectAppService.LaunchAsync(pws.ProjectId, cancellationToken);
 
-                // 应用启动间隔（如果有配置）
-                if (workSpace.DefaultLaunchIntervalSeconds > 0)
+                // 应用启动间隔：优先使用项目单独配置的间隔，否则使用工作空间默认间隔
+                var intervalSeconds = pws.IntervalSeconds ?? workSpace.DefaultLaunchIntervalSeconds;
+                if (intervalSeconds > 0)
                 {
-                    await Task.Delay(workSpace.DefaultLaunchIntervalSeconds * 1000, cancellationToken);
+                    await Task.Delay(intervalSeconds * 1000, cancellationToken);
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "启动项目 (Id={ProjectId}) 失败", projectId);
+                _logger.LogError(ex, "启动项目 (Id={ProjectId}) 失败", pws.ProjectId);
                 // 继续启动其他项目
             }
         }
@@ -278,7 +286,7 @@ public class WorkSpaceAppService : IWorkSpaceAppService
     /// <summary>
     /// 设置工作空间的项目列表（全量替换）
     /// </summary>
-    public async Task SetWorkSpaceProjectsAsync(long workSpaceId, IReadOnlyList<long> projectIds, CancellationToken cancellationToken = default)
+    public async Task SetWorkSpaceProjectsAsync(long workSpaceId, IReadOnlyList<long> projectIds, IReadOnlyDictionary<long, int?>? intervalSecondsMap = null, CancellationToken cancellationToken = default)
     {
         var workSpace = await _workSpaceRepository.GetByIdAsync(workSpaceId, cancellationToken)
             ?? throw new KeyNotFoundException($"工作空间 (Id={workSpaceId}) 不存在");
@@ -289,8 +297,9 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         // 添加新的项目关联
         for (int i = 0; i < projectIds.Count; i++)
         {
+            var intervalSeconds = intervalSecondsMap?.GetValueOrDefault(projectIds[i]);
             await _projectWorkSpaceRepository.AddProjectToWorkSpaceAsync(
-                projectIds[i], workSpaceId, isEnabled: true, sortOrder: i, cancellationToken);
+                projectIds[i], workSpaceId, isEnabled: true, sortOrder: i, intervalSeconds, cancellationToken);
         }
 
         // 更新项目计数

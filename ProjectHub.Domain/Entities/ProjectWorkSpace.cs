@@ -27,6 +27,12 @@ public class ProjectWorkSpace : BaseEntity
     /// </summary>
     public bool IsEnabled { get; private set; }
 
+    /// <summary>
+    /// 启动间隔时间（秒）
+    /// null 表示使用工作空间的默认间隔
+    /// </summary>
+    public int? IntervalSeconds { get; private set; }
+
     // ========== DDD 领域行为 ==========
 
     /// <summary>
@@ -39,12 +45,13 @@ public class ProjectWorkSpace : BaseEntity
     /// <summary>
     /// 工厂方法：创建关联
     /// </summary>
-    public ProjectWorkSpace(long projectId, long workSpaceId, int sortOrder = 0, bool isEnabled = true)
+    public ProjectWorkSpace(long projectId, long workSpaceId, int sortOrder = 0, bool isEnabled = true, int? intervalSeconds = null)
     {
         ProjectId = projectId;
         WorkSpaceId = workSpaceId;
         SortOrder = sortOrder;
         IsEnabled = isEnabled;
+        IntervalSeconds = intervalSeconds;
     }
 
     /// <summary>
@@ -62,6 +69,15 @@ public class ProjectWorkSpace : BaseEntity
     public void SetEnabled(bool isEnabled)
     {
         IsEnabled = isEnabled;
+        UpdatedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// 更新启动间隔时间
+    /// </summary>
+    public void UpdateIntervalSeconds(int? intervalSeconds)
+    {
+        IntervalSeconds = intervalSeconds;
         UpdatedAt = DateTime.UtcNow;
     }
 }

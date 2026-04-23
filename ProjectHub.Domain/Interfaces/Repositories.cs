@@ -173,7 +173,7 @@ public interface IProjectWorkSpaceRepository
     /// <summary>
     /// 添加项目到工作空间
     /// </summary>
-    Task AddProjectToWorkSpaceAsync(long projectId, long workSpaceId, bool isEnabled = true, int sortOrder = 0, CancellationToken cancellationToken = default);
+    Task AddProjectToWorkSpaceAsync(long projectId, long workSpaceId, bool isEnabled = true, int sortOrder = 0, int? intervalSeconds = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 从工作空间移除项目

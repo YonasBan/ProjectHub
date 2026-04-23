@@ -17,29 +17,30 @@ public class ProjectWorkSpaceRepository : IProjectWorkSpaceRepository
         _factory = factory;
     }
 
-    public async Task AddProjectToWorkSpaceAsync(long projectId, long workSpaceId, bool isEnabled = true, int sortOrder = 0, CancellationToken cancellationToken = default)
+    public async Task AddProjectToWorkSpaceAsync(long projectId, long workSpaceId, bool isEnabled = true, int sortOrder = 0, int? intervalSeconds = null, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
-        
+
         // 检查是否已存在
         var exists = await ctx.ProjectWorkSpaces
             .AnyAsync(pws => pws.ProjectId == projectId && pws.WorkSpaceId == workSpaceId, cancellationToken);
-        
+
         if (exists)
         {
-            // 已存在则更新启用状态和排序
+            // 已存在则更新启用状态、排序和间隔
             var existing = await ctx.ProjectWorkSpaces
                 .FirstAsync(pws => pws.ProjectId == projectId && pws.WorkSpaceId == workSpaceId, cancellationToken);
             existing.SetEnabled(isEnabled);
             existing.UpdateSortOrder(sortOrder);
+            existing.UpdateIntervalSeconds(intervalSeconds);
         }
         else
         {
             // 创建新的关联
-            var projectWorkSpace = new ProjectWorkSpace(projectId, workSpaceId, sortOrder, isEnabled);
+            var projectWorkSpace = new ProjectWorkSpace(projectId, workSpaceId, sortOrder, isEnabled, intervalSeconds);
             await ctx.ProjectWorkSpaces.AddAsync(projectWorkSpace, cancellationToken);
         }
-        
+
         await ctx.SaveChangesAsync(cancellationToken);
     }
 
