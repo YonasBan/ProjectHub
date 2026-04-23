@@ -109,11 +109,12 @@
                     Padding="4"
                     Command="{Binding ToggleThemeCommand}"
                     Content="&#x2600;"
+                    Cursor="Hand"
                     FontSize="14"
                     Style="{StaticResource IconButtonStyle}"
-                    ToolTip="{Binding L.Header_Theme}" Cursor="Hand" />
+                    ToolTip="{Binding L.Header_Theme}" />
                 <!--  设置按钮  -->
-                <Button
+                <!--<Button
                     x:Name="SettingsButton"
                     Width="32"
                     Height="32"
@@ -121,7 +122,7 @@
                     Content="&#x2699;"
                     FontSize="14"
                     Style="{StaticResource IconButtonStyle}"
-                    ToolTip="{Binding L.Header_Settings}" />
+                    ToolTip="{Binding L.Header_Settings}" />-->
             </StackPanel>
         </Grid>
     </Border>
