@@ -8,6 +8,8 @@ using ReactiveUI;
 using System;
 using System.Reactive.Concurrency;
 using System.Windows;
+using MessageBox = System.Windows.MessageBox;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace ProjectHub.Presentation.Wpf.Services;
 
@@ -93,10 +95,10 @@ public class DialogService : IDialogService
 
     public string? ShowSelectFolderDialog(string title)
     {
-        var dialog = new System.Windows.Forms.FolderBrowserDialog
+        var dialog = new OpenFolderDialog
         {
-            Description = title,
-            UseDescriptionForTitle = true
+            Title = title,
+            Multiselect = false
         };
 
         // 使用 WPF 窗口句柄作为父窗口
@@ -107,7 +109,7 @@ public class DialogService : IDialogService
             // FolderBrowserDialog 在 .NET Core/WPF 中需要通过 Win32 API 设置 Owner，这里简化处理
         }
 
-        return dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK ? dialog.SelectedPath : null;
+        return dialog.ShowDialog() == true ? dialog.FolderName : null;
     }
 
     public async Task<DialogResult<TResult>> ShowDialogAsync<TViewModel, TResult>(TViewModel viewModel)
