@@ -20,9 +20,22 @@ public enum ItemChangedType
 }
 
 /// <summary>
+/// 项目/工作空间 ViewModel 公共接口
+/// </summary>
+public interface IItemViewModel
+{
+    long Id { get; }
+    string Name { get; }
+    string? Description { get; }
+    bool IsFavorite { get; }
+    DateTime? FavoritedAt { get; }
+    DateTime? LastOpenedAt { get; }
+}
+
+/// <summary>
 /// 项目/工作空间 ViewModel 基类
 /// </summary>
-public abstract class ItemViewModelBase<TDto> : ReactiveObject where TDto : class
+public abstract class ItemViewModelBase<TDto> : ReactiveObject, IItemViewModel where TDto : class
 {
     protected TDto _dto;
     protected readonly IDialogService _dialogService;

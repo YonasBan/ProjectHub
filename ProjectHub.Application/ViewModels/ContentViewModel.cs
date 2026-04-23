@@ -35,9 +35,9 @@ public class ContentViewModel : ViewModelBase
     /// <summary>
     /// 内容项列表（统一显示项目和工作空间）
     /// </summary>
-    private ObservableCollection<object>? _contentItems;
+    private ObservableCollection<IItemViewModel>? _contentItems;
 
-    public ObservableCollection<object> ContentItems
+    public ObservableCollection<IItemViewModel> ContentItems
     {
         get => _contentItems ??= new();
         set => this.RaiseAndSetIfChanged(ref _contentItems, value);
@@ -113,7 +113,7 @@ public class ContentViewModel : ViewModelBase
     /// <summary>
     /// 从当前文件夹移除项目或工作空间命令
     /// </summary>
-    public ReactiveCommand<object, Unit> RemoveFromFolderCommand { get; }
+    public ReactiveCommand<IItemViewModel, Unit> RemoveFromFolderCommand { get; }
 
     #endregion
 
@@ -142,7 +142,7 @@ public class ContentViewModel : ViewModelBase
         _appSettingsService = appSettingsService;
 
         AddContentCommand = ReactiveCommand.CreateFromTask(AddContentAsync);
-        RemoveFromFolderCommand = ReactiveCommand.CreateFromTask<object>(RemoveFromFolderAsync);
+        RemoveFromFolderCommand = ReactiveCommand.CreateFromTask<IItemViewModel>(RemoveFromFolderAsync);
 
         // 订阅侧边栏选中项变化，自动更新内容
         SidebarViewModel.SelectedItemChanged += OnSidebarSelectedItemChanged;
@@ -178,9 +178,9 @@ public class ContentViewModel : ViewModelBase
                 var cutoffDate = DateTime.Now.AddDays(-_appSettingsService.Load().RecentUsageDays);
                 var recentItems = SidebarViewModel.Projects
                     .Where(p => p.LastOpenedAt.HasValue && p.LastOpenedAt.Value >= cutoffDate)
-                    .Select(p => (object)p)
-                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.LastOpenedAt.HasValue && w.LastOpenedAt.Value >= cutoffDate).Select(w => (object)w))
-                    .OrderByDescending(item => item is ProjectViewModel p ? p.LastOpenedAt : ((WorkSpaceViewModel)item).LastOpenedAt)
+                    .Cast<IItemViewModel>()
+                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.LastOpenedAt.HasValue && w.LastOpenedAt.Value >= cutoffDate))
+                    .OrderByDescending(item => item.LastOpenedAt)
                     .ToList();
                 foreach (var item in recentItems)
                 {
@@ -192,9 +192,9 @@ public class ContentViewModel : ViewModelBase
                 // 显示收藏的项目和工作空间（混合按收藏时间排序）
                 var favoriteItems = SidebarViewModel.Projects
                     .Where(p => p.IsFavorite)
-                    .Select(p => (object)p)
-                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.IsFavorite).Select(w => (object)w))
-                    .OrderByDescending(item => item is ProjectViewModel p ? p.FavoritedAt : ((WorkSpaceViewModel)item).FavoritedAt)
+                    .Cast<IItemViewModel>()
+                    .Concat(SidebarViewModel.WorkSpaces.Where(w => w.IsFavorite))
+                    .OrderByDescending(item => item.FavoritedAt)
                     .ToList();
                 foreach (var item in favoriteItems)
                 {
@@ -273,12 +273,12 @@ public class ContentViewModel : ViewModelBase
         // 从项目中过滤
         var matchedProjects = SidebarViewModel.Projects
             .Where(p => MatchesSearch(p, lowerKeyword))
-            .Select(p => (object)p);
+            .Cast<IItemViewModel>();
 
         // 从工作空间中过滤
         var matchedWorkSpaces = SidebarViewModel.WorkSpaces
             .Where(w => MatchesSearch(w, lowerKeyword))
-            .Select(w => (object)w);
+            .Cast<IItemViewModel>();
 
         // 合并结果
         var results = matchedProjects.Concat(matchedWorkSpaces).ToList();
@@ -293,7 +293,7 @@ public class ContentViewModel : ViewModelBase
     /// <summary>
     /// 判断 ViewModel 是否匹配搜索关键字
     /// </summary>
-    private static bool MatchesSearch(object item, string lowerKeyword)
+    private static bool MatchesSearch(IItemViewModel item, string lowerKeyword)
     {
         return item switch
         {
@@ -478,7 +478,7 @@ public class ContentViewModel : ViewModelBase
     /// <summary>
     /// 从当前文件夹移除项目或工作空间
     /// </summary>
-    private async Task RemoveFromFolderAsync(object item)
+    private async Task RemoveFromFolderAsync(IItemViewModel item)
     {
         if (!CurrentWorkFolderId.HasValue) return;
 
