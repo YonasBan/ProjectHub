@@ -25,6 +25,7 @@ public class MainViewModel : ViewModelBase
     private readonly IServiceProvider _serviceProvider;
     private readonly IDialogService _dialogService;
     private readonly IWorkFolderAppService _workFolderAppService;
+    private readonly IAppSettingsService _appSettingsService;
 
     #endregion
 
@@ -130,6 +131,7 @@ public class MainViewModel : ViewModelBase
         IServiceProvider serviceProvider,
         IDialogService dialogService,
         IWorkFolderAppService workFolderAppService,
+        IAppSettingsService appSettingsService,
         SidebarViewModel sidebarViewModel,
         ContentViewModel contentViewModel)
         : base(logger, mainThreadScheduler)
@@ -138,12 +140,17 @@ public class MainViewModel : ViewModelBase
         _serviceProvider = serviceProvider;
         _dialogService = dialogService;
         _workFolderAppService = workFolderAppService;
+        _appSettingsService = appSettingsService;
         SidebarViewModel = sidebarViewModel;
         ContentViewModel = contentViewModel;
 
         // 初始化语言和主题切换命令
         SetLanguageCommand = ReactiveCommand.CreateFromTask<string>(SetLanguageAsync);
-        SetThemeCommand = ReactiveCommand.Create<string>(theme => _themeService.SetTheme(theme));
+        SetThemeCommand = ReactiveCommand.Create<string>(theme =>
+        {
+            _themeService.SetTheme(theme);
+            _appSettingsService.Save(new AppSettings { Language = L.CurrentCulture.Name, Theme = theme });
+        });
         SetLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
         // 初始化设置选项
@@ -209,6 +216,10 @@ public class MainViewModel : ViewModelBase
     {
         var newCulture = new System.Globalization.CultureInfo(cultureName);
         await L.SetCultureAsync(newCulture);
+
+        // 保存配置
+        _appSettingsService.Save(new AppSettings { Language = cultureName, Theme = _themeService.CurrentTheme });
+
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
     }
 
@@ -218,12 +229,27 @@ public class MainViewModel : ViewModelBase
     private void RefreshAvailableSettings()
     {
         AvailableCultures.Clear();
-        AvailableCultures.Add(new CultureOption("zh-CN", L.Language_Chinese));
-        AvailableCultures.Add(new CultureOption("en-US", L.Language_English));
+        foreach (var culture in AppSettings.SupportedCultures)
+        {
+            AvailableCultures.Add(new CultureOption(culture, GetLanguageDisplayName(culture)));
+        }
 
         AvailableThemes.Clear();
         AvailableThemes.Add(new ThemeOption("Light", L.Theme_Light));
         AvailableThemes.Add(new ThemeOption("Dark", L.Theme_Dark));
+    }
+
+    /// <summary>
+    /// 根据语言代码获取本地化显示名称
+    /// </summary>
+    private string GetLanguageDisplayName(string culture)
+    {
+        return culture switch
+        {
+            "zh-CN" => L.Language_Chinese,
+            "en-US" => L.Language_English,
+            _ => culture
+        };
     }
 
     #endregion

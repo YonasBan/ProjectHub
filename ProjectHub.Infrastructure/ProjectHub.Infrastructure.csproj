@@ -9,6 +9,7 @@
   <!-- Infrastructure layer depends on Core, Domain, and Application -->
   <ItemGroup>
     <ProjectReference Include="..\ProjectHub.Domain\ProjectHub.Domain.csproj" />
+    <ProjectReference Include="..\ProjectHub.Application\ProjectHub.Application.csproj" />
   </ItemGroup>
 
   <!-- EF Core and SQLite dependencies -->

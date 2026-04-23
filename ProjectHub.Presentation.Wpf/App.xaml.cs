@@ -9,7 +9,7 @@ using ProjectHub.Application.Services;
 using ProjectHub.Application.ViewModels;
 using ProjectHub.Application.ViewModels.DialogViewModel;
 using ProjectHub.Infrastructure.DependencyInjection;
-using ProjectHub.Infrastructure.Persistence;
+using ProjectHub.Infrastructure.Services;
 using ProjectHub.Presentation.Wpf.Dialogs;
 using ProjectHub.Presentation.Wpf.Services;
 using ReactiveUI;
@@ -107,6 +107,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IFileAssociationService, WindowsFileAssociationService>();
         services.AddSingleton<IProcessLauncherService, WindowsProcessLauncherService>();
         services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
+        services.AddSingleton<IAppSettingsService, JsonAppSettingsService>();
         // 或者
         var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
         // ========== Register WPF Scheduler (must be before other registrations) ==========
@@ -212,6 +213,9 @@ public partial class App : System.Windows.Application
             _logger.LogInformation("Environment: {Environment}",
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production");
 
+            // 加载用户配置并应用语言和主题
+            await ApplyUserSettingsAsync();
+
             // 直接使用 Services 而不是创建新的 Scope，避免 Scoped 服务被提前 dispose
             var mainWindow = Services.GetRequiredService<MainWindow>();
             mainWindow?.Show();
@@ -227,6 +231,32 @@ public partial class App : System.Windows.Application
         }
 
         base.OnStartup(e);
+    }
+
+    /// <summary>
+    /// 加载用户配置并应用语言和主题
+    /// </summary>
+    private async Task ApplyUserSettingsAsync()
+    {
+        try
+        {
+            var settingsService = Services.GetRequiredService<IAppSettingsService>();
+            var settings = settingsService.Load();
+
+            // 应用主题
+            var themeService = Services.GetRequiredService<IThemeService>();
+            themeService.SetTheme(settings.Theme);
+
+            // 应用语言
+            var localizedStrings = Services.GetRequiredService<LocalizedStrings>();
+            await localizedStrings.SetCultureAsync(new System.Globalization.CultureInfo(settings.Language));
+
+            _logger.LogInformation("应用用户配置 - 语言: {Language}, 主题: {Theme}", settings.Language, settings.Theme);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "应用用户配置时发生错误");
+        }
     }
 
     /// <summary>
