@@ -13,6 +13,11 @@
     <None Remove="Icons\search.svg" />
     <None Remove="Icons\tags.svg" />
     <None Remove="Icons\workspace.svg" />
+    <None Remove="projecthub.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="projecthub.ico" />
   </ItemGroup>
 
   <!-- Microsoft.Extensions for Localization -->

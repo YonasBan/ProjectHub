@@ -7,6 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <UserSecretsId>a17b039d-f6a1-446f-a4af-3f9928505b8b</UserSecretsId>
+    <ApplicationIcon>projecthub.ico</ApplicationIcon>
   </PropertyGroup>
 
   <!-- Host layer references all layers -->
@@ -52,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="..\ProjectHub.Resources\Icons\**\*" Link="Icons\%(RecursiveDir)%(FileName)%(Extension)" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="projecthub.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Update="projecthub.db">
