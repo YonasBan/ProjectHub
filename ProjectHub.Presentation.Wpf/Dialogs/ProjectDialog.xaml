@@ -22,6 +22,7 @@
     <Window.Resources>
         <converters:PathToIconConverter x:Key="PathToIconConverter" />
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" />
 
         <!--  打开文件模板  -->
         <DataTemplate x:Key="OpenFileTemplate" DataType="{x:Type domain:LaunchType}">
@@ -57,7 +58,33 @@
                     FontSize="12"
                     Foreground="{DynamicResource TextSecondaryBrush}"
                     Text="{Binding DataContext.L.ProjectDialog_ProgramLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
-                <Grid Margin="0,0,0,12">
+                <!--  有关联程序时显示下拉选择  -->
+                <Grid
+                    Margin="0,0,0,12"
+                    Visibility="{Binding DataContext.ShowAssociatedPrograms, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <ComboBox
+                        Grid.Column="0"
+                        DisplayMemberPath="FriendlyName"
+                        ItemsSource="{Binding DataContext.AssociatedPrograms, RelativeSource={RelativeSource AncestorType=Window}}"
+                        SelectedValue="{Binding DataContext.DefaultProgram, RelativeSource={RelativeSource AncestorType=Window}}"
+                        SelectedValuePath="ExePath"
+                        Style="{DynamicResource VSCodeComboBoxStyle}" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        Padding="12,8"
+                        Command="{Binding DataContext.BrowseProgramCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Content="{Binding DataContext.L.ProjectDialog_Browse, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Style="{DynamicResource SecondaryButtonStyle}" />
+                </Grid>
+                <!--  无关联程序时显示文本输入  -->
+                <Grid
+                    Margin="0,0,0,12"
+                    Visibility="{Binding DataContext.ShowAssociatedPrograms, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource InverseBoolToVisibilityConverter}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />

@@ -29,6 +29,15 @@ public class WindowsFileAssociationService : IFileAssociationService
         return apps.FirstOrDefault()?.ExePath;
     }
 
+    public IReadOnlyList<AssociatedProgram> GetAssociatedPrograms(string extension)
+    {
+        if (string.IsNullOrEmpty(extension))
+            return Array.Empty<AssociatedProgram>();
+
+        var apps = FileAssociationHelper.GetOpenWithApps(extension);
+        return apps.Select(a => new AssociatedProgram(a.ExePath, a.FriendlyName)).ToList();
+    }
+
     public string? GetFileIcon(string filePath)
     {
         // 在 Windows 上，直接返回文件路径，WPF 会通过 Icon 提取器获取图标

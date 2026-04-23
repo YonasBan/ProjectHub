@@ -48,6 +48,21 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     }
 
     /// <summary>
+    /// 文件的关联程序列表
+    /// </summary>
+    private IReadOnlyList<AssociatedProgram> _associatedPrograms = Array.Empty<AssociatedProgram>();
+    public IReadOnlyList<AssociatedProgram> AssociatedPrograms
+    {
+        get => _associatedPrograms;
+        private set => this.RaiseAndSetIfChanged(ref _associatedPrograms, value);
+    }
+
+    /// <summary>
+    /// 是否显示关联程序下拉框（OpenFile 模式下有多个关联程序时显示）
+    /// </summary>
+    public bool ShowAssociatedPrograms => LaunchType == LaunchType.OpenFile && AssociatedPrograms.Count > 0;
+
+    /// <summary>
     /// 启动参数（可选）
     /// </summary>
     private string _launchArguments = string.Empty;
@@ -288,6 +303,18 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             .Subscribe(_ => UpdateIcon())
             .DisposeWith(Disposables);
 
+        // 启动类型变化时，如果不是 OpenFile 则清空关联程序列表
+        this.WhenAnyValue(x => x.LaunchType)
+            .Subscribe(lt =>
+            {
+                if (lt != LaunchType.OpenFile)
+                {
+                    AssociatedPrograms = Array.Empty<AssociatedProgram>();
+                }
+                this.RaisePropertyChanged(nameof(ShowAssociatedPrograms));
+            })
+            .DisposeWith(Disposables);
+
         // 设置初始图标
         UpdateIcon();
     }
@@ -381,6 +408,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         ErrorMessage = null;
         HasError = false;
         _isIconCustomized = false;  // ✅ 清除标志
+        AssociatedPrograms = Array.Empty<AssociatedProgram>();
 
     }
 
@@ -408,7 +436,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     }
 
     /// <summary>
-    /// 自动检测文件的默认打开方式
+    /// 自动检测文件的默认打开方式并填充关联程序列表
     /// </summary>
     private void DetectDefaultProgram(string filePath)
     {
@@ -416,11 +444,16 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         {
             var extension = System.IO.Path.GetExtension(filePath).ToLowerInvariant();
 
-            // 根据文件类型设置默认打开方式
-            string? defaultProgram = GetDefaultProgramFromRegistry(extension);
-            if (!string.IsNullOrEmpty(defaultProgram))
+            // 获取所有关联程序
+            var programs = _fileAssociationService.GetAssociatedPrograms(extension);
+            AssociatedPrograms = programs;
+            this.RaisePropertyChanged(nameof(ShowAssociatedPrograms));
+
+            // 设置默认程序为第一个关联程序
+            var defaultProgram = programs.FirstOrDefault();
+            if (defaultProgram != null)
             {
-                DefaultProgram = defaultProgram;
+                DefaultProgram = defaultProgram.ExePath;
             }
         }
         catch (Exception ex)
