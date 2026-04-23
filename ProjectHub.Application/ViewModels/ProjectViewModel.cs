@@ -84,6 +84,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         L?.CultureChanged.Subscribe(_ =>
         {
             this.RaisePropertyChanged(nameof(LaunchCountDisplay));
+            this.RaisePropertyChanged(nameof(LastOpenedDisplay));
         });
     }
 
@@ -215,7 +216,7 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 
         await _projectAppService.LaunchAsync(Id);
 
-        _dto.LastOpenedAt=DateTime.UtcNow;
+        _dto.LastOpenedAt = DateTime.UtcNow;
         this.RaisePropertyChanged(nameof(LaunchCount));
         this.RaisePropertyChanged(nameof(LastOpenedAt));
     }
