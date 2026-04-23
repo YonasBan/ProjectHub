@@ -38,11 +38,6 @@ public interface IProjectAppService
     Task<IReadOnlyList<ProjectDto>> GetAllActiveAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 获取最近使用的项目
-    /// </summary>
-    Task<IReadOnlyList<ProjectDto>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 启动项目
     /// </summary>
     Task LaunchAsync(long id, CancellationToken cancellationToken = default);
@@ -158,11 +153,6 @@ public interface IWorkSpaceAppService
     /// 获取所有工作空间 (含项目数量)
     /// </summary>
     Task<IReadOnlyList<WorkSpaceDto>> GetAllWithProjectCountAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取最近打开的工作空间
-    /// </summary>
-    Task<IReadOnlyList<WorkSpaceDto>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 记录工作空间被打开

@@ -51,17 +51,6 @@ public interface IProjectRepository : IRepository<Project>
     Task<IReadOnlyList<Project>> GetByWorkSpaceIdAsync(long? workSpaceId, CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// 获取最近使用的项目
-    /// </summary>
-    /// <param name="count">返回数量</param>
-    Task<IReadOnlyList<Project>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取收藏的项目
-    /// </summary>
-    Task<IReadOnlyList<Project>> GetFavoriteProjectsAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// 检查路径是否已存在
     /// </summary>
     Task<bool> ExistsByPathAsync(string path, CancellationToken cancellationToken = default);
@@ -154,12 +143,6 @@ public interface IWorkSpaceRepository : IRepository<WorkSpace>
     /// 检查工作空间名称是否已存在
     /// </summary>
     Task<bool> ExistsByNameAsync(string name, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 获取最近打开的工作空间
-    /// </summary>
-    /// <param name="count">返回数量</param>
-    Task<IReadOnlyList<WorkSpace>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// 获取工作空间中的所有项目 ID 列表

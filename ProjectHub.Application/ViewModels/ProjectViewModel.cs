@@ -26,29 +26,9 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
 
     public string? CustomIconPath => ((ProjectDto)_dto).CustomIconPath;
 
-    //public string LastOpenedDisplay => ((ProjectDto)_dto).LastOpenedAt?.ToString("yyyy-MM-dd HH:mm") ?? "Never";
     public string LastOpenedDisplay => LastOpenedAt.HasValue
       ? string.Format(L.WorkSpace_LastOpened, LastOpenedAt.Value.ToLocalTime())
       : "";
-
-    public int LaunchCount => ((ProjectDto)_dto).LaunchCount;
-
-    /// <summary>
-    /// 启动次数显示文本（支持本地化）
-    /// </summary>
-    public string LaunchCountDisplay => string.Format(L.Project_LaunchCount, LaunchCount);
-
-    public string TotalUsageDurationDisplay => ((ProjectDto)_dto).TotalUsageDuration.ToHumanReadableString();
-
-    public DateTime? Deadline => ((ProjectDto)_dto).Deadline;
-
-    public long? DiskSpaceBytes => ((ProjectDto)_dto).DiskSpaceBytes;
-
-    public string DiskSpaceDisplay => ((ProjectDto)_dto).DiskSpaceBytes?.FormatFileSize() ?? "Not calculated";
-
-    public long? CleanableSpaceBytes => ((ProjectDto)_dto).CleanableSpaceBytes;
-
-    public string CleanableSpaceDisplay => ((ProjectDto)_dto).CleanableSpaceBytes?.FormatFileSize() ?? "Not calculated";
 
     /// <summary>
     /// Icon path for display
@@ -83,7 +63,6 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         // 订阅语言变化，刷新本地化显示属性
         L?.CultureChanged.Subscribe(_ =>
         {
-            this.RaisePropertyChanged(nameof(LaunchCountDisplay));
             this.RaisePropertyChanged(nameof(LastOpenedDisplay));
         });
     }
@@ -217,7 +196,6 @@ public partial class ProjectViewModel : ItemViewModelBase<ProjectDto>
         await _projectAppService.LaunchAsync(Id);
 
         _dto.LastOpenedAt = DateTime.UtcNow;
-        this.RaisePropertyChanged(nameof(LaunchCount));
         this.RaisePropertyChanged(nameof(LastOpenedAt));
     }
 }

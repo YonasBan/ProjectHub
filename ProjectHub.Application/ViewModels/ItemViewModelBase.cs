@@ -9,17 +9,6 @@ using System.Reactive;
 namespace ProjectHub.Application.ViewModels;
 
 /// <summary>
-/// 项目改变类型
-/// </summary>
-public enum ItemChangedType
-{
-    FavoriteChanged,
-    Deleted,
-    Launched,
-    MovedToFolder
-}
-
-/// <summary>
 /// 项目/工作空间 ViewModel 公共接口
 /// </summary>
 public interface IItemViewModel

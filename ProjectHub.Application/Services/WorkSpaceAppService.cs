@@ -95,12 +95,6 @@ public class WorkSpaceAppService : IWorkSpaceAppService
         return await MapWorkSpacesToDtosAsync(workSpaces, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<WorkSpaceDto>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default)
-    {
-        var workSpaces = await _workSpaceRepository.GetRecentlyOpenedAsync(count, cancellationToken);
-        return await MapWorkSpacesToDtosAsync(workSpaces, cancellationToken);
-    }
-
     /// <summary>
     /// 将工作空间列表映射为 DTO 列表
     /// </summary>

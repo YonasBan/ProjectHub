@@ -56,17 +56,6 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _searchKeyword, value);
     }
 
-    /// <summary>
-    /// 当前视图模式 (列表/卡片)
-    /// </summary>
-    private ViewMode _currentViewMode = ViewMode.List;
-
-    public ViewMode CurrentViewMode
-    {
-        get => _currentViewMode;
-        set => this.RaiseAndSetIfChanged(ref _currentViewMode, value);
-    }
-
     #endregion
 
     #region Reactive Commands
@@ -97,26 +86,6 @@ public class MainViewModel : ViewModelBase
     {
         get => _availableThemes;
         private set => this.RaiseAndSetIfChanged(ref _availableThemes, value);
-    }
-
-    #endregion
-
-    #region 主题与状态属性
-
-    /// <summary>
-    /// 当前主题 (Light/Dark)
-    /// </summary>
-    public string CurrentTheme => _themeService.CurrentTheme;
-
-    /// <summary>
-    /// 正在加载标识
-    /// </summary>
-    private bool _isLoading;
-
-    public bool IsLoading
-    {
-        get => _isLoading;
-        set => this.RaiseAndSetIfChanged(ref _isLoading, value);
     }
 
     #endregion
@@ -268,15 +237,6 @@ public record CultureOption(string CultureName, string DisplayName);
 /// 主题选项
 /// </summary>
 public record ThemeOption(string ThemeName, string DisplayName);
-
-/// <summary>
-/// 视图模式枚举
-/// </summary>
-public enum ViewMode
-{
-    List,   // 列表视图
-    Card    // 卡片视图
-}
 
 // ========== 移动到文件夹消息 ==========
 

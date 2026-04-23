@@ -95,17 +95,6 @@ public class WorkSpaceRepository : IWorkSpaceRepository
             .AnyAsync(w => w.Name == name, cancellationToken);
     }
 
-    public async Task<IReadOnlyList<WorkSpace>> GetRecentlyOpenedAsync(int count, CancellationToken cancellationToken = default)
-    {
-        await using var ctx = _factory.CreateDbContext();
-        // 按最近打开时间降序排序，获取指定数量的工作空间
-        return await ctx.WorkSpaces
-            .Where(w => !w.IsDeleted && w.LastOpenedAt.HasValue)
-            .OrderByDescending(w => w.LastOpenedAt)
-            .Take(count)
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<IReadOnlyList<long>> GetProjectIdsByWorkSpaceIdAsync(long workSpaceId, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();

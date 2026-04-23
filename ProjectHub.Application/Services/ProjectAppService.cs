@@ -86,12 +86,6 @@ public class ProjectAppService : IProjectAppService
         return _mapper.Map<List<ProjectDto>>(projects);
     }
 
-    public async Task<IReadOnlyList<ProjectDto>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default)
-    {
-        var projects = await _projectRepository.GetRecentlyUsedAsync(count, cancellationToken);
-        return _mapper.Map<List<ProjectDto>>(projects);
-    }
-
     public async Task LaunchAsync(long id, CancellationToken cancellationToken = default)
     {
         var project = await _projectRepository.GetByIdAsync(id, cancellationToken)

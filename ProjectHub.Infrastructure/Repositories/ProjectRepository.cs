@@ -125,25 +125,6 @@ public class ProjectRepository : IProjectRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Project>> GetRecentlyUsedAsync(int count, CancellationToken cancellationToken = default)
-    {
-        await using var ctx = _factory.CreateDbContext();
-        return await ctx.Projects
-            .Where(p => !p.IsDeleted && p.LastOpenedAt != null)
-            .OrderByDescending(p => p.LastOpenedAt)
-            .Take(count)
-            .ToListAsync(cancellationToken);
-    }
-
-    public async Task<IReadOnlyList<Project>> GetFavoriteProjectsAsync(CancellationToken cancellationToken = default)
-    {
-        await using var ctx = _factory.CreateDbContext();
-        return await ctx.Projects
-            .Where(p => !p.IsDeleted && p.IsFavorite)
-            .OrderByDescending(p => p.CreatedAt)
-            .ToListAsync(cancellationToken);
-    }
-
     public async Task<bool> ExistsByPathAsync(string path, CancellationToken cancellationToken = default)
     {
         await using var ctx = _factory.CreateDbContext();
