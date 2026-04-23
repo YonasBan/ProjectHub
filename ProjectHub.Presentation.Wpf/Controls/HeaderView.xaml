@@ -76,9 +76,8 @@
                         x:Name="SearchInput"
                         Grid.Column="1"
                         Style="{StaticResource SearchTextBoxStyle}"
-                        Tag="{Binding L.Header_Search, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                        Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}"
-                        TextChanged="SearchInput_OnTextChanged" />
+                        Tag="{Binding L.Header_Search}"
+                        Text="{Binding SearchKeyword, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
             </Border>
 
@@ -88,41 +87,51 @@
                 Margin="0,0,16,0"
                 VerticalAlignment="Center"
                 Orientation="Horizontal">
-                <!--  语言切换按钮  -->
+                <!--  设置按钮（含语言、主题下拉菜单）  -->
                 <Button
-                    x:Name="LanguageButton"
-                    Width="32"
-                    Height="32"
-                    Margin="0,0,8,0"
-                    Padding="4"
-                    Command="{Binding ToggleLanguageCommand}"
-                    Content="&#x1F310;"
-                    FontSize="14"
-                    Style="{StaticResource IconButtonStyle}"
-                    ToolTip="{Binding L.Header_Language}" />
-                <!--  主题切换按钮  -->
-                <Button
-                    x:Name="ThemeButton"
-                    Width="32"
-                    Height="32"
-                    Margin="0,0,8,0"
-                    Padding="4"
-                    Command="{Binding ToggleThemeCommand}"
-                    Content="&#x2600;"
-                    Cursor="Hand"
-                    FontSize="14"
-                    Style="{StaticResource IconButtonStyle}"
-                    ToolTip="{Binding L.Header_Theme}" />
-                <!--  设置按钮  -->
-                <!--<Button
                     x:Name="SettingsButton"
                     Width="32"
                     Height="32"
                     Padding="4"
+                    Click="SettingsButton_Click"
                     Content="&#x2699;"
                     FontSize="14"
                     Style="{StaticResource IconButtonStyle}"
-                    ToolTip="{Binding L.Header_Settings}" />-->
+                    ToolTip="{Binding L.Header_Settings}">
+                    <Button.ContextMenu>
+                        <ContextMenu
+                            Background="{DynamicResource BgSecondaryBrush}"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            Style="{StaticResource DarkContextMenuStyle}">
+                            <!--  语言子菜单  -->
+                            <MenuItem
+                                Header="{Binding L.Settings_Language}"
+                                ItemsSource="{Binding AvailableCultures}"
+                                Style="{StaticResource DarkContextMenuItemStyle}">
+                                <MenuItem.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource DarkContextMenuItemStyle}" TargetType="MenuItem">
+                                        <Setter Property="Header" Value="{Binding DisplayName}" />
+                                        <Setter Property="Command" Value="{Binding DataContext.SetLanguageCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <Setter Property="CommandParameter" Value="{Binding CultureName}" />
+                                    </Style>
+                                </MenuItem.ItemContainerStyle>
+                            </MenuItem>
+                            <!--  主题子菜单  -->
+                            <MenuItem
+                                Header="{Binding L.Settings_Theme}"
+                                ItemsSource="{Binding AvailableThemes}"
+                                Style="{StaticResource DarkContextMenuItemStyle}">
+                                <MenuItem.ItemContainerStyle>
+                                    <Style BasedOn="{StaticResource DarkContextMenuItemStyle}" TargetType="MenuItem">
+                                        <Setter Property="Header" Value="{Binding DisplayName}" />
+                                        <Setter Property="Command" Value="{Binding DataContext.SetThemeCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
+                                        <Setter Property="CommandParameter" Value="{Binding ThemeName}" />
+                                    </Style>
+                                </MenuItem.ItemContainerStyle>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
             </StackPanel>
         </Grid>
     </Border>

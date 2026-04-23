@@ -162,33 +162,9 @@ public partial class App : System.Windows.Application
         {
             config.AddCommandLine(args);
         }
-
-        // 5. In-memory configuration (highest precedence)
-        config.AddInMemoryCollection(CreateDefaultInMemoryConfiguration());
     }
 
-    /// <summary>
-    /// Creates default in-memory configuration values.
-    /// These serve as fallback defaults when other configuration sources don't provide values.
-    /// </summary>
-    private static Dictionary<string, string?> CreateDefaultInMemoryConfiguration()
-    {
-        return new Dictionary<string, string?>
-        {
-            // Database configuration
-            ["ConnectionStrings:DefaultConnection"] = "Data Source=projecthub.db",
-
-            // Application settings
-            ["AppSettings:EnableTelemetry"] = "false",
-            ["AppSettings:Theme"] = "Light",
-            ["AppSettings:Language"] = "en-US",
-
-            // Feature flags
-            ["FeatureFlags:EnableProjectBundles"] = "true",
-            ["FeatureFlags:EnableGarbageCollection"] = "true",
-            ["FeatureFlags:EnableAutoSave"] = "true"
-        };
-    }
+   
 
     /// <summary>
     /// Configures logging providers and minimum log levels.

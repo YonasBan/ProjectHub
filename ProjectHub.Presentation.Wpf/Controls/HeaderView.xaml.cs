@@ -9,29 +9,19 @@ namespace ProjectHub.Presentation.Wpf.Controls;
 
 public partial class HeaderView : UserControl
 {
-    private readonly LocalizedStrings _l = Locator.Current.GetService<LocalizedStrings>()!;
-    public LocalizedStrings L => _l;
 
     public HeaderView()
     {
         InitializeComponent();
     }
 
-    public static readonly DependencyProperty SearchKeywordProperty =
-        DependencyProperty.Register(nameof(SearchKeyword), typeof(string),
-            typeof(HeaderView), new FrameworkPropertyMetadata(string.Empty));
-
-    public string SearchKeyword
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
-        get => (string)GetValue(SearchKeywordProperty);
-        set => SetValue(SearchKeywordProperty, value);
-    }
-
-    private void SearchInput_OnTextChanged(object sender, TextChangedEventArgs e)
-    {
-        if (DataContext is MainViewModel vm)
+        if (sender is Button btn && btn.ContextMenu != null)
         {
-            vm.SearchKeyword = SearchInput.Text;
+            btn.ContextMenu.PlacementTarget = btn;
+            btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            btn.ContextMenu.IsOpen = true;
         }
     }
 }

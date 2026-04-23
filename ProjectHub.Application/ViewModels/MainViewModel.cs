@@ -71,14 +71,32 @@ public class MainViewModel : ViewModelBase
     #region Reactive Commands
 
     /// <summary>
-    /// 切换语言命令
+    /// 设置语言命令
     /// </summary>
-    public ReactiveCommand<Unit, Unit> ToggleLanguageCommand { get; }
+    public ReactiveCommand<string, Unit> SetLanguageCommand { get; }
 
     /// <summary>
-    /// 切换主题命令
+    /// 设置主题命令
     /// </summary>
-    public ReactiveCommand<Unit, Unit> ToggleThemeCommand { get; }
+    public ReactiveCommand<string, Unit> SetThemeCommand { get; }
+
+    #endregion
+
+    #region 设置选项
+
+    private ObservableCollection<CultureOption> _availableCultures = new();
+    public ObservableCollection<CultureOption> AvailableCultures
+    {
+        get => _availableCultures;
+        private set => this.RaiseAndSetIfChanged(ref _availableCultures, value);
+    }
+
+    private ObservableCollection<ThemeOption> _availableThemes = new();
+    public ObservableCollection<ThemeOption> AvailableThemes
+    {
+        get => _availableThemes;
+        private set => this.RaiseAndSetIfChanged(ref _availableThemes, value);
+    }
 
     #endregion
 
@@ -124,9 +142,12 @@ public class MainViewModel : ViewModelBase
         ContentViewModel = contentViewModel;
 
         // 初始化语言和主题切换命令
-        ToggleLanguageCommand = ReactiveCommand.CreateFromTask(ToggleLanguageAsync);
-        ToggleThemeCommand = ReactiveCommand.Create(_themeService.ToggleTheme);
-        ToggleLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
+        SetLanguageCommand = ReactiveCommand.CreateFromTask<string>(SetLanguageAsync);
+        SetThemeCommand = ReactiveCommand.Create<string>(theme => _themeService.SetTheme(theme));
+        SetLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
+
+        // 初始化设置选项
+        RefreshAvailableSettings();
 
         // 订阅语言切换事件
         L.CultureChanged
@@ -135,6 +156,7 @@ public class MainViewModel : ViewModelBase
             {
                 SidebarViewModel.BuildSidebarTree();
                 SidebarViewModel.UpdateStatistics();
+                RefreshAvailableSettings();
             })
             .DisposeWith(Disposables);
 
@@ -181,23 +203,41 @@ public class MainViewModel : ViewModelBase
     #region 语言与主题方法
 
     /// <summary>
-    /// 切换语言
+    /// 设置语言
     /// </summary>
-    private async Task ToggleLanguageAsync()
+    private async Task SetLanguageAsync(string cultureName)
     {
-        var currentCulture = L.CurrentCulture;
-        var newCulture = currentCulture.Name == "zh-CN"
-            ? new System.Globalization.CultureInfo("en-US")
-            : new System.Globalization.CultureInfo("zh-CN");
-
+        var newCulture = new System.Globalization.CultureInfo(cultureName);
         await L.SetCultureAsync(newCulture);
-
-        // SidebarViewModel 会自动处理语言切换
         Logger.LogInformation("语言已切换至: {Culture}", newCulture.Name);
+    }
+
+    /// <summary>
+    /// 刷新设置选项（语言、主题）
+    /// </summary>
+    private void RefreshAvailableSettings()
+    {
+        AvailableCultures.Clear();
+        AvailableCultures.Add(new CultureOption("zh-CN", L.Language_Chinese));
+        AvailableCultures.Add(new CultureOption("en-US", L.Language_English));
+
+        AvailableThemes.Clear();
+        AvailableThemes.Add(new ThemeOption("Light", L.Theme_Light));
+        AvailableThemes.Add(new ThemeOption("Dark", L.Theme_Dark));
     }
 
     #endregion
 }
+
+/// <summary>
+/// 文化选项
+/// </summary>
+public record CultureOption(string CultureName, string DisplayName);
+
+/// <summary>
+/// 主题选项
+/// </summary>
+public record ThemeOption(string ThemeName, string DisplayName);
 
 /// <summary>
 /// 视图模式枚举

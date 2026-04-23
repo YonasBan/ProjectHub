@@ -45,7 +45,6 @@
                         BorderBrush="{DynamicResource BorderBrush}"
                         Style="{StaticResource DarkContextMenuStyle}">
                         <MenuItem
-                            Height="26"
                             Command="{Binding LaunchCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Launch}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -57,7 +56,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Height="26"
                             Command="{Binding ToggleFavoriteCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_ToggleFavorite}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -69,7 +67,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Height="26"
                             Command="{Binding EditCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Edit}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -81,7 +78,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Height="26"
                             Command="{Binding OpenFileFolderCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_OpenFilePosition}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -94,7 +90,6 @@
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
-                            Height="26"
                             Command="{Binding MoveToFolderCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_MoveToFolder}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -107,7 +102,6 @@
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
-                            Height="26"
                             Command="{Binding DeleteCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Delete}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -259,9 +253,9 @@
                     <!--  右上角删除按钮（仅在工作文件夹视图中显示）  -->
                     <Button
                         Grid.RowSpan="4"
+                        Margin="8"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
-                        Margin="8"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding DataContext.RemoveFromFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
@@ -305,7 +299,6 @@
                         BorderBrush="{DynamicResource BorderBrush}"
                         Style="{StaticResource DarkContextMenuStyle}">
                         <MenuItem
-                            Height="26"
                             Command="{Binding LaunchAllCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_LaunchAll}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -317,7 +310,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Height="26"
                             Command="{Binding ToggleFavoriteCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_ToggleFavorite}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -329,7 +321,6 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem
-                            Height="26"
                             Command="{Binding EditCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Edit}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -342,7 +333,6 @@
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
-                            Height="26"
                             Command="{Binding MoveToFolderCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_MoveToFolder}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -355,7 +345,6 @@
                         </MenuItem>
                         <Separator Style="{StaticResource DarkSeparatorStyle}" />
                         <MenuItem
-                            Height="26"
                             Command="{Binding DeleteCommand}"
                             Header="{Binding Source={StaticResource LocalizedStringsProxy}, Path=Data.ContextMenu_Delete}"
                             Style="{StaticResource DarkContextMenuItemStyle}">
@@ -505,9 +494,9 @@
                     <!--  右上角删除按钮（仅在工作文件夹视图中显示）  -->
                     <Button
                         Grid.RowSpan="4"
+                        Margin="8"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
-                        Margin="8"
                         Background="Transparent"
                         BorderThickness="0"
                         Command="{Binding DataContext.RemoveFromFolderCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
