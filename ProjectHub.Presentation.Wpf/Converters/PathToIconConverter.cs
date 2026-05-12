@@ -67,6 +67,26 @@ public class PathToIconConverter : IValueConverter
                         BitmapSizeOptions.FromEmptyOptions());
                 }
             }
+            else if (System.IO.Directory.Exists(filePath))
+            {
+                // 文件夹：使用 shell32.dll 中的默认文件夹图标（索引 4）
+                try
+                {
+                    var shell32Path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "shell32.dll");
+                    var icon = System.Drawing.Icon.ExtractIcon(shell32Path, 4);
+                    if (icon != null)
+                    {
+                        return Imaging.CreateBitmapSourceFromHIcon(
+                            icon.Handle,
+                            Int32Rect.Empty,
+                            BitmapSizeOptions.FromEmptyOptions());
+                    }
+                }
+                catch
+                {
+                    // 如果提取失败，返回 null
+                }
+            }
         }
         catch
         {

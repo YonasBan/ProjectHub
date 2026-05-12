@@ -343,12 +343,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         }
         else
         {
-            // 根据启动类型设置默认图标
+            // 根据启动类型设置默认图标（仅在没有路径时）
             IconPath = LaunchType switch
             {
                 LaunchType.OpenWebUrl => "Images/explorer.png",
                 LaunchType.OpenCmd => "Images/CMD.png",
-                LaunchType.OpenFolder => "Images/folder.png",
                 _ => null
             };
         }
