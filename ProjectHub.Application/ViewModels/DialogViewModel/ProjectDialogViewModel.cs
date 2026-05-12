@@ -192,6 +192,11 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
     public ReactiveCommand<Unit, Unit> BrowseWorkingDirectoryCommand { get; }
 
     /// <summary>
+    /// 浏览文件夹命令（用于 OpenFolder 模式）
+    /// </summary>
+    public ReactiveCommand<Unit, Unit> BrowseFolderCommand { get; }
+
+    /// <summary>
     /// 重置图标命令
     /// </summary>
     public ReactiveCommand<Unit, Unit> ResetIconCommand { get; }
@@ -254,6 +259,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         BrowseProgramCommand = ReactiveCommand.Create(BrowseProgram);
         BrowseIconCommand = ReactiveCommand.Create(BrowseIcon);
         BrowseWorkingDirectoryCommand = ReactiveCommand.Create(BrowseWorkingDirectory);
+        BrowseFolderCommand = ReactiveCommand.Create(BrowseFolder);
         ResetIconCommand = ReactiveCommand.Create(ResetIcon);
 
         // 响应式验证逻辑：当任何相关属性变化时自动重新计算错误信息和按钮状态
@@ -280,6 +286,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
                             ? L.ProjectDialog_Error_EmptyWebUrl
                             : null,
                     LaunchType.OpenCmd => string.IsNullOrWhiteSpace(cmdCommand) ? L.ProjectDialog_Error_EmptyCmdCommand : null,
+                    LaunchType.OpenFolder => string.IsNullOrWhiteSpace(path) ? L.ProjectDialog_Error_EmptyPath : null,
                     _ => null
                 };
             });
@@ -341,6 +348,7 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
             {
                 LaunchType.OpenWebUrl => "Images/explorer.png",
                 LaunchType.OpenCmd => "Images/CMD.png",
+                LaunchType.OpenFolder => "Images/folder.png",
                 _ => null
             };
         }
@@ -508,6 +516,24 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         }
     }
 
+    private void BrowseFolder()
+    {
+        var folder = _dialogService.ShowSelectFolderDialog(L.Dialog_SelectProjectPath_Title);
+
+        if (!string.IsNullOrEmpty(folder))
+        {
+            ProjectPath = folder;
+
+            // 自动提取项目名称（从文件夹名）
+            if (string.IsNullOrWhiteSpace(ProjectName) || Mode == DialogMode.Add)
+            {
+                ProjectName = System.IO.Path.GetFileName(folder);
+            }
+
+            _logger.LogInformation(string.Format(L.Log_UserSelectedPath, folder));
+        }
+    }
+
     private void ResetIcon()
     {
         _isIconCustomized = false;  // ✅ 清除自定义标志
@@ -576,10 +602,12 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         var isFileOrExe = LaunchType is LaunchType.OpenFile or LaunchType.OpenExe;
         var isCmd = LaunchType == LaunchType.OpenCmd;
         var isWeb = LaunchType == LaunchType.OpenWebUrl;
+        var isFolder = LaunchType == LaunchType.OpenFolder;
 
         return (
             // ✅ Bug3修复：OpenExe 也保留 ProjectPath（作为传给程序的目标路径）
-            path: (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe)
+            // OpenFolder 也需要 Path
+            path: (LaunchType == LaunchType.OpenFile || LaunchType == LaunchType.OpenExe || LaunchType == LaunchType.OpenFolder)
                   ? ProjectPath
                   : string.Empty,
             defaultProgram: isFileOrExe && !string.IsNullOrWhiteSpace(DefaultProgram) ? DefaultProgram : null,

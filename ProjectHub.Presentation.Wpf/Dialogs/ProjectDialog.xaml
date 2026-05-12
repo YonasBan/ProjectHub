@@ -236,13 +236,45 @@
             </StackPanel>
         </DataTemplate>
 
+        <!--  打开文件夹模板  -->
+        <DataTemplate x:Key="OpenFolderTemplate" DataType="{x:Type domain:LaunchType}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,6"
+                    FontSize="12"
+                    Foreground="{DynamicResource TextSecondaryBrush}"
+                    Text="{Binding DataContext.L.ProjectDialog_PathLabel, RelativeSource={RelativeSource AncestorType=Window}}" />
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        Grid.Column="0"
+                        IsReadOnly="{Binding DataContext.IsEditMode, RelativeSource={RelativeSource AncestorType=Window}}"
+                        MaxLength="500"
+                        Style="{DynamicResource VSCodeTextBoxStyle}"
+                        Text="{Binding DataContext.ProjectPath, RelativeSource={RelativeSource AncestorType=Window}, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button
+                        Grid.Column="1"
+                        Margin="8,0,0,0"
+                        Padding="12,8"
+                        Command="{Binding DataContext.BrowseFolderCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Content="{Binding DataContext.L.ProjectDialog_Browse, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Style="{DynamicResource SecondaryButtonStyle}"
+                        Visibility="{Binding DataContext.IsAddMode, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}" />
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+
         <!--  启动类型模板选择器  -->
         <selectors:LaunchTypeTemplateSelector
             x:Key="LaunchTypeTemplateSelector"
             OpenExeTemplate="{StaticResource OpenExeTemplate}"
             OpenFileTemplate="{StaticResource OpenFileTemplate}"
             OpenWebUrlTemplate="{StaticResource OpenWebUrlTemplate}"
-            OpenCmdTemplate="{StaticResource OpenCmdTemplate}" />
+            OpenCmdTemplate="{StaticResource OpenCmdTemplate}"
+            OpenFolderTemplate="{StaticResource OpenFolderTemplate}" />
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="Return" Command="{Binding ConfirmCommand}" />
