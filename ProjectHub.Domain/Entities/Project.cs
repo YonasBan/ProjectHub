@@ -208,7 +208,7 @@ public class Project : BaseEntity
         WebUrl = webUrl;
         UpdatedAt = DateTime.UtcNow;
         CustomIconPath = customIconPath;
-        
+
         if (!string.IsNullOrWhiteSpace(path))
         {
             Path = path;
@@ -363,5 +363,6 @@ public enum LaunchType
     /// <summary>
     /// 运行 CMD 命令
     /// </summary>
-    OpenCmd = 3
+    OpenCmd = 3,
+    OpenFolder = 4
 }

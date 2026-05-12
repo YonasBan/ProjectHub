@@ -591,4 +591,7 @@
   <data name="Content_SearchResults" xml:space="preserve">
     <value>搜索结果</value>
   </data>
+  <data name="ProjectDialog_LaunchType_OpenFolder" xml:space="preserve">
+    <value>打开文件夹</value>
+  </data>
 </root>

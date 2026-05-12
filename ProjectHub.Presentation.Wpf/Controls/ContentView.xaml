@@ -247,6 +247,20 @@
                                         Source="{Binding IsFavorite, Converter={StaticResource BoolToFavoriteIconConverter}}" />
                                 </Button.Content>
                             </Button>
+                            <Button
+                                Width="32"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Command="{Binding OpenFileFolderCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                ToolTip="{Binding DataContext.L.ContextMenu_OpenFilePosition, RelativeSource={RelativeSource AncestorType=ItemsControl}}">
+                                <Button.Content>
+                                    <svg:SvgViewbox
+                                        Width="16"
+                                        Height="16"
+                                        Source="/Icons/openFile.svg" />
+                                </Button.Content>
+                            </Button>
                         </StackPanel>
                     </Grid>
 

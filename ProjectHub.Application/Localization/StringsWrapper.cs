@@ -129,6 +129,12 @@ public class LocalizedStrings : ReactiveObject
     public string Header_Language => ProjectHub.Resources.Strings.Strings.Header_Language;
     public string Header_Theme => ProjectHub.Resources.Strings.Strings.Header_Theme;
     public string Header_Settings => ProjectHub.Resources.Strings.Strings.Header_Settings;
+    public string Settings_Language => ProjectHub.Resources.Strings.Strings.Settings_Language;
+    public string Settings_Theme => ProjectHub.Resources.Strings.Strings.Settings_Theme;
+    public string Theme_Light => ProjectHub.Resources.Strings.Strings.Theme_Light;
+    public string Theme_Dark => ProjectHub.Resources.Strings.Strings.Theme_Dark;
+    public string Language_Chinese => ProjectHub.Resources.Strings.Strings.Language_Chinese;
+    public string Language_English => ProjectHub.Resources.Strings.Strings.Language_English;
     public string Status_Ready => ProjectHub.Resources.Strings.Strings.Status_Ready;
     public string Status_ProjectCount => ProjectHub.Resources.Strings.Strings.Status_ProjectCount;
     public string Status_FolderCount => ProjectHub.Resources.Strings.Strings.Status_FolderCount;
@@ -239,10 +245,5 @@ public class LocalizedStrings : ReactiveObject
     public string Log_UserSelectedWorkingDirectory => ProjectHub.Resources.Strings.Strings.Log_UserSelectedWorkingDirectory;
     public string Log_ConfirmAddProject => ProjectHub.Resources.Strings.Strings.Log_ConfirmAddProject;
     public string Content_SearchResults => ProjectHub.Resources.Strings.Strings.Content_SearchResults;
-    public string Settings_Language => ProjectHub.Resources.Strings.Strings.Settings_Language;
-    public string Settings_Theme => ProjectHub.Resources.Strings.Strings.Settings_Theme;
-    public string Theme_Light => ProjectHub.Resources.Strings.Strings.Theme_Light;
-    public string Theme_Dark => ProjectHub.Resources.Strings.Strings.Theme_Dark;
-    public string Language_Chinese => ProjectHub.Resources.Strings.Strings.Language_Chinese;
-    public string Language_English => ProjectHub.Resources.Strings.Strings.Language_English;
+    public string ProjectDialog_LaunchType_OpenFolder => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenFolder;
 }

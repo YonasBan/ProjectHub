@@ -234,7 +234,8 @@ public class ProjectDialogViewModel : DialogViewModelBase<ProjectDto?>
         new LaunchTypeItem(LaunchType.OpenFile, L.ProjectDialog_LaunchType_OpenFile),
         new LaunchTypeItem(LaunchType.OpenExe, L.ProjectDialog_LaunchType_OpenExe),
         new LaunchTypeItem(LaunchType.OpenWebUrl, L.ProjectDialog_LaunchType_OpenWebUrl),
-        new LaunchTypeItem(LaunchType.OpenCmd, L.ProjectDialog_LaunchType_OpenCmd)
+        new LaunchTypeItem(LaunchType.OpenCmd, L.ProjectDialog_LaunchType_OpenCmd),
+        new LaunchTypeItem(LaunchType.OpenFolder, L.ProjectDialog_LaunchType_OpenFolder)
     };
 
     public ProjectDialogViewModel(
