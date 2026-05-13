@@ -55,6 +55,10 @@
     <Resource Include="..\ProjectHub.Resources\Icons\**\*" Link="Icons\%(RecursiveDir)%(FileName)%(Extension)" />
   </ItemGroup>
   <ItemGroup>
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="appsettings.json" />
     <Content Include="projecthub.ico" />
   </ItemGroup>
   <ItemGroup>
