@@ -1,10 +1,5 @@
-using DynamicData;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using ProjectHub.Application.DTOs;
 using ProjectHub.Application.Interfaces;
-using ProjectHub.Application.ViewModels.DialogViewModel;
-using ProjectHub.Domain.Entities;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -27,7 +22,7 @@ public class MainViewModel : ViewModelBase
     private readonly IWorkFolderAppService _workFolderAppService;
     private readonly IAppSettingsService _appSettingsService;
 
-    #endregion
+    #endregion 注入服务
 
     #region 子 ViewModels
 
@@ -41,7 +36,7 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public ContentViewModel ContentViewModel { get; }
 
-    #endregion
+    #endregion 子 ViewModels
 
     #region 搜索与视图属性
 
@@ -56,7 +51,7 @@ public class MainViewModel : ViewModelBase
         set => this.RaiseAndSetIfChanged(ref _searchKeyword, value);
     }
 
-    #endregion
+    #endregion 搜索与视图属性
 
     #region Reactive Commands
 
@@ -70,11 +65,12 @@ public class MainViewModel : ViewModelBase
     /// </summary>
     public ReactiveCommand<string, Unit> SetThemeCommand { get; }
 
-    #endregion
+    #endregion Reactive Commands
 
     #region 设置选项
 
     private ObservableCollection<CultureOption> _availableCultures = new();
+
     public ObservableCollection<CultureOption> AvailableCultures
     {
         get => _availableCultures;
@@ -82,6 +78,7 @@ public class MainViewModel : ViewModelBase
     }
 
     private ObservableCollection<ThemeOption> _availableThemes = new();
+
     public ObservableCollection<ThemeOption> AvailableThemes
     {
         get => _availableThemes;
@@ -92,24 +89,44 @@ public class MainViewModel : ViewModelBase
     /// 是否最小化到托盘
     /// </summary>
     private bool _minimizeToTray;
+
     public bool MinimizeToTray
     {
         get => _minimizeToTray;
         set
         {
-            if (this.RaiseAndSetIfChanged(ref _minimizeToTray, value))
-            {
-                // 保存配置
-                var settings = _appSettingsService.Load();
-                settings.MinimizeToTray = value;
-                _appSettingsService.Save(settings);
-                Logger.LogInformation("托盘设置已更新: {Value}", value ? "启用" : "禁用");
-            }
+            this.RaiseAndSetIfChanged(ref _minimizeToTray, value);
+            // 保存配置
+            var settings = _appSettingsService.Load();
+            settings.MinimizeToTray = value;
+            _appSettingsService.Save(settings);
+            Logger.LogInformation("托盘设置已更新: {Value}", value ? "启用" : "禁用");
         }
     }
 
-    #endregion
+    /// <summary>
+    /// 当前选中的语言
+    /// </summary>
+    private string _selectedCulture;
 
+    public string SelectedCulture
+    {
+        get => _selectedCulture;
+        set => this.RaiseAndSetIfChanged(ref _selectedCulture, value);
+    }
+
+    /// <summary>
+    /// 当前选中的主题
+    /// </summary>
+    private string _selectedTheme;
+
+    public string SelectedTheme
+    {
+        get => _selectedTheme;
+        set => this.RaiseAndSetIfChanged(ref _selectedTheme, value);
+    }
+
+    #endregion 设置选项
 
     #region 构造函数与初始化
 
@@ -138,19 +155,24 @@ public class MainViewModel : ViewModelBase
         SetThemeCommand = ReactiveCommand.Create<string>(theme =>
         {
             _themeService.SetTheme(theme);
+            SelectedTheme = theme;
             var settings = _appSettingsService.Load();
             settings.Theme = theme;
             _appSettingsService.Save(settings);
         });
         SetLanguageCommand.ThrownExceptions.Subscribe(ex => Logger.LogError(ex, "切换语言时发生错误"));
 
-        // 初始化设置选项
-        RefreshAvailableSettings();
+    
 
         // 加载托盘设置
         var settings = _appSettingsService.Load();
-        MinimizeToTray = settings.MinimizeToTray;
+        _minimizeToTray = settings.MinimizeToTray;
 
+        // 加载当前语言和主题
+        SelectedCulture = settings.Language;
+        SelectedTheme = settings.Theme;
+        // 初始化设置选项
+        RefreshAvailableSettings();
         // 订阅语言切换事件
         L.CultureChanged
             .ObserveOn(MainThreadScheduler)
@@ -173,8 +195,7 @@ public class MainViewModel : ViewModelBase
         _ = LoadInitialDataAsync();
     }
 
-    #endregion
-
+    #endregion 构造函数与初始化
 
     #region 数据加载方法
 
@@ -186,7 +207,7 @@ public class MainViewModel : ViewModelBase
         await SidebarViewModel.LoadInitialDataAsync();
     }
 
-    #endregion
+    #endregion 数据加载方法
 
     #region 语言与主题方法
 
@@ -197,6 +218,9 @@ public class MainViewModel : ViewModelBase
     {
         var newCulture = new System.Globalization.CultureInfo(cultureName);
         await L.SetCultureAsync(newCulture);
+
+        // 更新选中状态
+        SelectedCulture = cultureName;
 
         // 保存配置（保留其他设置）
         var settings = _appSettingsService.Load();
@@ -214,12 +238,13 @@ public class MainViewModel : ViewModelBase
         AvailableCultures.Clear();
         foreach (var culture in AppSettings.SupportedCultures)
         {
-            AvailableCultures.Add(new CultureOption(culture, GetLanguageDisplayName(culture)));
+            var isSelected = culture == SelectedCulture;
+            AvailableCultures.Add(new CultureOption(culture, GetLanguageDisplayName(culture), isSelected));
         }
 
         AvailableThemes.Clear();
-        AvailableThemes.Add(new ThemeOption("Light", L.Theme_Light));
-        AvailableThemes.Add(new ThemeOption("Dark", L.Theme_Dark));
+        AvailableThemes.Add(new ThemeOption("Light", L.Theme_Light, "Light" == SelectedTheme));
+        AvailableThemes.Add(new ThemeOption("Dark", L.Theme_Dark, "Dark" == SelectedTheme));
     }
 
     /// <summary>
@@ -235,18 +260,42 @@ public class MainViewModel : ViewModelBase
         };
     }
 
-    #endregion
+    #endregion 语言与主题方法
 }
 
 /// <summary>
 /// 文化选项
 /// </summary>
-public record CultureOption(string CultureName, string DisplayName);
+public class CultureOption
+{
+    public string CultureName { get; }
+    public string DisplayName { get; }
+    public bool IsSelected { get; set; }
+
+    public CultureOption(string cultureName, string displayName, bool isSelected = false)
+    {
+        CultureName = cultureName;
+        DisplayName = displayName;
+        IsSelected = isSelected;
+    }
+}
 
 /// <summary>
 /// 主题选项
 /// </summary>
-public record ThemeOption(string ThemeName, string DisplayName);
+public class ThemeOption
+{
+    public string ThemeName { get; }
+    public string DisplayName { get; }
+    public bool IsSelected { get; set; }
+
+    public ThemeOption(string themeName, string displayName, bool isSelected = false)
+    {
+        ThemeName = themeName;
+        DisplayName = displayName;
+        IsSelected = isSelected;
+    }
+}
 
 // ========== 移动到文件夹消息 ==========
 

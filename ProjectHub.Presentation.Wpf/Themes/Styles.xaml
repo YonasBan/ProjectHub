@@ -1046,6 +1046,19 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="24" />
                                 </Grid.ColumnDefinitions>
+                                <!--  选中标记（对勾）  -->
+                                <Path
+                                    x:Name="CheckMark"
+                                    Grid.Column="0"
+                                    Width="16"
+                                    Height="16"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Data="M 1,4.5 L 4.5,8 L 11,1.5"
+                                    Fill="Transparent"
+                                    Stroke="{DynamicResource AccentBlueBrush}"
+                                    StrokeThickness="2"
+                                    Visibility="Collapsed" />
                                 <Border
                                     Grid.Column="0"
                                     Width="28"
@@ -1110,6 +1123,9 @@
                         <Trigger Property="HasItems" Value="True">
                             <Setter TargetName="ShortcutText" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="Arrow" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

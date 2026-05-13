@@ -2,6 +2,7 @@
     x:Class="ProjectHub.Presentation.Wpf.Controls.HeaderView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:ProjectHub.Presentation.Wpf.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:res="clr-namespace:ProjectHub.Resources.Strings;assembly=ProjectHub.Resources"
@@ -9,6 +10,10 @@
     d:DesignHeight="48"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <!--  BindingProxy 用于解决 ContextMenu 绑定问题  -->
+        <converters:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+    </UserControl.Resources>
     <Border
         Background="{DynamicResource BgTertiaryBrush}"
         BorderBrush="{DynamicResource BorderBrush}"
@@ -102,6 +107,7 @@
                         <ContextMenu
                             Background="{DynamicResource BgSecondaryBrush}"
                             BorderBrush="{DynamicResource BorderBrush}"
+                            DataContext="{Binding Source={StaticResource DataContextProxy}, Path=Data}"
                             Style="{StaticResource DarkContextMenuStyle}">
                             <!--  语言子菜单  -->
                             <MenuItem
@@ -111,6 +117,8 @@
                                 <MenuItem.ItemContainerStyle>
                                     <Style BasedOn="{StaticResource DarkContextMenuItemStyle}" TargetType="MenuItem">
                                         <Setter Property="Header" Value="{Binding DisplayName}" />
+                                        <Setter Property="IsCheckable" Value="True" />
+                                        <Setter Property="IsChecked" Value="{Binding IsSelected}" />
                                         <Setter Property="Command" Value="{Binding DataContext.SetLanguageCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <Setter Property="CommandParameter" Value="{Binding CultureName}" />
                                     </Style>
@@ -124,6 +132,8 @@
                                 <MenuItem.ItemContainerStyle>
                                     <Style BasedOn="{StaticResource DarkContextMenuItemStyle}" TargetType="MenuItem">
                                         <Setter Property="Header" Value="{Binding DisplayName}" />
+                                        <Setter Property="IsCheckable" Value="True" />
+                                        <Setter Property="IsChecked" Value="{Binding IsSelected}" />
                                         <Setter Property="Command" Value="{Binding DataContext.SetThemeCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" />
                                         <Setter Property="CommandParameter" Value="{Binding ThemeName}" />
                                     </Style>
@@ -133,12 +143,10 @@
                             <Separator Style="{StaticResource DarkContextMenuSeparatorStyle}" />
                             <!--  最小化到托盘  -->
                             <MenuItem
-                                Click="MinimizeToTrayMenuItem_Click"
                                 Header="{Binding L.Settings_MinimizeToTray}"
                                 IsCheckable="True"
-                                IsChecked="{Binding MinimizeToTray}"
-                                Style="{StaticResource DarkContextMenuItemStyle}"
-                                Tag="{Binding L.Settings_MinimizeToTray}" />
+                                IsChecked="{Binding MinimizeToTray, Mode=TwoWay}"
+                                Style="{StaticResource DarkContextMenuItemStyle}" />
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
