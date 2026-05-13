@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Update="projecthub.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
