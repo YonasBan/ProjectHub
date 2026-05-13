@@ -129,6 +129,16 @@
                                     </Style>
                                 </MenuItem.ItemContainerStyle>
                             </MenuItem>
+                            <!--  分隔线  -->
+                            <Separator Style="{StaticResource DarkContextMenuSeparatorStyle}" />
+                            <!--  最小化到托盘  -->
+                            <MenuItem
+                                Click="MinimizeToTrayMenuItem_Click"
+                                Header="{Binding L.Settings_MinimizeToTray}"
+                                IsCheckable="True"
+                                IsChecked="{Binding MinimizeToTray}"
+                                Style="{StaticResource DarkContextMenuItemStyle}"
+                                Tag="{Binding L.Settings_MinimizeToTray}" />
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>

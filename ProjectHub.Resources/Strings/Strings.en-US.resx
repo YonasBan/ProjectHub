@@ -249,6 +249,18 @@
   <data name="Settings_Theme" xml:space="preserve">
     <value>Theme</value>
   </data>
+  <data name="Settings_MinimizeToTray" xml:space="preserve">
+    <value>Minimize to Tray</value>
+  </data>
+  <data name="Tray_ShowWindow" xml:space="preserve">
+    <value>Show Window</value>
+  </data>
+  <data name="Tray_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Tray_MinimizedMessage" xml:space="preserve">
+    <value>Application minimized to tray</value>
+  </data>
   <data name="Theme_Light" xml:space="preserve">
     <value>Light</value>
   </data>

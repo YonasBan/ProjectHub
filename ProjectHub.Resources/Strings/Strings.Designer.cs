@@ -1015,6 +1015,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 最小化到托盘 的本地化字符串。
+        /// </summary>
+        public static string Settings_MinimizeToTray {
+            get {
+                return ResourceManager.GetString("Settings_MinimizeToTray", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 主题 的本地化字符串。
         /// </summary>
         public static string Settings_Theme {
@@ -1317,6 +1326,33 @@ namespace ProjectHub.Resources.Strings {
         public static string Tooltip_RemoveFromFolder {
             get {
                 return ResourceManager.GetString("Tooltip_RemoveFromFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 退出 的本地化字符串。
+        /// </summary>
+        public static string Tray_Exit {
+            get {
+                return ResourceManager.GetString("Tray_Exit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 程序已最小化到托盘 的本地化字符串。
+        /// </summary>
+        public static string Tray_MinimizedMessage {
+            get {
+                return ResourceManager.GetString("Tray_MinimizedMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 显示窗口 的本地化字符串。
+        /// </summary>
+        public static string Tray_ShowWindow {
+            get {
+                return ResourceManager.GetString("Tray_ShowWindow", resourceCulture);
             }
         }
         

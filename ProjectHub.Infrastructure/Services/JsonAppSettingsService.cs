@@ -75,7 +75,8 @@ public class JsonAppSettingsService : IAppSettingsService
         return new AppSettings
         {
             Language = language,
-            Theme = "Dark"
+            Theme = "Dark",
+            MinimizeToTray = false
         };
     }
 }

@@ -24,4 +24,14 @@ public partial class HeaderView : UserControl
             btn.ContextMenu.IsOpen = true;
         }
     }
+
+    private void MinimizeToTrayMenuItem_Click(object sender, RoutedEventArgs e)
+    {
+        // 通过数据绑定自动更新 ViewModel 中的 MinimizeToTray 属性
+        // 该属性的 setter 会自动保存配置
+        if (DataContext is MainViewModel viewModel && sender is MenuItem menuItem)
+        {
+            viewModel.MinimizeToTray = menuItem.IsChecked;
+        }
+    }
 }

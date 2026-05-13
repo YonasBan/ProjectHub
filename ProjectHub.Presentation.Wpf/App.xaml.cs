@@ -77,11 +77,7 @@ public partial class App : System.Windows.Application
     private static void RegisterViews(IServiceCollection services)
     {
         // MainWindow with injected ViewModel - Singleton to match MainViewModel's lifetime
-        services.AddSingleton<MainWindow>(provider =>
-        {
-            var viewModel = provider.GetRequiredService<MainViewModel>();
-            return new MainWindow(viewModel);
-        });
+        services.AddSingleton<MainWindow>();
     }
     /// <summary>
     /// Registers all application services with the DI container.
@@ -108,6 +104,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IProcessLauncherService, WindowsProcessLauncherService>();
         services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
         services.AddSingleton<IAppSettingsService, JsonAppSettingsService>();
+        services.AddSingleton<TrayIconService>();
         // 或者
         var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
         // ========== Register WPF Scheduler (must be before other registrations) ==========

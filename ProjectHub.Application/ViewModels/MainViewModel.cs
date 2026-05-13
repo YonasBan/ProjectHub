@@ -88,6 +88,26 @@ public class MainViewModel : ViewModelBase
         private set => this.RaiseAndSetIfChanged(ref _availableThemes, value);
     }
 
+    /// <summary>
+    /// 是否最小化到托盘
+    /// </summary>
+    private bool _minimizeToTray;
+    public bool MinimizeToTray
+    {
+        get => _minimizeToTray;
+        set
+        {
+            if (this.RaiseAndSetIfChanged(ref _minimizeToTray, value))
+            {
+                // 保存配置
+                var settings = _appSettingsService.Load();
+                settings.MinimizeToTray = value;
+                _appSettingsService.Save(settings);
+                Logger.LogInformation("托盘设置已更新: {Value}", value ? "启用" : "禁用");
+            }
+        }
+    }
+
     #endregion
 
 
@@ -127,6 +147,10 @@ public class MainViewModel : ViewModelBase
         // 初始化设置选项
         RefreshAvailableSettings();
 
+        // 加载托盘设置
+        var settings = _appSettingsService.Load();
+        MinimizeToTray = settings.MinimizeToTray;
+
         // 订阅语言切换事件
         L.CultureChanged
             .ObserveOn(MainThreadScheduler)
@@ -145,26 +169,12 @@ public class MainViewModel : ViewModelBase
             .Subscribe(keyword => ContentViewModel.Search(keyword))
             .DisposeWith(Disposables);
 
-        // 订阅 MessageBus 消息
-        SubscribeToMessageBus();
-
         // 首次加载
         _ = LoadInitialDataAsync();
     }
 
     #endregion
 
-    #region MessageBus 消息处理
-
-    /// <summary>
-    /// 订阅 MessageBus 消息
-    /// </summary>
-    private void SubscribeToMessageBus()
-    {
-
-    }
-
-    #endregion
 
     #region 数据加载方法
 

@@ -246,4 +246,8 @@ public class LocalizedStrings : ReactiveObject
     public string Log_ConfirmAddProject => ProjectHub.Resources.Strings.Strings.Log_ConfirmAddProject;
     public string Content_SearchResults => ProjectHub.Resources.Strings.Strings.Content_SearchResults;
     public string ProjectDialog_LaunchType_OpenFolder => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenFolder;
+    public string Settings_MinimizeToTray => ProjectHub.Resources.Strings.Strings.Settings_MinimizeToTray;
+    public string Tray_ShowWindow => ProjectHub.Resources.Strings.Strings.Tray_ShowWindow;
+    public string Tray_Exit => ProjectHub.Resources.Strings.Strings.Tray_Exit;
+    public string Tray_MinimizedMessage => ProjectHub.Resources.Strings.Strings.Tray_MinimizedMessage;
 }

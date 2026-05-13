@@ -40,4 +40,9 @@ public class AppSettings
     /// 最近使用显示天数（默认30天）
     /// </summary>
     public int RecentUsageDays { get; set; } = 30;
+
+    /// <summary>
+    /// 关闭行为：true=最小化到托盘，false=退出程序（默认 false）
+    /// </summary>
+    public bool MinimizeToTray { get; set; } = true;
 }
