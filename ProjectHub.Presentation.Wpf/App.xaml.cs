@@ -126,7 +126,6 @@ public partial class App : System.Windows.Application
 
         // ========== Register Infrastructure Services ==========
         services.AddInfrastructureServices(configuration);
-        services.Configure<AppSettings>(context.Configuration.GetSection("AppSettings"));
     }
 
     private void RegisterDialogs(IServiceCollection services)
