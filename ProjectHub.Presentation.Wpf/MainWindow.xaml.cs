@@ -96,5 +96,76 @@ namespace ProjectHub.Presentation.Wpf
             base.OnClosed(e);
             _trayIconService?.Dispose();
         }
+
+        #region 窗口控制按钮事件
+
+        /// <summary>
+        /// 标题栏拖动
+        /// </summary>
+        private void TitleBar_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (e.ClickCount == 2)
+            {
+                // 双击标题栏最大化/还原
+                MaximizeRestoreButton_Click(null, null);
+            }
+            else
+            {
+                // 如果窗口是最大化状态，先还原
+                if (WindowState == WindowState.Maximized)
+                {
+                    // 计算鼠标位置相对于窗口的比例
+                    var mousePos = e.GetPosition(this);
+                    var widthRatio = mousePos.X / ActualWidth;
+                    
+                    // 还原窗口
+                    WindowState = WindowState.Normal;
+                    
+                    // 计算新的窗口位置，使鼠标保持在标题栏的相同相对位置
+                    var newLeft = mousePos.X - (widthRatio * RestoreBounds.Width);
+                    Left = newLeft;
+                    Top = 0;
+                }
+                
+                // 拖动窗口
+                DragMove();
+            }
+        }
+
+        /// <summary>
+        /// 最小化按钮
+        /// </summary>
+        private void MinimizeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WindowState = WindowState.Minimized;
+        }
+
+        /// <summary>
+        /// 最大化/还原按钮
+        /// </summary>
+        private void MaximizeRestoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+                MaximizeRestoreButton.Content = "\xE739"; // 最大化图标
+            }
+            else
+            {
+                WindowState = WindowState.Maximized;
+                MaximizeRestoreButton.Content = "\xE923"; // 还原图标
+            }
+        }
+
+        /// <summary>
+        /// 关闭按钮
+        /// </summary>
+        private void CloseButton_Click(object sender, RoutedEventArgs e)
+        {
+            _isClosing = true;
+            Close();
+        }
+
+        #endregion
     }
 }

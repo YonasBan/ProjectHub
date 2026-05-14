@@ -47,7 +47,7 @@
                 <TextBlock
                     FontSize="18"
                     FontWeight="SemiBold"
-                    Foreground="{DynamicResource AccentBlueBrush}"
+                    Foreground="{DynamicResource TextPrimaryBrush}"
                     Text="ProjectHub" />
             </StackPanel>
 
