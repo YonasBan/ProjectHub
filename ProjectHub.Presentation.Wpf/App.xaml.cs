@@ -11,6 +11,7 @@ using ProjectHub.Application.ViewModels.DialogViewModel;
 using ProjectHub.Infrastructure.DependencyInjection;
 using ProjectHub.Infrastructure.Services;
 using ProjectHub.Presentation.Wpf.Dialogs;
+using ProjectHub.Presentation.Wpf.Helpers;
 using ProjectHub.Presentation.Wpf.Services;
 using ReactiveUI;
 using ReactiveUI.Builder;
@@ -18,6 +19,7 @@ using Splat;
 using Splat.Microsoft.Extensions.DependencyInjection;
 using System.Reactive.Concurrency;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Windows;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
@@ -43,6 +45,8 @@ public partial class App : System.Windows.Application
 {
     private readonly IHost _host;
     private readonly ILogger<App> _logger;
+    private Mutex? _mutex;
+    private const string MutexName = "ProjectHub_SingleInstance_Mutex";
 
     /// <summary>
     /// Gets the service provider for resolving services throughout the application.
@@ -105,6 +109,7 @@ public partial class App : System.Windows.Application
         services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
         services.AddSingleton<IAppSettingsService, JsonAppSettingsService>();
         services.AddSingleton<TrayIconService>();
+        services.AddSingleton<ProjectHub.Application.Interfaces.IShellContextMenuService, WindowsShellContextMenuService>();
         // 或者
         var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
         // ========== Register WPF Scheduler (must be before other registrations) ==========
@@ -203,6 +208,19 @@ public partial class App : System.Windows.Application
             _logger.LogInformation("Application starting up...");
             _logger.LogDebug("Command line arguments: {Args}", string.Join(" ", e.Args));
 
+            // 检查单实例
+            bool createdNew;
+            _mutex = new Mutex(true, MutexName, out createdNew);
+            
+            if (!createdNew)
+            {
+                // 已经有实例在运行，发送消息给现有实例并退出
+                _logger.LogInformation("检测到已有实例在运行，发送消息后退出");
+                SendArgsToRunningInstance(e.Args);
+                Shutdown();
+                return;
+            }
+
             // Start the host (initializes all services)
             await _host.StartAsync();
 
@@ -212,6 +230,9 @@ public partial class App : System.Windows.Application
 
             // 加载用户配置并应用语言和主题
             await ApplyUserSettingsAsync();
+
+            // 根据配置决定是否注册 Windows Shell 右键菜单
+            RegisterShellContextMenu();
 
             // 直接使用 Services 而不是创建新的 Scope，避免 Scoped 服务被提前 dispose
             var mainWindow = Services.GetRequiredService<MainWindow>();
@@ -257,6 +278,112 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
+    /// 注册 Windows Shell 右键菜单
+    /// </summary>
+    private void RegisterShellContextMenu()
+    {
+        try
+        {
+            var settingsService = Services.GetRequiredService<IAppSettingsService>();
+            var settings = settingsService.Load();
+            
+            // 只有当用户启用时才注册
+            if (!settings.EnableShellContextMenu)
+            {
+                _logger.LogDebug("用户未启用右键菜单，跳过注册");
+                return;
+            }
+            
+            var shellService = Services.GetRequiredService<ProjectHub.Application.Interfaces.IShellContextMenuService>();
+            
+            if (!shellService.IsRegistered())
+            {
+                shellService.Register();
+                _logger.LogInformation("Windows Shell 右键菜单已注册");
+            }
+            else
+            {
+                _logger.LogDebug("Windows Shell 右键菜单已存在，跳过注册");
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "注册 Windows Shell 右键菜单失败");
+        }
+    }
+
+    /// <summary>
+    /// 发送参数到已运行的实例
+    /// </summary>
+    private void SendArgsToRunningInstance(string[] args)
+    {
+        if (args == null || args.Length == 0) return;
+
+        try
+        {
+            var argsString = string.Join("|", args);
+            _logger.LogInformation($"尝试发送参数到运行实例: {argsString}");
+            
+            // 查找已运行的 ProjectHub 窗口
+            var mainWindowHandle = Win32Helper.FindWindow(null, "ProjectHub");
+            
+            if (mainWindowHandle == IntPtr.Zero)
+            {
+                _logger.LogWarning("未找到 ProjectHub 窗口句柄");
+                return;
+            }
+            
+            _logger.LogInformation($"找到窗口句柄: {mainWindowHandle}");
+            
+            // 使用 WM_COPYDATA 发送消息
+            var copyData = new Win32Helper.COPYDATASTRUCT
+            {
+                dwData = IntPtr.Zero,
+                cbData = (argsString.Length + 1) * 2, // Unicode 每个字符2字节，+1为null终止符
+                lpData = Marshal.StringToHGlobalUni(argsString)
+            };
+
+            var result = Win32Helper.SendMessage(mainWindowHandle, Win32Helper.WM_COPYDATA, IntPtr.Zero, ref copyData);
+            Marshal.FreeHGlobal(copyData.lpData);
+            
+            _logger.LogInformation($"SendMessage 返回结果: {result}");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "发送参数到运行实例失败");
+        }
+    }
+
+    /// <summary>
+    /// 注销 Windows Shell 右键菜单
+    /// </summary>
+    private void UnregisterShellContextMenu()
+    {
+        try
+        {
+            var settingsService = Services.GetService<IAppSettingsService>();
+            if (settingsService == null) return;
+            
+            var settings = settingsService.Load();
+            
+            // 只有当用户启用了右键菜单时才注销
+            if (!settings.EnableShellContextMenu)
+            {
+                _logger.LogDebug("用户未启用右键菜单，跳过注销");
+                return;
+            }
+            
+            var shellService = Services.GetService<ProjectHub.Application.Interfaces.IShellContextMenuService>();
+            shellService?.Unregister();
+            _logger.LogDebug("Windows Shell 右键菜单已注销");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "注销 Windows Shell 右键菜单失败");
+        }
+    }
+
+    /// <summary>
     /// Global exception handler for unhandled UI thread exceptions.
     /// Delegates to platform-specific implementation.
     /// </summary>
@@ -292,6 +419,9 @@ public partial class App : System.Windows.Application
         try
         {
             _logger.LogInformation("Application shutting down...");
+
+            // 注销 Windows Shell 右键菜单
+            UnregisterShellContextMenu();
 
             // Gracefully stop the host and dispose all services
             using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5)))

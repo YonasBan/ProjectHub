@@ -195,4 +195,25 @@ public interface IWorkSpaceAppService
     Task<IReadOnlyList<WorkSpaceDto>> GetByWorkFolderIdAsync(long workFolderId, CancellationToken cancellationToken = default);
 }
 
+/// <summary>
+/// Shell 右键菜单管理服务接口
+/// </summary>
+public interface IShellContextMenuService
+{
+    /// <summary>
+    /// 注册右键菜单
+    /// </summary>
+    void Register();
+
+    /// <summary>
+    /// 注销右键菜单
+    /// </summary>
+    void Unregister();
+
+    /// <summary>
+    /// 检查是否已注册
+    /// </summary>
+    bool IsRegistered();
+}
+
 

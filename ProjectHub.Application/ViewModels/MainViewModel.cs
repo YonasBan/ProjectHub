@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using ProjectHub.Application.Interfaces;
 using ReactiveUI;
@@ -105,6 +106,17 @@ public class MainViewModel : ViewModelBase
     }
 
     /// <summary>
+    /// 是否启用右键菜单
+    /// </summary>
+    private bool _enableShellContextMenu;
+
+    public bool EnableShellContextMenu
+    {
+        get => _enableShellContextMenu;
+        set => this.RaiseAndSetIfChanged(ref _enableShellContextMenu, value);
+    }
+
+    /// <summary>
     /// 当前选中的语言
     /// </summary>
     private string _selectedCulture;
@@ -167,6 +179,7 @@ public class MainViewModel : ViewModelBase
         // 加载托盘设置
         var settings = _appSettingsService.Load();
         _minimizeToTray = settings.MinimizeToTray;
+        _enableShellContextMenu = settings.EnableShellContextMenu;
 
         // 加载当前语言和主题
         SelectedCulture = settings.Language;
@@ -189,6 +202,43 @@ public class MainViewModel : ViewModelBase
             .Throttle(TimeSpan.FromMilliseconds(300))
             .ObserveOn(MainThreadScheduler)
             .Subscribe(keyword => ContentViewModel.Search(keyword))
+            .DisposeWith(Disposables);
+
+        // 订阅右键菜单设置变化
+        this.WhenAnyValue(x => x.EnableShellContextMenu)
+            // 关键：Skip(1) 确保程序刚启动、第一次从配置文件加载该值时，不触发下面的注册/注销逻辑
+            .Skip(1)
+            // 关键：在后台线程执行耗时的 I/O 和注册表操作，绝不卡顿 UI
+            .ObserveOn(System.Reactive.Concurrency.TaskPoolScheduler.Default)
+            .Subscribe(value =>
+            {
+                // A. 保存配置
+                var settings = _appSettingsService.Load();
+                settings.EnableShellContextMenu = value;
+                _appSettingsService.Save(settings);
+                Logger.LogInformation("右键菜单设置已更新: {Value}", value ? "启用" : "禁用");
+
+                // B. 动态注册或注销右键菜单
+                var shellService = _serviceProvider.GetService<ProjectHub.Application.Interfaces.IShellContextMenuService>();
+                if (shellService == null)
+                {
+                    Logger.LogWarning("未找到 IShellContextMenuService 服务");
+                    return;
+                }
+
+                if (value)
+                {
+                    Logger.LogInformation("开始注册右键菜单...");
+                    shellService.Register();
+                    Logger.LogInformation("Windows Shell 右键菜单已注册");
+                }
+                else
+                {
+                    Logger.LogInformation("开始注销右键菜单...");
+                    shellService.Unregister();
+                    Logger.LogInformation("Windows Shell 右键菜单已注销");
+                }
+            })
             .DisposeWith(Disposables);
 
         // 首次加载

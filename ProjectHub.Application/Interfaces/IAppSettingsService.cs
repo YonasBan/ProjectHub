@@ -45,4 +45,9 @@ public class AppSettings
     /// 关闭行为：true=最小化到托盘，false=退出程序（默认 false）
     /// </summary>
     public bool MinimizeToTray { get; set; } = true;
+
+    /// <summary>
+    /// 是否添加右键菜单到系统（默认 false）
+    /// </summary>
+    public bool EnableShellContextMenu { get; set; } = false;
 }
