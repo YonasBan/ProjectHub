@@ -149,7 +149,7 @@
                                 Style="{StaticResource DarkContextMenuItemStyle}" />
                             <!--  添加到右键菜单  -->
                             <MenuItem
-                                Header="添加到右键菜单"
+                                Header="{Binding L.Settings_EnableShellContextMenu}"
                                 IsCheckable="True"
                                 IsChecked="{Binding EnableShellContextMenu, Mode=TwoWay}"
                                 Style="{StaticResource DarkContextMenuItemStyle}" />

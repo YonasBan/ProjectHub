@@ -1024,6 +1024,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 添加到右键菜单 的本地化字符串。
+        /// </summary>
+        public static string Settings_EnableShellContextMenu {
+            get {
+                return ResourceManager.GetString("Settings_EnableShellContextMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 主题 的本地化字符串。
         /// </summary>
         public static string Settings_Theme {

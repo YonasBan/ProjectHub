@@ -252,6 +252,9 @@
   <data name="Settings_MinimizeToTray" xml:space="preserve">
     <value>最小化到托盘</value>
   </data>
+  <data name="Settings_EnableShellContextMenu" xml:space="preserve">
+    <value>添加到右键菜单</value>
+  </data>
   <data name="Tray_ShowWindow" xml:space="preserve">
     <value>显示窗口</value>
   </data>

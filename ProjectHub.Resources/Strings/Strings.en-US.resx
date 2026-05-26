@@ -252,6 +252,9 @@
   <data name="Settings_MinimizeToTray" xml:space="preserve">
     <value>Minimize to Tray</value>
   </data>
+  <data name="Settings_EnableShellContextMenu" xml:space="preserve">
+    <value>Add to Context Menu</value>
+  </data>
   <data name="Tray_ShowWindow" xml:space="preserve">
     <value>Show Window</value>
   </data>
