@@ -77,7 +77,8 @@ public class DialogService : IDialogService
 
     public Task<DialogResult<string>> ShowInputAsync(string title, string message, string? defaultValue = null)
     {
-        throw new NotImplementedException();
+        // TODO: 实现通用输入对话框
+        throw new NotImplementedException("通用输入对话框尚未实现");
     }
 
     public string? ShowOpenFileDialog(string filter, string title)

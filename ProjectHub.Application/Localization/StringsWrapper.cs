@@ -131,6 +131,11 @@ public class LocalizedStrings : ReactiveObject
     public string Header_Settings => ProjectHub.Resources.Strings.Strings.Header_Settings;
     public string Settings_Language => ProjectHub.Resources.Strings.Strings.Settings_Language;
     public string Settings_Theme => ProjectHub.Resources.Strings.Strings.Settings_Theme;
+    public string Settings_MinimizeToTray => ProjectHub.Resources.Strings.Strings.Settings_MinimizeToTray;
+    public string Settings_EnableShellContextMenu => ProjectHub.Resources.Strings.Strings.Settings_EnableShellContextMenu;
+    public string Tray_ShowWindow => ProjectHub.Resources.Strings.Strings.Tray_ShowWindow;
+    public string Tray_Exit => ProjectHub.Resources.Strings.Strings.Tray_Exit;
+    public string Tray_MinimizedMessage => ProjectHub.Resources.Strings.Strings.Tray_MinimizedMessage;
     public string Theme_Light => ProjectHub.Resources.Strings.Strings.Theme_Light;
     public string Theme_Dark => ProjectHub.Resources.Strings.Strings.Theme_Dark;
     public string Language_Chinese => ProjectHub.Resources.Strings.Strings.Language_Chinese;
@@ -246,8 +251,4 @@ public class LocalizedStrings : ReactiveObject
     public string Log_ConfirmAddProject => ProjectHub.Resources.Strings.Strings.Log_ConfirmAddProject;
     public string Content_SearchResults => ProjectHub.Resources.Strings.Strings.Content_SearchResults;
     public string ProjectDialog_LaunchType_OpenFolder => ProjectHub.Resources.Strings.Strings.ProjectDialog_LaunchType_OpenFolder;
-    public string Settings_MinimizeToTray => ProjectHub.Resources.Strings.Strings.Settings_MinimizeToTray;
-    public string Tray_ShowWindow => ProjectHub.Resources.Strings.Strings.Tray_ShowWindow;
-    public string Tray_Exit => ProjectHub.Resources.Strings.Strings.Tray_Exit;
-    public string Tray_MinimizedMessage => ProjectHub.Resources.Strings.Strings.Tray_MinimizedMessage;
 }

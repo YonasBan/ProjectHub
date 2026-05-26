@@ -1006,6 +1006,15 @@ namespace ProjectHub.Resources.Strings {
         }
         
         /// <summary>
+        ///   查找类似 添加到右键菜单 的本地化字符串。
+        /// </summary>
+        public static string Settings_EnableShellContextMenu {
+            get {
+                return ResourceManager.GetString("Settings_EnableShellContextMenu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 语言 的本地化字符串。
         /// </summary>
         public static string Settings_Language {
@@ -1020,15 +1029,6 @@ namespace ProjectHub.Resources.Strings {
         public static string Settings_MinimizeToTray {
             get {
                 return ResourceManager.GetString("Settings_MinimizeToTray", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似 添加到右键菜单 的本地化字符串。
-        /// </summary>
-        public static string Settings_EnableShellContextMenu {
-            get {
-                return ResourceManager.GetString("Settings_EnableShellContextMenu", resourceCulture);
             }
         }
         

@@ -20,7 +20,7 @@ namespace ProjectHub.Application.ViewModels;
 /// - 不直接引用 WPF/Avalonia API，便于迁移
 /// - 通过接口与领域层交互 (依赖注入)
 /// </summary>
-public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
+public abstract class ViewModelBase : ReactiveObject
 {
     /// <summary>
     /// 日志记录器
@@ -52,8 +52,6 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
     /// </summary>
     public CompositeDisposable Disposables { get; } = new();
 
-    public ViewModelActivator Activator => throw new NotImplementedException();
-
     /// <summary>
     /// 从异步函数创建 ReactiveCommand（使用主线程调度器）
     /// </summary>
@@ -73,13 +71,5 @@ public abstract class ViewModelBase : ReactiveObject, IActivatableViewModel
             executeAction,
             canExecute,
             outputScheduler: MainThreadScheduler);
-    }
-
-    /// <summary>
-    /// 清理资源
-    /// </summary>
-    public void Deactivate()
-    {
-        Disposables.Dispose();
     }
 }

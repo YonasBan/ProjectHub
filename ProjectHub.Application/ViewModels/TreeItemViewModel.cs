@@ -91,14 +91,6 @@ public class TreeItemViewModel : ReactiveObject
     }
 
     /// <summary>
-    /// 更新计数
-    /// </summary>
-    public void UpdateCount(int newCount)
-    {
-        Count = newCount;
-    }
-
-    /// <summary>
     /// 更新本地化文本
     /// </summary>
     public void UpdateName(string newName)

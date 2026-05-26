@@ -315,49 +315,6 @@ public class SidebarViewModel : ViewModelBase
     }
 
     /// <summary>
-    /// 重建文件夹树形结构（保持其他节点不变）
-    /// </summary>
-    public void RebuildFolderTreeOnly()
-    {
-        // 移除所有文件夹节点
-        var folderNodesToRemove = SidebarTreeItems.Where(i => i.ItemType == TreeItemType.WorkFolder).ToList();
-        foreach (var node in folderNodesToRemove)
-        {
-            SidebarTreeItems.Remove(node);
-        }
-
-        // 找到工作空间节点的索引
-        var workSpaceIndex = -1;
-        for (int i = 0; i < SidebarTreeItems.Count; i++)
-        {
-            if (SidebarTreeItems[i].ItemType == TreeItemType.WorkSpace)
-            {
-                workSpaceIndex = i;
-                break;
-            }
-        }
-
-        // 重新添加文件夹节点
-        var insertIndex = workSpaceIndex + 1;
-        var folderNodes = WorkFolders
-            .OrderBy(f => f.SortOrder)
-            .ToDictionary(f => f.Id, f => new TreeItemViewModel(f.Name, 0, TreeItemType.WorkFolder, f.Id));
-
-        foreach (var folder in WorkFolders.OrderBy(f => f.SortOrder))
-        {
-            if (folder.ParentId.HasValue && folderNodes.TryGetValue(folder.ParentId.Value, out var parentNode))
-            {
-                parentNode.Children.Add(folderNodes[folder.Id]);
-            }
-            else
-            {
-                SidebarTreeItems.Insert(insertIndex, folderNodes[folder.Id]);
-                insertIndex++;
-            }
-        }
-    }
-
-    /// <summary>
     /// 增加项目计数
     /// </summary>
     public void IncrementProjectCount()

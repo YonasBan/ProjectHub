@@ -29,12 +29,6 @@ public class WpfThemeService : IThemeService
         _themeChanged.OnNext(themeName);
     }
 
-    public void ToggleTheme()
-    {
-        var newTheme = _currentTheme == "Dark" ? "Light" : "Dark";
-        SetTheme(newTheme);
-    }
-
     /// <summary>
     /// 初始化默认主题 - 应在 Application 启动完成后调用
     /// </summary>
