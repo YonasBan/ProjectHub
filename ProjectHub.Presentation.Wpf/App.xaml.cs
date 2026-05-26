@@ -231,9 +231,6 @@ public partial class App : System.Windows.Application
             // 加载用户配置并应用语言和主题
             await ApplyUserSettingsAsync();
 
-            // 根据配置决定是否注册 Windows Shell 右键菜单
-            RegisterShellContextMenu();
-
             // 直接使用 Services 而不是创建新的 Scope，避免 Scoped 服务被提前 dispose
             var mainWindow = Services.GetRequiredService<MainWindow>();
             mainWindow?.Show();
@@ -274,41 +271,6 @@ public partial class App : System.Windows.Application
         catch (Exception ex)
         {
             _logger.LogError(ex, "应用用户配置时发生错误");
-        }
-    }
-
-    /// <summary>
-    /// 注册 Windows Shell 右键菜单
-    /// </summary>
-    private void RegisterShellContextMenu()
-    {
-        try
-        {
-            var settingsService = Services.GetRequiredService<IAppSettingsService>();
-            var settings = settingsService.Load();
-            
-            // 只有当用户启用时才注册
-            if (!settings.EnableShellContextMenu)
-            {
-                _logger.LogDebug("用户未启用右键菜单，跳过注册");
-                return;
-            }
-            
-            var shellService = Services.GetRequiredService<ProjectHub.Application.Interfaces.IShellContextMenuService>();
-            
-            if (!shellService.IsRegistered())
-            {
-                shellService.Register();
-                _logger.LogInformation("Windows Shell 右键菜单已注册");
-            }
-            else
-            {
-                _logger.LogDebug("Windows Shell 右键菜单已存在，跳过注册");
-            }
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "注册 Windows Shell 右键菜单失败");
         }
     }
 
