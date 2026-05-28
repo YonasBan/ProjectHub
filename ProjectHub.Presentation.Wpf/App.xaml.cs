@@ -77,10 +77,10 @@ public partial class App : System.Windows.Application
     }
     /// <summary>
     /// Registers all Views with dependency injection support.
+    /// MainWindow is registered as Singleton to match MainViewModel's lifetime.
     /// </summary>
     private static void RegisterViews(IServiceCollection services)
     {
-        // MainWindow with injected ViewModel - Singleton to match MainViewModel's lifetime
         services.AddSingleton<MainWindow>();
     }
     /// <summary>
@@ -89,48 +89,84 @@ public partial class App : System.Windows.Application
     /// </summary>
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
-        // ✅ 在 ConfigureServices 最顶部做这三步
-        services.UseMicrosoftDependencyResolver();
-        var resolver = Locator.CurrentMutable;
-        resolver.InitializeSplat();
-
-        // ✅ 然后用 RxAppBuilder 注册平台服务
-        RxAppBuilder.CreateReactiveUIBuilder()
-            .WithWpf()
-            //.WithViewsFromAssembly(typeof(App).Assembly)
-            .BuildApp();
         var configuration = context.Configuration;
 
-        // ========== Register Platform-Specific Services (WPF) ==========
-        services.AddSingleton<IDialogService, DialogService>();
-        services.AddSingleton<IThemeService, WpfThemeService>();
-        services.AddSingleton<IFileAssociationService, WindowsFileAssociationService>();
-        services.AddSingleton<IProcessLauncherService, WindowsProcessLauncherService>();
-        services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
-        services.AddSingleton<IAppSettingsService, JsonAppSettingsService>();
-        services.AddSingleton<TrayIconService>();
-        services.AddSingleton<ProjectHub.Application.Interfaces.IShellContextMenuService, WindowsShellContextMenuService>();
-        // 或者
-        var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
-        // ========== Register WPF Scheduler (must be before other registrations) ==========
-        services.AddSingleton<IScheduler>(scheduler);
-        // ========== Register Localization Service ==========
-        RegisterLocalizationServices(services);
+        // ========== Step 1: Initialize ReactiveUI & Splat ==========
+        InitializeReactiveUI(services);
 
-        // ========== Register Views ==========
+        // ========== Step 2: Register Platform-Specific Services (WPF) ==========
+        RegisterPlatformServices(services);
+
+        // ========== Step 3: Register Core Infrastructure ==========
+        RegisterCoreInfrastructure(services);
+
+        // ========== Step 4: Register Views and Dialogs ==========
         RegisterViews(services);
-        RegisterDialogs(services);
-        // ========== Register UI Services (ViewModels) ==========
+        RegisterDialogs();
+
+        // ========== Step 5: Register Application Layers ==========
         services.AddUIServices();
-
-        // ========== Register Application Services ==========
         services.AddApplicationServices();
-
-        // ========== Register Infrastructure Services ==========
         services.AddInfrastructureServices(configuration);
     }
 
-    private void RegisterDialogs(IServiceCollection services)
+    /// <summary>
+    /// Initializes ReactiveUI framework and Splat dependency resolver.
+    /// Must be called before any ReactiveUI components are used.
+    /// </summary>
+    private static void InitializeReactiveUI(IServiceCollection services)
+    {
+        // Bridge Microsoft.Extensions.DependencyInjection with Splat
+        services.UseMicrosoftDependencyResolver();
+        
+        // Initialize Splat locator
+        var resolver = Locator.CurrentMutable;
+        resolver.InitializeSplat();
+
+        // Configure ReactiveUI for WPF platform
+        RxAppBuilder.CreateReactiveUIBuilder()
+            .WithWpf()
+            .BuildApp();
+    }
+
+    /// <summary>
+    /// Registers all WPF platform-specific service implementations.
+    /// These services provide platform-dependent functionality.
+    /// </summary>
+    private static void RegisterPlatformServices(IServiceCollection services)
+    {
+        // UI and Interaction Services
+        services.AddSingleton<IDialogService, DialogService>();
+        services.AddSingleton<IThemeService, WpfThemeService>();
+        services.AddSingleton<TrayIconService>();
+
+        // System Integration Services
+        services.AddSingleton<IFileAssociationService, WindowsFileAssociationService>();
+        services.AddSingleton<IProcessLauncherService, WindowsProcessLauncherService>();
+        services.AddSingleton<IFileExplorerService, WindowsFileExplorerService>();
+        services.AddSingleton<ProjectHub.Application.Interfaces.IShellContextMenuService, WindowsShellContextMenuService>();
+
+        // Configuration Service
+        services.AddSingleton<IAppSettingsService, JsonAppSettingsService>();
+
+        // WPF Dispatcher Scheduler (required for ReactiveUI threading)
+        var scheduler = new DispatcherScheduler(System.Windows.Application.Current.Dispatcher);
+        services.AddSingleton<IScheduler>(scheduler);
+    }
+
+    /// <summary>
+    /// Registers core infrastructure services like localization.
+    /// </summary>
+    private static void RegisterCoreInfrastructure(IServiceCollection services)
+    {
+        RegisterLocalizationServices(services);
+    }
+
+    /// <summary>
+    /// Registers all dialog views with ReactiveUI view locator.
+    /// Maps ViewModel interfaces to their corresponding WPF views.
+    /// </summary>
+    private static void RegisterDialogs()
     {
         AppLocator.CurrentMutable.Register(() => new InputDialog(), typeof(IViewFor<CreateFolderDialogViewModel>));
         AppLocator.CurrentMutable.Register(() => new ProjectDialog(), typeof(IViewFor<ProjectDialogViewModel>));
@@ -189,11 +225,11 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
-    /// Registers localization services.
+    /// Registers localization services for multi-language support.
+    /// Provides access to localized strings throughout the application.
     /// </summary>
     private static void RegisterLocalizationServices(IServiceCollection services)
     {
-        // 注册本地化字符串包装类 - 直接访问资源文件
         services.AddSingleton<LocalizedStrings>();
     }
 
@@ -317,35 +353,6 @@ public partial class App : System.Windows.Application
     }
 
     /// <summary>
-    /// 注销 Windows Shell 右键菜单
-    /// </summary>
-    private void UnregisterShellContextMenu()
-    {
-        try
-        {
-            var settingsService = Services.GetService<IAppSettingsService>();
-            if (settingsService == null) return;
-            
-            var settings = settingsService.Load();
-            
-            // 只有当用户启用了右键菜单时才注销
-            if (!settings.EnableShellContextMenu)
-            {
-                _logger.LogDebug("用户未启用右键菜单，跳过注销");
-                return;
-            }
-            
-            var shellService = Services.GetService<ProjectHub.Application.Interfaces.IShellContextMenuService>();
-            shellService?.Unregister();
-            _logger.LogDebug("Windows Shell 右键菜单已注销");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "注销 Windows Shell 右键菜单失败");
-        }
-    }
-
-    /// <summary>
     /// Global exception handler for unhandled UI thread exceptions.
     /// Delegates to platform-specific implementation.
     /// </summary>
@@ -381,9 +388,6 @@ public partial class App : System.Windows.Application
         try
         {
             _logger.LogInformation("Application shutting down...");
-
-            // 注销 Windows Shell 右键菜单
-            UnregisterShellContextMenu();
 
             // Gracefully stop the host and dispose all services
             using (var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(5)))
